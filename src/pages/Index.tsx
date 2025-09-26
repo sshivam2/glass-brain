@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useQuizStore } from "@/store/quizStore";
 import { Question, QuizSession } from "@/types/question";
 
 // Components
 import Header from "@/components/Layout/Header";
+import PlatformSelector from "@/components/Dashboard/PlatformSelector";
+import SubjectSelector from "@/components/Dashboard/SubjectSelector";
+import TopicSelector from "@/components/Dashboard/TopicSelector";
 import ModeSelector from "@/components/Dashboard/ModeSelector";
 import QuizBuilder from "@/components/Quiz/QuizBuilder";
 import QuizInterface from "@/components/Quiz/QuizInterface";
 import QuizResults from "@/components/Quiz/QuizResults";
 
 const Index = () => {
-  const { currentSession, isDarkMode, resetQuiz } = useQuizStore();
-  const [currentView, setCurrentView] = useState<'home' | 'builder' | 'quiz' | 'results'>('home');
+  const { currentSession, navigation, isDarkMode, resetQuiz, updateNavigation, resetNavigation } = useQuizStore();
+  const [currentView, setCurrentView] = useState<'platforms' | 'subjects' | 'topics' | 'modes' | 'builder' | 'quiz' | 'results'>('platforms');
   const [selectedMode, setSelectedMode] = useState<QuizSession['mode'] | null>(null);
 
   // Apply dark mode on mount
@@ -23,6 +28,21 @@ const Index = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  const handlePlatformSelect = (platform: string) => {
+    updateNavigation({ selectedPlatform: platform });
+    setCurrentView('subjects');
+  };
+
+  const handleSubjectsSelect = (subjects: number[]) => {
+    updateNavigation({ selectedSubjects: subjects });
+    setCurrentView('topics');
+  };
+
+  const handleTopicsSelect = (topics: string[]) => {
+    updateNavigation({ selectedTopics: topics });
+    setCurrentView('modes');
+  };
 
   const handleModeSelect = (mode: QuizSession['mode']) => {
     setSelectedMode(mode);
@@ -44,7 +64,8 @@ const Index = () => {
 
   const handleReturnHome = () => {
     resetQuiz();
-    setCurrentView('home');
+    resetNavigation();
+    setCurrentView('platforms');
     setSelectedMode(null);
   };
 
@@ -61,13 +82,25 @@ const Index = () => {
   };
 
   const handleBackToModeSelect = () => {
-    setCurrentView('home');
+    setCurrentView('modes');
     setSelectedMode(null);
+  };
+
+  const handleBackToPlatforms = () => {
+    setCurrentView('platforms');
+  };
+
+  const handleBackToSubjects = () => {
+    setCurrentView('subjects');
+  };
+
+  const handleBackToTopics = () => {
+    setCurrentView('topics');
   };
 
   const handleExitQuiz = () => {
     resetQuiz();
-    setCurrentView('home');
+    setCurrentView('platforms');
     setSelectedMode(null);
   };
 
@@ -108,15 +141,69 @@ const Index = () => {
 
         <div className="relative z-10">
           <AnimatePresence mode="wait">
-            {currentView === 'home' && (
+            {currentView === 'platforms' && (
               <motion.div
-                key="home"
+                key="platforms"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
                 className="container mx-auto px-4 py-12"
               >
+                <PlatformSelector onPlatformSelect={handlePlatformSelect} />
+              </motion.div>
+            )}
+
+            {currentView === 'subjects' && navigation.selectedPlatform && (
+              <motion.div
+                key="subjects"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.3 }}
+                className="container mx-auto px-4 py-8"
+              >
+                <SubjectSelector
+                  platform={navigation.selectedPlatform}
+                  onBack={handleBackToPlatforms}
+                  onSubjectsSelect={handleSubjectsSelect}
+                />
+              </motion.div>
+            )}
+
+            {currentView === 'topics' && navigation.selectedPlatform && navigation.selectedSubjects.length > 0 && (
+              <motion.div
+                key="topics"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.3 }}
+                className="container mx-auto px-4 py-8"
+              >
+                <TopicSelector
+                  platform={navigation.selectedPlatform}
+                  subjects={navigation.selectedSubjects}
+                  onBack={handleBackToSubjects}
+                  onTopicsSelect={handleTopicsSelect}
+                />
+              </motion.div>
+            )}
+
+            {currentView === 'modes' && (
+              <motion.div
+                key="modes"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="container mx-auto px-4 py-12"
+              >
+                <div className="mb-6">
+                  <Button variant="ghost" onClick={handleBackToTopics} className="glass-button">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Topics
+                  </Button>
+                </div>
                 <ModeSelector onModeSelect={handleModeSelect} />
               </motion.div>
             )}

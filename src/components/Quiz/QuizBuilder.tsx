@@ -45,18 +45,30 @@ const QuizBuilder = ({ mode, onBack, onStartQuiz }: QuizBuilderProps) => {
   }, []);
 
   const filteredQuestions = availableQuestions.filter(question => {
-    // Filter by subjects
+    const { navigation } = useQuizStore.getState();
+    
+    // Filter by selected subjects from navigation
+    if (navigation.selectedSubjects.length > 0) {
+      const hasSubject = question.subjects_id.some(id => navigation.selectedSubjects.includes(id));
+      if (!hasSubject) return false;
+    }
+
+    // Filter by selected topics from navigation
+    if (navigation.selectedTopics.length > 0) {
+      const hasTag = question.tags.some(tag => navigation.selectedTopics.includes(tag));
+      if (!hasTag) return false;
+    }
+
+    // Additional filters
     if (filters.subjects.length > 0) {
       const hasSubject = question.subjects_id.some(id => filters.subjects.includes(id));
       if (!hasSubject) return false;
     }
 
-    // Filter by difficulty
     if (filters.difficulty.length > 0) {
       if (!filters.difficulty.includes(question.difficulty_level)) return false;
     }
 
-    // Filter by tags
     if (filters.tags.length > 0) {
       const hasTag = question.tags.some(tag => filters.tags.includes(tag));
       if (!hasTag) return false;

@@ -2,6 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Question, QuizSession, UserStats, QuizFilters } from '@/types/question';
 
+interface NavigationState {
+  selectedPlatform: string | null;
+  selectedSubjects: number[];
+  selectedTopics: string[];
+}
+
 interface QuizState {
   // Current session
   currentSession: QuizSession | null;
@@ -14,6 +20,9 @@ interface QuizState {
   
   // Quiz filters
   filters: QuizFilters;
+  
+  // Navigation state
+  navigation: NavigationState;
   
   // Theme
   isDarkMode: boolean;
@@ -32,6 +41,8 @@ interface QuizState {
   addIncorrectAnswer: (question: Question) => void;
   removeIncorrectAnswer: (questionId: number) => void;
   updateFilters: (filters: Partial<QuizFilters>) => void;
+  updateNavigation: (navigation: Partial<NavigationState>) => void;
+  resetNavigation: () => void;
   toggleTheme: () => void;
 }
 
@@ -61,6 +72,11 @@ export const useQuizStore = create<QuizState>()(
       userStats: initialUserStats,
       incorrectAnswers: [],
       filters: initialFilters,
+      navigation: {
+        selectedPlatform: null,
+        selectedSubjects: [],
+        selectedTopics: [],
+      },
       isDarkMode: false,
 
       startQuiz: (questions, mode, timeLimit) => {
@@ -276,6 +292,21 @@ export const useQuizStore = create<QuizState>()(
         set({ filters: { ...filters, ...newFilters } });
       },
 
+      updateNavigation: (newNavigation) => {
+        const { navigation } = get();
+        set({ navigation: { ...navigation, ...newNavigation } });
+      },
+
+      resetNavigation: () => {
+        set({
+          navigation: {
+            selectedPlatform: null,
+            selectedSubjects: [],
+            selectedTopics: [],
+          },
+        });
+      },
+
       toggleTheme: () => {
         const { isDarkMode } = get();
         set({ isDarkMode: !isDarkMode });
@@ -294,6 +325,7 @@ export const useQuizStore = create<QuizState>()(
         userStats: state.userStats,
         incorrectAnswers: state.incorrectAnswers,
         filters: state.filters,
+        navigation: state.navigation,
         isDarkMode: state.isDarkMode,
       }),
     }
