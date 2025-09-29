@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Dashboard - QuizMaster Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+<body>
+    <header class="glass sticky top-0 z-40 mb-8">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <button onclick="window.location.href='index.html'" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg>
+                Back to Home
+            </button>
+            <div class="text-lg font-semibold text-white">Performance Dashboard</div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 pb-12">
+        <div id="emptyState" class="hidden text-center py-16">
+             <h2 class="text-3xl font-bold text-white mb-4">No Performance Data Yet</h2>
+             <p class="text-white text-opacity-70 mb-8 text-lg">Complete a quiz in 'Test' or 'Timed Exam' mode to see your stats here.</p>
+        </div>
+
+        <div id="dashboardContent">
+            <!-- Overall Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Overall Accuracy</h3><div id="overallAccuracy" class="text-3xl font-bold text-white">0%</div></div>
+                <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Quizzes Completed</h3><div id="quizzesCompleted" class="text-3xl font-bold text-white">0</div></div>
+                <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Total Questions</h3><div id="totalQuestions" class="text-3xl font-bold text-white">0</div></div>
+                <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Average Score</h3><div id="averageScore" class="text-3xl font-bold text-white">0%</div></div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-card p-6"><h3 class="text-xl font-bold text-white mb-4">Performance Over Time</h3><canvas id="performanceHistoryChart"></canvas></div>
+                <div class="glass-card p-6 flex flex-col items-center justify-center"><h3 class="text-xl font-bold text-white mb-4">Overall Breakdown</h3><div class="w-full max-w-xs"><canvas id="overallBreakdownChart"></canvas></div></div>
+            </div>
+
+            <div class="glass-card p-6 mb-8"><h3 class="text-xl font-bold text-white mb-4">Accuracy by Topic</h3><canvas id="accuracyByTopicChart"></canvas></div>
+
+            <!-- Quiz History Table -->
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-bold text-white mb-4">Quiz History</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead><tr class="border-b border-white border-opacity-20"><th class="p-3">Quiz Name</th><th class="p-3">Date</th><th class="p-3">Score</th><th class="p-3">Accuracy</th><th class="p-3">Time</th></tr></thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = JSON.parse(localStorage.getItem('quizPerformanceData')) || [];
+            if (data.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('dashboardContent').style.display = 'none';
+                return;
+            }
+
+            // Calculate Overall Stats
+            const totalQuizzes = data.length;
+            const totalCorrect = data.reduce((sum, item) => sum + item.stats.correct, 0);
+            const totalIncorrect = data.reduce((sum, item) => sum + item.stats.incorrect, 0);
+            const totalAttempted = totalCorrect + totalIncorrect;
+            const overallAccuracy = totalAttempted > 0 ? ((totalCorrect / totalAttempted) * 100).toFixed(1) : 0;
+            const avgScore = (data.reduce((sum, item) => sum + ((item.stats.correct / (item.stats.correct + item.stats.incorrect + item.stats.notAttempted)) * 100), 0) / totalQuizzes).toFixed(1);
+
+            document.getElementById('overallAccuracy').textContent = `${overallAccuracy}%`;
+            document.getElementById('quizzesCompleted').textContent = totalQuizzes;
+            document.getElementById('totalQuestions').textContent = totalAttempted;
+            document.getElementById('averageScore').textContent = `${avgScore}%`;
+
+            // Chart Colors
+            Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.2)';
+
+            // Performance History Chart
+            new Chart(document.getElementById('performanceHistoryChart'), {
+                type: 'line',
+                data: {
+                    labels: data.map(item => new Date(item.timestamp).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Accuracy %',
+                        data: data.map(item => {
+                           const attempted = item.stats.correct + item.stats.incorrect;
+                           return attempted > 0 ? (item.stats.correct / attempted) * 100 : 0;
+                        }),
+                        borderColor: 'var(--accent-blue)',
+                        backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                }
+            });
+
+            // Overall Breakdown Chart
+            new Chart(document.getElementById('overallBreakdownChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        data: [totalCorrect, totalIncorrect],
+                        backgroundColor: ['var(--accent-green)', 'var(--accent-red)'],
+                        borderWidth: 0
+                    }]
+                }
+            });
+            
+            // Accuracy by Topic Chart
+            const topicData = data.reduce((acc, item) => {
+                const topic = item.hierarchy.join(' > ');
+                if (!acc[topic]) acc[topic] = { correct: 0, incorrect: 0 };
+                acc[topic].correct += item.stats.correct;
+                acc[topic].incorrect += item.stats.incorrect;
+                return acc;
+            }, {});
+
+            const topicLabels = Object.keys(topicData);
+            const topicAccuracies = topicLabels.map(topic => {
+                const { correct, incorrect } = topicData[topic];
+                return (correct + incorrect) > 0 ? (correct / (correct + incorrect)) * 100 : 0;
+            });
+
+            new Chart(document.getElementById('accuracyByTopicChart'), {
+                type: 'bar',
+                data: {
+                    labels: topicLabels,
+                    datasets: [{
+                        label: 'Accuracy %',
+                        data: topicAccuracies,
+                        backgroundColor: 'rgba(168, 85, 247, 0.5)',
+                        borderColor: 'var(--accent-purple)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y' }
+            });
+
+            // Populate History Table
+            const tableBody = document.getElementById('historyTableBody');
+            tableBody.innerHTML = data.map(item => {
+                const total = item.stats.correct + item.stats.incorrect + item.stats.notAttempted;
+                const accuracy = (item.stats.correct + item.stats.incorrect) > 0 ? ((item.stats.correct / (item.stats.correct + item.stats.incorrect)) * 100).toFixed(1) : 0;
+                const minutes = Math.floor(item.totalTime / 60000);
+                const seconds = Math.floor((item.totalTime % 60000) / 1000).toString().padStart(2, '0');
+                return `
+                    <tr class="border-b border-white border-opacity-10">
+                        <td class="p-3">${item.quizName}</td>
+                        <td class="p-3">${new Date(item.timestamp).toLocaleString()}</td>
+                        <td class="p-3">${item.stats.correct}/${total}</td>
+                        <td class="p-3">${accuracy}%</td>
+                        <td class="p-3">${minutes}:${seconds}</td>
+                    </tr>`;
+            }).join('');
+        });
+    </script>
+</body>
+</html>
