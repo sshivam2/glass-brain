@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fmge Mini Test - 012 (Ecg Based) - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        Marrow / FMGE Mini Test Series / 2022
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">30</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls>
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd" />
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z" />
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>
+        let questionsData = [
+  {
+    "text": "The ECG of a patient with core body temperature of 85 \u00b0F is shown below. What is the hallmark of this patient's ECG, marked by arrows in the image below?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Prominent U wave"
+      },
+      {
+        "id": 2,
+        "text": "Tall peaked T waves"
+      },
+      {
+        "id": 3,
+        "text": "ST segment elevation"
+      },
+      {
+        "id": 4,
+        "text": "Osborne J wave"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The hallmark of this patient's ECG is the\u00a0<strong>Osborn J wave.</strong></p>\n<p>Hypothermia is defined as core body temperature being less than 95\u00b0F and is associated with ECG changes such as:\u00a0</p>\n<ul>\n<li>In the initial stages of hypothermia, as a reaction to the general stress, there is sinus tachycardia.</li>\n<li>As the temperature drops below 90\u00b0F there is sinus bradycardia associated with prolongation of the PR interval, QRS complex, and QT interval progressively.</li>\n<li>With temperature approaching 86\u00b0F, atrial ectopic activity is often noted and can progress to atrial fibrillation. It is at this level of hypothermia that many patients have Osborn waves that consist of an extra deflection at the end of the QRS complex.\u00a0J waves occur when a heterogeneous distribution of potassium current enhances the activity of a transient outward potassium current in the heart, caused by low temperatures.</li>\n</ul>\n<p>Osborn waves, also known as J waves, camel-hump waves or hypothermic waves, are best seen the inferior and lateral precordial leads. They become more prominent as the body temperature drops, and they regress gradually with rewarming.</p>\n<p>A progressive widening of the QRS complex occurs when the temperature falls below 86\u00b0F, which is associated with an increased risk of ventricular fibrillation and asystole occurs when the temperature drops to \u224860\u00b0F</p>\n<p><strong>Other</strong> <strong>options</strong>:</p>\n<p>Option A: Prominent <strong>U waves</strong> are seen in hypokalemia.</p>\n<p>Option B: <strong>Tall peaked T waves</strong> are the first change in the ECG as the plasma potassium level rises.</p>\n<p>Option C: <strong>ST segment elevation</strong> is seen in Myocardial infarction.</p>\n<p>\u00a0</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/29dc1fe3a6be4b7aa7e1f6f35438a466.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/9759e9288cff443c9c7c7f47eb48cc5ax482x442.PNG"
+    ]
+  },
+  {
+    "text": "An 85-year-old female presented with acute-onset palpitations for the last 3 days. She is a diabetic since her childhood and has had multiple episodes of hospitalization in the past. Her ECG is given below. There was evidence of thrombus in the left atria on transesophageal electrocardiography. How will you manage this patient?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Anticoagulation for 4 weeks"
+      },
+      {
+        "id": 2,
+        "text": "Immediate Electrical Cardioversion"
+      },
+      {
+        "id": 3,
+        "text": "Immediate Pharmacological Cardioversion"
+      },
+      {
+        "id": 4,
+        "text": "Rate Control Strategy"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>The given ECG shows an <strong>irregularly irregular rhythm</strong> with <strong>absent 'p'</strong> waves, which is consistent with atrial fibrillation. An episode that lasted for <strong>more than 48hours</strong> carries a high risk of thromboembolism.</p>\n<p>Anticoagulation is initiated and ideally recommended for 4 weeks. However, the duration needs to be reduced in this <strong>elderly</strong>&nbsp;<strong>female</strong> who is a<strong> diabetic</strong> and has a long history of <strong>hospitalization</strong>. To reduce the duration of pre-cardioversion anticoagulation, <strong>Transesophageal electrocardiography</strong>&nbsp;(TEE) is indicated to screen for any thrombus in the left atria. TEE is not mandatory in all patients, it is only helpful if early cardioversion has to be planned.</p>\n<ul>\n<li>If the absence of a thrombus is ensured, cardioversion may be carried out safely.&nbsp;However,&nbsp;Anticoagulation is recommended for a minimum of 4weeks post-conversion in <strong>ALL</strong> the patients.</li>\n<li>If the <strong>presence of thrombus is confirmed</strong>, <strong>anticoagulation has to be carried out for another 4weeks.</strong> After these 4weeks,&nbsp;<strong>Transesophageal electrocardiography</strong>&nbsp;is used to rule out the evidence of thrombus.</li>\n</ul>\n<p>&nbsp;</p>\n<p>In general, all patients with all types of Atrial Fibrillation carry an increased risk of thromboembolism. This risk is furthermore increased transiently when sinus rhythm is restored either intendedly or spontaneously.&nbsp;During or two weeks after cardioversion, the most common <strong>source of stroke</strong> in these patients is the&nbsp;embolism of a thrombus in the <strong>left atrial appendage</strong>. The major causes are:</p>\n<ul>\n<li>embolism from a <strong>pre-formed</strong> thrombus.</li>\n<li>embolism from thrombus formed<strong> post-conversion</strong> worsening of atrial function.</li>\n<li>embolism from subsequent <strong>episodes of AF.</strong></li>\n</ul>\n<p>&nbsp;</p>\n<table style=\"height: 588px;\" width=\"724\">\n<tbody>\n<tr>\n<td style=\"width: 230.703125px;\">&nbsp;</td>\n<td style=\"width: 230.703125px;\">Risk of thromboembolism present '<strong>before'&nbsp;</strong>reverting to normal sinus rhythm.</td>\n<td style=\"width: 230.09375px;\">Risk of thromboembolism <strong>'during' </strong>reverting to normal sinus rhythm.</td>\n<td style=\"width: 241.21875px;\">Risk of thromboembolism <strong>'after'</strong>&nbsp;reverting to normal sinus rhythm.</td>\n</tr>\n<tr>\n<td style=\"width: 230.703125px;\">The <strong>source</strong> of thromboembolism.&nbsp;</td>\n<td style=\"width: 230.703125px;\">The thrombus that is already pre-formed in the left atria might get <strong>dislodged</strong> during cardioversion.</td>\n<td style=\"width: 230.09375px;\">There is an <strong>incremental increase</strong> in the risk at the time of reversion to&nbsp;normal sinus rhythm. Most of the embolic events occur within 10 days of reversion.</td>\n<td style=\"width: 241.21875px;\">The mechanical/contractile dysfunction of atria is called atrial <strong>'stunning'</strong>. It creates a milieu for de novo synthesis of thrombus in the atria.</td>\n</tr>\n<tr>\n<td style=\"width: 230.703125px;\">\n<p>The <strong>high-risk</strong> patients.</p>\n</td>\n<td style=\"width: 230.703125px;\">\n<p>The prevalence is increased in <strong>high-risk</strong> patients having:</p>\n<ul>\n<li>severe LV systolic dysfunction</li>\n<li>left atrial enlargement</li>\n<li>depressed left atrial appendage ejection velocity</li>\n<li>left atrial appendage spontaneous echo contrast(a marker of stasis)</li>\n</ul>\n</td>\n<td style=\"width: 230.09375px;\">\n<p>The particularly <strong>high-risk</strong> patients are those who had an episode of AF <strong>longer than 48 hours or unknown </strong>duration.</p>\n<p>&nbsp;</p>\n<p>The prevalence of left atrial appendage on transesophageal echocardiography is significantly <strong>lower</strong> when the duration is <strong>less than 48 hours.</strong></p>\n<p>&nbsp;</p>\n</td>\n<td style=\"width: 241.21875px;\">\n<p><strong>Recurrent</strong> episodes of AF are also common in the <strong>first-month</strong> post-conversion.</p>\n</td>\n</tr>\n<tr>\n<td style=\"width: 230.703125px;\">\n<p><strong>Control the risk</strong> of thromboembolism with&nbsp;<strong>Anticoagulation.</strong></p>\n</td>\n<td style=\"width: 230.703125px;\">\n<p>Anticoagulation is recommended for a minimum of <strong>3</strong><strong>weeks</strong> pre-conversion if the CHA2DS2-VASc score of a patient is &gt;=1. DOAC are preferred to Warfarin, if not contra-indicated.</p>\n</td>\n<td style=\"width: 230.09375px;\">\n<p>The loading dose of <strong>IV Heparin</strong> is instituted prior to <strong>urgent</strong> cardioversion if the patient is hemodynamically unstable.</p>\n</td>\n<td style=\"width: 241.21875px;\">Anticoagulation is recommended for a minimum of <strong>4weeks</strong> post-conversion in <strong>ALL</strong> the patients.</td>\n</tr>\n</tbody>\n</table>\n<p>The duration of atrial fibrillation - those who present <strong>within 48 hours</strong> of the onset of symptoms have a lower risk of an existing atrial thrombus and can be safely cardioverted. Those who present with unknown or known onset of <strong>more than 48 hours</strong> should ideally be anticoagulated <strong>3 weeks before</strong> cardioversion. However, a <strong>hemodynamically unstable</strong> patient must be immediately cardioverted. Cardioversion has to be <strong>followed by 4 weeks</strong> of anticoagulation in all the patients.</p>\n<p>Anticoagulation is recommended for a minimum of <strong>4weeks</strong> post-conversion in <strong>ALL</strong> the patients.</p>\n<p>An episode<strong>&nbsp;of AF lasting more than 48 hours. (Flowchart)</strong></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/70d1e6b6b8b741e495953b892363f400.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/20dd674c09d84200b5676d3ca1ff80f0x1280x2221.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/f9318792157147c88d81bb5b2f6ac7c8x1280x2207.JPEG"
+    ]
+  },
+  {
+    "text": "Identify the tachycardia depicted in the given ECG.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Atrial fibrillation"
+      },
+      {
+        "id": 2,
+        "text": "Atrial flutter"
+      },
+      {
+        "id": 3,
+        "text": "Ventricular tachycardia"
+      },
+      {
+        "id": 4,
+        "text": "Ventricular fibrillation"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given ECG is suggestive of <strong>atrial flutter</strong>.</p>\n<p>The given ECG shows <strong>narrow QRS</strong> complexes, hence it is supraventricular tachycardia. The RR intervals are<strong> regular</strong> and the normal P waves are replaced by <strong>sawtooth-shaped</strong> <strong>waves\u00a0</strong>(red arrows), known as <strong>flutter waves</strong>. Hence, it is most likely to be<strong> atrial flutter.</strong></p>\n<p>In atrial flutter, the ventricular rate is determined by the AV conduction ratio. The commonest AV ratio is 2:1. As the atrial rate is around 300 bpm, AV conduction ratio of 2:1 results in a ventricular rate of ~150 bpm.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/c01b08ca1a7c4904989ac83075d37b91.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/83ccc936da244a8ca580c56a88af1c6ax182x137.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/c0ba7804b69b49158a3605cc4c0df424x800x372.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/0a510ad10139448d9bb81528d27e6a74x1280x669.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/02b56cb8ee1b412280e93059d27dac7ex1279x654.JPEG"
+    ]
+  },
+  {
+    "text": "A 60-year-old male has made frequent visits to the emergency room for management of atrial flutter. The consultant administers a drug that shows the following effect. What is the likely drug administered?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Magnesium sulphate"
+      },
+      {
+        "id": 2,
+        "text": "Disopyramide"
+      },
+      {
+        "id": 3,
+        "text": "Dofetilide"
+      },
+      {
+        "id": 4,
+        "text": "Either B or C"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>For&nbsp;<strong>recurrent</strong>&nbsp;<strong>episodes </strong>of atrial flutter,<strong>&nbsp;</strong>antiarrhythmic drugs such as sotalol, dofetilide, disopyramide, and amiodarone may be prescribed. These drugs belong to class 1A (disopyramide) and 3 (sotalol and dofetilide) and cause&nbsp;<strong>torsades de pointes&nbsp;</strong>as shown in the image.</p>\n<p><strong>Torsades de pointes</strong>&nbsp;is a polymorphic ventricular tachycardia meaning &ldquo;twisting of the points,&rdquo; characterized by twisting of the QRS axis around the baseline and a polymorphic appearance. Torsade rhythm is&nbsp;most commonly seen in association with&nbsp;hypomagnesemia and hypokalemia. There is QT interval prolongation in the ECG due to a non-uniform delay in repolarization.&nbsp;</p>\n<p>Causes of torsades de pointes include:</p>\n<ul>\n<li>Drugs like&nbsp;quinidine, procainamide,<strong> disopyramide,</strong>&nbsp;and&nbsp;phenothiazine<strong>&nbsp;</strong>(<strong>amiodarone is rarely associated</strong> with torsades de pointes because the delay in repolarization induced by it is uniform).</li>\n<li>Bradycardia</li>\n<li>Acute ischemia or infarction</li>\n</ul>\n<p><strong>IV MgSO<sub>4</sub> is the treatment of choice </strong>in Torsades de pointes and not a causative drug.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/cfd8f479bced4420bc8c0cb2443477a3.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "An ECG as shown below is given to you. What AV Ratio is most commonly seen in this arrhythmia?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "2:1"
+      },
+      {
+        "id": 2,
+        "text": "4:1"
+      },
+      {
+        "id": 3,
+        "text": "3:1"
+      },
+      {
+        "id": 4,
+        "text": "5:1"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>The given ECG showing&nbsp;regular rhythm, the rate between 250-300 bpm, and normal P waves being replaced by saw tooth-shaped waves known as flutter waves is diagnostic of atrial flutter and the <strong>commonest AV ratio is a 2:1 ratio</strong>.</p>\n<p>In atrial flutter, the ventricular rate is determined by the AV conduction ratio. The commonest AV ratio is 2:1. In the above ECG, the rhythm is atrial flutter 4:1 block with an atrial rate of about 270 and a ventricular rate of 68/min.</p>\n<p>It is extremely difficult to distinguish between atrial tachycardia with a block, from atrial flutter especially in a 2:1 block since the flutter waves may not be appreciated and may be appreciated only after attempts at exposing the AV block are made.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/6e7bbac80dfd4d19b8e8c1083dc71539.PNG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "Match the following:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "1-C, 2-A, 3-B, 4-D"
+      },
+      {
+        "id": 2,
+        "text": "1-B, 2-D ,3-A,4-C"
+      },
+      {
+        "id": 3,
+        "text": "1-B, 2-A, 3-D, 4-C"
+      },
+      {
+        "id": 4,
+        "text": "1-C, 2-D, 3-B, 4-A"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The correctly matched pairs are 1-B, 2-D,3-A,4-C.</p>\n<p>The different types of heart blocks are:</p>\n<p>1.<strong>First Degree Heart Block: </strong>Prolonged PR &gt; 0.2s, RR interval equal</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/c468e0bc8d434a4b8cfc0ebd3b62b5bf.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/bb2b1bf5fccd42d69c29723f44fe0ad7x436x132.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/eeba5011417b4da7a5c8584dc8401b57x436x135.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/fe5f3695d29449e391e74d1f2dd270b5x442x133.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/3b00c73226bc4034885522477f638e27x434x125.PNG"
+    ]
+  },
+  {
+    "text": "Diagnose the ECG and choose the false statement about the condition?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Most common symptom of pulmonary embolism is dyspnea"
+      },
+      {
+        "id": 2,
+        "text": "Most common sign of pulmonary embolism is tachycardia"
+      },
+      {
+        "id": 3,
+        "text": "Most common ECG abnormality in pulmonary embolism is sinus tachycardia"
+      },
+      {
+        "id": 4,
+        "text": "Most common investigation used is ECG."
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>Most common <strong>sign</strong> of pulmonary embolism is <strong>tachypnea.</strong></p>\n<ul>\n<li>Most common <strong>symptom</strong> of pulmonary embolism is dyspnea.</li>\n<li>Most common <strong>ECG abnormality</strong> in pulmonary embolism is <strong>sinus tachycardia</strong>.</li>\n<li>Most common preventable cause of death in the hospitalised patients is Pulmonary embolism.</li>\n<li><strong>S1Q3T3 sign,</strong>on&nbsp;ECG (i.e, an S wave in lead I, a Q wave in lead III, and an inverted T wave in lead III) is relatively <strong>specific</strong> but insensitive.</li>\n<li>Most common preliminary investigation used is D Dimer.</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/c15bad8965c540749bb7f7745ea1ecb7.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/c65ce46408fd45f9815585362faea2c9x1280x1255.JPEG"
+    ]
+  },
+  {
+    "text": "An elderly obese man was brought to casualty with complaints of severe chest pain for the last two hours. He has also had profuse sweating, pain in the left arm, nausea, and one episode of vomiting.  On examination, his pulse rate is 58 per minute and blood pressure is 90/60 mm of Hg. ECG was done and it shows the following finding. Cardiac biomarker showed elevated troponin levels. What is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Anterior wall MI"
+      },
+      {
+        "id": 2,
+        "text": "Inferior wall MI"
+      },
+      {
+        "id": 3,
+        "text": "Posterior wall MI"
+      },
+      {
+        "id": 4,
+        "text": "Pericarditis"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given presentation of <strong>chest pain,</strong> and <strong>elevated biomarkers</strong> depict that the patient has a <strong>myocardial infarction</strong>. In the ECG, there is <strong>elevation of ST-segments in leads\u00a0II, III, aVF, </strong>with r<strong>eciprocal change in lead aVL</strong>. This depicts <strong>inferior wall MI.\u00a0</strong>It mainly occurs due to blockage of the<strong> posterior descending branch of the right coronary artery</strong>.</p>\n<p>The table below gives localization of MI and probable vessel involved based on ECG findings.</p>\n<table>\n<thead>\n<tr>\n<td>Location of MI</td>\n<td>Leads Affected</td>\n<td>Vessel Involved</td>\n<td>ECG Changes</td>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Anterior wall</td>\n<td>V<sub>2</sub>\u00a0to V<sub>4</sub></td>\n<td>Left Anterior Descending artery (LAD)<br />\u2013 Diagonal branch</td>\n<td>\n<ul>\n<li>Poor R-wave progression</li>\n<li>ST-segment elevation</li>\n<li>T-wave inversion</li>\n</ul>\n</td>\n</tr>\n<tr>\n<td>Septal wall</td>\n<td>V<sub>1</sub>\u00a0and V<sub>2</sub></td>\n<td>Left Anterior Descending artery (LAD)<br />\u2013 Septal branch</td>\n<td>\n<ul>\n<li>R-wave disappears</li>\n<li>ST-segment rises</li>\n<li>T-wave inverts</li>\n</ul>\n</td>\n</tr>\n<tr>\n<td>Lateral wall</td>\n<td>I, aV<sub>L</sub>, V<sub>5</sub>, V<sub>6</sub></td>\n<td>Left Coronary Artery (LCA)<br />\u2013 Circumflex branch</td>\n<td>\n<ul>\n<li>ST-segment elevation</li>\n</ul>\n</td>\n</tr>\n<tr>\n<td>Inferior wall</td>\n<td>II, III, aV<sub>F</sub></td>\n<td>Right Coronary Artery (RCA)<br />\u2013 Posterior descending branch</td>\n<td>\n<ul>\n<li>T-wave inversion</li>\n<li>ST-segment elevation</li>\n</ul>\n</td>\n</tr>\n<tr>\n<td>Posterior wall</td>\n<td>V<span style=\"font-size: 11.6667px;\">7</span>\u00a0to V<span style=\"font-size: 11.6667px;\">9</span></td>\n<td>Left Coronary Artery (LCA)<br />\u2013 Circumflex branch\n<p>\u00a0</p>\n<p>Right Coronary Artery (RCA)<br />\u2013 Posterior descending branch</p>\n</td>\n<td>\n<ul>\n<li>Tall R waves</li>\n<li>ST-segment depression</li>\n<li>Upright T waves</li>\n</ul>\n</td>\n</tr>\n</tbody>\n</table>\n<p>Patients with <strong>pericarditis</strong> also present with severe chest pain and ST-segment elevations. However, this<strong> ST-segment elevation</strong> has <strong>upward concavity</strong>\u00a0with depression of PR segment.</p>\n<p>Below image- ECG in pericarditis</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/da8490ce97be4d6c984747669c90d521.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/2a10570b6df74845b957b8ff3b836f30x800x446.JPEG"
+    ]
+  },
+  {
+    "text": "A 64-year-old man presents with complaints of palpitations and syncope. He has a history of inferior-wall myocardial infarction a year ago. Holter study was done and his 24 hour  ECG strip obtained is given below. What is the long-term treatment for this condition?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Amiodarone"
+      },
+      {
+        "id": 2,
+        "text": "Atropine only"
+      },
+      {
+        "id": 3,
+        "text": "Permanent pacemaker"
+      },
+      {
+        "id": 4,
+        "text": "Atropine and isoproterenol"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>Based on his ECG findings, this patient is suffering from&nbsp;<strong>symptomatic </strong>(palpitations, syncope)&nbsp;<strong>Mobitz Type II AV block</strong>. The definitive long-term treatment is, therefore, a&nbsp;<strong>permanent pacemaker.&nbsp;</strong></p>\n<p>Mobitz Type II AV block is characterized by:</p>\n<ul>\n<li>a <strong>constant PR interval</strong></li>\n<li>some P waves not be followed by QRS complexes</li>\n</ul>\n<p>According to the rhythm strip (Lead II) of the ECG shown, the patient is experiencing a <strong>3:2 AV block</strong> which is then progressing to a 2:1 AV block.</p>\n<p>This patient is also suffering from a <strong>right bundle branch block</strong>&nbsp;(RBBB)<strong>&nbsp;</strong>as indicated by the wide QRS complexes in leads V1, V2, and <strong>V3 ('M'-shaped)</strong>.&nbsp;</p>\n<p>This patient with a history of ischemic heart disease (previous history of inferior-wall MI) and objective signs of Mobitz Type II AV block and RBBB will benefit most from a permanent pacemaker.&nbsp;</p>\n<p>In the ECG below, the <strong>blue arrows</strong> show&nbsp;some <strong>P waves</strong> that were not followed by QRS complexes. The <strong>missed QRS complex</strong> is pointed by the <strong>red arrow</strong>. The <strong>red box</strong> indicates the <strong>wide QRS complexes</strong>&nbsp;in leads V1, V2, and V3:</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/9dfaf70ce58944319079bd24881234e5.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/9b0310f1672747cb9a200242d8371321x765x510.PNG"
+    ]
+  },
+  {
+    "text": "A 60-year old hypertensive male patient with critical mitral stenosis presented with acute onset palpitations. He has a past history of multiple episodes of transient ischemic attacks. He often complains of fatiguability and intolerance to exercise on most days. On further inquiry, attendants revealed that the patient has been experiencing progressively irregular loss of memory, and that he was non-compliant with his medications for hypertension and hyperthyroidism. Which of the following ECG most likely belongs to the patient?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "A"
+      },
+      {
+        "id": 2,
+        "text": "B"
+      },
+      {
+        "id": 3,
+        "text": "C"
+      },
+      {
+        "id": 4,
+        "text": "D"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given ECG shows an <strong>irregularly irregular rhythm</strong> with <strong>absent 'p'</strong> waves, which is consistent with atrial fibrillation.</p>\n<p><br />The patient with mitral stenosis presenting with acute onset palpitations, along with the history of multiple episodes of TIA is most likely to have had an episode of Atrial Fibrillation. <strong>Mitral stenosis</strong> is well known to cause atrial fibrillation being a common cause of <strong>cardioembolic stroke</strong>. <strong>Hypertension</strong> is a major risk factor. Also, <strong>Hyperthyroidism</strong> should be considered in elderly patients with atrial fibrillation and unexplained heart failure. AF might have been precipitated by non-compliance with the medications along with the two risk factors mentioned.</p>\n<p><strong>Transient ischemic attack (TIA) </strong>is a temporary, focal neurological deficit of sudden onset (stroke-like symptoms) lasting for less than 24 hours. This occurs due to focal ischemia of the brain, retina, or cochlea. Most TIAs last for less than 1 hour to a few minutes. There is a high risk of developing an ischemic stroke after a TIA, especially for the first 3 months following a TIA.</p>\n<p>The attendants also revealed <strong>dementia</strong> which is PROGRESSIVE and IRREGULAR. In the background of TIA episodes, dementia corresponds to <strong>vascular</strong> origin. Vascular dementia is commonly seen in the setting of <strong>hypertension, atrial fibrillation</strong>, Peripheral Vascular Disease, and diabetes.&nbsp;In patients suffering from CerebroVascularDisease, it's difficult to determine whether dementia is due to Alzheimer&rsquo;s Disease, Vascular or both.&nbsp;</p>\n<table>\n<tbody>\n<tr>\n<td>CLINICAL PATTERN OF LOSS OF MEMORY</td>\n<td>ORIGIN OF DEMENTIA</td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Irregular progression with h/o stroke</li>\n</ol>\n</td>\n<td>\n<ol>\n<li aria-level=\"1\"><strong>Vascular </strong><span style=\"font-weight: 400;\">Dementia&nbsp;&nbsp;</span></li>\n</ol>\n<br /><br /></td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Acute/ Subacute - DELIRIUM</li>\n</ol>\n</td>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Infection/ Intoxication/ Metabolic. Eg Hypokalemia or Hyperkalemia</li>\n</ol>\n</td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Very slow progression in elderly</li>\n</ol>\n</td>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">AD (Alzheimer's Disease)</li>\n</ol>\n</td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Personality change, disinhibition, weight gain, compulsive eating</li>\n</ol>\n</td>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">FTD&nbsp; (FrontoTemporal Dementia)</li>\n</ol>\n</td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Early visual hallucinations, parkinsonism, delirium</li>\n</ol>\n</td>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">DLB (Dementia with Lewy Bodies)</li>\n</ol>\n</td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Rapid progression + motor rigidity</li>\n</ol>\n</td>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">CJD (Creutzfeldt Jakob Disease)</li>\n</ol>\n</td>\n</tr>\n<tr>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Recurrent head trauma&nbsp;</li>\n</ol>\n</td>\n<td>\n<ol>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Chronic Subdural Hematoma</li>\n</ol>\n</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>\n<p>Option A: The ECG in A depicts tall, peaked T waves with a narrow base, short QT interval; and ST-segment depression., widened QRS complex. The features are consistent with the findings of <strong>Hyperkalemia</strong>.</p>\n<p><br />Option C: The ECG depicts characteristic pattern of Hypokalemia.&nbsp;<br />Metabolic abnormalities like hyperkalemia or hypokalemia are typically associated with <strong>delirium </strong>presenting with an acute/subacute onset.&nbsp;</p>\n<p><br />Option D: Sinus rhythm is unlikely as the patient with mitral stenosis has presented with <strong>palpitations</strong>.</p>\n<p><br />For further management, it is mandatory to calculate the CHA2DS2 Vasc SCORE in order to predict the future risk of stroke, and the use of antithrombotics is based on the CHADS2 score.&nbsp;<br /><br /></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/3770a5233dbf41ed967f4e91cbc16234.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/c7ea3407b9a540d2a3bfab92c0d70ae5x1280x1066.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/70850f7feb9b414db9ad9b3334493512x1280x801.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/273e4e14284246a99eab92a6c3a612b8x1280x841.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/88263d5bd7354a14a800b482b129bdd4x1280x841.JPEG"
+    ]
+  },
+  {
+    "text": "A 32-year-old diabetic man was undergoing a routine check-up. ECG revealed ST changes as given below. Repeated cardiac biomarkers were found to be within the normal range. Which among the following is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Brugada syndrome"
+      },
+      {
+        "id": 2,
+        "text": "Anterior wall ST-elevation MI"
+      },
+      {
+        "id": 3,
+        "text": "Acute pericarditis"
+      },
+      {
+        "id": 4,
+        "text": "Non ST-elevation MI"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>The ECG shows <strong>coved ST-segment elevation of V1-V3</strong> followed by a negative T wave (Brugada sign) which points to a diagnosis of <strong>Brugada syndrome.&nbsp;</strong>A coved ST-segment has a&nbsp;<strong>downward concavity.</strong></p>\n<p>Brugada syndrome is an inherited sodium channelopathy (SCN5A mutation) and is most commonly seen in Southeast Asian males. The age of presentation is usually 40 years. This syndrome is characterized by an increased risk for sudden cardiac death due to polymorphic ventricular tachyarrhythmias.&nbsp;<strong>Implantable cardioverter-defibrillator</strong> is the treatment of choice.</p>\n<p><strong>Other options -</strong></p>\n<p><strong>Options B, C, and D -&nbsp;</strong></p>\n<p>To establish a diagnosis of <strong>ST-elevation MI</strong>&nbsp;and <strong>NSTEMI,</strong>&nbsp;a positive and significant rise in cardiac biomarkers (troponins) is necessary along with one of the following features:</p>\n<ul>\n<li>Symptoms of ischemia</li>\n<li>New ST-T elevation or LBBB (not for NSTEMI)</li>\n<li>Pathologic Q waves (STEMI, old infarcts)</li>\n<li>Imaging evidence of loss of myocardium viability</li>\n<li>Intracoronary thrombus identified on angioplasty or autopsy</li>\n</ul>\n<p>Since we do not have a typical rise and fall pattern of cardiac biomarkers, in this case, a diagnosis of acute ST-elevation MI and NSTEMI are less likely.</p>\n<p>Causes of ST-T changes apart from acute MI:</p>\n<ul>\n<li><strong>Acute pericarditis&nbsp;</strong>(Diffuse ST elevation with <strong>upward concavity</strong> and PR depression)</li>\n<li>Brugada patterns (right bundle branch block-like pattern with ST elevations in right precordial leads) seen secondary to electrolyte disturbances like hyperkalemia.</li>\n<li>Hyperkalemia (peaked T waves)</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/a70c09d5fb24480fa818adccafbad9b6.PNG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "The ECG given below shows:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "A prolonged PR interval measuring 240 ms"
+      },
+      {
+        "id": 2,
+        "text": "A normal PR interval measuring 240 ms"
+      },
+      {
+        "id": 3,
+        "text": "A prolonged PR interval measuring 160 ms"
+      },
+      {
+        "id": 4,
+        "text": "A normal PR interval measuring 160 ms"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>The given ECG shows a&nbsp;<strong>prolonged PR interval</strong> measuring <strong>240 msec</strong>.</p>\n<p>The given ECG shows a PR interval measuring 6 small boxes. One small box represents 0.04 sec. Therefore,&nbsp;6 boxes is 6*0.04 sec = 0.240 sec or 240 msec.&nbsp;</p>\n<p>The PR interval is measured from the <strong>beginning</strong> of the <strong>P wave</strong> to the <strong>beginning</strong> of the <strong>QRS</strong> <strong>complex</strong>.&nbsp;The normal PR interval is <strong>120-200ms</strong>.</p>\n<p>The image below represents the <strong>PR interval</strong>:</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/9670abd5e9214551955e7c10800ebd37.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/dd4026692f9c46439df32a139601af27x115x173.JPEG"
+    ]
+  },
+  {
+    "text": "A 50-year-old man was brought to the emergency in an unconscious state. He had a fever for the past two days and is a known case of severe COPD. His ECG is given below. What is the mechanism behind this condition?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Increased atrial automaticity"
+      },
+      {
+        "id": 2,
+        "text": "Automaticity of multiple foci in the atrium"
+      },
+      {
+        "id": 3,
+        "text": "Macro re-entry circuit in the right atrium"
+      },
+      {
+        "id": 4,
+        "text": "Abnormal band of conductive tissue"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given clinical scenario of <strong>chronic pulmonary disease</strong> and the ECG showing <strong>different p wave morphologies</strong> are suggestive of <strong>multifocal atrial tachycardia (MAT)</strong>. The mechanism triggering multifocal atrial tachycardia is the <strong>automaticity of multiple atrial foci</strong>.</p>\n<p>The given ECG shows narrow QRS complexes with irregular RR intervals, hence it can be atrial fibrillation or multifocal atrial tachycardia. The next step is to look at the p waves. Multifocal atrial tachycardia (MAT) is characterized by at least<strong> 3 distinct P-wave morphologies</strong> (shown by arrows in the image).&nbsp;Whereas, in atrial fibrillation, there would be no distinct p waves seen.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/387a876cd4744f5d9f1a15e4fa949d22.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/3ca1f22af8114d94ba32e0c4cd65fa6bx1280x697.JPEG"
+    ]
+  },
+  {
+    "text": "Tall and tented T waves, wide QRS, and absent P wave are features of:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Bundle branch block"
+      },
+      {
+        "id": 2,
+        "text": "Acute MI"
+      },
+      {
+        "id": 3,
+        "text": "Hyperkalemia"
+      },
+      {
+        "id": 4,
+        "text": "Venticular ectopic"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>Hyperkalemia produces a sequence of changes usually beginning with narrowing and <strong>peaking (tenting) of the T waves</strong>.&nbsp;Further elevation of extracellular K+ leads to:</p>\n<ul>\n<li>AV conduction disturbances.</li>\n<li>Diminution in P-wave amplitude.</li>\n<li>Widening of the QRS interval.</li>\n</ul>\n<p>The ECG changes that can be seen in hyperkalemia depend on the extent of hyperkalemia.&nbsp;</p>\n<table style=\"height: 21px; width: 499px;\">\n<tbody>\n<tr>\n<td style=\"width: 45px;\">S. No.</td>\n<td style=\"width: 147px;\">Serum potassium level</td>\n<td style=\"width: 285px;\">ECG change</td>\n</tr>\n<tr>\n<td style=\"width: 45px;\">1</td>\n<td style=\"width: 147px;\">5.5 - 6.5 mEq/L</td>\n<td style=\"width: 285px;\">tall, peaked T waves with 'tented' or 'pinched' shape</td>\n</tr>\n<tr>\n<td style=\"width: 45px;\">2</td>\n<td style=\"width: 147px;\">6.5 - 7.5 mEq/L</td>\n<td style=\"width: 285px;\">loss of P waves</td>\n</tr>\n<tr>\n<td style=\"width: 45px;\">3</td>\n<td style=\"width: 147px;\">7.0 - 8.0 mEq/L</td>\n<td style=\"width: 285px;\">widened QRS complex</td>\n</tr>\n<tr>\n<td style=\"width: 45px;\">4</td>\n<td style=\"width: 147px;\">&gt; 8.0 mEq/L</td>\n<td style=\"width: 285px;\">sine wave</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;Severe hyperkalemia eventually causes cardiac arrest with a slow sinusoidal type of mechanism(\"<strong>sine-wave\" pattern) followed by asystole.</strong></p>\n<p>The <strong>most common cause</strong> of hyperkalemia is <strong>kidney failure</strong>. Drugs that cause hyperkalemia include angiotensin-converting enzyme inhibitors, angiotensin receptor blockers, potassium-sparing diuretics.&nbsp;</p>\n<p>Treatment of hyperkalemia involves the following</p>\n<ol>\n<li>Administer intravenous <strong>calcium gluconate</strong> which raises the threshold and reduces excitability. It is cardioprotective</li>\n<li>Administer <strong>regular insulin with dextrose</strong>. The insulin will reduce the serum potassium concentration by causing an intracellular shift. The dextrose will counteract the hypoglycemic effects of insulin.</li>\n<li>Remove potassium with calcium-based resins, diuretics, or hemodialysis.&nbsp;</li>\n</ol>",
+    "explanation_video": "",
+    "question_images": [],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/c497d5c557a24cde9c93f55d8b625e65x1280x1465.JPEG"
+    ]
+  },
+  {
+    "text": "A patient who was being treated for an arrhythmia presented with palpitations and chest discomfort. His ECG has been given below. Which of the following drugs would be least likely to cause this condition?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Quinidine"
+      },
+      {
+        "id": 2,
+        "text": "Sotalol"
+      },
+      {
+        "id": 3,
+        "text": "Procainamide"
+      },
+      {
+        "id": 4,
+        "text": "Lidocaine"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The ECG of this patient shows&nbsp;<strong>wide QRS complexes </strong>and an<strong>&nbsp;undulating baseline </strong>suggesting the diagnosis of&nbsp;<strong>torsades de pointed</strong>. It is associated with&nbsp;<strong>prolonged QT interval.&nbsp;</strong>Lidocaine use does not prolong the QT interval, hence, it is unlikely to cause torsades de pointes.&nbsp;</p>\n<p><strong>Lidocaine</strong> belongs&nbsp;to the <strong>class IB</strong> antiarrhythmic agent. It is considered to have the least arrhythmogenic potential among antiarrhythmic.QT interval is usually unaltered or slightly reduced with lidocaine use.</p>\n<p>Among the antiarrhythmics, class Ia and class III drugs prolong action potential duration and thus prolong QT interval and are also prone to cause Torsades de pointes.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/304d1d1a389b4396b058d5428046d834.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/b2b1e13fe6134e12b1862511d5f653abx1280x1424.JPEG"
+    ]
+  },
+  {
+    "text": "Identify the rhythm in the following ECG rhythm strip.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Atrial fibrillation"
+      },
+      {
+        "id": 2,
+        "text": "Atrial flutter"
+      },
+      {
+        "id": 3,
+        "text": "Normal sinus rhythm"
+      },
+      {
+        "id": 4,
+        "text": "AV block"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The above ECG strip shows&nbsp;<strong>normal sinus rhythm</strong>.</p>\n<p>The features in this ECG that suggest this diagnosis are as follows:</p>\n<ul>\n<li>The <strong>QRS complexes are narrow</strong> (&lt;120 ms or 3 small squares) which implies that the impulse is supraventricular and is conducted via the normal conduction pathway.</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/108e6f629d29457fb80c044c7e0de665.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/251a17748fb242b0b115bb0876e4de25x537x130.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/c3db622654d7465093f09972c262c87dx800x224.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/fc5516f5be574d34a4d83ca6643b63cax800x224.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/4baaf24d405f481b9956ca56d1ac06a7x800x224.JPEG"
+    ]
+  },
+  {
+    "text": "A 22-year-old patient is assessed with an ECG during his wellness check-up visit. Calculate the heart rate from the ECG given below.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "100/min"
+      },
+      {
+        "id": 2,
+        "text": "90/min"
+      },
+      {
+        "id": 3,
+        "text": "79/min"
+      },
+      {
+        "id": 4,
+        "text": "68/min"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The RR interval has 19 small boxes in between, and hence the heart rate is 1500/19~<strong>79/min</strong>.</p>\n<p>The relationship between the heart rate and the RR interval is given by:\u00a0</p>\n<p>Heart rate = <strong>1500/(number of small boxes (1mm each) in between successive R waves)\u00a0</strong></p>\n<p>Methods to calculate heart rate from ECG:\u00a0</p>\n<p><strong>Box counting</strong> methods: This can be done via the number of small boxes or the large boxes between two successive R waves. If using the large boxes, the equation is \u00a0</p>\n<p>Heart rate =<strong> 300/(number of big boxes (5mm each) in between successive R waves)\u00a0</strong></p>\n<p><strong>QRS counting</strong> methods: This is used when the heart rate is irregular. Thus there will be a variability in the RR intervals, making the box-counting method unreliable. Here, the number of QRS intervals in a set interval, for example, 10 seconds, is counted. This number is then multiplied by an appropriate factor to get an estimate for 60s. In this example, we would multiple the number of QRS complexes in 10s by 6.\u00a0</p>\n<p>Tachycardia is defined as a heart rate of more than 100 beats/minute and bradycardia is defined as a heart rate of less than 60 beats/minute.\u00a0</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/85184e841a1648479e4a7985c79614ee.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/df69cba4696441aea55b5534366ea884x800x224.JPEG"
+    ]
+  },
+  {
+    "text": "A 32-year-old male presents to the emergency with chest discomfort following a football match. His ECG is as below. Which of the following is an accurate description of the ECG finding?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Hyperkalemia"
+      },
+      {
+        "id": 2,
+        "text": "De Winter\u2019s T waves"
+      },
+      {
+        "id": 3,
+        "text": "Digoxin toxicity"
+      },
+      {
+        "id": 4,
+        "text": "Ventricular ectopic"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given ECG depicts <strong>De Winter&rsquo;s T waves</strong>. There is no ST elevation in V2, but there is a hyperacute T-wave. &nbsp;This is a De Winter's T-wave and diagnostic of <strong>near occlusion of the LAD</strong>. &nbsp;V3 also has ST depression with a hyperacute T-wave very suggestive of de Winter's T-waves.</p>\n<ul>\n<li>The de Winter ECG pattern is an&nbsp;<strong>anterior STEMI equivalent</strong>&nbsp;that <strong>presents&nbsp;without&nbsp;obvious ST-segment elevation.</strong></li>\n</ul>\n<p><strong>Diagnostic Criteria</strong></p>\n<ul>\n<li>Tall, prominent, symmetric T waves in the precordial leads</li>\n<li>Upsloping ST-segment depression &gt;1mm at the J-point in the precordial leads</li>\n<li>Absence of ST elevation in the precordial leads</li>\n<li>ST segment elevation (0.5mm-1mm) in aVR</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/2d5fd9e5a4c44b9ab4b961d686047c72.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 45-year-old man comes to the emergency room with complaints of sudden onset chest pain that radiates to the left arm and jaw. He is profusely sweating. An ECG was taken immediately. The ECG depicts ________.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Right ventricular hypertrophy"
+      },
+      {
+        "id": 2,
+        "text": "Right bundle-branch block"
+      },
+      {
+        "id": 3,
+        "text": "Left bundle-branch block"
+      },
+      {
+        "id": 4,
+        "text": "Ventricular tachycardia"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The patient has a myocardial infarction (MI) with ECG changes of a\u00a0<strong>left bundle-branch block (LBBB)</strong>,<strong>\u00a0</strong>which can be identified by the following classical features:</p>\n<ul>\n<li>Wide QRS\u00a0complex: QRS \u2265120 ms\u00a0</li>\n<li>Predominantly negative (QS) complexes in lead V<span class=\"s1\">1 </span>and entirely positive (R) complexes in lead V<span class=\"s1\">6</span>.</li>\n<li>M pattern seen in\u00a0left chest leads (V5, V6)\u00a0</li>\n</ul>\n<div class=\"page\" title=\"Page 1922\">\n<div class=\"section\">\n<div class=\"layoutArea\">\n<div class=\"column\">\n<p>\u00a0MI can have the following ECG changes:</p>\n<ul>\n<li>ST-segment elevation: Zone of injury</li>\n<li>T wave depression</li>\n<li>Deep Q waves: late sign to develop</li>\n<li>New left bundle branch block (LBBB)</li>\n</ul>\n<p>\u00a0</p>\n<p><strong>RBBB</strong></p>\n</div>\n</div>\n</div>\n</div>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/2a54878ec8ff4c20aa069e10dbf8fcc3.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/992e406bb094442094e60195d7e4b088x1280x810.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/0e6306d001434620bdba7c39df33bf02x1280x810.JPEG"
+    ]
+  },
+  {
+    "text": "The following ECG  depicts ?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Ventricular bigeminy"
+      },
+      {
+        "id": 2,
+        "text": "Right bundle branch block"
+      },
+      {
+        "id": 3,
+        "text": "Paroxysmal supraventricular tachycardia"
+      },
+      {
+        "id": 4,
+        "text": "Right ventricular hypertrophy"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The ECG shows <strong>right ventricular hypertrophy</strong>.</p>\n<p><strong>ECG findings suggestive of RVH:</strong></p>\n<ul>\n<li>R-V1 &gt;= 7mm</li>\n<li>R-V1 + S-V5/V6 &gt; 11mm</li>\n<li>Right axis deviation of +110&deg; or more</li>\n<li>T wave inversion in RV leads (Lead III, V1 &amp; V2)</li>\n</ul>\n<p><strong>Causes of RVH</strong></p>\n<ul>\n<li>Pulmonary hypertension</li>\n<li>Mitral stenosis</li>\n<li>Pulmonary embolism</li>\n<li>Chronic lung disease (Cor pulmonale)</li>\n<li>Congenital heart disease (e.g. Tetralogy of Fallot, pulmonary stenosis)</li>\n<li>Arrhythmogenic right ventricular cardiomyopathy</li>\n</ul>\n<p>Other options:</p>\n<p>1)The ECG depicts&nbsp;<strong>ventricular bigeminy&nbsp;</strong>seen in&nbsp;Premature Ventricular Complexes.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/7854b1f6c94741af99df325b384dcfed.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/64345b9f74f640218b0008ee1df2a9fex720x428.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/c0cafa7828a14b22a8edddf6c2be419fx720x335.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/67d48e4a3dea42a88f26fde35ec19d71x720x363.JPEG"
+    ]
+  },
+  {
+    "text": "A 45-year-old woman presented to the ER with dizziness. Her blood pressure is 80/60 mmHg, pulse rate is 45/minute. Her ECG is shown below. What is the next best step of management?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "IV Epinephrine"
+      },
+      {
+        "id": 2,
+        "text": "IV Atropine"
+      },
+      {
+        "id": 3,
+        "text": "IV Amiodarone"
+      },
+      {
+        "id": 4,
+        "text": "IV Adenosine"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The ECG shown above is the <strong>second-degree atrioventricular block type 1 - Wenckebach phenomenon.</strong></p>\n<p>Treatment is indicated when bradycardia is accompanied by any one of the following:</p>\n<ul>\n<li>Hypotension</li>\n<li>Acutely altered mental status</li>\n<li>Signs of shock</li>\n<li>Ischemic chest discomfort</li>\n<li>Acute heart failure</li>\n</ul>\n<p>Treatment is initiated with <strong>1 mg atropine iv</strong> which may be <strong>repeated</strong> at <strong>3-5 minute intervals</strong> to a <strong>maximum</strong> <strong>dose</strong> of <strong>3 mg.</strong></p>\n<p>Along with atropine, <strong>transcutaneous pacing</strong> is to be done.</p>\n<p>If the bradycardia is <strong>refractory</strong> to both atropine and transcutaneous pacing, then <strong>IV infusions of dopamine </strong>(5 to 20 &mu;g/kg/min)<strong> or epinephrine </strong>(2 to 10 &mu;g/min) should be considered.</p>\n<p>If the patient still isn&rsquo;t responding, then<strong> transvenous pacing</strong> should be tried. If the patient is under spinal anesthesia, low-dose (0.2 mg) IV epinephrine can be given.</p>\n<p>Epinephrine is the drug of choice for treating bradyarrhythmias in infants and children.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/e670fae5674148f988745cec59402f1a.PNG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 22-year-old man was brought to the casualty with palpitations and dizziness. His heart rate was 160/min and blood pressure was 110/80 mm Hg. His ECG is given below. What is the first line of management?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Adenosine 6 mg"
+      },
+      {
+        "id": 2,
+        "text": "Adenosine 12 mg"
+      },
+      {
+        "id": 3,
+        "text": "Vagal manoeuvre"
+      },
+      {
+        "id": 4,
+        "text": "Amiodarone 300 mg"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The patient has&nbsp;<strong>paroxysmal supraventricular tachycardia</strong>. As the patient's&nbsp;<strong>blood pressure </strong>is <strong>normal</strong> and there is no evidence of hemodynamic deterioration, <strong>initial treatment </strong>consists of<strong> vagal maneuvers </strong>(Valsalva maneuver) in awake patients. This is because vagal maneuvers alone can terminate approximately 20% to 25% of reentry supraventricular tachycardias (SVTs).</p>\n<p>If this is <strong>unsuccessful</strong>, then IV <strong>adenosine 6 mg</strong> is given. If necessary another dose of adenosine 12 mg may be administered after 1-2 minutes.</p>\n<p>If the drug is administered via a central venous catheter, then these doses are reduced to 3 mg and 6 mg, respectively.</p>\n<p>If there is <strong>hemodynamic deterioration</strong>, then <strong>cardioversion</strong> is the treatment of choice.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/77638b066d3a4f7bb927ad96012145e9.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "The AH interval on His Bundle Electrocardiogram (HBE) corresponds to the conduction of _____ on ECG.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Through His \u2013Purkinje system"
+      },
+      {
+        "id": 2,
+        "text": "From AV node to bundle of His"
+      },
+      {
+        "id": 3,
+        "text": "Purkinje to ventricular fibers"
+      },
+      {
+        "id": 4,
+        "text": "Through ventricular fibers"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The AH interval corresponds to conduction from AV node to bundle of His on an ECG.</p>\n<p><strong>His bundle electrogram (HBE)</strong></p>\n<p>The record of the electrical activity obtained with the catheter&nbsp;passed through a vein to the right side of the heart and placed close to the tricuspid valve is&nbsp;HBE.</p>\n<p>It shows 3 deflections as shown in the figure:</p>",
+    "explanation_video": "",
+    "question_images": [],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/96e457fabf8445a496436784cffc0806x1280x958.JPEG"
+    ]
+  },
+  {
+    "text": "Which lead does the given ECG tracing represent in a normal ECG?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "aVL"
+      },
+      {
+        "id": 2,
+        "text": "aVR"
+      },
+      {
+        "id": 3,
+        "text": "V1"
+      },
+      {
+        "id": 4,
+        "text": "V6"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>As all the waves (<strong>P, QRS, T</strong>) are <strong>negative</strong>&nbsp;in the given ECG, it should be lead <strong>aVR</strong>. All the depolarisations waves (P, QRS, T) move away from lead aVR in the normal sinus.</p>\n<p>Depolarisation wave moving towards the positive pole of the lead (or active electrode) produces a positive deflection in the ECG and depolarization moving away from the positive pole of the lead produces a negative deflection in the ECG.</p>\n<p>The lead aVR provides&nbsp;information from the right upper side of the heart.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/092c99c66ad44bb488410f167376cfbf.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/0f77d513ca2a4b888208329cdfb90fc8x1280x1382.JPEG"
+    ]
+  },
+  {
+    "text": "A patient came with sudden onset palpitations. ECG showed a narrow complex, regular tachycardia without P waves, and a rate of 160 BPM. His blood pressure is 96/68 mmHg. What is the next step in management?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Carotid sinus massage"
+      },
+      {
+        "id": 2,
+        "text": "Adenosine"
+      },
+      {
+        "id": 3,
+        "text": "Beta-blocker"
+      },
+      {
+        "id": 4,
+        "text": "Defibrillator"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>Narrow complex tachycardia without visible P waves and sudden onset palpitations suggest&nbsp;<strong>AV node reentrant tachycardia </strong>(AVNRT). It is a type of PSVT.<strong>&nbsp;Carotid sinus massage </strong>(or any other vagal maneuver) will be the best next step in management as vagal maneuvers can terminate an approximate 10-20% of AVNRT&rsquo;s.</p>\n<p>The patient is clinically stable (SBP &gt; 90 mm Hg), hence there is no need for defibrillation.</p>\n<p>The drug of choice would still be<strong>&nbsp;adenosine</strong> &gt;<strong> beta-blockers</strong> which can be used in cases of failed vagal maneuvers.</p>",
+    "explanation_video": "",
+    "question_images": [],
+    "explanation_images": []
+  },
+  {
+    "text": "A 40-year-old woman presents with complaints of numbness around the lips and a tingling sensation in her fingers. She underwent parathyroidectomy for hyperparathyroidism one year ago. An ECG was done and is given below. What will be your immediate management?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Beta blockers"
+      },
+      {
+        "id": 2,
+        "text": "Teriparatide"
+      },
+      {
+        "id": 3,
+        "text": "IV bisphosphonates"
+      },
+      {
+        "id": 4,
+        "text": "IV calcium gluconate"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The given clinical scenario and ECG showing\u00a0a <strong>prolonged QT interval</strong> (QT interval more than 0.43 seconds) is suggestive of <strong>hungry bone syndrome</strong> i.e.\u00a0<strong>hypocalcemia</strong> post parathyroidectomy. Acute symptomatic presentation of hypocalcemia is treated with <strong>IV calcium gluconate.</strong></p>\n<p><strong>Symptoms and signs of hypocalcemia</strong>:</p>\n<ul>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Mild circumoral or digital numbness</li>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Paresthesia</li>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Laryngeal spasms\u00a0</li>\n<li style=\"font-weight: 400;\" aria-level=\"1\">Cardiac arrhythmias\u00a0</li>\n<li style=\"font-weight: 400;\" aria-level=\"1\"><strong>Chvostek sign</strong>:\u00a0This is elicited by gently tapping over the <strong>facial nerve</strong> in front of the<strong> tragus</strong> of the ear. There is hyperexcitability of the facial muscles, manifesting as a contraction of the muscles.</li>\n<li style=\"font-weight: 400;\" aria-level=\"1\"><strong>Trousseau's sign</strong>:\u00a0This is elicited by making the forearm ischemic by applying a sphygmomanometer cuff to the arm and keeping the pressure <strong>above</strong> systolic blood pressure (<strong>SBP</strong>) for <strong>5 minutes</strong>. The hand goes into a painful carpopedal spasm and assumes the accoucheur\u2019s hand position. (shown in the image below)</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/76cb125fe3fc404389c47bdd5981cc4a.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/7d4c48e73535461ab15bea1f0755d4d3x600x486.JPEG"
+    ]
+  },
+  {
+    "text": "Sharp irregular spikes of the baseline that are particularly prominent in the limb leads are seen in",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Patient with hypothyroidism"
+      },
+      {
+        "id": 2,
+        "text": "Patient that is not relaxed"
+      },
+      {
+        "id": 3,
+        "text": "Recording done with paper speed of 12.5 mm/s"
+      },
+      {
+        "id": 4,
+        "text": "Recording done with paper speed of 50 mm/s"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p><strong>Sharp irregular spikes of the baseline</strong> that are particularly <strong>prominent in the limb leads</strong> are seen in a <strong>patient that is not relaxed.&nbsp;</strong></p>\n<p>Though the ECG recorders are configured to pick up the electrical frequency generated by the heart better, they also <strong>detect the contractions of skeletal muscles.</strong> So, unless the patient is relaxed and lying down comfortably, the tracing may show some skeletal muscle activity.</p>\n<p>Ex:-&nbsp;</p>\n<p>A patient that is shivering due to cold, or one that has involuntary movements due to conditions like Parkinson's, etc would cause spikes in the baseline of the ECG.</p>\n<p>In the case of <strong>shivering</strong>, the <strong>spikes</strong> would be <strong>more exaggerated and synchronized</strong>&nbsp;than that seen in a patient that is not adequately relaxed, because of the skeletal muscle groups contracting together in case of shivering.</p>\n<p>&nbsp;</p>\n<p>Other options:</p>\n<ul>\n<li>Patients with <strong>hypothyroidism</strong> would show <strong>bradycardia, low voltage QRS complexes, and widespread T-wave inversions.</strong></li>\n<li>The <strong>recording</strong> is <strong>normally</strong> done with a <strong>paper speed of 25 mm/s. </strong>\n<ul>\n<li>Recording at<strong> 12.5 mm/s</strong>, which is slower than normal, would cause <strong>QRS complex that are close together&nbsp;</strong>(creating the false impression of a rapid heart rate) and P waves, QRS complexes, and T waves that are <strong>narrow and spiky</strong></li>\n<li>Recording at <strong>50 mm/s</strong>, which is faster than normal, would produce <strong>longer intervals between QRS complexes</strong> (creating the false impression of a slow heart rate), <strong>widened QRS complexes</strong>, and an <strong>apparently long QT interval</strong>.&nbsp;</li>\n</ul>\n</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [],
+    "explanation_images": []
+  },
+  {
+    "text": "A patient with dizziness and breathing difficulty came to the emergency department. The ECG is given below. What is the most probable diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Acute pericarditis"
+      },
+      {
+        "id": 2,
+        "text": "Constrictive pericarditis"
+      },
+      {
+        "id": 3,
+        "text": "Cardiac tamponade"
+      },
+      {
+        "id": 4,
+        "text": "Restrictive cardiomyopathy"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The ECG shows <strong>electrical alternans with sinus tachycardia. </strong>This along with the patient's symptoms<strong>\u00a0</strong>suggests a likely diagnosis of<strong>\u00a0cardiac tamponade.</strong></p>\n<p>Electrical alternans is the\u00a0beat-to-beat alternation in the ECG waveform. In cardiac tamponade, this is caused by the periodic swinging motion of the heart in a large pericardial effusion.\u00a0</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/f85a43ae2fdf4f1b8fadfa0ca0531736.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/1c6c060940e3403eb77355813df0c89ax1280x1090.JPEG"
+    ]
+  },
+  {
+    "text": "What is the possible diagnosis for a patient with the ECG findings as shown below?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Inferior wall myocardial infarction"
+      },
+      {
+        "id": 2,
+        "text": "Acute pericarditis"
+      },
+      {
+        "id": 3,
+        "text": "Pericardial tamponade"
+      },
+      {
+        "id": 4,
+        "text": "Hypothyroidism"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The ECG image give shows <strong>diffuse ST-segment elevation</strong>&nbsp;characteristic of <strong>acute&nbsp;pericarditis</strong>.</p>\n<p>Other options:</p>\n<ul>\n<li>Inferior wall MI will show ST elevations in leads II, III, aVF</li>\n<li>The ECG findings for pericardial effusion with cardiac tamponade&nbsp;are:\n<ul>\n<li>Sinus tachycardia</li>\n<li>Electrical alternans</li>\n<li>Low QRS voltages</li>\n</ul>\n</li>\n<li>The ECG changes of hypothyroidism will include bradycardia with low voltage complexes.</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/5f9cb261cde14ecf89d8461d7a352748.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "The ECG wave as shown in the image below is commonly seen in",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Myocardial infarction"
+      },
+      {
+        "id": 2,
+        "text": "Hyperkalemia"
+      },
+      {
+        "id": 3,
+        "text": "Digoxin treatment"
+      },
+      {
+        "id": 4,
+        "text": "Hypokalemia"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The above ECG wave characteristically depicts <strong>Digoxin</strong> <strong>effect</strong>.</p>\n<p><strong>Digoxin effect</strong> refers to the presence on the ECG of:</p>\n<ul>\n<li><strong>Downsloping</strong> <strong>ST depression</strong> with a characteristic \u201c<strong>Salvador Dali sagging</strong>\u201d or \u201c<strong>Hockey Stick</strong>\u201d appearance.</li>\n<li>Flattened, inverted, or biphasic T waves.</li>\n<li>Shortened QT interval.</li>\n</ul>\n<p><strong>Additional ECG Features:</strong></p>\n<ul>\n<li>Mild PR interval prolongation of up to 240ms (due to increased vagal tone).</li>\n<li>Prominent <strong>U waves</strong>.</li>\n<li>Peaking of the terminal portion of the <strong>T waves</strong>.</li>\n<li><strong>J point depression</strong> (usually in leads with tall R waves).</li>\n</ul>\n<p><strong>QRS complex / ST segment changes:</strong></p>\n<ul>\n<li>The morphology of the QRS complex / ST segment is variously described as either \u201cslurred\u201d, \u201csagging\u201d or \u201cscooped\u201d and resembling either a \u201creverse tick\u201d, \u201chockey stick\u201d or \u201cSalvador Dali\u2019s moustache\u201d.</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/2a1acd6e9d4e4e7582a7802848589e94.JPEG"
+    ],
+    "explanation_images": []
+  }
+];
+        let quizName = 'Fmge Mini Test - 012 (Ecg Based)';
+        let hierarchy = ["Marrow", "FMGE Mini Test Series", "2022"];
+        
+        // Handle Custom Quiz Loading
+        if (window.location.pathname.endsWith('custom_quiz.html')) {
+            const customData = JSON.parse(localStorage.getItem('customQuizData'));
+            if (customData) {
+                questionsData = customData.questions;
+                quizName = customData.name;
+                hierarchy = customData.hierarchy;
+                document.title = quizName + ' - Brain And Scalpel';
+                document.getElementById('totalQuestions').textContent = questionsData.length;
+                document.getElementById('quizHierarchy').textContent = hierarchy.join(' > ');
+            }
+        }
+
+        let currentQuestionIndex = 0;
+        let selectedOption = null;
+        let currentMode = 'study';
+        let timer = null;
+        let timeRemaining = 0;
+        let questionStartTime = Date.now();
+        let quizStartTime = Date.now();
+        let isQuizCompleted = false;
+        
+        let questionStates = new Array(questionsData.length).fill(null).map(() => ({
+            status: 'not_attempted',
+            bookmarked: false,
+            markedForReview: false,
+            selectedAnswer: null,
+            timeSpent: 0
+        }));
+        
+        let stats = {
+            correctAnswers: 0,
+            incorrectAnswers: 0,
+            totalAttempted: 0,
+            totalTime: 0,
+            notAttempted: questionsData.length
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        currentQuestionIndex = Math.min(parseInt(urlParams.get('startAt')) || 0, questionsData.length - 1);
+
+        function goBack() {
+            if (isQuizCompleted || confirm('Are you sure you want to leave the quiz? Your progress will be lost.')) {
+                window.history.back();
+            }
+        }
+
+        function selectMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeModal').style.display = 'none';
+            initializeQuiz();
+        }
+
+        function initializeQuiz() {
+            quizStartTime = Date.now();
+            
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            const markReviewBtn = document.getElementById('markReviewBtn');
+            const testModeReviewLegend = document.getElementById('testModeReviewLegend');
+            const isTestMode = currentMode === 'test' || currentMode === 'timed_exam';
+            
+            document.getElementById('statsBar').style.display = isTestMode ? 'none' : 'block';
+            document.getElementById('studyModeLegend').style.display = isTestMode ? 'none' : 'block';
+            document.getElementById('testModeLegend').style.display = isTestMode ? 'block' : 'none';
+            document.getElementById('submitSection').style.display = isTestMode ? 'block' : 'none';
+            bookmarkBtn.style.display = isTestMode ? 'none' : 'flex';
+            markReviewBtn.style.display = isTestMode ? 'flex' : 'none';
+            testModeReviewLegend.style.display = isTestMode ? 'flex' : 'none';
+            
+            if (currentMode === 'timed_study' || currentMode === 'timed_exam') {
+                document.getElementById('timerContainer').classList.remove('hidden');
+            }
+            
+            loadBookmarkedQuestions();
+            generateQuestionNav();
+            updateStats();
+            displayQuestion();
+        }
+
+        function generateQuestionNav() {
+            const nav = document.getElementById('questionNav');
+            nav.innerHTML = '';
+            
+            for (let i = 0; i < questionsData.length; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i + 1;
+                btn.className = 'w-8 h-8 text-sm font-medium rounded transition-all duration-200';
+                btn.onclick = () => jumpToQuestion(i);
+                btn.id = `navBtn_${i}`;
+                nav.appendChild(btn);
+            }
+            
+            updateQuestionNav();
+        }
+
+        function updateQuestionNav() {
+            for (let i = 0; i < questionsData.length; i++) {
+                const btn = document.getElementById(`navBtn_${i}`);
+                const state = questionStates[i];
+                let className = '';
+                
+                if (i === currentQuestionIndex) {
+                    className = 'nav-btn-current';
+                } else if (state.bookmarked) {
+                    className = 'nav-btn-bookmarked';
+                } else if (state.markedForReview) {
+                    className = 'nav-btn-marked-review';
+                } else if (currentMode === 'study' || currentMode === 'timed_study') {
+                    if (state.status === 'correct') className = 'nav-btn-correct';
+                    else if (state.status === 'incorrect') className = 'nav-btn-incorrect';
+                    else className = 'nav-btn-not-attempted hover:bg-white hover:bg-opacity-20';
+                } else {
+                    if (state.selectedAnswer !== null) className = 'nav-btn-answered';
+                    else className = 'nav-btn-not-attempted hover:bg-white hover:bg-opacity-20';
+                }
+                btn.className = `w-8 h-8 text-sm font-medium rounded ${className}`;
+            }
+        }
+
+        function jumpToQuestion(index) {
+            if (index >= 0 && index < questionsData.length) {
+                if (questionStartTime) {
+                    questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+                }
+                
+                currentQuestionIndex = index;
+                displayQuestion();
+            }
+        }
+
+        function updateStats() {
+            if (currentMode === 'study' || currentMode === 'timed_study') {
+                document.getElementById('correctCount').textContent = stats.correctAnswers;
+                document.getElementById('incorrectCount').textContent = stats.incorrectAnswers;
+                document.getElementById('totalAttempted').textContent = stats.totalAttempted;
+                
+                const accuracy = stats.totalAttempted > 0 
+                    ? Math.round((stats.correctAnswers / stats.totalAttempted) * 100)
+                    : 0;
+                document.getElementById('accuracy').textContent = accuracy + '%';
+                
+                stats.totalTime = questionStates.reduce((acc, state) => acc + state.timeSpent, 0);
+                const timeSpent = Math.floor(stats.totalTime / 1000);
+                const minutes = Math.floor(timeSpent / 60);
+                const seconds = timeSpent % 60;
+                document.getElementById('timeSpent').textContent = 
+                    minutes + ':' + seconds.toString().padStart(2, '0');
+            }
+        }
+
+        function setupVideo(videoElement, url) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(videoElement);
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = url;
+            }
+        }
+
+        function displayQuestion() {
+            if (!questionsData || questionsData.length === 0) {
+                document.getElementById('questionText').innerHTML = 'No questions available for this quiz.';
+                return;
+            };
+            
+            const question = questionsData[currentQuestionIndex];
+            questionStartTime = Date.now();
+            
+            selectedOption = questionStates[currentQuestionIndex].selectedAnswer;
+            
+            const progress = ((currentQuestionIndex + 1) / questionsData.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            updateQuestionNav();
+            
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            
+            document.getElementById('solutionContainer').classList.add('hidden');
+            
+            document.getElementById('questionText').innerHTML = question.text || 'No question text available';
+            
+            let mediaHtml = '';
+            if (question.question_audio) mediaHtml += `<div class="glass-light p-4 mb-4"><audio src="${question.question_audio}" controls class="w-full"></audio></div>`;
+            if (question.question_video) mediaHtml += `<div class="glass-light p-4 mb-4"><video src="${question.question_video}" controls class="w-full rounded-lg"></video></div>`;
+            if (question.question_images) {
+                question.question_images.forEach(imgSrc => {
+                    if (imgSrc) mediaHtml += `<div class="glass-light p-4 mb-4"><img src="${imgSrc}" alt="Question Image" class="w-full rounded-lg"></div>`;
+                });
+            }
+            document.getElementById('questionMedia').innerHTML = mediaHtml;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            optionsContainer.classList.remove('answered');
+            
+            if (question.choices && Array.isArray(question.choices)) {
+                question.choices.forEach((choice, index) => {
+                    const optionLetter = String.fromCharCode(65 + index);
+                    const isSelected = selectedOption === index;
+                    
+                    const optionDiv = document.createElement('div');
+                    optionDiv.innerHTML = `
+                        <button type="button" class="option-button ${isSelected ? 'selected' : ''}" data-option-index="${index}">
+                            <div class="option-letter">${optionLetter}</div>
+                            <div class="option-text">${choice.text || 'Option ' + (index + 1)}</div>
+                        </button>
+                    `;
+                    optionsContainer.appendChild(optionDiv);
+                });
+                
+                optionsContainer.addEventListener('click', function(e) {
+                    const optionButton = e.target.closest('.option-button');
+                    if (optionButton) {
+                        const optionIndex = parseInt(optionButton.getAttribute('data-option-index'));
+                        selectOption(optionIndex);
+                    }
+                });
+            }
+            
+            updateBookmarkButton();
+            updateMarkReviewButton();
+
+            if ((currentMode === 'timed_study' || currentMode === 'timed_exam') && !isQuizCompleted) {
+                startTimer();
+            }
+        }
+
+        function selectOption(index) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            if (optionsContainer.classList.contains('answered')) return;
+
+            if (questionStartTime) {
+                questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+                questionStartTime = Date.now();
+            }
+            
+            selectedOption = index;
+            questionStates[currentQuestionIndex].selectedAnswer = index;
+            
+            document.querySelectorAll('.option-button').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === index);
+            });
+            
+            if (currentMode === 'study' || currentMode === 'timed_study') {
+                setTimeout(processAnswer, 300);
+            } else {
+                if (questionStates[currentQuestionIndex].status === 'not_attempted') {
+                    questionStates[currentQuestionIndex].status = 'answered';
+                    stats.totalAttempted++;
+                    stats.notAttempted--;
+                }
+                updateQuestionNav();
+            }
+        }
+
+        function processAnswer() {
+            const question = questionsData[currentQuestionIndex];
+            const correctChoiceId = question.correct_choice_id;
+            
+            if(selectedOption === null) return;
+
+            const selectedChoice = question.choices[selectedOption];
+            const isCorrect = selectedChoice.id === correctChoiceId;
+            
+            if (questionStates[currentQuestionIndex].status === 'not_attempted') {
+                stats.totalAttempted++;
+                stats.notAttempted--;
+                if(isCorrect) stats.correctAnswers++; else stats.incorrectAnswers++;
+            }
+            questionStates[currentQuestionIndex].status = isCorrect ? 'correct' : 'incorrect';
+            
+            updateStats();
+            showInlineFeedback(isCorrect);
+            updateQuestionNav();
+        }
+
+        function showInlineFeedback(isCorrect) {
+            if (currentMode !== 'study' && currentMode !== 'timed_study') return;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            const optionButtons = optionsContainer.querySelectorAll('.option-button');
+            const question = questionsData[currentQuestionIndex];
+            const correctChoiceId = question.correct_choice_id;
+            let correctOptionIndex = question.choices.findIndex(c => c.id === correctChoiceId);
+
+            optionsContainer.classList.add('answered');
+
+            optionButtons.forEach((btn, index) => {
+                btn.classList.remove('selected');
+                if (index === correctOptionIndex) btn.classList.add('correct');
+                else if (index === selectedOption && !isCorrect) btn.classList.add('incorrect');
+            });
+
+            setTimeout(showSolution, 1500);
+        }
+
+
+        function showSolution() {
+            if (currentMode !== 'study' && currentMode !== 'timed_study') return;
+            
+            const question = questionsData[currentQuestionIndex];
+            document.getElementById('solutionText').innerHTML = question.solution || 'No solution provided';
+            
+            const videoContainer = document.getElementById('solutionVideo');
+            const videoPlayer = document.getElementById('explanationVideoPlayer');
+            const explanationVideo = question.explanation_video;
+            
+            if (explanationVideo) {
+                videoContainer.classList.remove('hidden');
+                if (explanationVideo.includes('.m3u8')) setupVideo(videoPlayer, explanationVideo);
+                else videoPlayer.src = explanationVideo;
+            } else {
+                videoContainer.classList.add('hidden');
+            }
+
+            const audioContainer = document.getElementById('solutionAudio');
+            audioContainer.innerHTML = '';
+            if (question.explanation_audio_eng) {
+                audioContainer.innerHTML += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English Explanation:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
+            }
+            if (question.explanation_audio_hin) {
+                audioContainer.innerHTML += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish Explanation:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
+            }
+            
+            const imagesContainer = document.getElementById('solutionImages');
+            imagesContainer.innerHTML = '';
+            if (question.explanation_images) {
+                 question.explanation_images.forEach(imgSrc => {
+                    if(imgSrc) imagesContainer.innerHTML += `<div class="mt-4"><img src="${imgSrc}" alt="Explanation Image" class="w-full rounded-lg"></div>`;
+                });
+            }
+
+            document.getElementById('solutionContainer').classList.remove('hidden');
+        }
+
+        function submitQuiz() {
+            if (timer) clearInterval(timer);
+            if (!confirm('Are you sure you want to submit the quiz?')) return;
+            
+            isQuizCompleted = true;
+            let correct = 0, incorrect = 0;
+            const totalTime = Date.now() - quizStartTime;
+            
+            questionsData.forEach((question, index) => {
+                const state = questionStates[index];
+                if (state.selectedAnswer !== null) {
+                    if (question.choices[state.selectedAnswer].id === question.correct_choice_id) {
+                        correct++;
+                        state.status = 'correct';
+                    } else {
+                        incorrect++;
+                        state.status = 'incorrect';
+                    }
+                }
+            });
+            
+            // Save performance data
+            const performanceData = JSON.parse(localStorage.getItem('quizPerformanceData')) || [];
+            performanceData.push({
+                quizName: quizName,
+                hierarchy: hierarchy,
+                timestamp: Date.now(),
+                totalTime: totalTime,
+                stats: {
+                    correct: correct,
+                    incorrect: incorrect,
+                    notAttempted: questionsData.length - (correct + incorrect)
+                }
+            });
+            localStorage.setItem('quizPerformanceData', JSON.stringify(performanceData));
+
+            showPerformanceAnalysis(correct, incorrect, questionsData.length - (correct + incorrect), totalTime);
+        }
+
+        function showPerformanceAnalysis(correct, incorrect, notAttempted, totalTime) {
+            const modal = document.getElementById('performanceModal');
+            const accuracy = (correct + incorrect) > 0 ? Math.round((correct / (correct + incorrect)) * 100) : 0;
+            
+            const circumference = 2 * Math.PI * 65;
+            const scoreCircle = document.getElementById('scoreCircle');
+            scoreCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+            scoreCircle.style.strokeDashoffset = circumference - (accuracy / 100) * circumference;
+            
+            document.getElementById('accuracyScore').textContent = `${accuracy}%`;
+            document.getElementById('totalQuestionsResult').textContent = questionsData.length;
+            document.getElementById('correctResult').textContent = correct;
+            document.getElementById('incorrectResult').textContent = incorrect;
+            document.getElementById('notAttemptedResult').textContent = notAttempted;
+            
+            const totalMinutes = Math.floor(totalTime / 60000);
+            const totalSeconds = Math.floor((totalTime % 60000) / 1000);
+            document.getElementById('totalTimeResult').textContent = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+            
+            const avgTime = totalTime / questionsData.length;
+            const avgMinutes = Math.floor(avgTime / 60000);
+            const avgSeconds = Math.floor((avgTime % 60000) / 1000);
+            document.getElementById('avgTimeResult').textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closePerformanceModal() { document.getElementById('performanceModal').classList.add('hidden'); }
+
+        function reviewQuestions() {
+            document.getElementById('questionReviewSection').classList.remove('hidden');
+            const container = document.getElementById('reviewQuestionsContainer');
+            container.innerHTML = '';
+            
+            questionsData.forEach((question, index) => {
+                const state = questionStates[index];
+                const correctChoiceId = question.correct_choice_id;
+                
+                let statusClass = 'not-attempted', statusText = 'Not Attempted';
+                if (state.selectedAnswer !== null) {
+                    const selectedChoice = question.choices[state.selectedAnswer];
+                    if (selectedChoice.id === correctChoiceId) { statusClass = 'correct'; statusText = 'Correct'; }
+                     else { statusClass = 'incorrect'; statusText = 'Incorrect'; }
+                }
+                
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = `review-question ${statusClass}`;
+                
+                let optionsHtml = (question.choices || []).map((choice, choiceIndex) => {
+                    const isSelected = state.selectedAnswer === choiceIndex;
+                    const isCorrect = choice.id === correctChoiceId;
+                    let borderClass = 'border-gray-600';
+                    if(isCorrect) borderClass = 'border-green-500';
+                    else if(isSelected) borderClass = 'border-red-500';
+                    
+                    return `<div class="p-3 rounded-lg border ${borderClass}"><span class="font-bold mr-3">${String.fromCharCode(65 + choiceIndex)}</span><span>${choice.text}</span></div>`;
+                }).join('');
+
+                const videoHtml = question.explanation_video ? `<div class="mt-4"><video id="review-video-${index}" data-src="${question.explanation_video}" class="w-full rounded-lg" controls></video></div>` : '';
+                
+                let audioHtml = '';
+                if(question.explanation_audio_eng) audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
+                if(question.explanation_audio_hin) audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
+
+                let imagesHtml = (question.explanation_images || []).map(src => src ? `<div class="mt-4"><img src="${src}" alt="Explanation Image" class="w-full rounded-lg"></div>` : '').join('');
+
+                reviewDiv.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-white">Question ${index + 1}</h4>
+                            <span class="text-sm px-3 py-1 rounded-full bg-${statusClass === 'correct' ? 'green' : statusClass === 'incorrect' ? 'red' : 'gray'}-600 text-white">${statusText}</span>
+                        </div>
+                        <div class="text-white mb-4">${question.text}</div>
+                    </div>
+                    <div class="space-y-2 mb-4">${optionsHtml}</div>
+                    <div class="bg-green-900 bg-opacity-20 p-4 rounded-lg border border-green-700">
+                        <h5 class="text-green-400 font-bold mb-2">Explanation:</h5>
+                        <div class="text-white text-opacity-90">${question.solution || 'No solution available.'}</div>
+                        ${videoHtml}
+                        ${audioHtml}
+                        ${imagesHtml}
+                    </div>`;
+                container.appendChild(reviewDiv);
+            });
+            initializeReviewVideos();
+        }
+
+        function initializeReviewVideos() {
+            document.querySelectorAll('video[data-src]').forEach(videoEl => {
+                const src = videoEl.dataset.src;
+                if (src && src.includes('.m3u8')) {
+                    setupVideo(videoEl, src);
+                } else if (src) {
+                    videoEl.src = src;
+                }
+            });
+        }
+
+        function retakeQuiz() {
+            if (confirm('Are you sure you want to retake the quiz? This will reset all your answers.')) {
+                if (window.location.pathname.endsWith('custom_quiz.html')) {
+                    localStorage.removeItem('customQuizData');
+                }
+                location.reload();
+            }
+        }
+
+        function loadBookmarkedQuestions() {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+            bookmarks.forEach(bookmark => {
+                if (bookmark.quizFile.includes(quizName.toLowerCase().replace(/ /g, '-'))) {
+                    if (bookmark.questionIndex < questionsData.length) {
+                        questionStates[bookmark.questionIndex].bookmarked = true;
+                    }
+                }
+            });
+        }
+
+        function toggleBookmark() {
+            const isBookmarked = !questionStates[currentQuestionIndex].bookmarked;
+            questionStates[currentQuestionIndex].bookmarked = isBookmarked;
+            
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+            
+            if (isBookmarked) {
+                const bookmarkData = {
+                    quizName: quizName,
+                    quizFile: window.location.pathname.split('/').pop(),
+                    questionIndex: currentQuestionIndex,
+                    question: questionsData[currentQuestionIndex],
+                    hierarchy: hierarchy,
+                    timestamp: Date.now()
+                };
+                bookmarks.push(bookmarkData);
+            } else {
+                bookmarks = bookmarks.filter(b => 
+                    !(b.quizFile.includes(quizName.toLowerCase().replace(/ /g, '-')) && b.questionIndex === currentQuestionIndex)
+                );
+            }
+            
+            localStorage.setItem('bookmarkedQuestions', JSON.stringify(bookmarks));
+            updateBookmarkButton();
+            updateQuestionNav();
+        }
+
+        function updateBookmarkButton() {
+            const btn = document.getElementById('bookmarkBtn');
+            const text = document.getElementById('bookmarkText');
+            const isBookmarked = questionStates[currentQuestionIndex].bookmarked;
+            
+            btn.className = isBookmarked ? 'gradient-yellow px-6 py-3 text-white transition-all duration-300 flex items-center' : 'glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center';
+            text.textContent = isBookmarked ? 'Bookmarked' : 'Bookmark';
+        }
+        
+        function toggleMarkForReview() {
+            questionStates[currentQuestionIndex].markedForReview = !questionStates[currentQuestionIndex].markedForReview;
+            updateMarkReviewButton();
+            updateQuestionNav();
+        }
+
+        function updateMarkReviewButton() {
+            const btn = document.getElementById('markReviewBtn');
+            const text = document.getElementById('markReviewText');
+            const isMarked = questionStates[currentQuestionIndex].markedForReview;
+            
+            btn.className = isMarked ? 'gradient-purple px-6 py-3 text-white transition-all duration-300 flex items-center' : 'glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center';
+            text.textContent = isMarked ? 'Marked' : 'Mark for Review';
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                if (questionStartTime) {
+                    questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+                }
+                
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (questionStartTime) {
+                questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+            }
+            
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                if (currentMode === 'test' || currentMode === 'timed_exam') {
+                    if (confirm('You have reached the end of the quiz. Would you like to submit your answers now?')) {
+                        submitQuiz();
+                    }
+                } else {
+                    if (confirm('You have completed all questions. Would you like to review from the beginning?')) {
+                        currentQuestionIndex = 0;
+                        displayQuestion();
+                    }
+                }
+            }
+        }
+
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            timeRemaining = 120; // 2 minutes per question
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    if (currentMode === 'timed_exam') {
+                        submitQuiz();
+                    } else {
+                        nextQuestion();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timeDisplay').textContent = 
+                minutes + ':' + seconds.toString().padStart(2, '0');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('quizSidebar').classList.toggle('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             if (!window.location.pathname.endsWith('custom_quiz.html')) {
+                document.getElementById('modeModal').style.display = 'flex';
+             } else {
+                initializeQuiz();
+             }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('modeModal').style.display !== 'none') return;
+            if (document.getElementById('performanceModal').classList.contains('hidden') === false) return;
+            
+            if (e.key >= '1' && e.key <= '4') {
+                const optionIndex = parseInt(e.key) - 1;
+                const options = document.querySelectorAll('.option-button');
+                if (optionIndex < options.length) selectOption(optionIndex);
+            } else if (e.key === 'ArrowLeft') {
+                previousQuestion();
+            } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextQuestion();
+            } else if (e.key.toLowerCase() === 'b' && (currentMode === 'study' || currentMode === 'timed_study')) {
+                toggleBookmark();
+            } else if (e.key.toLowerCase() === 'm' && (currentMode === 'test' || currentMode === 'timed_exam')) {
+                toggleMarkForReview();
+            } else if (e.key.toLowerCase() === 's' && (currentMode === 'test' || currentMode === 'timed_exam')) {
+                submitQuiz();
+            }
+        });
+    </script>
+</body>
+</html>

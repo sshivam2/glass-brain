@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fmge Mini Test - 12 (Pathology Slides) - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        Marrow / FMGE Mini Test Series / 2024
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">30</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls>
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd" />
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z" />
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>
+        let questionsData = [
+  {
+    "text": "A 5-year-old boy presents with weight loss, fever, and a painless swelling in the area of his jaw. CBC reveals anemia and lymphocytosis. Biopsy findings from the swelling are seen in the image below. Which of the following is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Hodgkin's disease"
+      },
+      {
+        "id": 2,
+        "text": "Acute lymphocytic leukemia"
+      },
+      {
+        "id": 3,
+        "text": "Chloroma"
+      },
+      {
+        "id": 4,
+        "text": "Burkitt's lymphoma"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The clinical presentation and biopsy findings point to a diagnosis of <strong>Burkitt's lymphoma.</strong></p>\n<p>The biopsy image shows tumor cells with <strong>multiple small nucleoli,&nbsp;</strong>minimal cytoplasm, and<strong> high mitotic index</strong>&nbsp;closely apposed to each other forming a dark blue background (the \"sky\"). These cells have a high turnover rate. The macrophages get stuffed in between along with cellular debris, they are called&nbsp;<strong>tingible body macrophages. </strong>Upon fixation, the cytoplasm washes away leaving behind white spaces filled with debris ( the \"stars\")<strong>. </strong>This produces a&nbsp;<strong>starry sky appearance</strong>, which is classical to <strong>Burkitt lymphoma.&nbsp;</strong></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/01de5fc54ac2457a9ee470833f28ccac.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/621f51b06c25459e989f496e5de2b48bx1280x613.JPEG"
+    ]
+  },
+  {
+    "text": "A 60-year-old male patient presented with backache. Urine examination revealed nephrotic range proteinuria with Bence-Jones proteins. Laboratory reports showed hypercalcemia.  A renal biopsy specimen stained by congo red seen under polarised light shows the following appearance. Which of the major fibril protein is accumulated in this patient?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Amyloid\u00a0\u03b22\u00a0microglobulin"
+      },
+      {
+        "id": 2,
+        "text": "Amyloid associated protein"
+      },
+      {
+        "id": 3,
+        "text": "Amyloid light chain"
+      },
+      {
+        "id": 4,
+        "text": "Amyloid transthyretin"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p><span data-preserver-spaces=\"true\">The patient is suffering from <strong>multiple myeloma</strong>. The major fibril protein accumulated in this patient is <strong>AL</strong> (amyloid light chain)<strong> protein.</strong></span></p>\n<p><span data-preserver-spaces=\"true\">The above clinical scenario of backache, proteinuria with Bence-Jones protein, hypercalcemia are suggestive of <strong>multiple myeloma</strong>. The image showing&nbsp;a congo-red stained&nbsp;biopsy specimen with <strong>apple-green birefringence</strong> under polarized microscopy is indicative of <strong>amyloid</strong> accumulation in the organ. In multiple myeloma, the amyloid is made from the <strong>light chain</strong> of immunoglobulins (chiefly &lambda; type).&nbsp;</span></p>\n<p><span data-preserver-spaces=\"true\">Amyloidosis refers to&nbsp;<strong>extracellular </strong>deposits of<strong> fibrillar proteins.&nbsp;</strong>The abnormal fibrils are obtained by the aggregation of misfolded proteins. The fibrillar deposits bind to&nbsp;proteoglycans&nbsp;and&nbsp;glycosaminoglycans, including heparan sulfate and dermatan sulfate, and plasma proteins, notably serum amyloid P component (SAP). Amyloid is an&nbsp;<strong>amorphous, eosinophilic, hyaline, extracellular substance.</strong></span></p>\n<p>Microscopy&nbsp;:</p>\n<p>All types of amyloid deposits are made up of continuous,&nbsp;<strong>nonbranching fibrils&nbsp;</strong>and are demonstrated on electron microscopy. A&nbsp;characteristic <strong>cross-&beta;-pleated sheet</strong> conformation is visualized on X-ray crystallography and infrared spectroscopy. The stain used for amyloid deposits is <strong>congo red staining</strong>. It imparts pink to red color to the amyloid under ordinary light. Under polarised microscopy, congo red-stained amyloid shows&nbsp;<strong>apple-green birefringence.</strong></p>\n<p>Other options:</p>\n<p>Option A-&nbsp;&nbsp;Amyloid&nbsp;&beta;<sub>2</sub><strong>&nbsp;</strong>microglobulin(<strong>A&beta;<sub>2</sub>M)&nbsp;</strong>fibrillar protein is seen in <strong>hemodialysis-associated amyloidosis</strong> in chronic renal failure.</p>\n<p>Option B- Amyloid-associated (<strong>AA</strong>) fibrillar protein is seen in <strong>secondary systemic amyloidosis</strong> and<strong> familial Mediterranean fever.</strong></p>\n<p>Option D- Amyloid transthyretin (<strong>ATTR)</strong>&nbsp;fibrillar protein is seen in the mutated form in <strong>familial amyloidotic polyneuropathies</strong> and in an unmutated form in <strong>systemic senile amyloidosis.&nbsp;</strong></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/b78a05bd93b84494b23141a17b04b71b.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 2-year-old male child is brought with enlargement of the right testis. USG shows a 3cm solid mass within the body of the testis. Serum AFP is 230 ng/ml. Orchidectomy specimen revealed a nonencapsulated tumour having a homogeneous, yellow-white, mucinous appearance. The microscopy image is shown below. What is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Leydig cell tumour"
+      },
+      {
+        "id": 2,
+        "text": "Teratoma"
+      },
+      {
+        "id": 3,
+        "text": "Neuroblastoma"
+      },
+      {
+        "id": 4,
+        "text": "Yolk sac tumour"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The most likely diagnosis of the above clinical scenario is the&nbsp;<strong>yolk sac tumor of the testis (Endodermal sinus tumour).&nbsp;</strong></p>\n<p>The given microscopic image shows a&nbsp;<strong>lacelike </strong>reticular network of cuboidal tumour cells and<strong> Schiller duval bodies.</strong></p>\n<p>Yolk sac tumor is the most common testicular tumor in<strong> infants and children up to 3 years of age</strong>. In this age group, it has a very good prognosis.</p>\n<p>&nbsp;</p>\n<p>Eosinophilic, <strong>hyaline-like globules</strong> may be present within and outside the cytoplasm in which <strong>&alpha;</strong><strong>-fetoprotein (AFP) and </strong><strong>&alpha;</strong><strong>1-antitrypsin </strong>can be demonstrated by<strong> immunocytochemical staining.</strong></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/200afa0f15b94cd78accbb25f4383b14.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/3e304d5f049e4bd38d3e928e29609bd1x774x483.PNG"
+    ]
+  },
+  {
+    "text": "Identify the marked structure in the given histopathology slide.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Interstitial cells of Cajal"
+      },
+      {
+        "id": 2,
+        "text": "Brunner's gland"
+      },
+      {
+        "id": 3,
+        "text": "crypts of Lieberkuhn"
+      },
+      {
+        "id": 4,
+        "text": "None of the above"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The slide shows section of the <strong>duodenum</strong> and marked structures glands located on the duodenum called <strong>Brunner's glands</strong></p>\n<p>Brunner's<strong> glands</strong> (or duodenal glands) are <strong>compound</strong> <strong>tubular submucosal glands</strong>\u00a0present in the\u00a0<strong>upper duodenum</strong>\u00a0(above the sphincter of Oddi).</p>\n<p>The alveoli of <strong>duodenal glands</strong> are lined mostly by\u00a0<strong>mucous secreting columnar cells</strong>. Their ducts pass through the muscularis mucosae and empty into the <strong>intestinal crypts</strong> (<strong>of</strong> <strong>Lieberkuhn</strong>).\u00a0</p>\n<p>The duodenum\u00a0can be easily differentiated from the jejunum or ileum by the presence of these submucosal glands. The jejunum and ileum do not have glands in their submucosa.\u00a0</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/2f6edf3d098b4fdabe654ab0eec0cb60.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/622f4633bb85431abb700b3fd1aa5799x1280x1045.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/bfd583c5f5ab4e89a163e1a7f1618069x1280x2063.JPEG"
+    ]
+  },
+  {
+    "text": "The histopathological section of the cardiac tissue of an 82-year-old man shows some pigmentation, as seen below. Intracellular accumulation of which of the following is likely to be seen in this case?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Lipofuscin"
+      },
+      {
+        "id": 2,
+        "text": "Coal"
+      },
+      {
+        "id": 3,
+        "text": "Melanin"
+      },
+      {
+        "id": 4,
+        "text": "Iron"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<div class=\"ng-scope\">\n<div class=\"ng-scope\">\n<p>Intracellular accumulation of <span data-preserver-spaces=\"true\"><strong>lipofuscin</strong></span><span data-preserver-spaces=\"true\">\u00a0</span><span data-preserver-spaces=\"true\">(brown lipid) is seen in this patient.\u00a0</span></p>\n<p><span data-preserver-spaces=\"true\"><strong>Lipofuscin </strong>or<strong> lipochrome</strong>\u00a0is also known as the\u00a0<strong>wear-and-tear</strong>\u00a0pigment.\u00a0It is an insoluble,<strong>\u00a0brownish-yellow</strong>, granular intracellular material, which accumulates in various tissues like the heart, liver, and brain. It is seen in\u00a0<strong>normal</strong>\u00a0<strong>ageing patients.\u00a0</strong></span><span data-preserver-spaces=\"true\">Accumulation of the brown pigment in large amounts can give a characteristic appearance to the tissue called\u00a0<strong>brown atrophy.</strong>\u00a0</span><span data-preserver-spaces=\"true\">\u00a0</span></p>\n<p><span data-preserver-spaces=\"true\">It is derived\u00a0from<strong>\u00a0lipid peroxidation</strong>\u00a0of polyunsaturated lipids indicating\u00a0<strong>free radical injury</strong>.\u00a0</span><strong>Not injurious\u00a0</strong>to the cell or its functions. It is s<span data-preserver-spaces=\"true\">een in cells undergoing slow, regressive changes.\u00a0</span>The image of lipofuscin is given below.</p>\n</div>\n</div>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/3e2e3acaad564dd2a49e97a26654f5aa.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/7708b20840564d3e8b726f8988c28fd0x907x683.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/0fe3727fb9c44fe78dab5cf9df0acd1ax720x481.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/b45dfc4f90fa40d9ac77bba5e2b7e905x411x311.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/f8321b33a3134a21ade948d8c5733c2bx800x600.JPEG"
+    ]
+  },
+  {
+    "text": "A 50-year-old man presented with the blurring of vision. Urine examination showed proteinuria. Fundus examination showed dot and blot hemorrhages, microaneurysms, and cotton wool spots. Histopathology of the kidney was as shown below. What is your diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Renal amyloidosis"
+      },
+      {
+        "id": 2,
+        "text": "Focal segmental glomerulosclerosis"
+      },
+      {
+        "id": 3,
+        "text": "Kimmelstiel-Wilson disease"
+      },
+      {
+        "id": 4,
+        "text": "Lupus nephritis"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>Histopathological image shows <strong>acellular periodic acid Schiff (PAS)-positive nodules</strong> suggestive of&nbsp;nodular glomerulosclerosis/intercapillary glomerulosclerosis/Kimmelstiel&ndash;Wilson disease, which occurs in patients with&nbsp;diabetic nephropathy.</p>\n<p>Three renal lesions are encountered in diabetic nephropathy:</p>\n<ul>\n<li><strong>Glomerular lesions</strong>:\n<ul>\n<li>Capillary basement membrane thickening</li>\n<li>Diffuse mesangial sclerosis</li>\n<li>Nodular glomerulosclerosis/<strong>Kimmelstiel&ndash;Wilson disease</strong></li>\n</ul>\n</li>\n<li><strong>Renal vascular lesions</strong>, principally hyaline arteriolosclerosis</li>\n<li><strong>Pyelonephritis</strong>, including necrotizing papillitis</li>\n</ul>\n<p>Renal histopathology in:</p>\n<ul>\n<li>Amyloidosis:&nbsp;Glomerular deposits appearing as thickenings of the mesangial matrix, forming interlacing broad ribbons of amyloid</li>\n<li>Lupus nephritis:&nbsp;Immune complex deposits in the mesangium or along the entire basement membrane (wire loop lesions), with mesangial cell proliferation</li>\n<li>Focal segmental glomerulosclerosis:&nbsp;Focal and segmental hyalinosis and sclerosis of the capillary wall; lipid droplets in the sclerosed area.</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/adc8108aae6d4031a17c8f407a45a31d.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 24-year old male patient presents with anemia. His father and paternal aunt had a similar illness that was treated successfully by splenectomy. His peripheral blood smear is similar to that shown in the illustration below. Which of the following additional abnormalities is expected?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Decreased osmotic fragility"
+      },
+      {
+        "id": 2,
+        "text": "Decreased reticulocytes"
+      },
+      {
+        "id": 3,
+        "text": "Heinz bodies"
+      },
+      {
+        "id": 4,
+        "text": "Howell-Jolly bodies"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The above image showing&nbsp;<strong>spherocytes</strong> present on the peripheral blood smear and, along with the history, strongly suggest a diagnosis of <strong>hereditary spherocytosis (HS). </strong>The presence of<strong> Howell-Jolly bodies&nbsp;</strong>is an additional abnormality which can be expected here.</p>\n<p>It is an <strong>autosomal dominant</strong> inheritance disorder. It is due to defective ankyrin, band 3, spectrin, or band 4.2 proteins causing a defect in the red cell membrane. This causes red cells to shed membrane vesicles and transform into spherocytes. The non-deformable spherocytes get trapped in the splenic cords and are phagocytosed by macrophages.</p>\n<ul>\n<li>Most common&nbsp;<strong>mode of inheritance</strong>&nbsp;of HS:&nbsp;<strong>Autosomal dominant</strong></li>\n<li>Most common gene&nbsp;<strong>mutation</strong>&nbsp;in autosomal&nbsp;<strong>dominant</strong>&nbsp;HS:&nbsp;<strong>Ankyrin</strong>&nbsp;&gt; Band 3</li>\n</ul>\n<p>Clinical presentation:</p>\n<p>The patients usually present with anemia, gall stones, splenomegaly, and jaundice but the age of presentation varies with the severity of the disease. They might also have a family history.</p>\n<p><strong>Aplastic crisis</strong> might occur where red cell production comes to a halt due to <strong>parvovirus</strong> infection. This lasts for 1 to 2 weeks which is usually the time required for the immune system to clear the virus. Blood transfusions may be needed during this period.</p>\n<p><strong>Morphology</strong> :</p>\n<ul>\n<li>The most common finding is <strong>spherocytosis</strong>, which presents as&nbsp;small, dark-staining (<strong>hyperchromic</strong>) red cells without the central zone of pallor but this is not specific to HS.&nbsp;</li>\n<li>Features seen in HS are :\n<ul>\n<li>Reticulocytosis- increased reticulocyte count</li>\n<li><strong>Howell-Jolly bodies- </strong>dense<strong> basophilic</strong>&nbsp;<strong>nuclear remnants</strong>&nbsp;in the RBCs.</li>\n<li>Marrow erythroid hyperplasia</li>\n<li>Hemosiderosis</li>\n</ul>\n</li>\n<li>Splenomegaly as a result of congested Billroth cords and increased phagocytes.</li>\n</ul>\n<p><strong>Diagnosis</strong>:</p>\n<p>Based on family history, peripheral smear findings, and laboratory investigations an adequate diagnosis is made.&nbsp;<strong>Increased osmotic fragility</strong> is seen in majority of the cases. They also show an increased MCHC (mean corpuscular hemoglobin concentration) due to cellular dehydration.</p>\n<p>Note- <strong>Heinz bodies</strong>: Undeterred oxidation of hemoglobin in the RBCs leads to the formation of denatured precipitates known as&nbsp;<strong>Heinz bodies</strong>. These bodies damage the RBC membrane. When&nbsp;these RBCs pass through the splenic cords, macrophages pluck out these precipitates, giving them the characteristic appearance of&nbsp;<strong>bite cells</strong>. They are seen in cases of&nbsp;chemical poisoning, drug toxicity, <strong>glucose-6-phosphate dehydrogenase (G6PD) deficiency</strong>, or the presence of unstable hemoglobin (e.g. hemoglobin K&ouml;ln)</p>\n<p>Below image shows Heinz bodies and bite cells.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/abae870154064bd790cea0cbb7ed6dd4.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/3b618167e2cd4ab9819379b8bc5a6c3fx720x605.PNG"
+    ]
+  },
+  {
+    "text": "A 36-year-old male presented with skin-coloured umbilicated nodules. Microscopy is as shown below. The most likely diagnosis is______.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Herpes virus"
+      },
+      {
+        "id": 2,
+        "text": "Verruca vulgaris"
+      },
+      {
+        "id": 3,
+        "text": "Molluscum contagiosum"
+      },
+      {
+        "id": 4,
+        "text": "Lichen planus"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The given microscopic image shows large, ellipsoid, homogeneous, cytoplasmic inclusion in cells of the stratum granulosum and the stratum corneum classically seen in <strong>molluscum contagiosum.</strong></p>\n<p><strong>Molluscum contagiosum&nbsp;</strong>is a common, self-limited viral disease of the skin caused by a <strong>poxvirus.&nbsp;</strong>Poxvirus is brick-shaped and is the largest pathogenic poxvirus in humans.</p>\n<p>Individual lesions are firm, pruritic, and pink to skin-coloured <strong>umbilicated papules.</strong> A curd-like material can be expressed from the central umbilication</p>\n<p>Tzanck smear: intracytoplasmic molluscum bodies (<strong>Henderson&ndash;Patterson bodies</strong>), the largest known inclusion bodies.</p>\n<p>Microscopic examination:<strong> Cuplike verrucous epidermal hyperplasia</strong> and&nbsp;<strong>Molluscum bodies:</strong>&nbsp;large, ellipsoid, homogeneous, cytoplasmic inclusion in cells of the stratum granulosum and the stratum corneum.</p>\n<p>Molluscum bodies contain numerous virions.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/a5ea68cb4a694e3aa898b75cc4baea47.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/bb7339621bed4a09bec7e9fcb719a21cx484x500.JPEG"
+    ]
+  },
+  {
+    "text": "A patient presents with a painless swelling of the neck. The histology of the tissue shows Hurthle cells. What is the diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Medullary carcinoma"
+      },
+      {
+        "id": 2,
+        "text": "Non Hodgkin's lymphoma"
+      },
+      {
+        "id": 3,
+        "text": "Grave's disease"
+      },
+      {
+        "id": 4,
+        "text": "Hashimoto's thyroiditis"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The slide shows the histopathology of<strong> Hashimoto thyroiditis, </strong>with:</p>\n<ul>\n<li>Follicular destruction</li>\n<li>Reduced colloid with increased interstitial connective tissue</li>\n<li>Small lymphocyte and plasma cell infiltration</li>\n<li>A well-developed germinal centre may be seen</li>\n<li>Hurthle/ Askanazy cells that have abundant eosinophilic granular cytoplasm lining the follicles</li>\n</ul>\n<p>&nbsp;</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/7f4e99a8139e46a3ac8af3423a1e1d2d.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/845a648c25b3440797f586e684e8981ex1280x1164.JPEG"
+    ]
+  },
+  {
+    "text": "You are a pathology resident who is looking at a slide, showing small round blue cells and Homer-Wright rosettes as shown below. The history you received from the pediatric surgery resident was that the specimen was resected from a 5-year-old child with ataxia. The tumor was present in the midline vermis. Which of the following is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Medulloblastoma"
+      },
+      {
+        "id": 2,
+        "text": "Ependymoma"
+      },
+      {
+        "id": 3,
+        "text": "Pilocytic astrocytoma"
+      },
+      {
+        "id": 4,
+        "text": "Glioblastoma multiforme"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>The given clinical scenario and slide are suggestive of&nbsp;<strong>Medulloblastoma.&nbsp;</strong></p>\n<p>Medulloblastoma is an embryonal CNS tumor, occurring predominantly in the <strong>cerebellar vermis</strong> that causes&nbsp;<strong>ataxia</strong>, poor balance, and dysmetria.&nbsp;It may cause obstructive hydrocephalus and often&nbsp;<strong>metastasizes extraneurally.</strong></p>\n<p>Histopathology shows<strong>&nbsp;</strong>a tumor composed of <strong>small, round, blue cells</strong> and is&nbsp;characterized by <strong>Homer&ndash;Wright rosettes</strong> and an immunopositivity for <strong>synaptophysin</strong>.&nbsp;</p>\n<p>Standard treatment for medulloblastomas is <strong>surgical resection</strong>, with adjuvant <strong>craniospinal radiotherapy</strong> for those over 3 years of age and <strong>chemotherapy</strong>. <br />Prognosis is strongly influenced by surgical resection, the presence of CSF metastases at the time of diagnosis, and the expression of the c-erbB-2 (HER2/neu) oncogene.</p>\n<p><strong>Note:&nbsp;</strong>Small, round, blue-cell tumors are malignant neoplasms that have a characteristic appearance under the microscope. It consists of sheets of small round cells that stain blue on routine hematoxylin and eosin (H&amp;E) staining.&nbsp;Examples are:</p>\n<ul>\n<li>Medulloblastoma</li>\n<li>Neuroblastoma</li>\n<li>Retinoblastoma</li>\n<li>Ewing&rsquo;s sarcoma</li>\n<li>Rhabdomyosarcoma</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/2ef492955eb34bc19b48a13b49dddb4a.jpg"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "Histopathological examination of an ovarian mass sent to the pathology department revealed the following. Which of the following is false regarding this condition?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "It is more common in women with low parity"
+      },
+      {
+        "id": 2,
+        "text": "The pathogenesis is related to family history and heritable mutations"
+      },
+      {
+        "id": 3,
+        "text": "High-grade tumors are associated with TP53 mutations"
+      },
+      {
+        "id": 4,
+        "text": "It is most commonly unilateral"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The given image denotes<strong> Psammoma bodies</strong>&nbsp;which are a histopathological finding seen in ovarian papillary<strong> serous cystadenoma </strong>and<strong> cystadenocarcinoma</strong>. These tumors are most commonly&nbsp;<strong>bilateral</strong>.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/07e3862872b64ee4b57d67e7a4bd181e.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/45eed5a59abb40e5b028ad47c7cacf21x1280x1945.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/90d191c0ea474d6ab26f37a1dadb9913x1280x1944.JPEG"
+    ]
+  },
+  {
+    "text": "A 3-year-old child presented to the OPD with failure to thrive and a developmental defect of the third and fourth pharyngeal pouches and was referred for further evaluation. The Fluorescence In Situ Hybridization ( FISH) findings have been shown in the following image. This syndrome is known as____",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Williams syndrome"
+      },
+      {
+        "id": 2,
+        "text": "Pitt syndrome"
+      },
+      {
+        "id": 3,
+        "text": "DiGeorge syndrome"
+      },
+      {
+        "id": 4,
+        "text": "Cri-du-chat syndrome"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p><span data-preserver-spaces=\"true\">The given clinical picture and&nbsp;</span><strong><span data-preserver-spaces=\"true\">deletion of chromosome 22q11.2 </span></strong>seen on <strong><span data-preserver-spaces=\"true\">Fluorescence In Situ Hybridization (FISH)</span></strong><span data-preserver-spaces=\"true\">&nbsp;are suggestive of&nbsp;</span><strong><span data-preserver-spaces=\"true\">DiGeorge syndrome</span></strong><span data-preserver-spaces=\"true\">.</span></p>\n<p><span data-preserver-spaces=\"true\">A child with a&nbsp;</span><strong><span data-preserver-spaces=\"true\">developmental defect of thymus</span></strong><span data-preserver-spaces=\"true\">&nbsp;and&nbsp;</span><strong><span data-preserver-spaces=\"true\">deletion of chromosome 22q11.2</span></strong><span data-preserver-spaces=\"true\">&nbsp;points towards the diagnosis of DiGeorge syndrome.</span></p>\n<p><span data-preserver-spaces=\"true\">In this syndrome, the fourth branchial arch and the derivatives of the&nbsp;</span><strong><span data-preserver-spaces=\"true\">third and fourth pharyngeal pouches</span></strong><span data-preserver-spaces=\"true\">&nbsp;(which contribute to the formation of the thymus, parathyroids, and heart) develop abnormally. This syndrome is therefore associated with multiple deficits (memorable through the mnemonic&nbsp;</span><strong><span data-preserver-spaces=\"true\">CATCH - 22</span></strong><span data-preserver-spaces=\"true\">)</span></p>\n<p><span data-preserver-spaces=\"true\">Mnemonic</span><strong><span data-preserver-spaces=\"true\">&nbsp;CATCH-22:</span></strong></p>\n<ul>\n<li><span data-preserver-spaces=\"true\">Cardiac abnormality</span></li>\n<li><span data-preserver-spaces=\"true\">Abnormal facies</span></li>\n<li><span data-preserver-spaces=\"true\">Thymic aplasia</span></li>\n<li><span data-preserver-spaces=\"true\">Cleft palate</span></li>\n<li><span data-preserver-spaces=\"true\">Hypocalcemia</span></li>\n<li><span data-preserver-spaces=\"true\">Deletion 22q11.2&nbsp;&nbsp;</span></li>\n</ul>\n<p><span data-preserver-spaces=\"true\">Thymic hypoplasia with impaired T-cell immunity can manifest as:</span></p>\n<ul>\n<li><span data-preserver-spaces=\"true\">T cells are absent in the lymph nodes, spleen, and peripheral blood, and infants with this defect are extremely vulnerable to viral, fungal, and protozoal infections.</span></li>\n<li><span data-preserver-spaces=\"true\">Patients also are susceptible to infection with intracellular bacteria, because of defective T cell-mediated immunity.</span></li>\n<li><span data-preserver-spaces=\"true\">B cells and serum immunoglobulins are generally unaffected.</span></li>\n</ul>\n<p><span data-preserver-spaces=\"true\">&nbsp;</span><span data-preserver-spaces=\"true\">Other options:</span></p>\n<p>Option A:<strong><span data-preserver-spaces=\"true\"><strong>&nbsp;</strong>Williams syndrome&nbsp;</span></strong><span data-preserver-spaces=\"true\">occurs due to deletion at&nbsp;</span><strong><span data-preserver-spaces=\"true\">chromosome 7</span></strong><span data-preserver-spaces=\"true\">. Classical&nbsp;</span><strong><span data-preserver-spaces=\"true\">facial features</span></strong><span data-preserver-spaces=\"true\">&nbsp;include:</span></p>\n<ul>\n<li><span data-preserver-spaces=\"true\">Periorbital fullness of subcutaneous tissues,</span></li>\n<li><span data-preserver-spaces=\"true\">Hypertelorism,</span></li>\n<li><span data-preserver-spaces=\"true\">A stellate pattern of the iris,</span></li>\n<li><span data-preserver-spaces=\"true\">Long philtrum,</span></li>\n<li><span data-preserver-spaces=\"true\">Thick vermillion border of the lips,</span></li>\n<li><span data-preserver-spaces=\"true\">Wide mouth,</span></li>\n<li><span data-preserver-spaces=\"true\">Small jaw (elfin facies).</span></li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/e94bcf3bef3543759d1b668518acefcf.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/dcc1ee4b6eb649549a273e24cab9a386x1280x2223.JPEG"
+    ]
+  },
+  {
+    "text": "A 14-year-old patient presents with bilateral proptosis. The biopsy from the region shows this pattern. What is the likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Leiomyoma"
+      },
+      {
+        "id": 2,
+        "text": "Schwannoma"
+      },
+      {
+        "id": 3,
+        "text": "Rhabdomyosarcoma"
+      },
+      {
+        "id": 4,
+        "text": "Fibromatosis"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given clinical history and biopsy picture is characteristic of <strong>schwannoma</strong>.</p>\n<p>The biopsy specimen in schwannoma shows <strong>hypocellular (Antoni B)</strong> and <strong>hypercellular areas (Antoni A).&nbsp;</strong><strong>Antoni A area</strong>&nbsp;has the<strong>&nbsp;nuclei</strong> of <strong>tumor cells</strong> aligned in <strong>palisading rows. </strong>The<strong> nuclear-free zones</strong>&nbsp;that lie between nuclear palisading<strong>&nbsp;</strong>are known as<strong>&nbsp;Verocay bodies.</strong></p>\n<p>The histological section of a schwannoma showing Antoni A, Antoni B and Verocay bodies is given below:</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/101a42fd672b4927a2ae133bdc0c630e.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/571f13ffb01c465aaf47e7426edc3498x1279x662.JPEG"
+    ]
+  },
+  {
+    "text": "A 55 yr old man is found to have hepatomegaly on physical examination. He also complains of having a dark tan despite avoiding sun exposure. His liver microscopy is given on the slide below. This patient most likely suffers from ________",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Wilson's disease"
+      },
+      {
+        "id": 2,
+        "text": "Autoimmune hepatitis"
+      },
+      {
+        "id": 3,
+        "text": "Alpha-1 antitrypsin deficiency"
+      },
+      {
+        "id": 4,
+        "text": "Hemochromatosis"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The patient most likely suffers from <strong>hemochromatosis</strong>. Liver microscopy shows <strong>hepatocellular iron</strong>, which is stained blue with <strong>Perl's prussian blue</strong> stain.</p>\n<div class=\"page\" title=\"Page 853\">\n<div class=\"section\">\n<div class=\"layoutArea\">\n<div class=\"column\">\n<p>Hemochromatosis is an inherited or acquired metabolic disorder caused by <strong>excessive iron absorption. </strong>Iron overload leads to the accumulation of iron in parenchymal organs such as the <strong>liver and pancreas </strong>followed by<strong>&nbsp;</strong>heart, joints, and endocrine organs.</p>\n</div>\n</div>\n</div>\n</div>\n<p><strong>The characteristic triad</strong> of hemochromatosis includes:</p>\n<ol>\n<li>Micronodular cirrhosis</li>\n<li>Diabetes mellitus in 75% to 80% of patients</li>\n<li>Abnormal skin pigmentation in 75% to 80% of patients</li>\n</ol>\n<p>Note:&nbsp;The total body iron pool ranges from<strong> 2 to 6 gm in normal</strong> adults. In <strong>hemochromatosis</strong>, total iron accumulation may <strong>exceed 50 gm</strong>, more than one-third of which accumulates in the <strong>liver.</strong></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/d7a4fd03013446689cfdb84f7a865001.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 45 year old male with recurrent bloody diarrhea came to the hospital. Colonoscopy showed geographical ulcers. Histopathology is given below. Your diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Adenocarcinoma colon"
+      },
+      {
+        "id": 2,
+        "text": "Pseudomebranous colitis"
+      },
+      {
+        "id": 3,
+        "text": "Crohn disease"
+      },
+      {
+        "id": 4,
+        "text": "Non-hodgkin lymphoma colon"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The probable diagnosis is <strong>Crohn's</strong> disease.</p>\n<p>In the given history, <strong>recurrent bloody diarrhea</strong> indicates periods of active disease interrupted by asymptomatic periods. The presence of <strong>geographical ulcers</strong> indicate the presence of multiple, clearly delineated areas of disease in-between areas of normal mucosa, or<strong> skip lesions.</strong></p>\n<p>The histopathological image shows <strong>transmural inflammation</strong> where inflammatory cells (neutrophils) extend from mucosa through submucosa, and to the muscularis thereby, infiltrating and damaging crypt epithelium. The normally straight and parallel<strong> crypts appear distorted</strong>.<br />All the above features indicate<strong> Crohn&rsquo;s disease</strong> to be the diagnosis.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/7eee3e1582264a0686134d8b64c559fc.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "An elderly man with a long-standing history of memory loss and behavioral changes passed away. On autopsy, brain atrophy was noted. A histopathology section of his brain showed the following finding. This protein is most likely to be:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Amyloid"
+      },
+      {
+        "id": 2,
+        "text": "Prion protein"
+      },
+      {
+        "id": 3,
+        "text": "Tau protein"
+      },
+      {
+        "id": 4,
+        "text": "Lewy body"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>The given clinical scenario is suggestive of <strong>Alzheimer&rsquo;s disease</strong> and the above image shows <strong>neurofibrillary tangles</strong> inside the neuron. These are formed from helical filaments of <strong>abnormal tau proteins</strong>.</p>\n<p>In Alzheimer&rsquo;s disease, <strong>neurofibrillary tangles </strong>and <strong>amyloid plaques</strong> are found in the brain, especially in the hippocampus. Neurofibrillary tangles are deposited inside the neurons, whereas amyloid plaques are deposited around the neurons.</p>\n<p>Other options:</p>\n<p>Option A:<strong> Amyloid plaques</strong> are made of <strong>beta-amyloid precursor protein </strong>(APP). They are deposited around the neurons. Amyloid plaque is shown in the image below:</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/0fbe00b9ed6d45009e1d70968c641f15.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/f1df345d47814d16afa92b7e82d3d0edx700x527.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/e26bb4efad0b4c1e91bb41ea67f87f06x600x600.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/45cfcb8fcce84e1b89fa2937301671a1x631x523.JPEG"
+    ]
+  },
+  {
+    "text": "A 28-year-old man is being evaluated for hematuria.  Histopathology showed mesangial widening and endocapillary proliferation. The following finding is seen on immunofluorescence. What is the likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Goodpasture syndrome"
+      },
+      {
+        "id": 2,
+        "text": "IgA nephropathy"
+      },
+      {
+        "id": 3,
+        "text": "Minimal change disease"
+      },
+      {
+        "id": 4,
+        "text": "Acute post-streptococcal glomerulonephritis"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given clinical scenario, histopathology findings of <strong>mesangial widening</strong> and endocapillary proliferation, as well as immunofluorescence showing <strong>mesangial deposits</strong> are suggestive of<strong> IgA nephropathy</strong> (Berger's disease).</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/0f7d77d6d12d488bb8d6e2c16411d228.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/5fe8f0fb5ded4459b59ab141165a20c1x1280x1133.JPEG"
+    ]
+  },
+  {
+    "text": "What type of cell is shown in the image below?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Faggot cell"
+      },
+      {
+        "id": 2,
+        "text": "Reed Sternberg cell"
+      },
+      {
+        "id": 3,
+        "text": "Mott cells"
+      },
+      {
+        "id": 4,
+        "text": "S\u00e9zary-Lutzner cells"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>In the picture given above,\u00a0<strong>Reed\u2013Sternberg (RS) cells </strong>are seen, which is seen in\u00a0<strong>Hodgkin's lymphoma (HL).</strong></p>\n<p><strong>Reed\u2013Sternberg cells</strong> :</p>\n<ul>\n<li>RS cells are large and either multinucleated or have a bilobed nucleus (thus resembling an <strong>\"owl's eye\" appearance</strong>) with prominent eosinophilic inclusion-like nucleoli.</li>\n<li>The RS cell is clonal in origin and arises from the<strong> germinal center B cells </strong>but typically has lost most B-cell gene expression and function.</li>\n<li>Reed Sternberg cells are not diagnostic for any condition since they are seen in many conditions such as:\n<ul>\n<li>Hodgkin\u2019s lymphoma</li>\n<li>Non-Hodgkin\u2019s lymphoma (commonly in immunoblastic type)</li>\n<li>Infectious mononucleosis</li>\n<li>Sarcomas</li>\n</ul>\n</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/ffd2ce5980124cc28f9d706394b478c0.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/1d90418214d14ea4ba8f044f2c899ddbx1280x1532.GIF",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/dea17996866f4e75ae020ca599970662x720x818.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/f9c12c6cc3994ec192369bf49b00ab0cx1279x1199.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/2d233f8100984d928107dd4914649ff5x720x727.JPEG"
+    ]
+  },
+  {
+    "text": "The histological finding shown in the image below is seen in which of the following?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Pleomorphic Xanthoastrocytoma"
+      },
+      {
+        "id": 2,
+        "text": "Medulloblastoma"
+      },
+      {
+        "id": 3,
+        "text": "Oligodendroglioma"
+      },
+      {
+        "id": 4,
+        "text": "None of the above"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<div class=\"page\" title=\"Page 1311\">\n<div class=\"section\">\n<div class=\"layoutArea\">\n<div class=\"column\">\n<p>The histological image shows <strong>fried egg appearance</strong> of cells is seen in <strong>Oligodendroglioma.</strong></p>\n<ul>\n<li>These are infiltrating gliomas comprised of cells that resemble oligodendrocytes.</li>\n<li>Common in the fourth and fifth decades.</li>\n<li>The lesions are found mostly in the <strong>cerebral hemispheres</strong>, with a pre&shy;dilection for white matter.</li>\n<li>The tumors are composed of sheets of regular cells with spherical nuclei containing finely granular chromatin (similar to normal oligodendrocytes) surrounded by a clear halo of vacuolated cytoplasm giving a <strong>fried egg appearance</strong>. Tumor cells infiltrating the cerebral cortex often collect around neurons (<strong>perineuronal satellitosis</strong>).</li>\n<li>Fried eggs in pathology:\n<ul>\n<li><strong>Oligodendroglioma</strong> on histopathology</li>\n<li><strong>Hairy cell leukemia</strong> on bone marrow biopsy</li>\n<li><strong>Seminoma/Dysgerminoma</strong>&nbsp;on light microscopy</li>\n<li><strong>Mycoplasma pneumonia</strong> fried egg colonies on <strong>Eaton agar</strong></li>\n</ul>\n</li>\n</ul>\n<div class=\"page\" title=\"Page 1312\">&nbsp;</div>\n</div>\n</div>\n</div>\n</div>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/3161c979be49471aa705a649a05b7db5.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A female patient presented with a lesion as shown in the image below. What is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Squamous cell carcinoma"
+      },
+      {
+        "id": 2,
+        "text": "Basal cell carcinoma"
+      },
+      {
+        "id": 3,
+        "text": "Malignant nevus"
+      },
+      {
+        "id": 4,
+        "text": "Malignant melanoma"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>An\u00a0<strong>asymmetrical lesion</strong>, with an <strong>irregular border,</strong>\u00a0with\u00a0<strong>black/brown pigmentation</strong>\u00a0points towards a diagnosis of <strong>m</strong><strong>alignant melanoma.\u00a0</strong></p>\n<p><strong>Types of melanoma:</strong></p>\n<ul>\n<li>Lentigo maligna</li>\n<li>Superficial spreading</li>\n<li>Acral lentiginous</li>\n<li>Nodular</li>\n</ul>\n<p><strong>Histopathology of melanoma:</strong></p>\n<ul>\n<li>Individual melanoma cells are larger than normal melanocytes</li>\n<li>They have large nuclei with irregular contours, chromatin is characteristically clumped at the periphery of the nuclear membrane with prominent red eosinophilic nucleoli</li>\n<li>All tumors have a vertical and radial phase of growth. The appearance of melanocytes is similar in both phases. The vertical growth has is often heralded by the appearance of a nodule.</li>\n<li>The possibility of metastasis correlates with the depth of invasion which is called the Breslow thickness.</li>\n</ul>\n<table style=\"height: 465px;\" width=\"729\">\n<tbody>\n<tr>\n<td style=\"width: 242.357px;\"><strong>Type</strong></td>\n<td style=\"width: 350.508px;\"><strong>Clinical features</strong></td>\n<td style=\"width: 115.612px;\"><strong>Spread</strong></td>\n</tr>\n<tr>\n<td style=\"width: 242.357px;\"><strong>Basal cell carcinoma</strong></td>\n<td style=\"width: 350.508px;\">\n<p><strong>Nodule</strong></p>\n<p>Central ulceration with a\u00a0<strong>pearly</strong>\u00a0surface,</p>\n<p><strong>telangiectasia</strong></p>\n</td>\n<td style=\"width: 115.612px;\">local</td>\n</tr>\n<tr>\n<td style=\"width: 242.357px;\"><strong>Squamous cell carcinoma</strong></td>\n<td style=\"width: 350.508px;\">\n<p><strong>Ulcer</strong>\u00a0with thickened margins,\u00a0<strong>keratosis</strong></p>\n<p><strong>Papillomatous</strong></p>\n</td>\n<td style=\"width: 115.612px;\">\n<p>Local,</p>\n<p>lymph nodes</p>\n</td>\n</tr>\n<tr>\n<td style=\"width: 242.357px;\"><strong>Malignant melanoma</strong></td>\n<td style=\"width: 350.508px;\">\n<p>&gt;<strong>6 mm</strong>\u00a0pigmented,\u00a0</p>\n<p><strong>vascularization</strong></p>\n<p>inflammation</p>\n</td>\n<td style=\"width: 115.612px;\">\n<p>Local</p>\n<p>vascular</p>\n<p>lymph nodes</p>\n</td>\n</tr>\n</tbody>\n</table>\n<p>\u00a0</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/496089d6e84b42de93d5d0ab2e9a98a5.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A farmer presents with a warty cutaneous growth on his foot. Histopathology is as shown below. Which of the following is a likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Sporotrichosis"
+      },
+      {
+        "id": 2,
+        "text": "Mycetoma"
+      },
+      {
+        "id": 3,
+        "text": "Chromoblastomycosis"
+      },
+      {
+        "id": 4,
+        "text": "Phaeohyphomycosis"
+      }
+    ],
+    "correct_choice_id": 3,
+    "solution": "<p>This patient is likely a case of <strong>chromoblastomycosis</strong> with <strong>sclerotic bodies</strong> seen on histopathology examination</p>\n<p>It is a subcutaneous infection caused by fungi belonging to the genera fonsecaea. It enters the skin by <strong>traumatic inoculation</strong>. Hence, seen in <strong>woodcutter and farmers</strong>. It appears as sclerotic bodies on histopathology examination and <strong>copper penny bodies</strong> on KOH mount. Treatment with <strong>antifungals</strong> are given.</p>\n<p>Other options:</p>\n<p><strong>Mycetoma</strong>:</p>\n<ul>\n<li>It is caused by various types of <strong>Fungi&nbsp;</strong>(<strong>Eumycetoma</strong>) or <strong>filamentous bacteria</strong> (<strong>actinomycetes</strong>).</li>\n<li>It presents with a <strong>painless nodule</strong> but with time, <strong>papules</strong> and <strong>pustules</strong> may form which breaks down to form <strong>draining sinuses, with the discharge of granules.</strong></li>\n</ul>\n<p><strong>Image:</strong> Mycetoma of Foot.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/40221b3fa784475ea959b02600ad85d5.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/18d37ca228ff470bac0025f86c31bc9bx512x381.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/68d669d2712643fcab2bcd042a4a8d35x512x680.PNG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/9bb21c268edc4f6e8f12536fdeb67746x400x323.JPEG"
+    ]
+  },
+  {
+    "text": "A 50-year-old female patient has been diagnosed with an ovarian tumor. Histopathological examination of tumor specimen reveals sheets of mucin-producing signet ring cells as seen below.  Identify the true statement regarding this ovarian tumor.",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Capsular infiltration is seen"
+      },
+      {
+        "id": 2,
+        "text": "Normal shape of ovary is retained"
+      },
+      {
+        "id": 3,
+        "text": "Ovary is attached to nearby viscera and becomes immobile"
+      },
+      {
+        "id": 4,
+        "text": "They are usually unilateral"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given clinical scenario with histopathology showing\u00a0<strong>signet ring cells</strong>\u00a0is suggestive of\u00a0<strong>Krukenberg tumor </strong>and\u00a0in this ovarian tumor, the normal shape of the ovary is retained.</p>\n<p><strong>Krukenberg tumor</strong>: These are secondary growth in the ovary and most often arise from a primary carcinoma of the stomach (70%), large bowel (15%), and breast (6%).</p>\n<p>Features:</p>\n<ul>\n<li>Usually\u00a0<strong>bilateral (Option D)</strong></li>\n<li>Have a\u00a0<strong>smooth surface</strong></li>\n<li>They retain the shape of the normal ovary.</li>\n<li>There is no tendency to form adhesions with neighboring viscera and they are freely movable in the pelvis <strong>(Option C)</strong></li>\n<li>There is <strong>no infiltration</strong> through the capsule <strong>(Option A)</strong></li>\n<li>Have a waxy consistency</li>\n</ul>\n<p><strong>Histologically, Numerous signet-ring cells</strong> with pale cytoplasm are seen.</p>\n<p>\u00a0</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/075a350f9a614f6d86ca53f15b9d033a.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/f6429d7a5d7d449b9d77b0a579847a6fx1280x960.JPEG"
+    ]
+  },
+  {
+    "text": "This characteristic appearance of T-lymphocytes is seen in ______",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Pseudolymphoma"
+      },
+      {
+        "id": 2,
+        "text": "Mycosis fungoides"
+      },
+      {
+        "id": 3,
+        "text": "Adult T Cell leukemia"
+      },
+      {
+        "id": 4,
+        "text": "Chronic Myeloid Leukemia"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The image shows a characteristic <strong>cerebriform appearance</strong> of T-lymphocytes as seen in <strong>Mycosis fungoides.</strong></p>\n<ul>\n<li><strong>Histopathology findings</strong>\n<ul>\n<li>Moderate lymphocytic infiltrate in papillary dermis</li>\n<li><strong>Epidermotropism</strong> (presence of lymphocytes in the epidermal cells)</li>\n<li>Pautriers&rsquo;s microabscesses consisting of clusters of atypical lymphocytes</li>\n<li>Atypical lymphocytes have a <strong>cerebriform appearance</strong> with irregular nuclear outline and halo around cells.</li>\n</ul>\n</li>\n</ul>\n<p><strong>Image</strong>:&nbsp;Typical epidermotropism (presence of lymphocytes in the epidermal cells) seen in Mycosis fungoides.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/0624bb663129435e8785e5d8069c9df3.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/f1a39f123500433291931917bb48ab87x400x600.JPEG",
+      "https://cdn1.dailyrounds.org/uploads/915e15210c8e4caa9e750e8eea875963x1024x768.JPEG"
+    ]
+  },
+  {
+    "text": "A patient working in a factory presented with lung fibrosis and thickening of pleura. Biopsy was done. Diagnosis from the histopathology picture is:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Asbestosis"
+      },
+      {
+        "id": 2,
+        "text": "Silicosis"
+      },
+      {
+        "id": 3,
+        "text": "Tuberculosis"
+      },
+      {
+        "id": 4,
+        "text": "Mesothelioma"
+      }
+    ],
+    "correct_choice_id": 1,
+    "solution": "<p>The given image shows typical <strong>asbestos bodies</strong> giving the diagnosis of <strong>asbestosis.</strong></p>\n<p>The disease-causing capabilities of the different forms of asbestos depend on concentration, size, shape, and solubility.</p>\n<ul>\n<li>Asbestosis is marked by diffuse pulmonary interstitial fibrosis, which is differentiated from other causes of diffuse interstitial fibrosis by the presence of multiple <strong>asbestos bodies.</strong></li>\n<li>Asbestos bodies are <strong>golden brown, fusiform, or beaded rods</strong> with a translucent center. They consist of asbestos fibers coated with an iron-containing proteinaceous material and arise when <strong>macrophages phagocytose asbestos fibers.</strong></li>\n<li>Other inorganic particulates may become coated with similar <strong>iron-protein complexes</strong> and are called <strong>ferruginous bodies</strong>.</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/33de163c82ed4eaca078ffe339f04027.PNG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 35-year-old female patient presented to the clinic with reddening and itching over the left breast as shown in the figure. Mammogram showed the presence of microcalcifications in the left breast. Histopathology shows the presence of large pale vacuolated cells with round nuclei in the epithelium. What is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Phyllodes tumor"
+      },
+      {
+        "id": 2,
+        "text": "Paget's disease of the breast"
+      },
+      {
+        "id": 3,
+        "text": "Superficial spreading melanoma"
+      },
+      {
+        "id": 4,
+        "text": "Chronic eczema"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The clinical picture and histology are&nbsp;diagnostic of<strong> Paget's disease of the breast.&nbsp;</strong></p>\n<p>Paget&rsquo;s disease is a superficial manifestation of underlying malignancy.</p>\n<p>Clinically it presents as a&nbsp;<strong>chronic, eczematous eruption </strong>of the nipple which may progress to ulceration. In the majority of patients, there is also an underlying breast <strong>lump</strong>. This lump is usually DCIS. Less commonly it can also be invasive ductal carcinoma.</p>\n<p>A <strong>nipple biopsy</strong> specimen will show a population of cells that are identical to the underlying malignant cells. The presence of&nbsp;large, <strong>pale, vacuolated</strong> cells (<strong>Paget cells)</strong> with round or oval nuclei are pathognomonic for this condition.</p>\n<p>Depending on the type and extent of underlying malignancy, it can be treated with lumpectomy or mastectomy.</p>\n<p>Note:&nbsp;</p>\n<p>Paget's disease can be often confused with superficial spreading melanoma. Paget's disease shows positive immunostaining with carcinoembryonic<strong>&nbsp;antigen</strong>&nbsp;(CEA), while superficial spreading melanoma is positive for S-100 antigen.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/b83c5da42e2c40afb29d50ddb1b9e4f4.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/e4a929fe0a80440996308fa434a97b95x512x411.PNG"
+    ]
+  },
+  {
+    "text": "A 35-year-old man with obesity, metabolic syndrome, and renal failure presents with excruciating joint pain associated with localized hyperemia and warmth involving ankles, heels, and knees.  Aspirate from the joint shows dense neutrophilic infiltrate and crystals seen under polarised light are as  shown below. What is the most likely diagnosis?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Rheumatoid arthritis"
+      },
+      {
+        "id": 2,
+        "text": "Gout"
+      },
+      {
+        "id": 3,
+        "text": "Ankylosing spondylitis"
+      },
+      {
+        "id": 4,
+        "text": "Septis arthritis"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The most likely diagnosis is gout. Aspirate from the joint shows dense neutrophilic infiltrate and crystals which are long, slender, needle-shaped, and negatively birefringent</p>\n<p><strong>Gout is marked by transient attacks of acute arthritis initiated by crystallization of monosodium urate within and around joints. </strong></p>\n<p>Gout can be classified&nbsp;into primary and secondary forms.</p>\n<p>The inflammation in gout is triggered by<strong> precipitation of monosodium urate (MSU) crystals into the joints, </strong>which results in the production of cytokines that recruit leukocytes.</p>\n<p>Macrophages phagocytose the MSU and the <strong>inflammasome activates caspase-1,</strong> which is involved in the production of some biologically active cytokines.</p>\n<p>IL-1 is pro-inflammatory and promotes accumulation of neutrophils and macrophages in the joint</p>\n<p>The distinctive morphologic changes in gout are <strong>(1) acute arthritis,(2) chronic tophaceous arthritis, (3) tophi in various sites, and (4) gouty nephropathy</strong></p>\n<p><strong>Tophi are the pathognomonic hallmark of gout</strong>- large aggregations of urate crystals surrounded by an intense inflammatory reaction of foreign body giant cells which may appear in the articular cartilage, ligaments, tendons, and bursae, earlobes, fingertips, or kidneys.</p>\n<p><strong>Gouty nephropathy </strong>refers to the renal complications caused by MSU crystals or tophi in the renal medullary interstitium or tubules. Complications include uric acid nephrolithiasis and pyelonephritis.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/6818295d8bee45afa9cf096c9e886ece.PNG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "A 51-year-old male patient came with complaints of hematuria to the clinic. On examination, he was normotensive and had pedal edema. Investigations revealed the patient had no glycosuria and had a creatinine of 9. His renal biopsy is shown below. Which of the following investigations should be done to identify the disease?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "ANA"
+      },
+      {
+        "id": 2,
+        "text": "Anti GBM antibodies"
+      },
+      {
+        "id": 3,
+        "text": "HIV RNA"
+      },
+      {
+        "id": 4,
+        "text": "Serum electrophoresis"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>Based on the given clinical history and microscopy showing <strong>crescents,</strong>\u00a0<strong>RPGN (type -1) </strong>is suspected. To confirm <strong>anti-GBM </strong>(Glomerular basement membrane) <strong>antibody testing</strong>\u00a0should be done.</p>\n<p class=\"ng-binding\"><strong>Type 1 RPGN</strong>\u00a0includes\u00a0renal limited disease\u00a0and\u00a0<strong>Goodpasture's</strong>\u00a0<strong>disease</strong>. In this condition, antibodies are produced against the non-collagenous domain of the<strong>\u00a0\u03b13 chain</strong>\u00a0of\u00a0<strong>collagen IV</strong>\u00a0of the GBM.</p>\n<p>Microscopy findings of Goodpasture's disease are:</p>\n<ul>\n<li>Immunofluorescence -\u00a0<strong>l</strong><strong>inear deposits\u00a0</strong>of<strong>\u00a0Ig\u00a0</strong>and<strong>\u00a0complement\u00a0</strong>along the glomerular basement membrane</li>\n<li>Electron microscopy -\u00a0<strong>wrinkling</strong>\u00a0of the glomerular basement membrane with\u00a0<strong>focal disruptions\u00a0</strong>without any immune complex deposition.</li>\n</ul>\n<p>A variant of Goodpasture's disease with\u00a0<strong>pulmonary involvement</strong>\u00a0is known as\u00a0<strong>Goodpasture's syndrome.</strong></p>\n<p>Option A:<strong> ANA</strong>(Antinuclear Antibody) testing is done if <strong>SLE</strong> is suspected. Electron microscopy will show immune complex deposits.</p>\n<p>Option C: <strong>HIV RNA</strong> in case of <strong>focal segmental glomerulosclerosis</strong>. Electron microscopy will show diffuse podocyte injury with complete foot process effacement.\u00a0</p>\n<p>Option D:\u00a0<strong>Serum electrophoresis</strong> is done for <strong>multiple myeloma</strong>.</p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/524e94573a524eed81434a719c5566d1.JPEG"
+    ],
+    "explanation_images": []
+  },
+  {
+    "text": "The vascular lesion shown below is characteristic of all of the following except:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Diabetes mellitus"
+      },
+      {
+        "id": 2,
+        "text": "Severe hypertension"
+      },
+      {
+        "id": 3,
+        "text": "Benign hypertension"
+      },
+      {
+        "id": 4,
+        "text": "Old age"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The given image shows <strong>hyaline arteriosclerosis</strong>. It is not a characteristic lesion of severe hypertension.\u00a0\u00a0</p>\n<p><strong>Hyaline arteriosclerosis</strong> occurs in the following conditions:</p>\n<ul>\n<li><strong>Elderly patients</strong> who are normotensive</li>\n<li><strong>Benign hypertension</strong>- due to chronic hemodynamic stresses</li>\n<li><strong>Diabetes mellitus</strong>- due to hyperglycemia-induced endothelial dysfunction.\u00a0Hyaline arteriosclerosis is a common feature of <strong>diabetic microangiopathy</strong>.</li>\n</ul>\n<p>The characteristic vascular lesion of <strong>severe hypertension</strong> is <strong>hyperplastic arteriosclerosis as seen in the image below.</strong></p>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/d755d36642df4d4a8aa43a975068b93c.JPEG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/6bf85e4e41e546498df3b1c4c54f94dcx600x600.JPEG"
+    ]
+  },
+  {
+    "text": "A patient has HbA2 3% and HbF 97%. A peripheral blood smear was taken. Which of the following blood pictures will be seen in this patient?",
+    "choices": [
+      {
+        "id": 1,
+        "text": "1, 2 and 3"
+      },
+      {
+        "id": 2,
+        "text": "1 and 2"
+      },
+      {
+        "id": 3,
+        "text": "2 and 3"
+      },
+      {
+        "id": 4,
+        "text": "1 and 3"
+      }
+    ],
+    "correct_choice_id": 4,
+    "solution": "<p>The presence of <strong>HbA2 3% and HbF 97% </strong>indicates that it is a case of <strong>thalassemia major</strong>. In thalassemia major, hematological findings in image 1 showing <strong>poikilocytes</strong> and image 3 showing<strong> target cells</strong> are seen. Image 2 showing Howell jolly bodies are seen in post-splenectomy thalassemia patients and not in this case.</p>\n<p>Hematological findings in thalassemia major include the following:</p>\n<ul>\n<li>Anisopoikilocytosis</li>\n<li>Target cells (codocytes)</li>\n<li>Nucleated RBC&rsquo;s</li>\n<li>Dacrocytes</li>\n<li>Basophilic stippling</li>\n<li>Polychromatophilic cells</li>\n</ul>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/4b7b10aac9564fb0b8a2c6e88480b3c7.PNG"
+    ],
+    "explanation_images": [
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/418a6034a31647d8829d5b06f1c67d05x1280x1157.JPEG",
+      "https://dhmbxeygs57ff.cloudfront.net/uploads/9e9ac978c6984f2bb20c51348e10e8bdx1280x1280.JPEG",
+      "https://cdn1.dailyrounds.org/uploads/465c8ab170be4eed833399e831eaeaf8x345x235.PNG"
+    ]
+  },
+  {
+    "text": "A patient died due to encephalitis. A postmortem biopsy of the brain tissue is shown below. This finding is characteristic of infection caused by:",
+    "choices": [
+      {
+        "id": 1,
+        "text": "Japanese encephalitis virus"
+      },
+      {
+        "id": 2,
+        "text": "Rabies virus"
+      },
+      {
+        "id": 3,
+        "text": "Herpes simplex virus"
+      },
+      {
+        "id": 4,
+        "text": "Influenza virus"
+      }
+    ],
+    "correct_choice_id": 2,
+    "solution": "<p>The finding in the image shows <strong>Negri bodies,</strong> which is characteristic of the infection caused by the <strong>rabies virus</strong>.</p>\n<p><strong>Negri</strong> <strong>bodies\u00a0</strong>are pathognomonic of <strong>rabies virus infection</strong>.<strong>\u00a0</strong>These are <strong>spherical-shaped</strong>\u00a0<strong>cytoplasmic inclusion</strong> bodies. They contain\u00a0<strong>eosinophilic matrix,\u00a0</strong>basophilic granules, and viral antigens.\u00a0</p>\n<div class=\"page\" title=\"Page 631\">\n<div class=\"section\">\n<div class=\"layoutArea\">\n<div class=\"column\">\n<p><strong>Rabies</strong> is a fatal infection of the central nervous system transmitted by the bite of a rabid animal. It is caused by\u00a0<strong>rhabdoviruses. </strong>These viruses are\u00a0<strong>enveloped</strong>, rod or <strong>bullet shaped</strong><strong>, </strong>and contain <strong>single-stranded RNA.</strong></p>\n<p>Clinical features of rabies can be categorized into three phases: prodromal, encephalitic phase, and coma. Prodromal phase is characterised by malaise, anorexia, headache, and irritability. This is followed by the encephalitic stage characterized by abnormal behavior and seizures. They develop <strong>hydrophobia</strong>. Attempts to drink liquids cause\u00a0painful spasms of the pharynx and larynx, producing a choking sensation. Therefore, the patients develop a phobia of even the sight or sound of water. Finally,\u00a0<strong>seizures, coma,\u00a0</strong>and<strong> death</strong>\u00a0occur.</p>\n<p>Laboratory diagnosis can be done on a postmortem or\u00a0antemortem basis. Postmortem diagnosis is done by the demonstration of <strong>Negri bodies</strong>. These bodies are common in the\u00a0<strong>pyramidal neurons</strong> of the hippocampus and <strong>Purkinje cells</strong> of the cerebellum.\u00a0Antemortem diagnosis is done from <strong>corneal scrapings</strong>, saliva, or skin biopsy. Demonstration of the virus is done using <strong>direct immunofluorescence.</strong>\u00a0</p>\n<p>Other methods used in the diagnosis are intracerebral inoculation in the mice, tissue culture, ELISA (enzyme-linked immunosorbent assay), and PCR (polymerase chain reaction).</p>\n</div>\n</div>\n</div>\n</div>",
+    "explanation_video": "",
+    "question_images": [
+      "https://cdn1.dailyrounds.org/uploads/26c5db8817f64a60a6d0ebb234c4c449.JPEG"
+    ],
+    "explanation_images": []
+  }
+];
+        let quizName = 'Fmge Mini Test - 12 (Pathology Slides)';
+        let hierarchy = ["Marrow", "FMGE Mini Test Series", "2024"];
+        
+        // Handle Custom Quiz Loading
+        if (window.location.pathname.endsWith('custom_quiz.html')) {
+            const customData = JSON.parse(localStorage.getItem('customQuizData'));
+            if (customData) {
+                questionsData = customData.questions;
+                quizName = customData.name;
+                hierarchy = customData.hierarchy;
+                document.title = quizName + ' - Brain And Scalpel';
+                document.getElementById('totalQuestions').textContent = questionsData.length;
+                document.getElementById('quizHierarchy').textContent = hierarchy.join(' > ');
+            }
+        }
+
+        let currentQuestionIndex = 0;
+        let selectedOption = null;
+        let currentMode = 'study';
+        let timer = null;
+        let timeRemaining = 0;
+        let questionStartTime = Date.now();
+        let quizStartTime = Date.now();
+        let isQuizCompleted = false;
+        
+        let questionStates = new Array(questionsData.length).fill(null).map(() => ({
+            status: 'not_attempted',
+            bookmarked: false,
+            markedForReview: false,
+            selectedAnswer: null,
+            timeSpent: 0
+        }));
+        
+        let stats = {
+            correctAnswers: 0,
+            incorrectAnswers: 0,
+            totalAttempted: 0,
+            totalTime: 0,
+            notAttempted: questionsData.length
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        currentQuestionIndex = Math.min(parseInt(urlParams.get('startAt')) || 0, questionsData.length - 1);
+
+        function goBack() {
+            if (isQuizCompleted || confirm('Are you sure you want to leave the quiz? Your progress will be lost.')) {
+                window.history.back();
+            }
+        }
+
+        function selectMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeModal').style.display = 'none';
+            initializeQuiz();
+        }
+
+        function initializeQuiz() {
+            quizStartTime = Date.now();
+            
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            const markReviewBtn = document.getElementById('markReviewBtn');
+            const testModeReviewLegend = document.getElementById('testModeReviewLegend');
+            const isTestMode = currentMode === 'test' || currentMode === 'timed_exam';
+            
+            document.getElementById('statsBar').style.display = isTestMode ? 'none' : 'block';
+            document.getElementById('studyModeLegend').style.display = isTestMode ? 'none' : 'block';
+            document.getElementById('testModeLegend').style.display = isTestMode ? 'block' : 'none';
+            document.getElementById('submitSection').style.display = isTestMode ? 'block' : 'none';
+            bookmarkBtn.style.display = isTestMode ? 'none' : 'flex';
+            markReviewBtn.style.display = isTestMode ? 'flex' : 'none';
+            testModeReviewLegend.style.display = isTestMode ? 'flex' : 'none';
+            
+            if (currentMode === 'timed_study' || currentMode === 'timed_exam') {
+                document.getElementById('timerContainer').classList.remove('hidden');
+            }
+            
+            loadBookmarkedQuestions();
+            generateQuestionNav();
+            updateStats();
+            displayQuestion();
+        }
+
+        function generateQuestionNav() {
+            const nav = document.getElementById('questionNav');
+            nav.innerHTML = '';
+            
+            for (let i = 0; i < questionsData.length; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i + 1;
+                btn.className = 'w-8 h-8 text-sm font-medium rounded transition-all duration-200';
+                btn.onclick = () => jumpToQuestion(i);
+                btn.id = `navBtn_${i}`;
+                nav.appendChild(btn);
+            }
+            
+            updateQuestionNav();
+        }
+
+        function updateQuestionNav() {
+            for (let i = 0; i < questionsData.length; i++) {
+                const btn = document.getElementById(`navBtn_${i}`);
+                const state = questionStates[i];
+                let className = '';
+                
+                if (i === currentQuestionIndex) {
+                    className = 'nav-btn-current';
+                } else if (state.bookmarked) {
+                    className = 'nav-btn-bookmarked';
+                } else if (state.markedForReview) {
+                    className = 'nav-btn-marked-review';
+                } else if (currentMode === 'study' || currentMode === 'timed_study') {
+                    if (state.status === 'correct') className = 'nav-btn-correct';
+                    else if (state.status === 'incorrect') className = 'nav-btn-incorrect';
+                    else className = 'nav-btn-not-attempted hover:bg-white hover:bg-opacity-20';
+                } else {
+                    if (state.selectedAnswer !== null) className = 'nav-btn-answered';
+                    else className = 'nav-btn-not-attempted hover:bg-white hover:bg-opacity-20';
+                }
+                btn.className = `w-8 h-8 text-sm font-medium rounded ${className}`;
+            }
+        }
+
+        function jumpToQuestion(index) {
+            if (index >= 0 && index < questionsData.length) {
+                if (questionStartTime) {
+                    questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+                }
+                
+                currentQuestionIndex = index;
+                displayQuestion();
+            }
+        }
+
+        function updateStats() {
+            if (currentMode === 'study' || currentMode === 'timed_study') {
+                document.getElementById('correctCount').textContent = stats.correctAnswers;
+                document.getElementById('incorrectCount').textContent = stats.incorrectAnswers;
+                document.getElementById('totalAttempted').textContent = stats.totalAttempted;
+                
+                const accuracy = stats.totalAttempted > 0 
+                    ? Math.round((stats.correctAnswers / stats.totalAttempted) * 100)
+                    : 0;
+                document.getElementById('accuracy').textContent = accuracy + '%';
+                
+                stats.totalTime = questionStates.reduce((acc, state) => acc + state.timeSpent, 0);
+                const timeSpent = Math.floor(stats.totalTime / 1000);
+                const minutes = Math.floor(timeSpent / 60);
+                const seconds = timeSpent % 60;
+                document.getElementById('timeSpent').textContent = 
+                    minutes + ':' + seconds.toString().padStart(2, '0');
+            }
+        }
+
+        function setupVideo(videoElement, url) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(videoElement);
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = url;
+            }
+        }
+
+        function displayQuestion() {
+            if (!questionsData || questionsData.length === 0) {
+                document.getElementById('questionText').innerHTML = 'No questions available for this quiz.';
+                return;
+            };
+            
+            const question = questionsData[currentQuestionIndex];
+            questionStartTime = Date.now();
+            
+            selectedOption = questionStates[currentQuestionIndex].selectedAnswer;
+            
+            const progress = ((currentQuestionIndex + 1) / questionsData.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            updateQuestionNav();
+            
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            
+            document.getElementById('solutionContainer').classList.add('hidden');
+            
+            document.getElementById('questionText').innerHTML = question.text || 'No question text available';
+            
+            let mediaHtml = '';
+            if (question.question_audio) mediaHtml += `<div class="glass-light p-4 mb-4"><audio src="${question.question_audio}" controls class="w-full"></audio></div>`;
+            if (question.question_video) mediaHtml += `<div class="glass-light p-4 mb-4"><video src="${question.question_video}" controls class="w-full rounded-lg"></video></div>`;
+            if (question.question_images) {
+                question.question_images.forEach(imgSrc => {
+                    if (imgSrc) mediaHtml += `<div class="glass-light p-4 mb-4"><img src="${imgSrc}" alt="Question Image" class="w-full rounded-lg"></div>`;
+                });
+            }
+            document.getElementById('questionMedia').innerHTML = mediaHtml;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            optionsContainer.classList.remove('answered');
+            
+            if (question.choices && Array.isArray(question.choices)) {
+                question.choices.forEach((choice, index) => {
+                    const optionLetter = String.fromCharCode(65 + index);
+                    const isSelected = selectedOption === index;
+                    
+                    const optionDiv = document.createElement('div');
+                    optionDiv.innerHTML = `
+                        <button type="button" class="option-button ${isSelected ? 'selected' : ''}" data-option-index="${index}">
+                            <div class="option-letter">${optionLetter}</div>
+                            <div class="option-text">${choice.text || 'Option ' + (index + 1)}</div>
+                        </button>
+                    `;
+                    optionsContainer.appendChild(optionDiv);
+                });
+                
+                optionsContainer.addEventListener('click', function(e) {
+                    const optionButton = e.target.closest('.option-button');
+                    if (optionButton) {
+                        const optionIndex = parseInt(optionButton.getAttribute('data-option-index'));
+                        selectOption(optionIndex);
+                    }
+                });
+            }
+            
+            updateBookmarkButton();
+            updateMarkReviewButton();
+
+            if ((currentMode === 'timed_study' || currentMode === 'timed_exam') && !isQuizCompleted) {
+                startTimer();
+            }
+        }
+
+        function selectOption(index) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            if (optionsContainer.classList.contains('answered')) return;
+
+            if (questionStartTime) {
+                questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+                questionStartTime = Date.now();
+            }
+            
+            selectedOption = index;
+            questionStates[currentQuestionIndex].selectedAnswer = index;
+            
+            document.querySelectorAll('.option-button').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === index);
+            });
+            
+            if (currentMode === 'study' || currentMode === 'timed_study') {
+                setTimeout(processAnswer, 300);
+            } else {
+                if (questionStates[currentQuestionIndex].status === 'not_attempted') {
+                    questionStates[currentQuestionIndex].status = 'answered';
+                    stats.totalAttempted++;
+                    stats.notAttempted--;
+                }
+                updateQuestionNav();
+            }
+        }
+
+        function processAnswer() {
+            const question = questionsData[currentQuestionIndex];
+            const correctChoiceId = question.correct_choice_id;
+            
+            if(selectedOption === null) return;
+
+            const selectedChoice = question.choices[selectedOption];
+            const isCorrect = selectedChoice.id === correctChoiceId;
+            
+            if (questionStates[currentQuestionIndex].status === 'not_attempted') {
+                stats.totalAttempted++;
+                stats.notAttempted--;
+                if(isCorrect) stats.correctAnswers++; else stats.incorrectAnswers++;
+            }
+            questionStates[currentQuestionIndex].status = isCorrect ? 'correct' : 'incorrect';
+            
+            updateStats();
+            showInlineFeedback(isCorrect);
+            updateQuestionNav();
+        }
+
+        function showInlineFeedback(isCorrect) {
+            if (currentMode !== 'study' && currentMode !== 'timed_study') return;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            const optionButtons = optionsContainer.querySelectorAll('.option-button');
+            const question = questionsData[currentQuestionIndex];
+            const correctChoiceId = question.correct_choice_id;
+            let correctOptionIndex = question.choices.findIndex(c => c.id === correctChoiceId);
+
+            optionsContainer.classList.add('answered');
+
+            optionButtons.forEach((btn, index) => {
+                btn.classList.remove('selected');
+                if (index === correctOptionIndex) btn.classList.add('correct');
+                else if (index === selectedOption && !isCorrect) btn.classList.add('incorrect');
+            });
+
+            setTimeout(showSolution, 1500);
+        }
+
+
+        function showSolution() {
+            if (currentMode !== 'study' && currentMode !== 'timed_study') return;
+            
+            const question = questionsData[currentQuestionIndex];
+            document.getElementById('solutionText').innerHTML = question.solution || 'No solution provided';
+            
+            const videoContainer = document.getElementById('solutionVideo');
+            const videoPlayer = document.getElementById('explanationVideoPlayer');
+            const explanationVideo = question.explanation_video;
+            
+            if (explanationVideo) {
+                videoContainer.classList.remove('hidden');
+                if (explanationVideo.includes('.m3u8')) setupVideo(videoPlayer, explanationVideo);
+                else videoPlayer.src = explanationVideo;
+            } else {
+                videoContainer.classList.add('hidden');
+            }
+
+            const audioContainer = document.getElementById('solutionAudio');
+            audioContainer.innerHTML = '';
+            if (question.explanation_audio_eng) {
+                audioContainer.innerHTML += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English Explanation:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
+            }
+            if (question.explanation_audio_hin) {
+                audioContainer.innerHTML += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish Explanation:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
+            }
+            
+            const imagesContainer = document.getElementById('solutionImages');
+            imagesContainer.innerHTML = '';
+            if (question.explanation_images) {
+                 question.explanation_images.forEach(imgSrc => {
+                    if(imgSrc) imagesContainer.innerHTML += `<div class="mt-4"><img src="${imgSrc}" alt="Explanation Image" class="w-full rounded-lg"></div>`;
+                });
+            }
+
+            document.getElementById('solutionContainer').classList.remove('hidden');
+        }
+
+        function submitQuiz() {
+            if (timer) clearInterval(timer);
+            if (!confirm('Are you sure you want to submit the quiz?')) return;
+            
+            isQuizCompleted = true;
+            let correct = 0, incorrect = 0;
+            const totalTime = Date.now() - quizStartTime;
+            
+            questionsData.forEach((question, index) => {
+                const state = questionStates[index];
+                if (state.selectedAnswer !== null) {
+                    if (question.choices[state.selectedAnswer].id === question.correct_choice_id) {
+                        correct++;
+                        state.status = 'correct';
+                    } else {
+                        incorrect++;
+                        state.status = 'incorrect';
+                    }
+                }
+            });
+            
+            // Save performance data
+            const performanceData = JSON.parse(localStorage.getItem('quizPerformanceData')) || [];
+            performanceData.push({
+                quizName: quizName,
+                hierarchy: hierarchy,
+                timestamp: Date.now(),
+                totalTime: totalTime,
+                stats: {
+                    correct: correct,
+                    incorrect: incorrect,
+                    notAttempted: questionsData.length - (correct + incorrect)
+                }
+            });
+            localStorage.setItem('quizPerformanceData', JSON.stringify(performanceData));
+
+            showPerformanceAnalysis(correct, incorrect, questionsData.length - (correct + incorrect), totalTime);
+        }
+
+        function showPerformanceAnalysis(correct, incorrect, notAttempted, totalTime) {
+            const modal = document.getElementById('performanceModal');
+            const accuracy = (correct + incorrect) > 0 ? Math.round((correct / (correct + incorrect)) * 100) : 0;
+            
+            const circumference = 2 * Math.PI * 65;
+            const scoreCircle = document.getElementById('scoreCircle');
+            scoreCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+            scoreCircle.style.strokeDashoffset = circumference - (accuracy / 100) * circumference;
+            
+            document.getElementById('accuracyScore').textContent = `${accuracy}%`;
+            document.getElementById('totalQuestionsResult').textContent = questionsData.length;
+            document.getElementById('correctResult').textContent = correct;
+            document.getElementById('incorrectResult').textContent = incorrect;
+            document.getElementById('notAttemptedResult').textContent = notAttempted;
+            
+            const totalMinutes = Math.floor(totalTime / 60000);
+            const totalSeconds = Math.floor((totalTime % 60000) / 1000);
+            document.getElementById('totalTimeResult').textContent = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+            
+            const avgTime = totalTime / questionsData.length;
+            const avgMinutes = Math.floor(avgTime / 60000);
+            const avgSeconds = Math.floor((avgTime % 60000) / 1000);
+            document.getElementById('avgTimeResult').textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closePerformanceModal() { document.getElementById('performanceModal').classList.add('hidden'); }
+
+        function reviewQuestions() {
+            document.getElementById('questionReviewSection').classList.remove('hidden');
+            const container = document.getElementById('reviewQuestionsContainer');
+            container.innerHTML = '';
+            
+            questionsData.forEach((question, index) => {
+                const state = questionStates[index];
+                const correctChoiceId = question.correct_choice_id;
+                
+                let statusClass = 'not-attempted', statusText = 'Not Attempted';
+                if (state.selectedAnswer !== null) {
+                    const selectedChoice = question.choices[state.selectedAnswer];
+                    if (selectedChoice.id === correctChoiceId) { statusClass = 'correct'; statusText = 'Correct'; }
+                     else { statusClass = 'incorrect'; statusText = 'Incorrect'; }
+                }
+                
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = `review-question ${statusClass}`;
+                
+                let optionsHtml = (question.choices || []).map((choice, choiceIndex) => {
+                    const isSelected = state.selectedAnswer === choiceIndex;
+                    const isCorrect = choice.id === correctChoiceId;
+                    let borderClass = 'border-gray-600';
+                    if(isCorrect) borderClass = 'border-green-500';
+                    else if(isSelected) borderClass = 'border-red-500';
+                    
+                    return `<div class="p-3 rounded-lg border ${borderClass}"><span class="font-bold mr-3">${String.fromCharCode(65 + choiceIndex)}</span><span>${choice.text}</span></div>`;
+                }).join('');
+
+                const videoHtml = question.explanation_video ? `<div class="mt-4"><video id="review-video-${index}" data-src="${question.explanation_video}" class="w-full rounded-lg" controls></video></div>` : '';
+                
+                let audioHtml = '';
+                if(question.explanation_audio_eng) audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
+                if(question.explanation_audio_hin) audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
+
+                let imagesHtml = (question.explanation_images || []).map(src => src ? `<div class="mt-4"><img src="${src}" alt="Explanation Image" class="w-full rounded-lg"></div>` : '').join('');
+
+                reviewDiv.innerHTML = `
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-white">Question ${index + 1}</h4>
+                            <span class="text-sm px-3 py-1 rounded-full bg-${statusClass === 'correct' ? 'green' : statusClass === 'incorrect' ? 'red' : 'gray'}-600 text-white">${statusText}</span>
+                        </div>
+                        <div class="text-white mb-4">${question.text}</div>
+                    </div>
+                    <div class="space-y-2 mb-4">${optionsHtml}</div>
+                    <div class="bg-green-900 bg-opacity-20 p-4 rounded-lg border border-green-700">
+                        <h5 class="text-green-400 font-bold mb-2">Explanation:</h5>
+                        <div class="text-white text-opacity-90">${question.solution || 'No solution available.'}</div>
+                        ${videoHtml}
+                        ${audioHtml}
+                        ${imagesHtml}
+                    </div>`;
+                container.appendChild(reviewDiv);
+            });
+            initializeReviewVideos();
+        }
+
+        function initializeReviewVideos() {
+            document.querySelectorAll('video[data-src]').forEach(videoEl => {
+                const src = videoEl.dataset.src;
+                if (src && src.includes('.m3u8')) {
+                    setupVideo(videoEl, src);
+                } else if (src) {
+                    videoEl.src = src;
+                }
+            });
+        }
+
+        function retakeQuiz() {
+            if (confirm('Are you sure you want to retake the quiz? This will reset all your answers.')) {
+                if (window.location.pathname.endsWith('custom_quiz.html')) {
+                    localStorage.removeItem('customQuizData');
+                }
+                location.reload();
+            }
+        }
+
+        function loadBookmarkedQuestions() {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+            bookmarks.forEach(bookmark => {
+                if (bookmark.quizFile.includes(quizName.toLowerCase().replace(/ /g, '-'))) {
+                    if (bookmark.questionIndex < questionsData.length) {
+                        questionStates[bookmark.questionIndex].bookmarked = true;
+                    }
+                }
+            });
+        }
+
+        function toggleBookmark() {
+            const isBookmarked = !questionStates[currentQuestionIndex].bookmarked;
+            questionStates[currentQuestionIndex].bookmarked = isBookmarked;
+            
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarkedQuestions')) || [];
+            
+            if (isBookmarked) {
+                const bookmarkData = {
+                    quizName: quizName,
+                    quizFile: window.location.pathname.split('/').pop(),
+                    questionIndex: currentQuestionIndex,
+                    question: questionsData[currentQuestionIndex],
+                    hierarchy: hierarchy,
+                    timestamp: Date.now()
+                };
+                bookmarks.push(bookmarkData);
+            } else {
+                bookmarks = bookmarks.filter(b => 
+                    !(b.quizFile.includes(quizName.toLowerCase().replace(/ /g, '-')) && b.questionIndex === currentQuestionIndex)
+                );
+            }
+            
+            localStorage.setItem('bookmarkedQuestions', JSON.stringify(bookmarks));
+            updateBookmarkButton();
+            updateQuestionNav();
+        }
+
+        function updateBookmarkButton() {
+            const btn = document.getElementById('bookmarkBtn');
+            const text = document.getElementById('bookmarkText');
+            const isBookmarked = questionStates[currentQuestionIndex].bookmarked;
+            
+            btn.className = isBookmarked ? 'gradient-yellow px-6 py-3 text-white transition-all duration-300 flex items-center' : 'glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center';
+            text.textContent = isBookmarked ? 'Bookmarked' : 'Bookmark';
+        }
+        
+        function toggleMarkForReview() {
+            questionStates[currentQuestionIndex].markedForReview = !questionStates[currentQuestionIndex].markedForReview;
+            updateMarkReviewButton();
+            updateQuestionNav();
+        }
+
+        function updateMarkReviewButton() {
+            const btn = document.getElementById('markReviewBtn');
+            const text = document.getElementById('markReviewText');
+            const isMarked = questionStates[currentQuestionIndex].markedForReview;
+            
+            btn.className = isMarked ? 'gradient-purple px-6 py-3 text-white transition-all duration-300 flex items-center' : 'glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center';
+            text.textContent = isMarked ? 'Marked' : 'Mark for Review';
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                if (questionStartTime) {
+                    questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+                }
+                
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (questionStartTime) {
+                questionStates[currentQuestionIndex].timeSpent += Date.now() - questionStartTime;
+            }
+            
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                if (currentMode === 'test' || currentMode === 'timed_exam') {
+                    if (confirm('You have reached the end of the quiz. Would you like to submit your answers now?')) {
+                        submitQuiz();
+                    }
+                } else {
+                    if (confirm('You have completed all questions. Would you like to review from the beginning?')) {
+                        currentQuestionIndex = 0;
+                        displayQuestion();
+                    }
+                }
+            }
+        }
+
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            timeRemaining = 120; // 2 minutes per question
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    if (currentMode === 'timed_exam') {
+                        submitQuiz();
+                    } else {
+                        nextQuestion();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timeDisplay').textContent = 
+                minutes + ':' + seconds.toString().padStart(2, '0');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('quizSidebar').classList.toggle('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             if (!window.location.pathname.endsWith('custom_quiz.html')) {
+                document.getElementById('modeModal').style.display = 'flex';
+             } else {
+                initializeQuiz();
+             }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('modeModal').style.display !== 'none') return;
+            if (document.getElementById('performanceModal').classList.contains('hidden') === false) return;
+            
+            if (e.key >= '1' && e.key <= '4') {
+                const optionIndex = parseInt(e.key) - 1;
+                const options = document.querySelectorAll('.option-button');
+                if (optionIndex < options.length) selectOption(optionIndex);
+            } else if (e.key === 'ArrowLeft') {
+                previousQuestion();
+            } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextQuestion();
+            } else if (e.key.toLowerCase() === 'b' && (currentMode === 'study' || currentMode === 'timed_study')) {
+                toggleBookmark();
+            } else if (e.key.toLowerCase() === 'm' && (currentMode === 'test' || currentMode === 'timed_exam')) {
+                toggleMarkForReview();
+            } else if (e.key.toLowerCase() === 's' && (currentMode === 'test' || currentMode === 'timed_exam')) {
+                submitQuiz();
+            }
+        });
+    </script>
+</body>
+</html>
