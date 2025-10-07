@@ -404,7 +404,7 @@ body::after {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
   }
-  
+ 
   .stats-grid > div:nth-child(4),
   .stats-grid > div:nth-child(5) {
     grid-column: span 1;
@@ -415,7 +415,7 @@ body::after {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+ 
   .stats-grid > div:last-child {
     grid-column: span 2;
     justify-self: center;
@@ -539,7 +539,6 @@ body::after {
         width: 100%;
     }
 }
-
 
     </style>
 </head>
@@ -1468,6 +1467,7 @@ body::after {
   }
 ];
         let quizName = '09 Drugs For Glaucoma';
+        const quizFilename = '09-drugs-for-glaucoma-f3c60d4f.html';
         let hierarchy = ["Marrow", "qBank", "Pharmacology"];
         
         // Handle Custom Quiz Loading
@@ -1508,13 +1508,66 @@ body::after {
             notAttempted: questionsData.length
         };
 
+        // --- NEW: History Management ---
+        function saveProgress() {
+            if (isQuizCompleted) return; // Don't save after completion
+            const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
+            userHistory[quizFilename] = {
+                questionStates,
+                stats,
+                currentQuestionIndex,
+                currentMode,
+                status: 'incomplete',
+                lastSeen: new Date().toISOString()
+            };
+            localStorage.setItem('userHistory', JSON.stringify(userHistory));
+        }
+
+        function loadProgress() {
+            const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
+            const savedState = userHistory[quizFilename];
+            if (savedState) {
+                questionStates = savedState.questionStates;
+                stats = savedState.stats;
+                currentQuestionIndex = savedState.currentQuestionIndex;
+                currentMode = savedState.currentMode;
+                console.log('Progress loaded.');
+                return true;
+            }
+            return false;
+        }
+
+        function clearProgress() {
+            const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
+            if(userHistory[quizFilename]) {
+                delete userHistory[quizFilename];
+                localStorage.setItem('userHistory', JSON.stringify(userHistory));
+                console.log('Previous progress cleared.');
+            }
+        }
+
+        function markQuizAsCompleted() {
+            const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
+            const totalQuestions = questionsData.length;
+            const correct = stats.correctAnswers || 0;
+            
+            userHistory[quizFilename] = {
+                score: correct,
+                total: totalQuestions,
+                status: 'completed',
+                completedOn: new Date().toISOString()
+            };
+            localStorage.setItem('userHistory', JSON.stringify(userHistory));
+        }
+        // --- End of History Management ---
+
         const urlParams = new URLSearchParams(window.location.search);
-        currentQuestionIndex = Math.min(parseInt(urlParams.get('startAt')) || 0, questionsData.length - 1);
+        const startAt = parseInt(urlParams.get('startAt'));
+        const resume = urlParams.get('resume') === 'true';
 
         function goBack() {
-            if (isQuizCompleted || confirm('Are you sure you want to leave the quiz? Your progress will be lost.')) {
-                window.history.back();
-            }
+            if (!isQuizCompleted) saveProgress(); // Save progress before leaving
+            window.location.href = document.referrer || 'index.html';
         }
 
         function selectMode(mode) {
@@ -1543,6 +1596,10 @@ body::after {
                 document.getElementById('timerContainer').classList.remove('hidden');
             }
             
+            if (!isNaN(startAt) && startAt >= 0 && startAt < questionsData.length) {
+                currentQuestionIndex = startAt;
+            }
+
             loadBookmarkedQuestions();
             generateQuestionNav();
             updateStats();
@@ -1597,6 +1654,7 @@ body::after {
                 
                 currentQuestionIndex = index;
                 displayQuestion();
+                saveProgress(); // NEW: Save on navigation
             }
         }
 
@@ -1715,7 +1773,7 @@ body::after {
             });
             
             if (currentMode === 'study' || currentMode === 'timed_study') {
-                setTimeout(processAnswer, 300);
+                processAnswer();
             } else {
                 if (questionStates[currentQuestionIndex].status === 'not_attempted') {
                     questionStates[currentQuestionIndex].status = 'answered';
@@ -1724,6 +1782,7 @@ body::after {
                 }
                 updateQuestionNav();
             }
+            saveProgress(); // NEW: Save on answer selection
         }
 
         function processAnswer() {
@@ -1764,7 +1823,7 @@ body::after {
                 else if (index === selectedOption && !isCorrect) btn.classList.add('incorrect');
             });
 
-            setTimeout(showSolution, 1500);
+            showSolution();
         }
 
 
@@ -1842,6 +1901,9 @@ body::after {
             });
             localStorage.setItem('quizPerformanceData', JSON.stringify(performanceData));
 
+            stats.correctAnswers = correct; // Update global stats
+            stats.incorrectAnswers = incorrect;
+            markQuizAsCompleted(); // NEW: Mark quiz as complete in history
             showPerformanceAnalysis(correct, incorrect, questionsData.length - (correct + incorrect), totalTime);
         }
 
@@ -1948,6 +2010,7 @@ body::after {
                 if (window.location.pathname.endsWith('custom_quiz.html')) {
                     localStorage.removeItem('customQuizData');
                 }
+                clearProgress(); // NEW: Clear history on retake
                 location.reload();
             }
         }
@@ -2022,6 +2085,7 @@ body::after {
                 
                 currentQuestionIndex--;
                 displayQuestion();
+                saveProgress(); // NEW: Save on navigation
             }
         }
 
@@ -2033,6 +2097,7 @@ body::after {
             if (currentQuestionIndex < questionsData.length - 1) {
                 currentQuestionIndex++;
                 displayQuestion();
+                saveProgress(); // NEW: Save on navigation
             } else {
                 if (currentMode === 'test' || currentMode === 'timed_exam') {
                     if (confirm('You have reached the end of the quiz. Would you like to submit your answers now?')) {
@@ -2042,6 +2107,7 @@ body::after {
                     if (confirm('You have completed all questions. Would you like to review from the beginning?')) {
                         currentQuestionIndex = 0;
                         displayQuestion();
+                        saveProgress();
                     }
                 }
             }
@@ -2079,7 +2145,17 @@ body::after {
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-             if (!window.location.pathname.endsWith('custom_quiz.html')) {
+             if (resume) {
+                if (loadProgress()) {
+                    document.getElementById('modeModal').style.display = 'none';
+                    initializeQuiz(); // Resume directly into the saved mode and state
+                } else {
+                    // If resume fails (e.g., cleared history), start fresh
+                    clearProgress();
+                    document.getElementById('modeModal').style.display = 'flex';
+                }
+             } else if (!window.location.pathname.endsWith('custom_quiz.html')) {
+                clearProgress(); // Clear old progress if not resuming
                 document.getElementById('modeModal').style.display = 'flex';
              } else {
                 initializeQuiz();

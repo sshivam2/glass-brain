@@ -402,7 +402,7 @@ body::after {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
   }
-  
+ 
   .stats-grid > div:nth-child(4),
   .stats-grid > div:nth-child(5) {
     grid-column: span 1;
@@ -413,7 +413,7 @@ body::after {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+ 
   .stats-grid > div:last-child {
     grid-column: span 2;
     justify-self: center;
@@ -538,7 +538,6 @@ body::after {
     }
 }
 
-
     </style>
 </head>
 <body>
@@ -579,7 +578,7 @@ body::after {
             FMGE Mini Test Series
         </h1>
         <p class="text-xl text-white text-opacity-80 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Comprehensive learning resources with 3,524 questions across 132 quiz sets
+            Comprehensive learning resources with 3,554 questions across 133 quiz sets
         </p>
     </section>
 
@@ -659,7 +658,7 @@ body::after {
                     2
                 </div>
                 <div class="text-right">
-                    <div class="text-2xl font-bold text-white">38</div>
+                    <div class="text-2xl font-bold text-white">39</div>
                     <div class="text-sm text-white text-opacity-60">Quiz Sets</div>
                 </div>
             </div>
@@ -669,13 +668,13 @@ body::after {
             </h3>
             
             <p class="text-white text-opacity-70 mb-6 leading-relaxed">
-                Explore 38 quiz sets with 1,140 comprehensive questions
+                Explore 39 quiz sets with 1,170 comprehensive questions
             </p>
             
             <div class="flex justify-between items-center text-sm text-white text-opacity-60">
                 <span class="flex items-center">
                     <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                    1,140 Questions
+                    1,170 Questions
                 </span>
                 <span class="flex items-center">
                     <div class="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
@@ -798,9 +797,18 @@ body::after {
         function startQuiz(filename) {
             window.location.href = filename;
         }
+        
+        // NEW: User History Logic
+        function clearQuizHistory(quizId) {
+            const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
+            if (userHistory[quizId]) {
+                delete userHistory[quizId];
+                localStorage.setItem('userHistory', JSON.stringify(userHistory));
+            }
+        }
 
-        // Add entrance animations
         document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards
             const cards = document.querySelectorAll('.glass-card');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
@@ -810,6 +818,58 @@ body::after {
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, index * 150);
+            });
+            
+            // NEW: Check user history and update quiz cards
+            const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
+            document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
+                const quizId = quizCard.dataset.quizId;
+                const history = userHistory[quizId];
+                if (!history) return;
+
+                const actionsContainer = quizCard.querySelector('.quiz-actions');
+                const titleEl = quizCard.querySelector('.quiz-title');
+                actionsContainer.innerHTML = ''; // Clear existing button
+
+                const statusBadge = document.createElement('span');
+                statusBadge.className = 'ml-3 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full';
+
+                if (history.status === 'completed') {
+                    statusBadge.textContent = 'Completed';
+                    statusBadge.classList.add('bg-green-100', 'text-green-800');
+                    
+                    const restartBtn = document.createElement('button');
+                    restartBtn.className = 'glass-light px-6 py-2 text-white hover:bg-white hover:bg-opacity-20';
+                    restartBtn.textContent = 'Restart';
+                    restartBtn.onclick = () => {
+                        clearQuizHistory(quizId);
+                        startQuiz(quizId);
+                    };
+                    actionsContainer.appendChild(restartBtn);
+                } else if (history.status === 'incomplete') {
+                    statusBadge.textContent = 'In Progress';
+                    statusBadge.classList.add('bg-yellow-100', 'text-yellow-800');
+
+                    const continueBtn = document.createElement('button');
+                    continueBtn.className = 'glass-button px-6 py-2';
+                    continueBtn.textContent = 'Continue';
+                    continueBtn.onclick = () => startQuiz(`${quizId}?resume=true`);
+
+                    const restartBtn = document.createElement('button');
+                    restartBtn.className = 'ml-2 glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20';
+                    restartBtn.textContent = 'Restart';
+                     restartBtn.onclick = () => {
+                        clearQuizHistory(quizId);
+                        startQuiz(quizId);
+                    };
+                    
+                    actionsContainer.appendChild(continueBtn);
+                    actionsContainer.appendChild(restartBtn);
+                }
+                
+                if (titleEl) {
+                    titleEl.appendChild(statusBadge);
+                }
             });
         });
     </script>
