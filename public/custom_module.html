@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Module Builder - Brain And Scalpel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+        .subject-checkbox:checked + .subject-label {
+            background-color: rgba(96, 165, 250, 0.3);
+            border-color: #60a5fa;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #60a5fa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-8">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <button onclick="window.location.href='index.html'" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg>
+                Back to Home
+            </button>
+            <div class="text-lg font-semibold text-white">Custom Module Builder</div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <div class="glass-card p-6 md:p-8">
+            <h2 class="text-3xl font-bold mb-6 border-b border-white border-opacity-20 pb-4 text-center">Create Your Perfect Quiz</h2>
+
+            <!-- Step 1: Number of Questions -->
+            <div class="mb-6">
+                <label for="question-count" class="block text-lg font-semibold mb-2 text-white">1. Number of Questions</label>
+                <input type="number" id="question-count" value="50" min="10" max="300" class="w-full md:w-1/2 p-3 glass-input text-lg">
+                <p id="question-count-error" class="text-red-400 text-sm mt-1 hidden">Please enter a number between 10 and 300.</p>
+            </div>
+
+            <!-- Step 2: Select by Exam Preset -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 text-white">2. Quick Start with Exam Presets</h3>
+                <div class="flex flex-wrap gap-3">
+                    <button data-exam="FMGE" class="exam-btn glass-button px-5 py-2">FMGE Pattern</button>
+                    <button data-exam="NEET PG" class="exam-btn glass-button px-5 py-2">NEET PG Pattern</button>
+                    <button data-exam="INICET" class="exam-btn glass-button px-5 py-2">INICET Pattern</button>
+                </div>
+            </div>
+            
+            <div class="text-center my-6"><span class="text-white text-opacity-60 font-semibold">OR</span></div>
+
+            <!-- Step 3: Select by Subjects -->
+            <div>
+                <h3 class="text-lg font-semibold mb-3 text-white">3. Customize by Subject</h3>
+                <div id="subject-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Subject checkboxes will be dynamically inserted here -->
+                </div>
+                 <p id="subject-error" class="text-red-400 text-sm mt-2 hidden">Please select at least one subject.</p>
+            </div>
+            
+            <!-- Create Module Button -->
+            <div class="mt-8 text-center">
+                <button id="create-module-btn" class="glass-button px-12 py-4 text-lg font-bold w-full md:w-auto">
+                    Create Module
+                </button>
+                <div id="loading-indicator" class="hidden mt-4 flex justify-center items-center gap-4">
+                    <div class="loader"></div>
+                    <span class="text-white text-opacity-80">Building your quiz...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const subjects = [
+                'Anatomy', 'Physiology', 'Biochemistry', 'Pharmacology', 'Pathology', 'Microbiology', 
+                'Community Medicine', 'ENT', 'Ophthalmology', 'Forensic Medicine', 'Medicine', 'Surgery', 
+                'Obstetrics & Gynecology', 'Pediatrics', 'Psychiatry', 'Radiology', 'Dermatology', 'Anesthesia', 'Orthopedics'
+            ];
+
+            const examWeightages = {
+                'FMGE': {
+                    'Anatomy': 5.67, 'Physiology': 5.67, 'Biochemistry': 5.67, 'Pathology': 4.33, 'Microbiology': 4.33,
+                    'Pharmacology': 4.33, 'Forensic Medicine': 3.33, 'Pediatrics': 5.00, 'Ophthalmology': 5.00, 'ENT': 5.00,
+                    'Obstetrics & Gynecology': 10.00, 'Community Medicine': 10.00, 'Surgery': 10.67, 'Anesthesia': 1.67, 'Orthopedics': 1.67,
+                    'Medicine': 11.00, 'Psychiatry': 1.67, 'Dermatology': 1.67, 'Radiology': 3.33
+                },
+                'NEET PG': {
+                    'Anatomy': 4.00, 'Physiology': 4.50, 'Biochemistry': 7.50, 'Pathology': 6.00, 'Pharmacology': 6.00,
+                    'Microbiology': 6.50, 'Forensic Medicine': 4.00, 'ENT': 4.00, 'Ophthalmology': 4.00, 'Community Medicine': 7.50,
+                    'Medicine': 8.50, 'Surgery': 13.50, 'Obstetrics & Gynecology': 9.00, 'Pediatrics': 5.00, 'Anesthesia': 1.50,
+                    'Orthopedics': 3.00, 'Radiology': 2.00, 'Dermatology': 2.00, 'Psychiatry': 2.50
+                },
+                'INICET': {
+                    'Anatomy': 4.00, 'Physiology': 4.50, 'Biochemistry': 7.50, 'Pathology': 6.00, 'Pharmacology': 6.00,
+                    'Microbiology': 6.50, 'Forensic Medicine': 4.00, 'ENT': 4.00, 'Ophthalmology': 4.00, 'Community Medicine': 7.50,
+                    'Medicine': 8.50, 'Surgery': 13.50, 'Obstetrics & Gynecology': 9.00, 'Pediatrics': 5.00, 'Anesthesia': 1.50,
+                    'Orthopedics': 3.00, 'Radiology': 2.00, 'Dermatology': 2.00, 'Psychiatry': 2.50
+                }
+            };
+            
+            let allQuestions = [];
+            const subjectGrid = document.getElementById('subject-grid');
+            const createModuleBtn = document.getElementById('create-module-btn');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const questionCountInput = document.getElementById('question-count');
+            const questionCountError = document.getElementById('question-count-error');
+            const subjectError = document.getElementById('subject-error');
+            const examBtns = document.querySelectorAll('.exam-btn');
+
+            async function loadAllQuestions() {
+                try {
+                    const response = await fetch('all_questions.json');
+                    if (!response.ok) throw new Error('Network response was not ok.');
+                    allQuestions = await response.json();
+                } catch (error) {
+                    console.error('Failed to load all_questions.json:', error);
+                    subjectGrid.innerHTML = '<p class="text-red-400 col-span-full text-center">Error: Could not load the question bank. Please try rebuilding the site.</p>';
+                }
+            }
+
+            function populateSubjectCheckboxes() {
+                subjects.forEach(subject => {
+                    const div = document.createElement('div');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = subject;
+                    checkbox.id = `subject-${subject.replace(/ /g, '-').replace(/&/g, 'and')}`;
+                    checkbox.className = 'hidden subject-checkbox';
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = checkbox.id;
+                    label.textContent = subject;
+                    label.className = 'subject-label block w-full p-3 glass-light cursor-pointer transition text-center font-medium';
+                    
+                    div.appendChild(checkbox);
+                    div.appendChild(label);
+                    subjectGrid.appendChild(div);
+                });
+            }
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function validateInputs(selectedSubjects, isPreset) {
+                const questionCount = parseInt(questionCountInput.value, 10);
+                let isValid = true;
+
+                const isQuestionCountInvalid = isNaN(questionCount) || questionCount < 10 || questionCount > 300;
+                questionCountError.classList.toggle('hidden', !isQuestionCountInvalid);
+                if (isQuestionCountInvalid) isValid = false;
+
+                if (!isPreset) {
+                    const isSubjectSelectionInvalid = selectedSubjects.length === 0;
+                    subjectError.classList.toggle('hidden', !isSubjectSelectionInvalid);
+                    if(isSubjectSelectionInvalid) isValid = false;
+                }
+
+                return { valid: isValid, questionCount, selectedSubjects };
+            }
+            
+            function handleCreateModule(examType = null) {
+                createModuleBtn.disabled = true;
+                loadingIndicator.classList.remove('hidden');
+
+                setTimeout(() => { // Simulate processing time
+                    let selectedSubjects = [];
+                    let validationResult;
+                    const isPreset = !!examType;
+
+                    if (isPreset) {
+                        selectedSubjects = subjects; 
+                        validationResult = validateInputs(selectedSubjects, isPreset);
+                    } else {
+                        selectedSubjects = Array.from(document.querySelectorAll('.subject-checkbox:checked')).map(cb => cb.value);
+                        validationResult = validateInputs(selectedSubjects, isPreset);
+                    }
+
+                    if (!validationResult.valid) {
+                        createModuleBtn.disabled = false;
+                        loadingIndicator.classList.add('hidden');
+                        return;
+                    }
+
+                    const { questionCount } = validationResult;
+                    let moduleQuestions = [];
+
+                    if (isPreset) {
+                        moduleQuestions = createExamModule(questionCount, examType);
+                    } else {
+                        moduleQuestions = createCustomSubjectModule(questionCount, selectedSubjects);
+                    }
+                    
+                    const quizTitle = isPreset ? `${examType} Pattern Module` : 'Custom Subject Module';
+                    generateAndRedirect(moduleQuestions, quizTitle);
+                }, 500);
+            }
+            
+            function createCustomSubjectModule(questionCount, selectedSubjects){
+                let questionPool = allQuestions.filter(q => q.subject && selectedSubjects.includes(q.subject));
+                shuffleArray(questionPool);
+                return questionPool.slice(0, questionCount);
+            }
+
+            function createExamModule(totalQuestions, examType) {
+                const weights = examWeightages[examType];
+                let finalQuestions = [];
+                let questionCounts = [];
+                let totalFloored = 0;
+
+                for (const subject in weights) {
+                    const exactCount = (totalQuestions * weights[subject]) / 100;
+                    const floorCount = Math.floor(exactCount);
+                    questionCounts.push({ subject, count: floorCount, remainder: exactCount - floorCount });
+                    totalFloored += floorCount;
+                }
+
+                let questionsToDistribute = totalQuestions - totalFloored;
+                questionCounts.sort((a, b) => b.remainder - a.remainder);
+                
+                for (let i = 0; i < questionsToDistribute; i++) {
+                    questionCounts[i % questionCounts.length].count++;
+                }
+
+                questionCounts.forEach(({ subject, count }) => {
+                    if (count > 0) {
+                        let subjectQuestions = allQuestions.filter(q => q.subject === subject);
+                        shuffleArray(subjectQuestions);
+                        finalQuestions.push(...subjectQuestions.slice(0, count));
+                    }
+                });
+                
+                return shuffleArray(finalQuestions);
+            }
+            
+            function generateAndRedirect(questions, title) {
+                if (questions.length === 0) {
+                    alert('Could not generate any questions. There might not be enough questions in the selected subjects.');
+                    createModuleBtn.disabled = false;
+                    loadingIndicator.classList.add('hidden');
+                    return;
+                }
+
+                const customQuizData = {
+                    name: `${title} (${questions.length} Qs)`,
+                    hierarchy: ['Custom Module'],
+                    questions: questions
+                };
+                
+                localStorage.setItem('customQuizData', JSON.stringify(customQuizData));
+                window.location.href = 'custom_quiz.html';
+            }
+
+            createModuleBtn.addEventListener('click', () => handleCreateModule(null));
+
+            examBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.subject-checkbox:checked').forEach(cb => cb.checked = false);
+                    handleCreateModule(btn.dataset.exam);
+                });
+            });
+
+            (async () => {
+                populateSubjectCheckboxes();
+                await loadAllQuestions();
+            })();
+        });
+    </script>
+</body>
+</html>
