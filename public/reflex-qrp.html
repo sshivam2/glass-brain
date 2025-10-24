@@ -1,0 +1,633 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRP - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <nav class="text-sm text-white text-opacity-60">
+                        Reflex / QRP
+                    </nav>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="window.location.href='bookmarks.html'" class="glass-light px-4 py-2 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        Bookmarks
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-6 py-16 text-center">
+        <div class="glass-heavy w-20 h-20 flex items-center justify-center text-2xl font-bold mx-auto mb-8 animate-float">
+            Q
+        </div>
+        <h1 class="text-5xl font-bold text-white mb-6">
+            QRP
+        </h1>
+        <p class="text-xl text-white text-opacity-80 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Comprehensive learning resources with 25 questions across 1 quiz sets
+        </p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 pb-12">
+        
+        <!-- Child Categories -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center">Categories</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+        <div class="glass-card p-8 cursor-pointer" onclick="navigateToTier('reflex-qrp-anatomy')">
+            <div class="flex items-center justify-between mb-6">
+                <div class="w-16 h-16 gradient-blue rounded-xl flex items-center justify-center text-2xl text-white shadow-lg font-bold">
+                    A
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold text-white">1</div>
+                    <div class="text-sm text-white text-opacity-60">Quiz Sets</div>
+                </div>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-white mb-3">
+                Anatomy
+            </h3>
+            
+            <p class="text-white text-opacity-70 mb-6 leading-relaxed">
+                Explore 1 quiz sets with 25 comprehensive questions
+            </p>
+            
+            <div class="flex justify-between items-center text-sm text-white text-opacity-60">
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                    25 Questions
+                </span>
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+                    0 Categories
+                </span>
+            </div>
+        </div>
+        
+            </div>
+        </section>
+        
+
+        
+
+        
+    </main>
+
+    <script>const _0x4f07d2=_0x5295;(function(_0x55ce0c,_0x58aff7){const _0x24b857=_0x5295,_0x291049=_0x55ce0c();while(!![]){try{const _0x58adb0=parseInt(_0x24b857(0x91))/0x1+-parseInt(_0x24b857(0xa2))/0x2*(parseInt(_0x24b857(0xc1))/0x3)+-parseInt(_0x24b857(0xf7))/0x4+-parseInt(_0x24b857(0xee))/0x5*(-parseInt(_0x24b857(0x8d))/0x6)+parseInt(_0x24b857(0xc0))/0x7*(-parseInt(_0x24b857(0xf6))/0x8)+-parseInt(_0x24b857(0x9f))/0x9+parseInt(_0x24b857(0xd2))/0xa;if(_0x58adb0===_0x58aff7)break;else _0x291049['push'](_0x291049['shift']());}catch(_0x5988c8){_0x291049['push'](_0x291049['shift']());}}}(_0x5a01,0x1f5ad));const _0x25a979=(function(){const _0x5be3dd=_0x5295,_0x346001={'YwHYw':function(_0x251b63,_0x50b979){return _0x251b63(_0x50b979);},'ZjEcQ':_0x5be3dd(0x92),'jQSVd':_0x5be3dd(0xc2),'VMDuT':'glass-light\x20px-6\x20py-2\x20text-white\x20hover:bg-white\x20hover:bg-opacity-20','bzeSh':'saEUi','wbDQa':_0x5be3dd(0xc6),'iYaYZ':_0x5be3dd(0xa3),'WiXgn':_0x5be3dd(0xa1)};let _0x3c8b75=!![];return function(_0x4b46ed,_0x12b759){const _0x31becc=_0x5be3dd,_0x11780c={'WagJQ':function(_0x1acd95,_0x1c6cd3){const _0x5a8302=_0x5295;return _0x346001[_0x5a8302(0xf4)](_0x1acd95,_0x1c6cd3);},'KPmKY':function(_0x22ed53,_0x1b8b91){return _0x22ed53(_0x1b8b91);},'LeBxm':_0x31becc(0xca),'wHgDo':_0x346001['ZjEcQ'],'AjjeP':_0x346001['jQSVd'],'RDSCN':_0x346001['VMDuT'],'HuxSy':'Restart','LsGHL':_0x346001['bzeSh'],'SKBgG':_0x346001[_0x31becc(0xde)]};if(_0x346001[_0x31becc(0x99)]===_0x346001[_0x31becc(0xa6)]){_0x5ca8db['textContent']=_0x11780c[_0x31becc(0xc8)],_0x15cc9e[_0x31becc(0xbf)][_0x31becc(0x87)](_0x11780c[_0x31becc(0xb8)],_0x31becc(0xba));const _0x144103=_0x53b29b['createElement'](_0x11780c[_0x31becc(0xa8)]);_0x144103['className']=_0x11780c[_0x31becc(0xe9)],_0x144103[_0x31becc(0xfa)]=_0x11780c[_0x31becc(0xd1)],_0x144103['onclick']=()=>{const _0x5a669f=_0x31becc;_0x11780c[_0x5a669f(0xc4)](_0x12fc87,_0x1841ae),_0x11780c[_0x5a669f(0xdc)](_0x3d81d6,_0x4238c2);},_0x558478['appendChild'](_0x144103);}else{const _0xfa0133=_0x3c8b75?function(){const _0x5650b9=_0x31becc;if(_0x12b759){if(_0x11780c['LsGHL']===_0x11780c[_0x5650b9(0x101)])_0x5c2ac7[_0x5650b9(0xa9)][_0x5650b9(0xe4)]=_0x5640b1;else{const _0xe78c7a=_0x12b759[_0x5650b9(0xe7)](_0x4b46ed,arguments);return _0x12b759=null,_0xe78c7a;}}}:function(){};return _0x3c8b75=![],_0xfa0133;}};}()),_0xad03c1=_0x25a979(this,function(){const _0x39bf6f=_0x5295,_0x11c8b4={'RNpwS':_0x39bf6f(0xdd)};return _0xad03c1[_0x39bf6f(0xaa)]()[_0x39bf6f(0x93)](_0x11c8b4[_0x39bf6f(0xad)])[_0x39bf6f(0xaa)]()[_0x39bf6f(0x96)](_0xad03c1)['search'](_0x11c8b4['RNpwS']);});function _0x5295(_0x26b5db,_0x23aa4a){const _0x1457af=_0x5a01();return _0x5295=function(_0x3b0438,_0x569f16){_0x3b0438=_0x3b0438-0x85;let _0x125ff3=_0x1457af[_0x3b0438];return _0x125ff3;},_0x5295(_0x26b5db,_0x23aa4a);}_0xad03c1();const _0x569f16=(function(){const _0x56b277=_0x5295,_0x2d9fa8={'jrGqv':'xGAgV','rXjuC':_0x56b277(0xb5)};let _0x882434=!![];return function(_0xb14e56,_0x4348e5){const _0x309386=_0x56b277,_0x1295d2={'WgbKz':_0x2d9fa8[_0x309386(0xb9)]},_0x4e6b4b=_0x882434?function(){const _0x4f8b88=_0x309386;if(_0x2d9fa8[_0x4f8b88(0x8a)]!==_0x4f8b88(0x8b))delete _0x2833bc[_0x12ed26],_0x1ad580[_0x4f8b88(0xe5)](_0x1295d2[_0x4f8b88(0xe1)],_0x358ade[_0x4f8b88(0xcb)](_0x34a788));else{if(_0x4348e5){const _0x1d56c5=_0x4348e5[_0x4f8b88(0xe7)](_0xb14e56,arguments);return _0x4348e5=null,_0x1d56c5;}}}:function(){};return _0x882434=![],_0x4e6b4b;};}()),_0x3b0438=_0x569f16(this,function(){const _0x256fea=_0x5295,_0x2493a5={'RFUKv':function(_0x13d5ce,_0x4c317e){return _0x13d5ce+_0x4c317e;},'vbPYv':_0x256fea(0xd0),'azImt':_0x256fea(0xa5),'snUFY':'warn','ZUzYj':_0x256fea(0xb7),'UowxJ':_0x256fea(0xf2),'LjgTJ':_0x256fea(0xcc),'ILBWQ':function(_0x55e487,_0x1fad18){return _0x55e487<_0x1fad18;}};let _0x43301e;try{const _0x364abe=Function(_0x2493a5[_0x256fea(0x98)](_0x2493a5[_0x256fea(0xb4)],_0x256fea(0xc3))+');');_0x43301e=_0x364abe();}catch(_0x513bb6){_0x43301e=window;}const _0x5b4718=_0x43301e[_0x256fea(0xc7)]=_0x43301e[_0x256fea(0xc7)]||{},_0x38f6cc=[_0x2493a5['azImt'],_0x2493a5[_0x256fea(0xf3)],_0x256fea(0xcd),_0x2493a5[_0x256fea(0xf1)],_0x2493a5[_0x256fea(0xd8)],_0x2493a5[_0x256fea(0xdf)],_0x256fea(0xa0)];for(let _0x1c7f59=0x0;_0x2493a5[_0x256fea(0x8e)](_0x1c7f59,_0x38f6cc[_0x256fea(0x97)]);_0x1c7f59++){const _0x22a486=_0x569f16[_0x256fea(0x96)][_0x256fea(0xd7)][_0x256fea(0xb2)](_0x569f16),_0x882b89=_0x38f6cc[_0x1c7f59],_0x2af9d7=_0x5b4718[_0x882b89]||_0x22a486;_0x22a486[_0x256fea(0x9a)]=_0x569f16[_0x256fea(0xb2)](_0x569f16),_0x22a486[_0x256fea(0xaa)]=_0x2af9d7[_0x256fea(0xaa)][_0x256fea(0xb2)](_0x2af9d7),_0x5b4718[_0x882b89]=_0x22a486;}});function _0x5a01(){const _0x54c36b=['span','bYjWa','ciXBG','querySelector','SKBgG','appendChild','innerHTML','add','nARKk','UqWqj','jrGqv','xGAgV','className','613740aLjLnL','ILBWQ','querySelectorAll','ml-3\x20text-xs\x20font-semibold\x20mr-2\x20px-2.5\x20py-0.5\x20rounded-full','45342wstWDA','bg-green-100','search','history','dataset','constructor','length','RFUKv','iYaYZ','__proto__','Continue','XlvlP','QvvUQ','OQJZr','1362429QUJDpY','trace','NSSrk','2cUIJLM','XpNHI','qhKDC','log','WiXgn','.quiz-title','AjjeP','location','toString','ZCGEJ','vwRzF','RNpwS','forEach','kapsC','inoLZ','all\x200.6s\x20cubic-bezier(0.4,\x200,\x200.2,\x201)','bind','text-yellow-800','vbPYv','userHistory','[data-quiz-id]','error','wHgDo','rXjuC','text-green-800','ziqlu','status','parse','wBioT','classList','7LEUikT','329862CZQevM','button','{}.constructor(\x22return\x20this\x22)(\x20)','WagJQ','EzXIO','Eubnc','console','LeBxm','zINdD','Completed','stringify','table','info','tREfe','kPUdD','return\x20(function()\x20','HuxSy','4896260zZxtqK','IovWO','addEventListener','translateY(0)','transform','prototype','UowxJ','translateY(30px)','EDzJu','createElement','KPmKY','(((.+)+)+)+$','wbDQa','LjgTJ','onclick','WgbKz','style','pjkET','href','setItem','back','apply','xOCGG','RDSCN','zBHwN','opacity','OAiWB','gbuby','5ShFdrA','DOMContentLoaded','DiOwE','ZUzYj','exception','snUFY','YwHYw','transition','378136YBWAbC','800908xnSyoT','glass-button\x20px-6\x20py-2','CqGYA','textContent','gLhjW','getItem'];_0x5a01=function(){return _0x54c36b;};return _0x5a01();}_0x3b0438();function goBack(){const _0x1f9434=_0x5295;window[_0x1f9434(0x94)][_0x1f9434(0xe6)]();}function navigateToTier(_0x30e4ee){const _0x46f4b0=_0x5295,_0x5d7f45={'IovWO':'.html'};window[_0x46f4b0(0xa9)]['href']=_0x30e4ee+_0x5d7f45[_0x46f4b0(0xd3)];}function startQuiz(_0x5ac28a){window['location']['href']=_0x5ac28a;}function clearQuizHistory(_0x4a2440){const _0x54a24e=_0x5295,_0x471a93={'ZCGEJ':_0x54a24e(0xb5)},_0x1e6e8d=JSON[_0x54a24e(0xbd)](localStorage[_0x54a24e(0xfc)](_0x471a93[_0x54a24e(0xab)]))||{};_0x1e6e8d[_0x4a2440]&&(delete _0x1e6e8d[_0x4a2440],localStorage['setItem']('userHistory',JSON[_0x54a24e(0xcb)](_0x1e6e8d)));}document[_0x4f07d2(0xd4)](_0x4f07d2(0xef),function(){const _0x37a059=_0x4f07d2,_0x3342d9={'qMhqQ':_0x37a059(0xd5),'bYjWa':_0x37a059(0xd9),'ziqlu':function(_0x44d6d9,_0x5d827f){return _0x44d6d9===_0x5d827f;},'kapsC':_0x37a059(0xff),'zINdD':function(_0x5a8088,_0x4e8539,_0x3a5675){return _0x5a8088(_0x4e8539,_0x3a5675);},'tREfe':function(_0x35c1c0,_0x1a8fab){return _0x35c1c0*_0x1a8fab;},'EDzJu':function(_0x3a2a51,_0x736896){return _0x3a2a51(_0x736896);},'pjkET':function(_0x7486f4,_0x1d72ba){return _0x7486f4(_0x1d72ba);},'qhKDC':function(_0x42236b,_0x3cbec6){return _0x42236b(_0x3cbec6);},'Futlg':_0x37a059(0xfd),'eFXgD':_0x37a059(0x90),'qtHNF':'completed','hPXkH':_0x37a059(0x92),'CqGYA':_0x37a059(0xba),'EzXIO':'Restart','cDMVF':'incomplete','inoLZ':'In\x20Progress','vwRzF':'bg-yellow-100','OQJZr':_0x37a059(0xb3),'Kfwhl':_0x37a059(0xf8),'OAiWB':_0x37a059(0x9b),'nARKk':_0x37a059(0xc2),'xOCGG':'ml-2\x20glass-light\x20px-4\x20py-2\x20text-white\x20hover:bg-white\x20hover:bg-opacity-20','QvvUQ':'.glass-card','UqWqj':_0x37a059(0xb6)},_0x284efb=document[_0x37a059(0x8f)](_0x3342d9[_0x37a059(0x9d)]);_0x284efb[_0x37a059(0xae)]((_0xac4fec,_0x584a35)=>{const _0x1e9641=_0x37a059,_0x2bdb4c={'zBHwN':_0x1e9641(0xb1),'XlvlP':_0x3342d9['qMhqQ'],'gbuby':_0x3342d9[_0x1e9641(0xfe)]};_0x3342d9['ziqlu'](_0x3342d9[_0x1e9641(0xaf)],_0x3342d9['kapsC'])?(_0xac4fec['style'][_0x1e9641(0xeb)]='0',_0xac4fec[_0x1e9641(0xe2)]['transform']=_0x3342d9[_0x1e9641(0xfe)],_0x3342d9[_0x1e9641(0xc9)](setTimeout,()=>{const _0xcaeb95=_0x1e9641;_0xac4fec[_0xcaeb95(0xe2)]['transition']=_0x2bdb4c[_0xcaeb95(0xea)],_0xac4fec[_0xcaeb95(0xe2)][_0xcaeb95(0xeb)]='1',_0xac4fec[_0xcaeb95(0xe2)][_0xcaeb95(0xd6)]=_0x2bdb4c[_0xcaeb95(0x9c)];},_0x3342d9[_0x1e9641(0xce)](_0x584a35,0x96))):(_0x747d43[_0x1e9641(0xe2)][_0x1e9641(0xeb)]='0',_0x43a421[_0x1e9641(0xe2)][_0x1e9641(0xd6)]=_0x2bdb4c[_0x1e9641(0xed)],_0x591c6a(()=>{const _0x45a5f6=_0x1e9641;_0x322cdc['style'][_0x45a5f6(0xf5)]=_0x45a5f6(0xb1),_0x4f411a[_0x45a5f6(0xe2)]['opacity']='1',_0x2de0e8['style'][_0x45a5f6(0xd6)]=_0x2bdb4c[_0x45a5f6(0x9c)];},_0x552f93*0x96));});const _0x47d468=JSON[_0x37a059(0xbd)](localStorage[_0x37a059(0xfc)](_0x37a059(0xb5)))||{};document[_0x37a059(0x8f)](_0x3342d9[_0x37a059(0x89)])[_0x37a059(0xae)](_0x104e97=>{const _0x32591c=_0x37a059,_0x16eca1={'kPUdD':function(_0x89d17f,_0x13bdd2){const _0x2e4c02=_0x5295;return _0x3342d9[_0x2e4c02(0xe3)](_0x89d17f,_0x13bdd2);},'wBioT':function(_0x29ff6c,_0x1cfde7){const _0x4760d2=_0x5295;return _0x3342d9[_0x4760d2(0xa4)](_0x29ff6c,_0x1cfde7);}};if(_0x3342d9[_0x32591c(0xbb)](_0x32591c(0xf0),_0x32591c(0xfb)))_0x2d913f(_0x2616f9),_0x16eca1['kPUdD'](_0x41412d,_0x4b8171);else{const _0x249b2d=_0x104e97[_0x32591c(0x95)]['quizId'],_0x32f378=_0x47d468[_0x249b2d];if(!_0x32f378)return;const _0xc69eb9=_0x104e97[_0x32591c(0x100)]('.quiz-actions'),_0x3d3dd9=_0x104e97['querySelector'](_0x32591c(0xa7));_0xc69eb9[_0x32591c(0x86)]='';const _0x5d10d0=document[_0x32591c(0xdb)](_0x3342d9['Futlg']);_0x5d10d0['className']=_0x3342d9['eFXgD'];if(_0x3342d9[_0x32591c(0xbb)](_0x32f378[_0x32591c(0xbc)],_0x3342d9['qtHNF'])){_0x5d10d0[_0x32591c(0xfa)]='Completed',_0x5d10d0[_0x32591c(0xbf)][_0x32591c(0x87)](_0x3342d9['hPXkH'],_0x3342d9[_0x32591c(0xf9)]);const _0x10a26d=document['createElement'](_0x32591c(0xc2));_0x10a26d[_0x32591c(0x8c)]='glass-light\x20px-6\x20py-2\x20text-white\x20hover:bg-white\x20hover:bg-opacity-20',_0x10a26d['textContent']=_0x3342d9[_0x32591c(0xc5)],_0x10a26d['onclick']=()=>{const _0x4bfb10=_0x32591c;_0x3342d9[_0x4bfb10(0xda)](clearQuizHistory,_0x249b2d),startQuiz(_0x249b2d);},_0xc69eb9['appendChild'](_0x10a26d);}else{if(_0x32f378[_0x32591c(0xbc)]===_0x3342d9['cDMVF']){_0x5d10d0[_0x32591c(0xfa)]=_0x3342d9[_0x32591c(0xb0)],_0x5d10d0[_0x32591c(0xbf)]['add'](_0x3342d9[_0x32591c(0xac)],_0x3342d9[_0x32591c(0x9e)]);const _0x25d323=document[_0x32591c(0xdb)](_0x32591c(0xc2));_0x25d323[_0x32591c(0x8c)]=_0x3342d9['Kfwhl'],_0x25d323[_0x32591c(0xfa)]=_0x3342d9[_0x32591c(0xec)],_0x25d323[_0x32591c(0xe0)]=()=>startQuiz(_0x249b2d+'?resume=true');const _0x33c67a=document[_0x32591c(0xdb)](_0x3342d9[_0x32591c(0x88)]);_0x33c67a['className']=_0x3342d9[_0x32591c(0xe8)],_0x33c67a[_0x32591c(0xfa)]=_0x3342d9[_0x32591c(0xc5)],_0x33c67a[_0x32591c(0xe0)]=()=>{const _0x1f8cc1=_0x32591c;_0x16eca1[_0x1f8cc1(0xcf)](clearQuizHistory,_0x249b2d),_0x16eca1[_0x1f8cc1(0xbe)](startQuiz,_0x249b2d);},_0xc69eb9[_0x32591c(0x85)](_0x25d323),_0xc69eb9[_0x32591c(0x85)](_0x33c67a);}}_0x3d3dd9&&_0x3d3dd9['appendChild'](_0x5d10d0);}});});</script>
+
+</body></html>

@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsafe Csom - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / qBank / ENT
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">17</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>const _0x35a466=_0x2dd9;(function(_0x25540d,_0x1ce798){const _0x4639ca=_0x2dd9,_0x402dfe=_0x25540d();while(!![]){try{const _0x55a0fe=-parseInt(_0x4639ca(0x295))/0x1*(-parseInt(_0x4639ca(0x3a1))/0x2)+-parseInt(_0x4639ca(0x247))/0x3+-parseInt(_0x4639ca(0x2ce))/0x4+parseInt(_0x4639ca(0x226))/0x5*(-parseInt(_0x4639ca(0x1e1))/0x6)+-parseInt(_0x4639ca(0x3e7))/0x7*(parseInt(_0x4639ca(0x34d))/0x8)+-parseInt(_0x4639ca(0x42c))/0x9+-parseInt(_0x4639ca(0x1f2))/0xa*(-parseInt(_0x4639ca(0x318))/0xb);if(_0x55a0fe===_0x1ce798)break;else _0x402dfe['push'](_0x402dfe['shift']());}catch(_0x20db3c){_0x402dfe['push'](_0x402dfe['shift']());}}}(_0x3ec4,0xd2529));const _0x1dc988=(function(){const _0x112ca0=_0x2dd9,_0x4be85e={'NaqCS':_0x112ca0(0x2eb),'siucj':_0x112ca0(0x29d)};let _0x5d83fe=!![];return function(_0x16600d,_0x5604c9){const _0x1f9f33=_0x112ca0,_0x48e9d1={'MwOQJ':_0x4be85e['NaqCS'],'itdwo':_0x1f9f33(0x43a),'bVxPA':_0x4be85e[_0x1f9f33(0x432)]},_0x5bae3f=_0x5d83fe?function(){const _0x475099=_0x1f9f33;if(_0x48e9d1['bVxPA']===_0x48e9d1[_0x475099(0x2c5)]){if(_0x5604c9){const _0x1dd5ef=_0x5604c9['apply'](_0x16600d,arguments);return _0x5604c9=null,_0x1dd5ef;}}else{if(_0x4eace0)return;const _0x3a288b=_0x2ddbfa['parse'](_0x4220f6[_0x475099(0x459)](_0x48e9d1['MwOQJ']))||{};_0x3a288b[_0x4fabf3]={'questionStates':_0x36f364,'stats':_0x912b33,'currentQuestionIndex':_0x545f24,'currentMode':_0x37203e,'status':_0x48e9d1[_0x475099(0x436)],'lastSeen':new _0x4802f5()[_0x475099(0x2a3)]()},_0x11bb30[_0x475099(0x272)](_0x48e9d1['MwOQJ'],_0x3a8b41[_0x475099(0x378)](_0x3a288b));}}:function(){};return _0x5d83fe=![],_0x5bae3f;};}()),_0x41b211=_0x1dc988(this,function(){const _0x394bb6=_0x2dd9,_0x249c54={'plRbl':'(((.+)+)+)+$'};return _0x41b211[_0x394bb6(0x3df)]()[_0x394bb6(0x1f4)]('(((.+)+)+)+$')[_0x394bb6(0x3df)]()[_0x394bb6(0x23c)](_0x41b211)[_0x394bb6(0x1f4)](_0x249c54['plRbl']);});_0x41b211();const _0x382cdd=(function(){const _0x1c15af=_0x2dd9,_0x381021={'kaHfv':function(_0x5011b1,_0x5bae4d){return _0x5011b1!==_0x5bae4d;},'BIitr':_0x1c15af(0x3be),'YQsyx':'QYVWx'};let _0x2ba983=!![];return function(_0x16b6fa,_0x5aafff){const _0x6b37d9=_0x2ba983?function(){const _0xc0d884=_0x2dd9;if(_0x5aafff){if(_0x381021['kaHfv'](_0x381021[_0xc0d884(0x38a)],_0x381021[_0xc0d884(0x225)])){const _0x34f2ce=_0x5aafff['apply'](_0x16b6fa,arguments);return _0x5aafff=null,_0x34f2ce;}else _0x1c96d4();}}:function(){};return _0x2ba983=![],_0x6b37d9;};}()),_0x2b8693=_0x382cdd(this,function(){const _0x3d14e9=_0x2dd9,_0x245a64={'VPwwj':function(_0x57fbd6,_0x17de59){return _0x57fbd6(_0x17de59);},'wtXJJ':function(_0x2444db,_0x33541a){return _0x2444db+_0x33541a;},'jjnMt':_0x3d14e9(0x359),'dGvmq':_0x3d14e9(0x2f3),'mljwY':function(_0x17e4c7){return _0x17e4c7();},'xvlvi':'warn','TqZJy':_0x3d14e9(0x45e),'cCgIR':'error','MEWKf':_0x3d14e9(0x2d6),'dfuRA':_0x3d14e9(0x240),'Otmhj':function(_0x30d1de,_0x3e6862){return _0x30d1de<_0x3e6862;}};let _0x11b0de;try{const _0x3570c0=_0x245a64[_0x3d14e9(0x232)](Function,_0x245a64[_0x3d14e9(0x2c1)](_0x245a64[_0x3d14e9(0x3fd)],_0x245a64[_0x3d14e9(0x241)])+');');_0x11b0de=_0x245a64['mljwY'](_0x3570c0);}catch(_0x425943){_0x11b0de=window;}const _0x460d53=_0x11b0de[_0x3d14e9(0x237)]=_0x11b0de['console']||{},_0x3e9f81=[_0x3d14e9(0x346),_0x245a64[_0x3d14e9(0x21b)],_0x245a64[_0x3d14e9(0x2be)],_0x245a64[_0x3d14e9(0x329)],_0x3d14e9(0x339),_0x245a64[_0x3d14e9(0x316)],_0x245a64['dfuRA']];for(let _0x47efdf=0x0;_0x245a64[_0x3d14e9(0x39f)](_0x47efdf,_0x3e9f81[_0x3d14e9(0x219)]);_0x47efdf++){const _0x298c84=_0x382cdd['constructor'][_0x3d14e9(0x448)][_0x3d14e9(0x28c)](_0x382cdd),_0x58cb60=_0x3e9f81[_0x47efdf],_0x5c5fc9=_0x460d53[_0x58cb60]||_0x298c84;_0x298c84[_0x3d14e9(0x3e5)]=_0x382cdd[_0x3d14e9(0x28c)](_0x382cdd),_0x298c84['toString']=_0x5c5fc9[_0x3d14e9(0x3df)][_0x3d14e9(0x28c)](_0x5c5fc9),_0x460d53[_0x58cb60]=_0x298c84;}});_0x2b8693();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':_0x35a466(0x303)},{'id':0x2,'text':_0x35a466(0x2db)},{'id':0x3,'text':_0x35a466(0x36a)},{'id':0x4,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Congenital\x20cholesteatoma</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20spot\x20diagnosis\x20for\x20the\x20given\x20image?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202509170a9f7b2c-e5d4-4c01-8a2b-5f6e7d8c9b3a.png\x22></span></p>','unique_key':'DT1224471','question_audio':null,'question_video':null,'map_id':0x12af17,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x32b),'correct_choice_id':0x4,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':_0x35a466(0x303)},{'id':0xc,'text':_0x35a466(0x2db)},{'id':0xd,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Tertiary\x20acquired\x20cholesteatoma</span></p>'},{'id':0xe,'text':_0x35a466(0x265)}],'text':_0x35a466(0x3ee),'unique_key':_0x35a466(0x371),'question_audio':null,'question_video':null,'map_id':0x12af1a,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Primary\x20Acquired\x20Cholesteatoma\x20(most\x20common\x20type).</li>\x0d\x0a<li>This\x20type\x20of\x20Cholesteatoma\x20originates\x20from\x20Retraction\x20Pockets,\x20which\x20are\x20most\x20common\x20in\x20the\x20Pars\x20Flaccida.</li>\x0d\x0a<li>This\x20theory\x20is\x20called\x20Wittmack\x27s\x20Theory.</li>\x0d\x0a<li>The\x20most\x20common\x20site\x20of\x20cholesteatoma\x20formation\x20in\x20the\x20middle\x20ear\x20cleft\x20is\x20Prussak\x27s\x20space.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Chief\x20complaints\x20:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Ear\x20discharge-\x20scanty,\x20foul-smelling\x20(due\x20to\x20bone\x20erosion)\x20and\x20blood-stained\x20(due\x20to\x20granulation\x20formation).</li>\x0d\x0a<li>Hearing\x20loss\x20is\x20mostly\x20conductive,\x20sometimes\x20mixed\x20(CHL+\x20SNHL)</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Treatment\x20:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Surgery\x20is\x20called\x20MRM\x20(Modified\x20Radical\x20Mastoidectomy),\x20also\x20known\x20as\x20Tympanomastoid\x20exploration.</li>\x0d\x0a<li>The\x20main\x20aim\x20of\x20MRM\x20is\x20to\x20make\x20the\x20ear\x20safe.</li>\x0d\x0a<li>After\x20making\x20adequate\x20clearance\x20of\x20cholesteatoma,\x20we\x20remove\x20the\x20posterior\x20wall\x20of\x20the\x20EAC\x20to\x20open\x20the\x20mastoid\x20cavity\x20into\x20the\x20EAC.</li>\x0d\x0a<li>Hence,\x20MRM\x20is\x20a\x20classical\x20example\x20of\x20canal\x20wall\x20down\x20surgery\x20(CWD).</li>\x0d\x0a<li>Canal\x20wall\x20means\x20the\x20posterior\x20wall\x20of\x20EAC,\x20and\x20down\x20means\x20removed.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Explanation\x20of\x20the\x20other\x20options:</strong></p>\x0d\x0a<p><strong>Secondary\x20acquired\x20cholesteatoma(Option\x20B)</strong>:\x20In\x20these\x20cases,\x20there\x20is\x20already\x20a\x20pre-existing\x20perforation\x20in\x20the\x20pars\x20tensa.\x20This\x20is\x20often\x20associated\x20with\x20posterosuperior\x20marginal\x20perforation\x20or\x20sometimes\x20large\x20central\x20perforation.\x20Theories\x20of\x20its\x20generation\x20are:</p>\x0d\x0a<ul>\x0d\x0a<li>Migration\x20of\x20the\x20Squamous\x20epithelium.</li>\x0d\x0a<li>Metaplasia</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Tertiary\x20acquired\x20cholesteatoma(Option\x20C):</strong>\x20Emerges\x20behind\x20a\x20normal-appearing\x20tympanic\x20membrane,\x20often\x20due\x20to\x20implantation\x20during\x20otitis\x20media\x20or\x20minor\x20trauma.</p>\x0d\x0a<p><strong>Congenital\x20cholesteatoma(Option\x20D):</strong></p>\x0d\x0a<ul>\x0d\x0a<li>It\x20arises\x20from\x20the\x20embryonic\x20epidermal\x20cell\x20resting\x20in\x20the\x20middle\x20ear\x20cleft\x20or\x20temporal\x20bone.\x20Congenital\x20cholesteatoma\x20occurs\x20at\x20three\x20important\x20sites:\x20the\x20middle\x20ear,\x20the\x20petrous\x20apex\x20and\x20the\x20cerebellopontine\x20angle,\x20and\x20produces\x20symptomatology\x20depending\x20on\x20its\x20location.</li>\x0d\x0a<li>A\x20middle\x20ear\x20congenital\x20cholesteatoma\x20presents\x20as\x20a\x20white\x20mass\x20behind\x20an\x20intact\x20tympanic\x20membrane\x20and\x20causes\x20conductive\x20hearing\x20loss.\x20It\x20may\x20sometimes\x20be\x20discovered\x20on\x20routine\x20examination\x20of\x20children\x20or\x20at\x20the\x20time\x20of\x20myringotomy.</li>\x0d\x0a<li>It\x20may\x20also\x20spontaneously\x20rupture\x20through\x20the\x20tympanic\x20membrane\x20and\x20present\x20with\x20a\x20discharging\x20ear\x20indistinguishable\x20from\x20a\x20case\x20of\x20chronic\x20suppurative\x20otitis\x20media.</li>\x0d\x0a</ul>','correct_choice_id':0xb,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':_0x35a466(0x386)},{'id':0x16,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Collagenase\x20and\x20acid\x20phosphatase\x20release\x20by\x20osteoclasts</span></p>'},{'id':0x17,'text':_0x35a466(0x2a0)},{'id':0x18,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Inflammatory\x20Osteitis</span></p>'}],'text':_0x35a466(0x3e2),'unique_key':_0x35a466(0x40a),'question_audio':null,'question_video':null,'map_id':0x12af1e,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x40b),'correct_choice_id':0x15,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':_0x35a466(0x230)},{'id':0x20,'text':_0x35a466(0x25f)},{'id':0x21,'text':_0x35a466(0x289)},{'id':0x22,'text':_0x35a466(0x1e0)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20most\x20common\x20site\x20of\x20residual\x20cholesteatoma\x20after\x20mastoid\x20exploration\x20in\x20a\x20case\x20of\x20unsafe\x20CSOM?</span></p>','unique_key':_0x35a466(0x220),'question_audio':null,'question_video':null,'map_id':0x12af1f,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p><strong>Sinus\x20tympani:</strong></p>\x0a<ul>\x0a<li>Sinus\x20tympani\x20is\x20a\x20deep\x20recess\x20on\x20the\x20medial\x20wall\x20of\x20the\x20middle\x20ear.\x20It\x20is\x20a\x20hidden\x20area\x20and\x20the\x20most\x20common\x20site\x20of\x20residual\x20cholesteatoma\x20after\x20mastoid\x20surgery.</li>\x0a<li>A\x20study\x20where\x20otoendoscopy\x20was\x20used\x20post-microscopically\x20on\x20150\x20patients\x20found\x20that\x2088.9%\x20of\x20hidden\x20residual\x20cholesteatoma\x20was\x20located\x20in\x20the\x20sinus\x20tympani,\x20making\x20it\x20the\x20leading\x20site\x20ahead\x20of\x20the\x20facial\x20recess,\x20anterior\x20epitympanum,\x20and\x20hypotympanum.</li>\x0a<li>The\x20sinus\x20tympani\x20is\x20a\x20notorious\x20\x22blind\x20spot\x22\x20during\x20microscopic\x20surgery,\x20which\x20explains\x20why\x20it\x27s\x20the\x20most\x20common\x20location\x20for\x20disease\x20leftover.</li>\x0a</ul>\x0a<p><strong>Boundaries\x20of\x20facial\x20Recess:</strong></p>\x0a<ul>\x0a<li>Superior\x20-\x20Ponticulus</li>\x0a<li>Inferior\x20-\x20Subiculum</li>\x0a<li>Lateral\x20-\x20Limited\x20by\x20the\x20vertical\x20segment\x20of\x20the\x20facial\x20nerve.</li>\x0a</ul>','correct_choice_id':0x20,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':_0x35a466(0x38d)},{'id':0x2a,'text':_0x35a466(0x1f6)},{'id':0x2b,'text':_0x35a466(0x2d8)},{'id':0x2c,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Vestibular\x20evoked\x20myogenic\x20potentials</span></p>'}],'text':_0x35a466(0x35d),'unique_key':_0x35a466(0x3b1),'question_audio':null,'question_video':null,'map_id':0x12af22,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x234),'correct_choice_id':0x2a,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':_0x35a466(0x385)},{'id':0x34,'text':_0x35a466(0x3dc)},{'id':0x35,'text':_0x35a466(0x21d)},{'id':0x36,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Tubotympanic\x20CSOM\x20with\x20subdural\x20empyema</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Mohan,\x20a\x2022-year-old,\x20gives\x20a\x20history\x20of\x20right-sided\x20ear\x20discharge,\x20foul-smelling\x20and\x20occasionally\x20blood-stained,\x20for\x20the\x20last\x206\x20years.\x20He\x20also\x20complains\x20of\x20hearing\x20loss\x20for\x20the\x20last\x202\x20years.\x20For\x20the\x20last\x203\x20days,\x20the\x20patient\x20has\x20developed\x20fever\x20with\x20chills,\x20headache\x20and\x20oedema\x20over\x20the\x20mastoid\x20region.\x20The\x20most\x20probable\x20diagnosis\x20is</span></p>','unique_key':_0x35a466(0x31f),'question_audio':null,'question_video':null,'map_id':0x12af23,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>Scanty,\x20foul-smelling\x20ear\x20discharge\x20is\x20seen\x20in\x20attic-antral\x20CSOM.</li>\x0a<li>The\x20patient\x20recently\x20developed\x20fever\x20with\x20chills,\x20headache\x20and\x20oedema\x20over\x20the\x20mastoid(Griesinger\x20sign).\x20All\x20these\x20point\x20to\x20a\x20diagnosis\x20of\x20Sigmoid\x20sinus\x20thrombosis(Lateral\x20sinus\x20thrombosis).</li>\x0a<li>The\x20treatment\x20is\x20Modified\x20radical\x20mastoidectomy\x20with\x20opening\x20of\x20the\x20sinus\x20wall\x20and\x20removal\x20of\x20thrombus\x20+\x20i/v\x20antibiotics.</li>\x0a</ul>\x0a<p><strong>Complications\x20of\x20CSOM:</strong></p>\x0a<p><strong>Intratemporal(within\x20the\x20temporal\x20bone):</strong></p>\x0a<ul>\x0a<li>Mastoiditis</li>\x0a<li>Petrositis</li>\x0a<li>Facial\x20paralysis</li>\x0a<li>Labyrinthitis</li>\x0a</ul>\x0a<p><strong>Intracranial:</strong></p>\x0a<ul>\x0a<li>Extradural\x20abscess</li>\x0a<li>Subdural\x20abscess</li>\x0a<li>Meningitis</li>\x0a<li>Brain\x20abscess</li>\x0a<li>Lateral\x20sinus\x20thrombophlebitis</li>\x0a<li>Otitic\x20hydrocephalus.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Tubotympanic\x20CSOM(Option\x20A):</strong>\x20Rarely\x20causes\x20serious\x20complications\x20like\x20meningitis</p>\x0a<p><strong>Brain\x20abscess(Option\x20B):</strong>\x20It\x20is\x20possible\x20with\x20unsafe\x20CSOM,\x20but\x20presentation\x20usually\x20includes\x20focal\x20neurological\x20deficits\x20or\x20progressive\x20mental\x20status\x20changes,\x20not\x20just\x20mastoid\x20oedema</p>\x0a<p><strong>Subdural\x20empyema(Option\x20D):\x20</strong>Typically\x20shows\x20signs\x20of\x20increased\x20intracranial\x20pressure,\x20mental\x20status\x20change,\x20and\x20rapid\x20worsening,\x20which\x20isn\x27t\x20described\x20in\x20her\x20case.</p>','correct_choice_id':0x35,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':_0x35a466(0x1cf)},{'id':0x3e,'text':_0x35a466(0x434)},{'id':0x3f,'text':_0x35a466(0x39b)},{'id':0x40,'text':_0x35a466(0x39c)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2020-year-old\x20Male\x20presents\x20with\x20unilateral\x20Ear\x20discharge,\x20pallor,\x20fever\x20and\x20positive\x20Crowe\x20Beck\x20Test.\x20The\x20clinical\x20diagnosis\x20is:</span></p>','unique_key':'DT1224484','question_audio':null,'question_video':null,'map_id':0x12af24,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x342),'correct_choice_id':0x3e,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':_0x35a466(0x1db)},{'id':0x48,'text':_0x35a466(0x2ed)},{'id':0x49,'text':_0x35a466(0x21a)},{'id':0x4a,'text':_0x35a466(0x363)}],'text':_0x35a466(0x427),'unique_key':_0x35a466(0x3bc),'question_audio':null,'question_video':null,'map_id':0x12af25,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x43e),'correct_choice_id':0x4a,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x9,'choices':[{'id':0x51,'text':_0x35a466(0x422)},{'id':0x52,'text':_0x35a466(0x42b)},{'id':0x53,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Antibiotics,\x20steroids\x20and\x20anti-labyrinthine\x20drugs</span></p>'},{'id':0x54,'text':_0x35a466(0x412)}],'text':_0x35a466(0x39e),'unique_key':_0x35a466(0x25c),'question_audio':null,'question_video':null,'map_id':0x12af26,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x351),'correct_choice_id':0x52,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xa,'choices':[{'id':0x5b,'text':_0x35a466(0x429)},{'id':0x5c,'text':_0x35a466(0x38e)},{'id':0x5d,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Oral\x20Steroids</span></p>'},{'id':0x5e,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Ear\x20Drops</span></p>'}],'text':_0x35a466(0x2d1),'unique_key':_0x35a466(0x383),'question_audio':null,'question_video':null,'map_id':0x12af27,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x224),'correct_choice_id':0x5c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xb,'choices':[{'id':0x65,'text':_0x35a466(0x399)},{'id':0x66,'text':_0x35a466(0x358)},{'id':0x67,'text':_0x35a466(0x357)},{'id':0x68,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Granulations\x20in\x20the\x20middle\x20ear\x20cleft</span></p>'}],'text':_0x35a466(0x440),'unique_key':_0x35a466(0x266),'question_audio':null,'question_video':null,'map_id':0x12af29,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0d\x0a<p>Attic\x20CSOM\x20always\x20presents\x20with\x20marginal\x20or\x20attic\x20perforation.</p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202509171f2e3d4c-5b6a-4d8e-9b0c-2d3e4f5a6b7c.png\x22>','correct_choice_id':0x66,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xc,'choices':[{'id':0x6f,'text':_0x35a466(0x344)},{'id':0x70,'text':_0x35a466(0x3c2)},{'id':0x71,'text':_0x35a466(0x2e6)},{'id':0x72,'text':_0x35a466(0x279)}],'text':_0x35a466(0x3b3),'unique_key':'DT1224490','question_audio':null,'question_video':null,'map_id':0x12af2a,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>Foul-smelling\x20discharge\x20with\x20perforation\x20of\x20the\x20pars\x20flaccida\x20of\x20the\x20tympanic\x20membrane\x20is\x20suggestive\x20of\x20atticoantral\x20CSOM.</li>\x0a<li>It\x20is\x20always\x20managed\x20surgically<strong>(Option\x20A\x20and\x20B\x20ruled\x20out)</strong>.\x20So\x20tympanomastoid\x20exploration(MRM)\x20is\x20the\x20correct\x20answer.</li>\x0a<li>Tympanoplasty\x20is\x20done\x20after\x20the\x20surgical\x20removal\x20of\x20the\x20infection,\x20that\x20is,\x20cholesteatoma<strong>(Option\x20C\x20ruled\x20out).</strong></li>\x0a</ul>\x0a<p><strong>Atticoantral\x20CSOM:</strong></p>\x0a<ul>\x0a<li>It\x20involves\x20the\x20posterosuperior\x20part\x20of\x20the\x20middle\x20ear\x20cleft\x20(attic,\x20antrum,\x20posterior\x20tympanum\x20and\x20mastoid)\x20and\x20is\x20associated\x20with\x20cholesteatoma,\x20which,\x20because\x20of\x20its\x20bone-eroding\x20properties,\x20causes\x20a\x20risk\x20of\x20serious\x20complications.\x20For\x20this\x20reason,\x20the\x20disease\x20is\x20also\x20called\x20unsafe\x20or\x20dangerous.</li>\x0a<li>The\x20aetiology\x20of\x20atticoantral\x20disease\x20is\x20the\x20same\x20as\x20that\x20of\x20cholesteatoma.\x20It\x20is\x20seen\x20in\x20sclerotic\x20mastoid,\x20and\x20whether\x20the\x20latter\x20is\x20the\x20cause\x20or\x20effect\x20of\x20the\x20disease\x20is\x20not\x20yet\x20clear.</li>\x0a</ul>\x0a<p><strong>Clinical\x20features:</strong></p>\x0a<ul>\x0a<li>Foul-smelling\x20discharge.</li>\x0a<li>Hearing\x20loss.</li>\x0a<li>Bleeding</li>\x0a<li>Marginal\x20perforation.</li>\x0a<li>Retraction\x20pocket.</li>\x0a<li>Cholesteatoma</li>\x0a</ul>','correct_choice_id':0x72,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xd,'choices':[{'id':0x79,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>b,\x20d</span></p>'},{'id':0x7a,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>a,\x20c</span></p>'},{'id':0x7b,'text':_0x35a466(0x242)},{'id':0x7c,'text':_0x35a466(0x1d6)}],'text':_0x35a466(0x447),'unique_key':'DT1224492','question_audio':null,'question_video':null,'map_id':0x12af2c,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x2f9),'correct_choice_id':0x7b,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xe,'choices':[{'id':0x83,'text':_0x35a466(0x31d)},{'id':0x84,'text':_0x35a466(0x3c5)},{'id':0x85,'text':_0x35a466(0x376)},{'id':0x86,'text':_0x35a466(0x423)}],'text':_0x35a466(0x1ef),'unique_key':_0x35a466(0x417),'question_audio':null,'question_video':null,'map_id':0x12af2d,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x35a466(0x203),'correct_choice_id':0x84,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xf,'choices':[{'id':0x8d,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Severe\x20otalgia</span></p>'},{'id':0x8e,'text':_0x35a466(0x35c)},{'id':0x8f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Pale\x20granulations\x20in\x20the\x20middle\x20ear</span></p>'},{'id':0x90,'text':_0x35a466(0x327)}],'text':_0x35a466(0x24e),'unique_key':_0x35a466(0x444),'question_audio':null,'question_video':null,'map_id':0x12bb92,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':_0x35a466(0x403),'correct_choice_id':0x8f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x10,'choices':[{'id':0x97,'text':_0x35a466(0x364)},{'id':0x98,'text':_0x35a466(0x3c6)},{'id':0x99,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Retraction\x20pocket</span></p>'},{'id':0x9a,'text':_0x35a466(0x419)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Tertiary\x20acquired\x20cholesteatoma\x20occurs\x20in\x20which\x20of\x20the\x20following\x20entities?</span></p>','unique_key':_0x35a466(0x391),'question_audio':null,'question_video':null,'map_id':0x12bb93,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>After\x20a\x20blast\x20injury,\x20a\x20cholesteatoma\x20may\x20arise\x20behind\x20a\x20spontaneously\x20healed\x20tympanic\x20membrane.</li>\x0a<li>Tertiary\x20acquired\x20cholesteatoma\x20refers\x20to\x20a\x20specific\x20subtype\x20of\x20acquired\x20cholesteatoma\x20defined\x20by\x20its\x20origin\x20behind\x20an\x20intact\x20tympanic\x20membrane,\x20occurring\x20due\x20to\x20implantation\x20of\x20squamous\x20epithelium\x20following\x20a\x20prior\x20middle\x20ear\x20injury\x20or\x20inflammation.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Perforation(Option\x20A)</strong>:\x20Leads\x20to\x20secondary\x20acquired\x20cholesteatoma,\x20where\x20epithelium\x20migrates\x20through\x20the\x20perforation,\x20not\x20a\x20tertiary\x20type.</p>\x0a<p><strong>Retraction\x20pocket(Option\x20C):\x20</strong>Causes\x20primary\x20acquired\x20cholesteatoma,\x20due\x20to\x20negative\x20pressure\x20in\x20the\x20middle\x20ear,\x20not\x20implantation\x20from\x20injury\x20or\x20surgery.</p>\x0a<p><strong>Eustachian\x20tube\x20dysfunction(Option\x20D)</strong>\x20is\x20also\x20a\x20mechanism\x20for\x20primary\x20(or\x20invagination-type)\x20cholesteatoma,\x20not\x20tertiary.</p>','correct_choice_id':0x98,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x11,'choices':[{'id':0xa1,'text':_0x35a466(0x263)},{'id':0xa2,'text':_0x35a466(0x25f)},{'id':0xa3,'text':_0x35a466(0x365)},{'id':0xa4,'text':_0x35a466(0x293)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20most\x20common\x20hidden\x20site\x20for\x20residual\x20cholesteatoma\x20after\x20the\x20mastoid\x20surgery\x20in\x20Atticoantral\x20CSOM\x20is</span></p>','unique_key':_0x35a466(0x44c),'question_audio':null,'question_video':null,'map_id':0x12bbb0,'difficulty_level':_0x35a466(0x2e9),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p>The\x20most\x20common\x20hidden\x20site\x20for\x20residual\x20cholesteatoma\x20after\x20the\x20mastoid\x20surgery\x20in\x20Atticoantral\x20CSOM\x20is\x20Sinus\x20Tympani\x20due\x20to\x20its\x20deep,\x20hidden\x20anatomy\x20and\x20limited\x20visibility\x20during\x20surgery.</p>\x0a<p><strong>Anatomy:\x20It\x20is\x20a\x20blind\x20spot\x20in\x20the\x20Middle\x20Ear:</strong></p>\x0a<ul>\x0a<li>The\x20sinus\x20tympani\x20is\x20a\x20deep\x20recess\x20located\x20behind\x20the\x20facial\x20nerve,\x20the\x20stapes,\x20and\x20the\x20posterior\x20canal,\x20wall-making\x20it\x20inaccessible\x20via\x20a\x20straight\x20microscope\x20view.</li>\x0a<li>This\x20\x22around-the-corner\x22\x20positioning\x20makes\x20complete\x20disease\x20removal\x20very\x20difficult\x20in\x20conventional\x20CWU\x20procedures.</li>\x0a</ul>\x0a<p><strong>High\x20Incidence\x20of\x20Residual\x20Disease:</strong></p>\x0a<ul>\x0a<li>Studies\x20report\x2022-47%\x20of\x20CWU\x20cases\x20have\x20residual\x20cholesteatoma\x20found\x20intraoperatively,\x20and\x20up\x20to\x2020-25%\x20recurrence,\x20with\x20the\x20sinus\x20tympani\x20most\x20frequently\x20involved.</li>\x0a<li>Even\x20after\x20microscopic\x20removal,\x20endoscopic\x20inspection\x20regularly\x20identifies\x20disease\x20in\x20this\x20hidden\x20recess.</li>\x0a</ul>\x0a<p><strong>Canal\x20Wall-Up\x20Increases\x20Risk:</strong></p>\x0a<ul>\x0a<li>CWU\x20maintains\x20the\x20posterior\x20canal\x20wall,\x20which\x20benefits\x20hearing\x20and\x20aesthetics,\x20but\x20it\x20limits\x20surgical\x20access\x20to\x20areas\x20like\x20the\x20sinus\x20tympani\x20and\x20facial\x20recess.</li>\x0a<li>Compared\x20to\x20canal\x20wall-down\x20(CWD),\x20CWU\x20shows\x20higher\x20residual\x20(19-47%\x20vs\x205-12%)\x20and\x20recurrence\x20rates\x20(up\x20to\x2020%).</li>\x0a</ul>\x0a<p><strong>Endoscopic\x20and\x20Two-Way\x20Approaches\x20Improve\x20Clearance:</strong></p>\x0a<ul>\x0a<li>Endoscopic-assisted\x20CWU\x20dramatically\x20reduces\x20residual\x20rates\x20(e.g.,\x2037%\x20&rarr;\x206%)\x20by\x20revealing\x20hidden\x20cholesteatoma.</li>\x0a<li>Combined\x20\x22two-way\x22\x20CWU\x20(via\x20meatus\x20+\x20mastoid/facial\x20recess)\x20specifically\x20targets\x20sinus\x20tympani\x20access-studies\x20show\x20this\x20approach\x20halves\x20residual\x20disease\x20rates\x20compared\x20to\x20one-way\x20CWU</li>\x0a</ul>','correct_choice_id':0xa2,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x35a466(0x331),'tags':[_0x35a466(0x249)],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName=_0x35a466(0x3ca);const quizFilename=_0x35a466(0x2c2);let hierarchy=['DocTutorial','qBank',_0x35a466(0x2e0)];if(window['location'][_0x35a466(0x433)][_0x35a466(0x27d)](_0x35a466(0x3a2))){const customData=JSON[_0x35a466(0x3af)](localStorage[_0x35a466(0x459)](_0x35a466(0x33c)));customData&&(questionsData=customData[_0x35a466(0x37a)],quizName=customData[_0x35a466(0x20d)],hierarchy=customData[_0x35a466(0x22c)],document['title']=quizName+'\x20-\x20Brain\x20And\x20Scalpel',document[_0x35a466(0x2f6)]('totalQuestions')[_0x35a466(0x1f5)]=questionsData[_0x35a466(0x219)],document[_0x35a466(0x2f6)](_0x35a466(0x392))[_0x35a466(0x1f5)]=hierarchy['join'](_0x35a466(0x211)));}let currentQuestionIndex=0x0,selectedOption=null,currentMode=_0x35a466(0x3b6),timer=null,timeRemaining=0x0,questionStartTime=Date[_0x35a466(0x3f8)](),quizStartTime=Date[_0x35a466(0x3f8)](),isQuizCompleted=![],questionStates=new Array(questionsData['length'])[_0x35a466(0x312)](null)[_0x35a466(0x366)](()=>({'status':'not_attempted','bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData['length']};function saveProgress(){const _0x39b8b5=_0x35a466,_0x3f6299={'GJYTZ':_0x39b8b5(0x2eb),'CZdnD':_0x39b8b5(0x43a)};if(isQuizCompleted)return;const _0x1060f1=JSON['parse'](localStorage[_0x39b8b5(0x459)](_0x3f6299['GJYTZ']))||{};_0x1060f1[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0x3f6299[_0x39b8b5(0x36e)],'lastSeen':new Date()[_0x39b8b5(0x2a3)]()},localStorage[_0x39b8b5(0x272)](_0x3f6299['GJYTZ'],JSON['stringify'](_0x1060f1));}function loadProgress(){const _0x5a2d9b=_0x35a466,_0x16e5b2={'ZZcyp':'userHistory'},_0x4daa79=JSON[_0x5a2d9b(0x3af)](localStorage[_0x5a2d9b(0x459)](_0x16e5b2[_0x5a2d9b(0x1d3)]))||{},_0x388b66=_0x4daa79[quizFilename];if(_0x388b66)return questionStates=_0x388b66[_0x5a2d9b(0x367)],stats=_0x388b66[_0x5a2d9b(0x41f)],currentQuestionIndex=_0x388b66[_0x5a2d9b(0x317)],currentMode=_0x388b66[_0x5a2d9b(0x2c3)],console[_0x5a2d9b(0x346)]('Progress\x20loaded.'),!![];return![];}function clearProgress(){const _0x35a106=_0x35a466,_0x5b92b0={'kaYyy':_0x35a106(0x2d3),'Babyh':_0x35a106(0x2eb),'iYbxe':function(_0x3501f4,_0x5ec843){return _0x3501f4!==_0x5ec843;},'Xtbws':_0x35a106(0x1f9),'rmkIs':_0x35a106(0x3b0)},_0x176abd=JSON[_0x35a106(0x3af)](localStorage['getItem'](_0x5b92b0[_0x35a106(0x2b7)]))||{};_0x176abd[quizFilename]&&(_0x5b92b0[_0x35a106(0x3ad)](_0x5b92b0['Xtbws'],_0x5b92b0[_0x35a106(0x340)])?_0x370d19[_0x35a106(0x2f6)](_0x5b92b0[_0x35a106(0x2df)])['classList']['toggle'](_0x35a106(0x231)):(delete _0x176abd[quizFilename],localStorage[_0x35a106(0x272)](_0x5b92b0[_0x35a106(0x2b7)],JSON['stringify'](_0x176abd)),console[_0x35a106(0x346)](_0x5b92b0[_0x35a106(0x3c3)])));}function markQuizAsCompleted(){const _0x447848=_0x35a466,_0x5eb2b1={'xKfEB':_0x447848(0x2eb)},_0x1b47bd=JSON[_0x447848(0x3af)](localStorage[_0x447848(0x459)](_0x5eb2b1['xKfEB']))||{},_0x5a00d5=questionsData[_0x447848(0x219)],_0x59933f=stats['correctAnswers']||0x0;_0x1b47bd[quizFilename]={'score':_0x59933f,'total':_0x5a00d5,'status':'completed','completedOn':new Date()['toISOString']()},localStorage[_0x447848(0x272)]('userHistory',JSON[_0x447848(0x378)](_0x1b47bd));}const urlParams=new URLSearchParams(window[_0x35a466(0x401)]['search']),startAt=parseInt(urlParams[_0x35a466(0x396)]('startAt')),resume=urlParams[_0x35a466(0x396)]('resume')===_0x35a466(0x21e);function goBack(){const _0x232808=_0x35a466,_0x4a31c1={'MVKDD':function(_0x577740){return _0x577740();},'fJWAD':_0x232808(0x3e3)};if(!isQuizCompleted)_0x4a31c1['MVKDD'](saveProgress);window['location'][_0x232808(0x3a6)]=document[_0x232808(0x1de)]||_0x4a31c1['fJWAD'];}function selectMode(_0x134ee1){const _0xcf0263=_0x35a466,_0x49e9ec={'oghTy':_0xcf0263(0x41e),'jVmEF':function(_0x407bdc){return _0x407bdc();}};currentMode=_0x134ee1,document[_0xcf0263(0x2f6)](_0x49e9ec[_0xcf0263(0x390)])[_0xcf0263(0x222)][_0xcf0263(0x421)]=_0xcf0263(0x201),_0x49e9ec[_0xcf0263(0x1dd)](initializeQuiz);}function initializeQuiz(){const _0x2f32a5=_0x35a466,_0x32cb50={'tTEYW':function(_0x30cfe8){return _0x30cfe8();},'Purqq':'markReviewBtn','eoqXb':_0x2f32a5(0x435),'ufjNw':_0x2f32a5(0x343),'DLtha':function(_0x5a3067,_0x2839d0){return _0x5a3067===_0x2839d0;},'fXWTa':_0x2f32a5(0x3b4),'NOOUU':_0x2f32a5(0x35b),'hguHO':_0x2f32a5(0x201),'HBFHt':'block','wCyBo':'studyModeLegend','NgFqp':_0x2f32a5(0x451),'HPAKX':_0x2f32a5(0x34e),'Hycqe':function(_0x5773a9,_0x463697){return _0x5773a9===_0x463697;},'plqqF':_0x2f32a5(0x313),'lVOtN':function(_0x1d43e7,_0x156555){return _0x1d43e7===_0x156555;},'IlxNK':_0x2f32a5(0x41b),'oYkaw':_0x2f32a5(0x2a4),'QjCHQ':_0x2f32a5(0x425),'acYwS':function(_0x3c3bfd,_0x5a643b){return _0x3c3bfd(_0x5a643b);},'AHTpg':function(_0x16cdaa,_0x3202af){return _0x16cdaa>=_0x3202af;},'PHLwa':function(_0x3322e5){return _0x3322e5();}};quizStartTime=Date[_0x2f32a5(0x3f8)]();const _0x53c950=document['getElementById'](_0x2f32a5(0x200)),_0x19f8e3=document[_0x2f32a5(0x2f6)](_0x32cb50[_0x2f32a5(0x44b)]),_0x44b20e=document[_0x2f32a5(0x2f6)](_0x32cb50['eoqXb']),_0x432054=currentMode===_0x32cb50[_0x2f32a5(0x2d4)]||_0x32cb50[_0x2f32a5(0x373)](currentMode,_0x32cb50['fXWTa']);document[_0x2f32a5(0x2f6)](_0x32cb50['NOOUU'])['style'][_0x2f32a5(0x421)]=_0x432054?_0x32cb50[_0x2f32a5(0x3f4)]:_0x32cb50['HBFHt'],document['getElementById'](_0x32cb50[_0x2f32a5(0x2f2)])[_0x2f32a5(0x222)][_0x2f32a5(0x421)]=_0x432054?_0x32cb50[_0x2f32a5(0x3f4)]:_0x2f32a5(0x1e6),document[_0x2f32a5(0x2f6)](_0x2f32a5(0x377))[_0x2f32a5(0x222)]['display']=_0x432054?_0x32cb50[_0x2f32a5(0x24f)]:_0x32cb50[_0x2f32a5(0x3f4)],document[_0x2f32a5(0x2f6)](_0x32cb50[_0x2f32a5(0x2e5)])[_0x2f32a5(0x222)][_0x2f32a5(0x421)]=_0x432054?_0x2f32a5(0x1e6):_0x32cb50[_0x2f32a5(0x3f4)],_0x53c950[_0x2f32a5(0x222)][_0x2f32a5(0x421)]=_0x432054?'none':_0x2f32a5(0x34e),_0x19f8e3[_0x2f32a5(0x222)][_0x2f32a5(0x421)]=_0x432054?_0x32cb50[_0x2f32a5(0x424)]:_0x32cb50[_0x2f32a5(0x3f4)],_0x44b20e[_0x2f32a5(0x222)][_0x2f32a5(0x421)]=_0x432054?_0x32cb50[_0x2f32a5(0x424)]:_0x32cb50['hguHO'],(_0x32cb50[_0x2f32a5(0x2ac)](currentMode,_0x32cb50[_0x2f32a5(0x3d8)])||_0x32cb50[_0x2f32a5(0x259)](currentMode,_0x32cb50[_0x2f32a5(0x3f9)]))&&(_0x32cb50[_0x2f32a5(0x259)]('IDkTa',_0x32cb50['IlxNK'])?document[_0x2f32a5(0x2f6)](_0x32cb50['oYkaw'])[_0x2f32a5(0x287)]['remove'](_0x32cb50[_0x2f32a5(0x428)]):(_0x5472fb[_0xed9391][_0x2f32a5(0x2e4)]=!_0x2578b4[_0x1da637][_0x2f32a5(0x2e4)],_0x32cb50[_0x2f32a5(0x254)](_0x447a47),_0x32cb50['tTEYW'](_0xbe8146))),!_0x32cb50[_0x2f32a5(0x26c)](isNaN,startAt)&&_0x32cb50[_0x2f32a5(0x330)](startAt,0x0)&&startAt<questionsData[_0x2f32a5(0x219)]&&(currentQuestionIndex=startAt),loadBookmarkedQuestions(),_0x32cb50[_0x2f32a5(0x254)](generateQuestionNav),_0x32cb50['PHLwa'](updateStats),_0x32cb50[_0x2f32a5(0x254)](displayQuestion);}function generateQuestionNav(){const _0x403d7f=_0x35a466,_0x458e76={'SsZuZ':function(_0x46ed22,_0x21e330){return _0x46ed22<_0x21e330;},'zEFEp':'button','xXqZY':function(_0x12b80f,_0x32cf5f){return _0x12b80f+_0x32cf5f;},'pwIKQ':_0x403d7f(0x29c),'dmFqJ':function(_0x95f5){return _0x95f5();}},_0x26ebef=document[_0x403d7f(0x2f6)]('questionNav');_0x26ebef[_0x403d7f(0x24c)]='';for(let _0x464708=0x0;_0x458e76['SsZuZ'](_0x464708,questionsData['length']);_0x464708++){const _0x483dd8=document[_0x403d7f(0x2ff)](_0x458e76[_0x403d7f(0x2e3)]);_0x483dd8[_0x403d7f(0x1f5)]=_0x458e76[_0x403d7f(0x2ad)](_0x464708,0x1),_0x483dd8['className']=_0x458e76[_0x403d7f(0x31a)],_0x483dd8[_0x403d7f(0x221)]=()=>jumpToQuestion(_0x464708),_0x483dd8['id']='navBtn_'+_0x464708,_0x26ebef[_0x403d7f(0x229)](_0x483dd8);}_0x458e76[_0x403d7f(0x217)](updateQuestionNav);}function updateQuestionNav(){const _0x3b784b=_0x35a466,_0x2876ec={'BRYag':_0x3b784b(0x200),'TzEph':_0x3b784b(0x321),'jurkG':function(_0x431802,_0xc6f805){return _0x431802===_0xc6f805;},'PNnkg':_0x3b784b(0x3b4),'DfuLJ':_0x3b784b(0x35b),'yteur':_0x3b784b(0x1e6),'VFlgD':_0x3b784b(0x450),'ANdDO':_0x3b784b(0x201),'rskdf':_0x3b784b(0x377),'GEgEc':_0x3b784b(0x34e),'mVetE':function(_0x401ce7,_0x22da72){return _0x401ce7===_0x22da72;},'vACGK':_0x3b784b(0x313),'XItDp':_0x3b784b(0x425),'dgRuN':function(_0x390e99,_0x5d6862){return _0x390e99(_0x5d6862);},'rPWyx':function(_0x507b2c,_0x4ed275){return _0x507b2c>=_0x4ed275;},'mVZJH':function(_0x1639ed,_0xf67fa3){return _0x1639ed<_0xf67fa3;},'MBHoz':function(_0x335be2){return _0x335be2();},'IIhuT':_0x3b784b(0x400),'PjFkr':'nav-btn-bookmarked','yHxUn':_0x3b784b(0x2a9),'QRxlG':function(_0x2bd52a,_0x34388d){return _0x2bd52a===_0x34388d;},'lIhoX':'study','qrCbo':_0x3b784b(0x1d1),'hiLjU':_0x3b784b(0x381),'ctsFB':'nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','BqLEF':function(_0x30f77c,_0x3d3e82){return _0x30f77c===_0x3d3e82;},'izzqw':_0x3b784b(0x2fa),'nbBCK':_0x3b784b(0x1d5),'nPZaH':'nav-btn-answered'};for(let _0x2003e4=0x0;_0x2876ec[_0x3b784b(0x1fa)](_0x2003e4,questionsData[_0x3b784b(0x219)]);_0x2003e4++){const _0x4a5da7=document['getElementById'](_0x3b784b(0x2cb)+_0x2003e4),_0x53aebf=questionStates[_0x2003e4];let _0x20dc48='';if(_0x2876ec[_0x3b784b(0x1fb)](_0x2003e4,currentQuestionIndex))_0x20dc48=_0x2876ec['IIhuT'];else{if(_0x53aebf['bookmarked'])_0x20dc48=_0x2876ec[_0x3b784b(0x347)];else{if(_0x53aebf['markedForReview'])_0x20dc48=_0x2876ec[_0x3b784b(0x2b9)];else{if(_0x2876ec['QRxlG'](currentMode,_0x2876ec[_0x3b784b(0x28f)])||currentMode===_0x3b784b(0x313)){if(_0x53aebf[_0x3b784b(0x2af)]===_0x2876ec['qrCbo'])_0x20dc48=_0x2876ec[_0x3b784b(0x3c0)];else{if(_0x2876ec[_0x3b784b(0x1fb)](_0x53aebf['status'],'incorrect'))_0x20dc48='nav-btn-incorrect';else _0x20dc48=_0x2876ec[_0x3b784b(0x415)];}}else{if(_0x2876ec[_0x3b784b(0x1f8)](_0x2876ec[_0x3b784b(0x2b2)],_0x2876ec[_0x3b784b(0x245)])){_0x26744e=_0x5ce05f[_0x3b784b(0x3f8)]();const _0x5c9960=_0x283b13[_0x3b784b(0x2f6)](_0x2876ec[_0x3b784b(0x430)]),_0x5655dc=_0x1a003c[_0x3b784b(0x2f6)](_0x2876ec[_0x3b784b(0x2f8)]),_0x181820=_0x10f786['getElementById'](_0x3b784b(0x435)),_0x3b4f47=_0x2876ec[_0x3b784b(0x326)](_0x1c66d1,_0x3b784b(0x343))||_0x47a8c7===_0x2876ec[_0x3b784b(0x2fc)];_0x51d747[_0x3b784b(0x2f6)](_0x2876ec[_0x3b784b(0x36d)])[_0x3b784b(0x222)]['display']=_0x3b4f47?'none':_0x2876ec['yteur'],_0x2fbd0b[_0x3b784b(0x2f6)](_0x2876ec[_0x3b784b(0x395)])[_0x3b784b(0x222)][_0x3b784b(0x421)]=_0x3b4f47?_0x2876ec[_0x3b784b(0x2fd)]:_0x2876ec[_0x3b784b(0x260)],_0x550cc6[_0x3b784b(0x2f6)](_0x2876ec[_0x3b784b(0x2c6)])['style'][_0x3b784b(0x421)]=_0x3b4f47?_0x2876ec[_0x3b784b(0x260)]:_0x2876ec[_0x3b784b(0x2fd)],_0x51a380[_0x3b784b(0x2f6)](_0x3b784b(0x451))[_0x3b784b(0x222)]['display']=_0x3b4f47?_0x2876ec[_0x3b784b(0x260)]:_0x3b784b(0x201),_0x5c9960[_0x3b784b(0x222)][_0x3b784b(0x421)]=_0x3b4f47?_0x3b784b(0x201):_0x2876ec['GEgEc'],_0x5655dc[_0x3b784b(0x222)]['display']=_0x3b4f47?_0x2876ec['GEgEc']:_0x2876ec[_0x3b784b(0x2fd)],_0x181820[_0x3b784b(0x222)][_0x3b784b(0x421)]=_0x3b4f47?_0x2876ec[_0x3b784b(0x2b3)]:_0x2876ec[_0x3b784b(0x2fd)],(_0x2876ec['mVetE'](_0x21a61e,_0x2876ec['vACGK'])||_0x363d3c===_0x3b784b(0x3b4))&&_0x1e396c[_0x3b784b(0x2f6)](_0x3b784b(0x2a4))['classList']['remove'](_0x2876ec[_0x3b784b(0x2f7)]),!_0x2876ec['dgRuN'](_0x5455a1,_0x2c92fe)&&_0x2876ec[_0x3b784b(0x22e)](_0x1a61e8,0x0)&&_0x2876ec[_0x3b784b(0x1fa)](_0x4deeff,_0x3d81de[_0x3b784b(0x219)])&&(_0xa5255=_0x4ae8de),_0x2876ec[_0x3b784b(0x3d2)](_0x2763d),_0x47814b(),_0x2876ec[_0x3b784b(0x3d2)](_0x49b092),_0x46b236();}else{if(_0x53aebf['selectedAnswer']!==null)_0x20dc48=_0x2876ec[_0x3b784b(0x1f1)];else _0x20dc48=_0x2876ec[_0x3b784b(0x415)];}}}}}_0x4a5da7[_0x3b784b(0x264)]='w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20'+_0x20dc48;}}function jumpToQuestion(_0x1b14ac){const _0x797d49=_0x35a466,_0x5dd340={'oSmsr':function(_0x383a90,_0xc52d56){return _0x383a90>=_0xc52d56;},'VpDqJ':function(_0x5ce0be,_0x474be6){return _0x5ce0be-_0x474be6;},'jhsJZ':function(_0x58cf64){return _0x58cf64();}};_0x5dd340['oSmsr'](_0x1b14ac,0x0)&&_0x1b14ac<questionsData[_0x797d49(0x219)]&&(questionStartTime&&(questionStates[currentQuestionIndex][_0x797d49(0x362)]+=_0x5dd340[_0x797d49(0x248)](Date[_0x797d49(0x3f8)](),questionStartTime)),currentQuestionIndex=_0x1b14ac,_0x5dd340['jhsJZ'](displayQuestion),saveProgress());}function updateStats(){const _0x297b2e=_0x35a466,_0x893ab={'hSRNd':function(_0x2dc2a2,_0x3885fb){return _0x2dc2a2-_0x3885fb;},'isnDB':function(_0x59f751,_0x43d833){return _0x59f751===_0x43d833;},'qkfSb':'study','qHfjG':function(_0x4daf7b,_0x8a849a){return _0x4daf7b===_0x8a849a;},'fmMZl':_0x297b2e(0x3f2),'UPMyE':_0x297b2e(0x446),'qbGkL':function(_0x46efac,_0x4a1a7e){return _0x46efac>_0x4a1a7e;},'Wkqsv':function(_0x5659f3,_0x3d89e1){return _0x5659f3*_0x3d89e1;},'AGtXl':function(_0x8c866,_0x8519b2){return _0x8c866/_0x8519b2;},'jDxJz':_0x297b2e(0x382),'iRplF':function(_0x24be88,_0x206291){return _0x24be88+_0x206291;},'BxjaH':function(_0x27b82e,_0x2ba7e6){return _0x27b82e/_0x2ba7e6;},'MLQcq':function(_0x30740d,_0x157c28){return _0x30740d%_0x157c28;},'uirKW':_0x297b2e(0x362)};if(_0x893ab[_0x297b2e(0x439)](currentMode,_0x893ab[_0x297b2e(0x3e9)])||_0x893ab[_0x297b2e(0x439)](currentMode,_0x297b2e(0x313))){if(_0x893ab['qHfjG'](_0x297b2e(0x1df),_0x297b2e(0x1df))){document[_0x297b2e(0x2f6)](_0x297b2e(0x29e))['textContent']=stats[_0x297b2e(0x3f1)],document['getElementById'](_0x893ab[_0x297b2e(0x305)])[_0x297b2e(0x1f5)]=stats[_0x297b2e(0x20e)],document[_0x297b2e(0x2f6)](_0x893ab[_0x297b2e(0x214)])['textContent']=stats[_0x297b2e(0x446)];const _0x433496=_0x893ab['qbGkL'](stats['totalAttempted'],0x0)?Math['round'](_0x893ab['Wkqsv'](_0x893ab[_0x297b2e(0x3db)](stats[_0x297b2e(0x3f1)],stats[_0x297b2e(0x446)]),0x64)):0x0;document['getElementById'](_0x893ab['jDxJz'])[_0x297b2e(0x1f5)]=_0x893ab['iRplF'](_0x433496,'%'),stats[_0x297b2e(0x45f)]=questionStates[_0x297b2e(0x2d2)]((_0x4be30b,_0x1d5a01)=>_0x4be30b+_0x1d5a01[_0x297b2e(0x362)],0x0);const _0x7aa03a=Math[_0x297b2e(0x3a5)](_0x893ab[_0x297b2e(0x1da)](stats['totalTime'],0x3e8)),_0x555689=Math[_0x297b2e(0x3a5)](_0x893ab[_0x297b2e(0x3db)](_0x7aa03a,0x3c)),_0x3480fe=_0x893ab[_0x297b2e(0x409)](_0x7aa03a,0x3c);document[_0x297b2e(0x2f6)](_0x893ab[_0x297b2e(0x1f7)])[_0x297b2e(0x1f5)]=_0x893ab[_0x297b2e(0x300)](_0x555689+':',_0x3480fe[_0x297b2e(0x3df)]()[_0x297b2e(0x1ee)](0x2,'0'));}else _0xb6109f[_0x4c7c0d][_0x297b2e(0x362)]+=_0x893ab['hSRNd'](_0x223302[_0x297b2e(0x3f8)](),_0x52b735);}}function setupVideo(_0x4f5c86,_0x4e0436){const _0x1095b3=_0x35a466,_0x5af57c={'ngFJx':_0x1095b3(0x3d5)};if(Hls[_0x1095b3(0x1fe)]()){const _0x365c0f=new Hls();_0x365c0f[_0x1095b3(0x297)](_0x4e0436),_0x365c0f[_0x1095b3(0x462)](_0x4f5c86);}else _0x4f5c86[_0x1095b3(0x23b)](_0x5af57c[_0x1095b3(0x31e)])&&(_0x4f5c86[_0x1095b3(0x379)]=_0x4e0436);}function displayQuestion(){const _0x1fa384=_0x35a466,_0x202de9={'pTkQo':_0x1fa384(0x3a2),'akrQG':function(_0x24ab5d){return _0x24ab5d();},'OHFXw':function(_0x3abd0a,_0x1dab88){return _0x3abd0a+_0x1dab88;},'RYfBM':function(_0x4c0137,_0x35bcf9){return _0x4c0137===_0x35bcf9;},'rFMQo':_0x1fa384(0x2bd),'wKLJA':function(_0x58d548,_0x490bf6){return _0x58d548+_0x490bf6;},'oubzT':_0x1fa384(0x40d),'TuvrN':function(_0x10da68,_0x4f2e49){return _0x10da68+_0x4f2e49;},'lDsai':function(_0x2a49f4,_0x32b238){return _0x2a49f4!==_0x32b238;},'JcUat':'.option-button','EOTsc':_0x1fa384(0x41a),'BvizM':function(_0xd89f9f,_0x2fdf60){return _0xd89f9f!==_0x2fdf60;},'ucdlF':'XHzHe','bJNtA':function(_0x28662e,_0x551dbf){return _0x28662e(_0x551dbf);},'fIzam':_0x1fa384(0x455),'UUpyA':_0x1fa384(0x397),'GaXgK':function(_0x3f8235,_0x27dfed){return _0x3f8235*_0x27dfed;},'UnMwv':function(_0x30c3e1,_0x2f4f2f){return _0x30c3e1/_0x2f4f2f;},'uCNPe':_0x1fa384(0x253),'XUosB':function(_0x98ae26){return _0x98ae26();},'YQDPg':_0x1fa384(0x349),'dLRJf':'hidden','ciCAG':_0x1fa384(0x2fe),'FSHmS':'RHQHe','ahPWb':'wmahc','eQAia':_0x1fa384(0x3dd),'wKHxq':_0x1fa384(0x27f),'XkTBV':_0x1fa384(0x1e3),'Alcok':_0x1fa384(0x286),'oAZXm':function(_0x449c37){return _0x449c37();},'tJHAU':function(_0x114442,_0x33e1a3){return _0x114442===_0x33e1a3;},'FyLKT':'timed_study','eVOsx':function(_0x3fbdbf,_0x5cd134){return _0x3fbdbf===_0x5cd134;},'AXnQI':_0x1fa384(0x3b4),'BMmxP':function(_0x1d8b6b){return _0x1d8b6b();}};if(!questionsData||questionsData[_0x1fa384(0x219)]===0x0){if(_0x202de9['RYfBM'](_0x1fa384(0x455),_0x202de9[_0x1fa384(0x301)])){document[_0x1fa384(0x2f6)](_0x202de9[_0x1fa384(0x43b)])['innerHTML']=_0x1fa384(0x3e1);return;}else _0x570ee5=_0x41798b;};const _0x51f1fb=questionsData[currentQuestionIndex];questionStartTime=Date[_0x1fa384(0x3f8)](),selectedOption=questionStates[currentQuestionIndex]['selectedAnswer'];const _0x44348b=_0x202de9[_0x1fa384(0x360)](_0x202de9[_0x1fa384(0x20c)](currentQuestionIndex+0x1,questionsData['length']),0x64);document['getElementById'](_0x202de9[_0x1fa384(0x39a)])[_0x1fa384(0x222)][_0x1fa384(0x43d)]=_0x202de9[_0x1fa384(0x1d7)](_0x44348b,'%'),document['getElementById']('currentQuestion')[_0x1fa384(0x1f5)]=currentQuestionIndex+0x1,_0x202de9['XUosB'](updateQuestionNav),document[_0x1fa384(0x2f6)](_0x1fa384(0x2b8))['disabled']=_0x202de9[_0x1fa384(0x239)](currentQuestionIndex,0x0),document['getElementById'](_0x202de9[_0x1fa384(0x2ec)])['classList']['add'](_0x202de9['dLRJf']),document[_0x1fa384(0x2f6)](_0x202de9['UUpyA'])[_0x1fa384(0x24c)]=_0x51f1fb[_0x1fa384(0x1ec)]||_0x202de9[_0x1fa384(0x2ae)];let _0x16c5a5='';if(_0x51f1fb[_0x1fa384(0x411)])_0x16c5a5+=_0x1fa384(0x27c)+_0x51f1fb[_0x1fa384(0x411)]+_0x1fa384(0x460);if(_0x51f1fb['question_video'])_0x16c5a5+=_0x1fa384(0x2de)+_0x51f1fb[_0x1fa384(0x3fb)]+_0x1fa384(0x35f);_0x51f1fb['question_images']&&(_0x202de9[_0x1fa384(0x239)](_0x202de9[_0x1fa384(0x334)],_0x202de9[_0x1fa384(0x3f0)])?(_0x11c0a7[_0x1fa384(0x401)][_0x1fa384(0x433)][_0x1fa384(0x27d)](_0x202de9[_0x1fa384(0x42f)])&&_0x4c3e9f[_0x1fa384(0x285)](_0x1fa384(0x33c)),_0x202de9['akrQG'](_0x1ff62e),_0x330988[_0x1fa384(0x35a)]()):_0x51f1fb[_0x1fa384(0x23d)][_0x1fa384(0x1e2)](_0x4f98d2=>{const _0x1161a0=_0x1fa384;if(_0x4f98d2)_0x16c5a5+=_0x1161a0(0x27b)+_0x4f98d2+'\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>';}));document[_0x1fa384(0x2f6)](_0x202de9[_0x1fa384(0x443)])[_0x1fa384(0x24c)]=_0x16c5a5;const _0x33b765=document['getElementById'](_0x202de9[_0x1fa384(0x416)]);_0x33b765[_0x1fa384(0x24c)]='',_0x33b765[_0x1fa384(0x287)]['remove'](_0x202de9['EOTsc']),_0x51f1fb['choices']&&Array[_0x1fa384(0x299)](_0x51f1fb[_0x1fa384(0x40c)])&&(_0x202de9[_0x1fa384(0x441)](_0x202de9['XkTBV'],_0x202de9[_0x1fa384(0x3b9)])?_0x4079ed(_0x5107f3,_0x286a52):(_0x51f1fb['choices']['forEach']((_0x405f77,_0x23dfc6)=>{const _0x463071=_0x1fa384,_0x1bda7f=String[_0x463071(0x370)](_0x202de9['OHFXw'](0x41,_0x23dfc6)),_0x599d27=_0x202de9['RYfBM'](selectedOption,_0x23dfc6),_0x392d56=document['createElement'](_0x463071(0x3b7));_0x392d56[_0x463071(0x24c)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20'+(_0x599d27?_0x202de9[_0x463071(0x26b)]:'')+_0x463071(0x213)+_0x23dfc6+_0x463071(0x44d)+_0x1bda7f+_0x463071(0x410)+(_0x405f77[_0x463071(0x1ec)]||_0x202de9[_0x463071(0x1d7)](_0x202de9[_0x463071(0x3e6)],_0x202de9['TuvrN'](_0x23dfc6,0x1)))+_0x463071(0x453),_0x33b765[_0x463071(0x229)](_0x392d56);}),_0x33b765[_0x1fa384(0x30a)](_0x202de9['Alcok'],function(_0x46252c){const _0x460b11=_0x1fa384,_0xeb6161={'uLARf':function(_0x513e4e,_0x521796){const _0x594a41=_0x2dd9;return _0x202de9[_0x594a41(0x44a)](_0x513e4e,_0x521796);},'TudLu':_0x460b11(0x313),'onJaT':_0x460b11(0x27f),'OhXmV':_0x202de9[_0x460b11(0x23f)],'MlpXl':_0x202de9[_0x460b11(0x2d7)],'ehLAn':function(_0x10bf7d){return _0x10bf7d();}};if(_0x202de9[_0x460b11(0x441)](_0x202de9[_0x460b11(0x21f)],_0x202de9[_0x460b11(0x21f)])){const _0x2a22d9={'lIEZT':_0x460b11(0x2bd),'uoKEo':function(_0x3873e4,_0x233584){return _0x3873e4===_0x233584;}};if(_0xeb6161[_0x460b11(0x3d3)](_0x19276d,'study')&&_0xeb6161[_0x460b11(0x3d3)](_0x1de8d7,_0xeb6161[_0x460b11(0x292)]))return;const _0x17a9ef=_0x46f039[_0x460b11(0x2f6)](_0xeb6161[_0x460b11(0x2bf)]),_0x1f03d5=_0x17a9ef[_0x460b11(0x45a)](_0xeb6161[_0x460b11(0x307)]),_0x230333=_0x114abb[_0x393b0e],_0x40318e=_0x230333['correct_choice_id'];let _0x2983c9=_0x230333[_0x460b11(0x40c)][_0x460b11(0x3c7)](_0x239826=>_0x239826['id']===_0x40318e);_0x17a9ef['classList'][_0x460b11(0x345)](_0xeb6161[_0x460b11(0x28b)]),_0x1f03d5['forEach']((_0x14f99e,_0x269065)=>{const _0x389fcb=_0x460b11;_0x14f99e[_0x389fcb(0x287)]['remove'](_0x2a22d9['lIEZT']);if(_0x269065===_0x2983c9)_0x14f99e[_0x389fcb(0x287)][_0x389fcb(0x345)](_0x389fcb(0x1d1));else{if(_0x2a22d9['uoKEo'](_0x269065,_0x584a03)&&!_0x5bfdef)_0x14f99e[_0x389fcb(0x287)][_0x389fcb(0x345)]('incorrect');}}),_0xeb6161[_0x460b11(0x34b)](_0x1ee3f8);}else{const _0x11c224=_0x46252c['target'][_0x460b11(0x2cf)](_0x202de9[_0x460b11(0x23f)]);if(_0x11c224){if(_0x202de9['RYfBM'](_0x460b11(0x2fb),'UZgRG')){const _0x1ecf1b=_0x202de9[_0x460b11(0x3bb)](parseInt,_0x11c224[_0x460b11(0x216)](_0x460b11(0x267)));_0x202de9[_0x460b11(0x3bb)](selectOption,_0x1ecf1b);}else{_0x50d3e1['totalAttempted']++,_0x2abdad[_0x460b11(0x348)]--;if(_0xdd5b80)_0x5c8a81['correctAnswers']++;else _0x4b4779[_0x460b11(0x20e)]++;}}}}))),updateBookmarkButton(),_0x202de9[_0x1fa384(0x3c8)](updateMarkReviewButton),(_0x202de9['tJHAU'](currentMode,_0x202de9[_0x1fa384(0x3c1)])||_0x202de9[_0x1fa384(0x262)](currentMode,_0x202de9[_0x1fa384(0x257)]))&&!isQuizCompleted&&_0x202de9['BMmxP'](startTimer);}function selectOption(_0x1c0e76){const _0x35850a=_0x35a466,_0x38cda0={'blxVM':_0x35850a(0x2bd),'xhoQn':function(_0x4c5cfa,_0x528ec0){return _0x4c5cfa===_0x528ec0;},'tDWQJ':function(_0x4d3007,_0x3f1776){return _0x4d3007-_0x3f1776;},'qfKjk':_0x35850a(0x1d4),'XdcvN':function(_0x3349be,_0x4d52d4){return _0x3349be===_0x4d52d4;},'wTUWD':_0x35850a(0x3b6),'fzPuo':function(_0x583478,_0x3af98b){return _0x583478===_0x3af98b;},'kVsQa':_0x35850a(0x23a),'DuDZQ':function(_0x347438,_0x3beae0){return _0x347438!==_0x3beae0;},'SKYdg':'IYABb','uAyoc':_0x35850a(0x41a),'SHJOZ':function(_0x150e50){return _0x150e50();},'EEcDt':function(_0x8c04a3){return _0x8c04a3();}},_0x14cc47=document[_0x35850a(0x2f6)](_0x35850a(0x27f));if(_0x14cc47['classList'][_0x35850a(0x3b5)](_0x35850a(0x41a)))return;questionStartTime&&(questionStates[currentQuestionIndex][_0x35850a(0x362)]+=_0x38cda0['tDWQJ'](Date['now'](),questionStartTime),questionStartTime=Date[_0x35850a(0x3f8)]()),selectedOption=_0x1c0e76,questionStates[currentQuestionIndex]['selectedAnswer']=_0x1c0e76,document[_0x35850a(0x45a)](_0x38cda0[_0x35850a(0x44f)])[_0x35850a(0x1e2)]((_0x234111,_0x5c4f85)=>{const _0x46964c=_0x35850a;_0x234111[_0x46964c(0x287)][_0x46964c(0x42e)](_0x38cda0[_0x46964c(0x294)],_0x38cda0[_0x46964c(0x2a8)](_0x5c4f85,_0x1c0e76));}),_0x38cda0[_0x35850a(0x25e)](currentMode,_0x38cda0[_0x35850a(0x3d6)])||currentMode==='timed_study'?processAnswer():(_0x38cda0[_0x35850a(0x1f3)](questionStates[currentQuestionIndex][_0x35850a(0x2af)],_0x38cda0[_0x35850a(0x3ec)])&&(_0x38cda0['DuDZQ'](_0x38cda0[_0x35850a(0x323)],'qvbHa')?(questionStates[currentQuestionIndex][_0x35850a(0x2af)]=_0x38cda0[_0x35850a(0x26f)],stats['totalAttempted']++,stats[_0x35850a(0x348)]--):(_0x28c04a++,_0x1294d5[_0x35850a(0x2af)]=_0x35850a(0x3ff))),_0x38cda0['SHJOZ'](updateQuestionNav)),_0x38cda0[_0x35850a(0x290)](saveProgress);}function processAnswer(){const _0x5313c7=_0x35a466,_0x244239={'NMvfL':function(_0x1ef938,_0x5b4ea4){return _0x1ef938===_0x5b4ea4;},'nVzQH':function(_0x82e302,_0x189a80){return _0x82e302===_0x189a80;},'MLOfr':_0x5313c7(0x1d1),'gcdeK':_0x5313c7(0x3ff),'HoKxL':function(_0x5ba4d3){return _0x5ba4d3();},'qSlFv':function(_0x2e0cc3){return _0x2e0cc3();}},_0x1d3a47=questionsData[currentQuestionIndex],_0x3a827c=_0x1d3a47[_0x5313c7(0x458)];if(_0x244239['NMvfL'](selectedOption,null))return;const _0x2c1811=_0x1d3a47[_0x5313c7(0x40c)][selectedOption],_0x1cb299=_0x244239['NMvfL'](_0x2c1811['id'],_0x3a827c);if(_0x244239[_0x5313c7(0x2a5)](questionStates[currentQuestionIndex][_0x5313c7(0x2af)],_0x5313c7(0x23a))){stats[_0x5313c7(0x446)]++,stats['notAttempted']--;if(_0x1cb299)stats[_0x5313c7(0x3f1)]++;else stats['incorrectAnswers']++;}questionStates[currentQuestionIndex]['status']=_0x1cb299?_0x244239[_0x5313c7(0x3de)]:_0x244239['gcdeK'],_0x244239['HoKxL'](updateStats),showInlineFeedback(_0x1cb299),_0x244239['qSlFv'](updateQuestionNav);}function showInlineFeedback(_0x52bc2a){const _0x37ea17=_0x35a466,_0x116775={'LFWlg':_0x37ea17(0x2e8),'nDkvs':function(_0x4b7440,_0x53a543){return _0x4b7440!==_0x53a543;},'aVUwX':_0x37ea17(0x37c),'TxrYC':_0x37ea17(0x34f),'sGuOK':_0x37ea17(0x2bd),'VBcTI':_0x37ea17(0x1d1),'VeVst':_0x37ea17(0x3b6),'GGeVV':function(_0x445a8e,_0x4287ab){return _0x445a8e!==_0x4287ab;},'SdhyU':'optionsContainer','yquQB':_0x37ea17(0x1d4),'uXRnb':function(_0x3120f0){return _0x3120f0();}};if(currentMode!==_0x116775[_0x37ea17(0x45c)]&&_0x116775[_0x37ea17(0x418)](currentMode,'timed_study'))return;const _0x23bb49=document[_0x37ea17(0x2f6)](_0x116775[_0x37ea17(0x33d)]),_0x2b4a66=_0x23bb49[_0x37ea17(0x45a)](_0x116775[_0x37ea17(0x420)]),_0x599add=questionsData[currentQuestionIndex],_0x9d5408=_0x599add[_0x37ea17(0x458)];let _0x2bebbf=_0x599add['choices'][_0x37ea17(0x3c7)](_0x2004d9=>_0x2004d9['id']===_0x9d5408);_0x23bb49[_0x37ea17(0x287)][_0x37ea17(0x345)](_0x37ea17(0x41a)),_0x2b4a66[_0x37ea17(0x1e2)]((_0x18b60d,_0x26a30d)=>{const _0x559389=_0x37ea17;if(_0x116775[_0x559389(0x33a)](_0x116775[_0x559389(0x380)],_0x116775['TxrYC'])){_0x18b60d[_0x559389(0x287)][_0x559389(0x28a)](_0x116775[_0x559389(0x335)]);if(_0x26a30d===_0x2bebbf)_0x18b60d[_0x559389(0x287)][_0x559389(0x345)](_0x116775[_0x559389(0x2a6)]);else{if(_0x26a30d===selectedOption&&!_0x52bc2a)_0x18b60d[_0x559389(0x287)][_0x559389(0x345)]('incorrect');}}else return _0x1ef502[_0x559389(0x3df)]()['search'](yeWFUI[_0x559389(0x2aa)])[_0x559389(0x3df)]()[_0x559389(0x23c)](_0x16b464)[_0x559389(0x1f4)](yeWFUI[_0x559389(0x2aa)]);}),_0x116775[_0x37ea17(0x387)](showSolution);}function showSolution(){const _0x2e3927=_0x35a466,_0x59be3a={'QXFNl':function(_0x48a7e7,_0xec67d8){return _0x48a7e7(_0xec67d8);},'zbhxk':function(_0x363552,_0x47db5d){return _0x363552===_0x47db5d;},'lIipe':_0x2e3927(0x3b4),'QUuSy':function(_0x2fdb49){return _0x2fdb49();},'EBVHb':function(_0x22032f,_0x153c30){return _0x22032f/_0x153c30;},'gbqWv':_0x2e3927(0x461),'eXxfR':function(_0x5e4c9a,_0x344b15){return _0x5e4c9a+_0x344b15;},'KTfTR':function(_0x1a480b,_0x5c2c69){return _0x1a480b+_0x5c2c69;},'hcWfB':function(_0x568b21,_0x45fbdc){return _0x568b21!==_0x45fbdc;},'BIkwD':_0x2e3927(0x3b6),'IaJrS':_0x2e3927(0x313),'AJAeH':_0x2e3927(0x283),'KcVmV':_0x2e3927(0x43f),'AhPRM':_0x2e3927(0x407),'IBeJu':'hidden','lTcSH':'.m3u8','zbEuE':function(_0x34d328,_0x5e581f,_0x4fa603){return _0x34d328(_0x5e581f,_0x4fa603);},'ryflL':_0x2e3927(0x1ed),'tHLns':function(_0x3053de,_0x5a53d9){return _0x3053de===_0x5a53d9;},'vFKPa':_0x2e3927(0x353),'GvhLg':_0x2e3927(0x2f5),'FToub':'solutionContainer'};if(_0x59be3a['hcWfB'](currentMode,_0x59be3a[_0x2e3927(0x2c9)])&&_0x59be3a['hcWfB'](currentMode,_0x59be3a[_0x2e3927(0x324)]))return;const _0x32b2a8=questionsData[currentQuestionIndex];document[_0x2e3927(0x2f6)](_0x59be3a[_0x2e3927(0x2b5)])[_0x2e3927(0x24c)]=_0x32b2a8[_0x2e3927(0x36b)]||_0x2e3927(0x361);const _0x1a5130=document['getElementById'](_0x2e3927(0x41d)),_0x59f21c=document[_0x2e3927(0x2f6)](_0x59be3a[_0x2e3927(0x39d)]),_0x57287d=_0x32b2a8[_0x2e3927(0x30b)];if(_0x57287d){if(_0x59be3a['AhPRM']===_0x2e3927(0x3a8))_0x59be3a[_0x2e3927(0x1e9)](_0x443836,_0x4fbb1e),_0x59be3a['zbhxk'](_0x3b5ee6,_0x59be3a[_0x2e3927(0x464)])?_0x59be3a['QUuSy'](_0x5288bd):_0x59be3a[_0x2e3927(0x336)](_0x6ed411);else{_0x1a5130['classList']['remove'](_0x59be3a[_0x2e3927(0x24d)]);if(_0x57287d[_0x2e3927(0x45b)](_0x59be3a['lTcSH']))_0x59be3a[_0x2e3927(0x426)](setupVideo,_0x59f21c,_0x57287d);else _0x59f21c[_0x2e3927(0x379)]=_0x57287d;}}else _0x1a5130['classList'][_0x2e3927(0x345)](_0x59be3a[_0x2e3927(0x24d)]);const _0x22caec=document['getElementById'](_0x59be3a[_0x2e3927(0x2bc)]);_0x22caec[_0x2e3927(0x24c)]='';_0x32b2a8[_0x2e3927(0x3e8)]&&(_0x22caec[_0x2e3927(0x24c)]+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22'+_0x32b2a8[_0x2e3927(0x3e8)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>');_0x32b2a8[_0x2e3927(0x3d0)]&&(_0x22caec['innerHTML']+=_0x2e3927(0x42a)+_0x32b2a8[_0x2e3927(0x3d0)]+_0x2e3927(0x460));const _0x1d0372=document[_0x2e3927(0x2f6)](_0x2e3927(0x304));_0x1d0372[_0x2e3927(0x24c)]='';if(_0x32b2a8[_0x2e3927(0x1fd)]){if(_0x59be3a[_0x2e3927(0x281)](_0x59be3a[_0x2e3927(0x393)],_0x59be3a[_0x2e3927(0x238)])){const _0x38bfa0=_0x21f435[_0x2e3927(0x3a5)](_0x59be3a['EBVHb'](_0xf46951,0x3c)),_0x39413d=_0x5d29f6%0x3c;_0x518ea3[_0x2e3927(0x2f6)](_0x59be3a[_0x2e3927(0x2da)])[_0x2e3927(0x1f5)]=_0x59be3a[_0x2e3927(0x38f)](_0x59be3a[_0x2e3927(0x341)](_0x38bfa0,':'),_0x39413d[_0x2e3927(0x3df)]()[_0x2e3927(0x1ee)](0x2,'0'));}else _0x32b2a8['explanation_images'][_0x2e3927(0x1e2)](_0x3fa375=>{const _0x2400f9=_0x2e3927;if(_0x3fa375)_0x1d0372[_0x2400f9(0x24c)]+=_0x2400f9(0x338)+_0x3fa375+_0x2400f9(0x1fc);});}document[_0x2e3927(0x2f6)](_0x59be3a[_0x2e3927(0x306)])[_0x2e3927(0x287)]['remove']('hidden');}function submitQuiz(){const _0x1190f4=_0x35a466,_0x1c3e9e={'jCzHJ':function(_0x5878b0,_0x545e11){return _0x5878b0+_0x545e11;},'TmVUY':function(_0x595226){return _0x595226();},'xrZsx':function(_0x35fd71,_0x34eb9a){return _0x35fd71!==_0x34eb9a;},'qqZfr':function(_0x4ed94c,_0x1a21da){return _0x4ed94c===_0x1a21da;},'cGZEI':'pdQfr','xMnwl':function(_0x2006c7,_0x5e9662){return _0x2006c7===_0x5e9662;},'FyHmy':_0x1190f4(0x3ff),'nFsuX':function(_0x407ef8,_0x3c56e1){return _0x407ef8(_0x3c56e1);},'zdiok':'quizPerformanceData','SWcjO':function(_0x2c3cdc,_0x3e4dc3){return _0x2c3cdc-_0x3e4dc3;},'zQzCI':function(_0x1b90aa,_0x419ae0,_0x5571d3,_0x3185b8,_0x88496c){return _0x1b90aa(_0x419ae0,_0x5571d3,_0x3185b8,_0x88496c);},'aExyD':function(_0x2b6099,_0x37ae4f){return _0x2b6099+_0x37ae4f;}};if(timer)clearInterval(timer);if(!_0x1c3e9e['nFsuX'](confirm,'Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?'))return;isQuizCompleted=!![];let _0xe717da=0x0,_0x3157df=0x0;const _0x49d1cd=Date[_0x1190f4(0x3f8)]()-quizStartTime;questionsData[_0x1190f4(0x1e2)]((_0x4212bb,_0x51e992)=>{const _0x2ea2f8=_0x1190f4,_0x5b1a9e=questionStates[_0x51e992];if(_0x1c3e9e[_0x2ea2f8(0x22a)](_0x5b1a9e['selectedAnswer'],null)){if(_0x1c3e9e['qqZfr'](_0x1c3e9e[_0x2ea2f8(0x319)],_0x2ea2f8(0x3fc))){const _0x186a62=_0x2c8a53(eeXqyY['jCzHJ'](eeXqyY[_0x2ea2f8(0x3f5)]('return\x20(function()\x20',_0x2ea2f8(0x2f3)),');'));_0x216e89=eeXqyY[_0x2ea2f8(0x322)](_0x186a62);}else _0x1c3e9e[_0x2ea2f8(0x31b)](_0x4212bb[_0x2ea2f8(0x40c)][_0x5b1a9e[_0x2ea2f8(0x45d)]]['id'],_0x4212bb[_0x2ea2f8(0x458)])?(_0xe717da++,_0x5b1a9e['status']=_0x2ea2f8(0x1d1)):(_0x3157df++,_0x5b1a9e['status']=_0x1c3e9e['FyHmy']);}});const _0xf01ac5=JSON[_0x1190f4(0x3af)](localStorage[_0x1190f4(0x459)](_0x1c3e9e['zdiok']))||[];_0xf01ac5['push']({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date['now'](),'totalTime':_0x49d1cd,'stats':{'correct':_0xe717da,'incorrect':_0x3157df,'notAttempted':_0x1c3e9e[_0x1190f4(0x3aa)](questionsData[_0x1190f4(0x219)],_0x1c3e9e[_0x1190f4(0x3f5)](_0xe717da,_0x3157df))}}),localStorage['setItem'](_0x1190f4(0x202),JSON[_0x1190f4(0x378)](_0xf01ac5)),stats[_0x1190f4(0x3f1)]=_0xe717da,stats[_0x1190f4(0x20e)]=_0x3157df,_0x1c3e9e[_0x1190f4(0x322)](markQuizAsCompleted),_0x1c3e9e['zQzCI'](showPerformanceAnalysis,_0xe717da,_0x3157df,_0x1c3e9e[_0x1190f4(0x3aa)](questionsData[_0x1190f4(0x219)],_0x1c3e9e[_0x1190f4(0x2a2)](_0xe717da,_0x3157df)),_0x49d1cd);}function showPerformanceAnalysis(_0x13da0b,_0x236340,_0x45dd7f,_0x123551){const _0x18127a=_0x35a466,_0x44b35f={'iVFvl':_0x18127a(0x3cc),'qTIkn':function(_0x47724a,_0x4870fd){return _0x47724a>_0x4870fd;},'eqULt':function(_0x2fa827,_0x562fdf){return _0x2fa827+_0x562fdf;},'Cnmvd':function(_0x1b4b61,_0x239856){return _0x1b4b61*_0x239856;},'PgxEC':function(_0x354af0,_0xc1e556){return _0x354af0/_0xc1e556;},'zfJgq':_0x18127a(0x261),'TZydP':_0x18127a(0x282),'WWbAj':_0x18127a(0x37d),'CQiTG':'notAttemptedResult','IsPLT':function(_0x1db753,_0x3f08f8){return _0x1db753/_0x3f08f8;},'vZzSz':function(_0x515e04,_0x4ad2b3){return _0x515e04%_0x4ad2b3;},'fmXRW':_0x18127a(0x449),'NWUti':function(_0x5bb073,_0x5238a0){return _0x5bb073/_0x5238a0;},'SCUNn':function(_0x1358e4,_0x11a1bc){return _0x1358e4/_0x11a1bc;},'HbYOB':'avgTimeResult'},_0x2be7be=document[_0x18127a(0x2f6)](_0x44b35f[_0x18127a(0x32c)]),_0x5812cb=_0x44b35f[_0x18127a(0x463)](_0x44b35f[_0x18127a(0x223)](_0x13da0b,_0x236340),0x0)?Math[_0x18127a(0x227)](_0x44b35f[_0x18127a(0x320)](_0x44b35f[_0x18127a(0x2e7)](_0x13da0b,_0x44b35f[_0x18127a(0x223)](_0x13da0b,_0x236340)),0x64)):0x0,_0x5cd9a6=_0x44b35f[_0x18127a(0x320)](0x2,Math['PI'])*0x41,_0x5e1a45=document[_0x18127a(0x2f6)](_0x44b35f['zfJgq']);_0x5e1a45[_0x18127a(0x222)]['strokeDasharray']=_0x5cd9a6+'\x20'+_0x5cd9a6,_0x5e1a45['style'][_0x18127a(0x1dc)]=_0x5cd9a6-_0x44b35f[_0x18127a(0x320)](_0x5812cb/0x64,_0x5cd9a6),document[_0x18127a(0x2f6)](_0x18127a(0x308))[_0x18127a(0x1f5)]=_0x5812cb+'%',document[_0x18127a(0x2f6)](_0x44b35f[_0x18127a(0x34c)])['textContent']=questionsData['length'],document['getElementById'](_0x44b35f[_0x18127a(0x28e)])[_0x18127a(0x1f5)]=_0x13da0b,document[_0x18127a(0x2f6)]('incorrectResult')[_0x18127a(0x1f5)]=_0x236340,document[_0x18127a(0x2f6)](_0x44b35f['CQiTG'])[_0x18127a(0x1f5)]=_0x45dd7f;const _0x146914=Math[_0x18127a(0x3a5)](_0x44b35f[_0x18127a(0x3d7)](_0x123551,0xea60)),_0x2a27ef=Math['floor'](_0x44b35f['vZzSz'](_0x123551,0xea60)/0x3e8);document[_0x18127a(0x2f6)](_0x44b35f['fmXRW'])[_0x18127a(0x1f5)]=_0x146914+':'+_0x2a27ef['toString']()[_0x18127a(0x1ee)](0x2,'0');const _0x34a19f=_0x44b35f[_0x18127a(0x23e)](_0x123551,questionsData[_0x18127a(0x219)]),_0x4ee0c4=Math[_0x18127a(0x3a5)](_0x44b35f[_0x18127a(0x3c9)](_0x34a19f,0xea60)),_0x15be05=Math['floor'](_0x44b35f[_0x18127a(0x275)](_0x34a19f,0xea60)/0x3e8);document[_0x18127a(0x2f6)](_0x44b35f[_0x18127a(0x21c)])[_0x18127a(0x1f5)]=_0x4ee0c4+':'+_0x15be05[_0x18127a(0x3df)]()[_0x18127a(0x1ee)](0x2,'0'),_0x2be7be[_0x18127a(0x287)][_0x18127a(0x28a)](_0x18127a(0x425));}function closePerformanceModal(){const _0x2ba50d=_0x35a466,_0x3e5f2e={'wwuAn':_0x2ba50d(0x425)};document[_0x2ba50d(0x2f6)](_0x2ba50d(0x3cc))[_0x2ba50d(0x287)]['add'](_0x3e5f2e[_0x2ba50d(0x3bd)]);}function reviewQuestions(){const _0x133b0b=_0x35a466,_0x3b2057={'oIDsF':_0x133b0b(0x2a9),'kwbSZ':function(_0x2dd8e9,_0x37c7ba){return _0x2dd8e9===_0x37c7ba;},'xEdyW':function(_0xec205b,_0x54f652){return _0xec205b===_0x54f652;},'MswaN':_0x133b0b(0x3c4),'TPbyb':_0x133b0b(0x25d),'RWnyb':function(_0x91efd,_0x4c2937){return _0x91efd(_0x4c2937);},'KYnUJ':_0x133b0b(0x218),'XpKTP':_0x133b0b(0x369),'rXifC':_0x133b0b(0x273),'VwyCC':function(_0x34f21f,_0x3091da){return _0x34f21f!==_0x3091da;},'AKgPO':'gxqXm','uAtzs':_0x133b0b(0x3ce),'gtwIt':_0x133b0b(0x1d1),'ZemqP':'incorrect','zKIDA':_0x133b0b(0x40f),'IxQDf':_0x133b0b(0x3b7),'Ampee':function(_0x433550,_0x93dadf){return _0x433550+_0x93dadf;},'LHfzR':function(_0x921ce1,_0x2c3f89){return _0x921ce1===_0x2c3f89;},'zQCUK':_0x133b0b(0x37e),'glFSO':function(_0x28648f,_0x5bf514){return _0x28648f===_0x5bf514;},'YMGtz':_0x133b0b(0x314),'VGxtj':_0x133b0b(0x374),'WjSql':_0x133b0b(0x425),'wFoIH':_0x133b0b(0x1d0),'wOOhk':function(_0x3031b3){return _0x3031b3();}};document[_0x133b0b(0x2f6)](_0x3b2057['VGxtj'])[_0x133b0b(0x287)][_0x133b0b(0x28a)](_0x3b2057[_0x133b0b(0x29f)]);const _0xe6ec4b=document[_0x133b0b(0x2f6)](_0x3b2057['wFoIH']);_0xe6ec4b[_0x133b0b(0x24c)]='',questionsData[_0x133b0b(0x1e2)]((_0x3b3b77,_0x54ba4f)=>{const _0x4454d5=_0x133b0b,_0x301ca4={'ZtndV':function(_0x2a239b,_0xf118b9){return _0x3b2057['RWnyb'](_0x2a239b,_0xf118b9);},'aEiad':_0x3b2057['KYnUJ'],'cQiYw':function(_0x30822e){return _0x30822e();}},_0x3dc11c=questionStates[_0x54ba4f],_0x28ad68=_0x3b3b77[_0x4454d5(0x458)];let _0x3d770e=_0x3b2057['XpKTP'],_0x27d971=_0x3b2057['rXifC'];if(_0x3b2057['VwyCC'](_0x3dc11c[_0x4454d5(0x45d)],null)){if(_0x3b2057[_0x4454d5(0x3a3)]!=='gxqXm')_0x38fca=_0x3b2057[_0x4454d5(0x2ba)];else{const _0x736c33=_0x3b3b77[_0x4454d5(0x40c)][_0x3dc11c[_0x4454d5(0x45d)]];_0x736c33['id']===_0x28ad68?_0x3b2057[_0x4454d5(0x408)]!==_0x4454d5(0x2b1)?(_0x3d770e=_0x3b2057['gtwIt'],_0x27d971=_0x4454d5(0x2b6)):_0x301ca4[_0x4454d5(0x457)](_0x3fbdb3,_0x301ca4[_0x4454d5(0x288)])&&_0x301ca4[_0x4454d5(0x2ea)](_0x202ac4):(_0x3d770e=_0x3b2057[_0x4454d5(0x310)],_0x27d971=_0x3b2057[_0x4454d5(0x258)]);}}const _0x5905f8=document['createElement'](_0x3b2057[_0x4454d5(0x2ef)]);_0x5905f8['className']=_0x4454d5(0x402)+_0x3d770e;let _0x1b8e4c=(_0x3b3b77[_0x4454d5(0x40c)]||[])[_0x4454d5(0x366)]((_0x14236d,_0x284dac)=>{const _0x350d5f=_0x4454d5,_0x34b72f=_0x3b2057[_0x350d5f(0x3d1)](_0x3dc11c[_0x350d5f(0x45d)],_0x284dac),_0x358378=_0x3b2057[_0x350d5f(0x205)](_0x14236d['id'],_0x28ad68);let _0x1493d2=_0x3b2057['MswaN'];if(_0x358378)_0x1493d2='border-green-500';else{if(_0x34b72f)_0x1493d2=_0x3b2057[_0x350d5f(0x270)];}return _0x350d5f(0x298)+_0x1493d2+_0x350d5f(0x302)+String[_0x350d5f(0x370)](0x41+_0x284dac)+_0x350d5f(0x3f3)+_0x14236d[_0x350d5f(0x1ec)]+_0x350d5f(0x2c0);})[_0x4454d5(0x38b)]('');const _0x3c0ab5=_0x3b3b77[_0x4454d5(0x30b)]?_0x4454d5(0x2d5)+_0x54ba4f+_0x4454d5(0x40e)+_0x3b3b77[_0x4454d5(0x30b)]+_0x4454d5(0x30e):'';let _0x111066='';if(_0x3b3b77[_0x4454d5(0x3e8)])_0x111066+=_0x4454d5(0x431)+_0x3b3b77['explanation_audio_eng']+_0x4454d5(0x460);if(_0x3b3b77['explanation_audio_hin'])_0x111066+=_0x4454d5(0x2a1)+_0x3b3b77[_0x4454d5(0x3d0)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>';let _0x507a26=(_0x3b3b77[_0x4454d5(0x1fd)]||[])[_0x4454d5(0x366)](_0x377bf9=>_0x377bf9?_0x4454d5(0x338)+_0x377bf9+_0x4454d5(0x1fc):'')[_0x4454d5(0x38b)]('');_0x5905f8['innerHTML']=_0x4454d5(0x2f1)+_0x3b2057['Ampee'](_0x54ba4f,0x1)+_0x4454d5(0x20f)+(_0x3b2057['LHfzR'](_0x3d770e,_0x3b2057[_0x4454d5(0x404)])?_0x3b2057[_0x4454d5(0x22d)]:_0x3b2057[_0x4454d5(0x27a)](_0x3d770e,_0x4454d5(0x3ff))?_0x4454d5(0x2c8):_0x3b2057['YMGtz'])+'-600\x20text-white\x22>'+_0x27d971+_0x4454d5(0x3cf)+_0x3b3b77[_0x4454d5(0x1ec)]+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>'+_0x1b8e4c+_0x4454d5(0x405)+(_0x3b3b77['solution']||_0x4454d5(0x31c))+_0x4454d5(0x34a)+_0x3c0ab5+_0x4454d5(0x368)+_0x111066+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x507a26+_0x4454d5(0x2f4),_0xe6ec4b['appendChild'](_0x5905f8);}),_0x3b2057['wOOhk'](initializeReviewVideos);}function initializeReviewVideos(){const _0x4a226b=_0x35a466,_0x2c3c5b={'aYpVp':_0x4a226b(0x33f),'AsRdk':function(_0x4ce8f4,_0x120d5c,_0x1ed04e){return _0x4ce8f4(_0x120d5c,_0x1ed04e);}};document[_0x4a226b(0x45a)](_0x4a226b(0x352))[_0x4a226b(0x1e2)](_0x5fd8b5=>{const _0x26a017=_0x4a226b,_0x5a697c=_0x5fd8b5[_0x26a017(0x375)][_0x26a017(0x379)];if(_0x5a697c&&_0x5a697c[_0x26a017(0x45b)](_0x2c3c5b[_0x26a017(0x43c)]))_0x2c3c5b['AsRdk'](setupVideo,_0x5fd8b5,_0x5a697c);else _0x5a697c&&(_0x5fd8b5['src']=_0x5a697c);});}function _0x3ec4(){const _0x53d2c7=['<p><span\x20style=\x22font-size:12.0pt;\x22>SD\x20angle</span></p>','blxVM','3ydnqMn','NxlSS','loadSource','<div\x20class=\x22p-3\x20rounded-lg\x20border\x20','isArray','Halpe','lSlxB','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','NQFZG','correctCount','WjSql','<p><span\x20style=\x22font-size:12.0pt;\x22>Proteolytic\x20enzymes\x20liberated\x20by\x20mononuclear\x20cells</span></p>','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22','aExyD','toISOString','timerContainer','nVzQH','VBcTI','nLZkw','xhoQn','nav-btn-marked-review','LFWlg','border-green-500','Hycqe','xXqZY','ciCAG','status','uwPDA','zgRJV','izzqw','GEgEc','NTOep','AJAeH','Correct','Babyh','prevBtn','yHxUn','oIDsF','eFcDy','ryflL','selected','TqZJy','onJaT','</span></div>','wtXJJ','unsafe-csom-8ce866ca.html','currentMode','fyghv','bVxPA','rskdf','PsKSc','red','BIkwD','key','navBtn_','SCdsm','jkyvc','6274888OBfcUi','closest','OZuyA','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20patient\x20having\x20foul-smelling\x20ear\x20discharge\x20and\x20cholesteatoma\x20in\x20the\x20middle\x20ear\x20presents\x20with\x20facial\x20nerve\x20palsy;\x20the\x20treatment\x20of\x20choice\x20is:</span></p>','reduce','quizSidebar','ufjNw','<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-','table','EOTsc','<p><span\x20style=\x22font-size:12.0pt;\x22>Aural\x20swab\x20for\x20culture\x20sensitivity</span></p>','CsDhN','gbqWv','<p><span\x20style=\x22font-size:12.0pt;\x22>Secondary\x20acquired\x20cholesteatoma</span></p>','uIzBA','vNwow','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22','kaYyy','ENT','gmoQO','completed','zEFEp','markedForReview','NgFqp','<p><span\x20style=\x22font-size:12.0pt;\x22>Tympanoplasty</span></p>','PgxEC','(((.+)+)+)+$','intermediate','cQiYw','userHistory','YQDPg','<p><span\x20style=\x22font-size:12.0pt;\x22>Improvement\x20in\x20hearing</span></p>','toLowerCase','IxQDf','RUgoo','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','wCyBo','{}.constructor(\x22return\x20this\x22)(\x20)','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','iRpSc','getElementById','XItDp','TzEph','<p><strong>Explanation:</strong></p>\x0a<p><strong>Tubercular\x20otitis\x20media:</strong></p>\x0a<p><strong>Clinical\x20features:</strong></p>\x0a<ul>\x0a<li>Painless\x20otorrhoea\x20-\x20The\x20ear\x20discharge\x20is\x20foul-smelling\x20due\x20to\x20underlying\x20bone\x20destruction.\x20<strong>(Statement\x20e\x20is\x20incorrect)</strong></li>\x0a<li>Pale\x20granulations\x20in\x20the\x20middle\x20ear\x20and\x20mastoid.\x20It\x20does\x20not\x20have\x20blood-stained\x20discharge.\x20<strong>(Statement\x20a\x20is\x20incorrect)</strong></li>\x0a<li>Multiple\x20perforations\x20in\x20the\x20pars\x20tensa\x20of\x20the\x20tympanic\x20membrane.</li>\x0a<li>Facial\x20palsy\x20&rarr;\x20most\x20common\x20complication.</li>\x0a</ul>\x0a<p><strong>Aetiology:</strong></p>\x0a<ul>\x0a<li>In\x20most\x20cases,\x20infection\x20is\x20secondary\x20to\x20pulmonary\x20tuberculosis;\x20infection\x20reaches\x20the\x20middle\x20ear\x20through\x20the\x20eustachian\x20tube.</li>\x0a<li>Sometimes,\x20it\x20is\x20blood-borne\x20from\x20m\x20tubercular\x20focus\x20in\x20the\x20lungs,\x20tonsils,\x20cervical\x20or\x20mesenteric\x20lymph\x20nodes.</li>\x0a<li>Disease\x20is\x20mostly\x20seen\x20in\x20children\x20a\x20young\x20adults.</li>\x0a</ul>\x0a<p><strong>Treatment:</strong></p>\x0a<ul>\x0a<li>Systemic\x20Anti-Tubercular\x20Drugs.</li>\x0a<li>Local\x20treatment\x20in\x20the\x20form\x20oan\x20f\x20an\x20aural\x20toilet.</li>\x0a<li>Mastoid\x20surgery.</li>\x0a</ul>','YnCbj','UZgRG','PNnkg','ANdDO','No\x20question\x20text\x20available','createElement','iRplF','fIzam','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','<p><span\x20style=\x22font-size:12.0pt;\x22>Primary\x20acquired\x20cholesteatoma</span></p>','solutionImages','fmMZl','FToub','OhXmV','accuracyScore','JkkKP','addEventListener','explanation_video','markReviewText','ekTsl','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','VXjgK','ZemqP','BVQxB','fill','timed_study','gray','oZJYF','MEWKf','currentQuestionIndex','11QobofQ','cGZEI','pwIKQ','xMnwl','No\x20solution\x20available.','<p><span\x20style=\x22font-size:12.0pt;\x22>Malignant\x20otitis\x20externa</span></p>','ngFJx','DT1224483','Cnmvd','markReviewBtn','TmVUY','SKYdg','IaJrS','filter','jurkG','<p><span\x20style=\x22font-size:12.0pt;\x22>Presence\x20of\x20Sequestrum</span></p>','Bookmark','cCgIR','IOwOG','<p><strong>Explanation:</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Pearly\x20white\x20mass\x20behind\x20Intact\x20Tympanic\x20membrane\x20is\x20indicative\x20of\x20Congenital\x20cholesteatoma(Levenson\x27s\x20Criteria)</strong></li>\x0d\x0a</ul>\x0d\x0a<p><strong>Congenital\x20cholesteatoma</strong></p>\x0d\x0a<ul>\x0d\x0a<li>It\x20arises\x20from\x20the\x20embryonic\x20epidermal\x20cell\x20resting\x20in\x20the\x20middle\x20ear\x20cleft\x20or\x20temporal\x20bone.\x20Congenital\x20cholesteatoma\x20occurs\x20at\x20three\x20important\x20sites:\x20the\x20middle\x20ear,\x20the\x20petrous\x20apex\x20and\x20the\x20cerebellopontine\x20angle,\x20and\x20produces\x20symptomatology\x20depending\x20on\x20its\x20location.</li>\x0d\x0a<li>A\x20middle\x20ear\x20congenital\x20cholesteatoma\x20presents\x20as\x20a\x20white\x20mass\x20behind\x20an\x20intact\x20tympanic\x20membrane\x20and\x20causes\x20conductive\x20hearing\x20loss.\x20It\x20may\x20sometimes\x20be\x20discovered\x20on\x20routine\x20examination\x20of\x20children\x20or\x20at\x20the\x20time\x20of\x20myringotomy.</li>\x0d\x0a<li>It\x20may\x20also\x20spontaneously\x20rupture\x20through\x20the\x20tympanic\x20membrane\x20and\x20present\x20with\x20a\x20discharging\x20ear\x20indistinguishable\x20from\x20a\x20case\x20of\x20chronic\x20suppurative\x20otitis\x20media.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0d\x0a<p><strong>Primary\x20acquired\x20Cholesteatoma(Option\x20A)</strong>:\x20It\x20is\x20called\x20primary\x20as\x20there\x20is\x20no\x20history\x20of\x20previous\x20otitis\x20media\x20or\x20a\x20pre-existing\x20perforation.\x20Theories\x20of\x20its\x20generation\x20are:</p>\x0d\x0a<ul>\x0d\x0a<li>Invagination\x20of\x20pars\x20flaccida:\x20Persistent\x20negative\x20pressure\x20in\x20the\x20attic\x20causes\x20a\x20retraction\x20pocket,\x20which\x20accumulates\x20keratin\x20debris.\x20When\x20infected,\x20the\x20keratin\x20mass\x20expands\x20towards\x20the\x20middle\x20ear.\x20Thus,\x20the\x20attic\x20perforation\x20is\x20the\x20proximal\x20end\x20of\x20an\x20expanding\x20invaginated\x20sac.\x20(Wittmack\x27s\x20theory).</li>\x0d\x0a<li>Basal\x20cell\x20hyperplasia.</li>\x0d\x0a<li>Squamous\x20metaplasia.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Primary\x20acquired\x20cholesteatoma\x20arising\x20from\x20the\x20retraction\x20pocket:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250917f2c3b4a5-6d78-4d9e-8b1c-2a3f4e5d6c7b.png\x22>\x0d\x0a<p><strong>Secondary\x20acquired\x20cholesteatoma(Option\x20B)</strong>:\x20In\x20these\x20cases,\x20there\x20is\x20already\x20a\x20pre-existing\x20perforation\x20in\x20the\x20pars\x20tensa.\x20This\x20is\x20often\x20associated\x20with\x20posterosuperior\x20marginal\x20perforation\x20or\x20sometimes\x20large\x20central\x20perforation.\x20Theories\x20of\x20its\x20generation\x20are:</p>\x0d\x0a<ul>\x0d\x0a<li>Migration\x20of\x20the\x20Squamous\x20epithelium.</li>\x0d\x0a<li>Metaplasia</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Tertiary\x20acquired\x20cholesteatoma(Option\x20C):</strong>\x20Emerges\x20behind\x20a\x20normal-appearing\x20tympanic\x20membrane,\x20often\x20due\x20to\x20implantation\x20during\x20otitis\x20media\x20or\x20minor\x20trauma.</p>','iVFvl','Lunch','dVyTu','vCOdQ','AHTpg','bottom','DiMlG','czTvP','FSHmS','sGuOK','QUuSy','gEPEd','<div\x20class=\x22mt-4\x22><img\x20src=\x22','exception','nDkvs','xDcAr','customQuizData','SdhyU','VCJBn','.m3u8','Xtbws','KTfTR','<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>Crowe\x20Beck\x20sign\x20is\x20seen\x20in\x20Sigmoid\x20sinus\x20thrombosis(Lateral\x20sinus\x20thrombosis).</li>\x0a<li>It\x20is\x20the\x20engorgement\x20of\x20retinal\x20veins\x20due\x20to\x20pressure\x20on\x20the\x20jugular\x20vein\x20of\x20the\x20healthy\x20side,\x20seen\x20on\x20fundoscopy.\x20This\x20is\x20absent\x20on\x20the\x20affected\x20side.\x20This\x20is\x20due\x20to\x20the\x20blockage\x20of\x20venous\x20drainage\x20of\x20the\x20brain.</li>\x0a<li>Additional\x20features-fever,\x20pallor,\x20and\x20ear\x20discharge-are\x20consistent\x20with\x20chronic\x20ear\x20infection\x20(CSOM)\x20leading\x20to\x20sigmoid\x20(lateral)\x20sinus\x20thrombosis.</li>\x0a</ul>\x0a<p><strong>Lateral\x20sinus\x20thrombosis:</strong></p>\x0a<ul>\x0a<li>It\x20is\x20an\x20inflammation\x20of\x20the\x20inner\x20wall\x20of\x20the\x20lateral\x20venous\x20sinus\x20with\x20formation\x20of\x20an\x20intrasinus\x20thrombus.</li>\x0a<li>It\x20occurs\x20as\x20a\x20complication\x20of\x20acute\x20coalescent\x20mastoiditis,\x20masked\x20mastoiditis\x20or\x20chronic\x20suppuration\x20of\x20the\x20middle\x20ear\x20and\x20cholesteatoma.</li>\x0a</ul>\x0a<p><strong>Clinical\x20features:</strong></p>\x0a<ul>\x0a<li>Hectic-\x20Picket-\x20Fence\x20type\x20of\x20fever\x20with\x20rigours.Papilledema.</li>\x0a<li>Griesinger\x20sign.</li>\x0a<li>Progressive\x20anaemia\x20and\x20emaciation.</li>\x0a<li>Tobey-Eyer\x20test\x20positive.</li>\x0a<li>Crowe\x20Beck\x20test\x20positive</li>\x0a<li>Tenderness\x20along\x20the\x20jugular\x20vein.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Cavernous\x20Sinus\x20Thrombosis(Option\x20A)</strong>:\x20More\x20commonly\x20associated\x20with\x20facial\x20infections,\x20periorbital\x20swelling,\x20proptosis,\x20and\x20cranial\x20nerve\x20III,\x20IV,\x20V1,\x20and\x20VI\x20palsies.\x20Not\x20typical\x20of\x20ear\x20disease.</p>\x0a<p><strong>Sagittal\x20Sinus\x20Thrombosis(Option\x20C)</strong>:\x20Rare\x20in\x20otogenic\x20infections,\x20and\x20presents\x20more\x20with\x20headache,\x20seizures,\x20and\x20altered\x20sensorium.</p>\x0a<p><strong>Brain\x20Abscess(Option\x20D)</strong>:\x20May\x20occur\x20as\x20a\x20complication\x20of\x20CSOM\x20but\x20usually\x20presents\x20with\x20focal\x20neurological\x20deficits,\x20raised\x20intracranial\x20pressure,\x20headache,\x20and\x20altered\x20consciousness,\x20not\x20Crowe-Beck\x20positivity.</p>','test','<p><span\x20style=\x22font-size:12.0pt;\x22>Topical\x20antibiotics\x20and\x20decongestants\x20for\x204\x20weeks</span></p>','add','log','PjFkr','notAttempted','solutionContainer','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','ehLAn','TZydP','8dygJqK','flex','PgHCL','VEVNu','<p><strong>Explanation:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250917a9b8c7d6-1e2f-4a3b-9c8d-0f1e2d3c4b5a.png\x22>','video[data-src]','mzVNY','DAnfF','riFbz','fBowo','<p><span\x20style=\x22font-size:12.0pt;\x22>Associated\x20with\x20cholesteatoma</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Central\x20perforation\x20of\x20tympanic\x20membrane</span></p>','return\x20(function()\x20','reload','statsBar','<p><span\x20style=\x22font-size:12.0pt;\x22>Facial\x20nerve\x20palsy</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20patient\x20with\x20right\x20unsafe\x20CSOM\x20has\x20presented\x20with\x20a\x20history\x20of\x20diplopia\x20and\x20pain\x20behind\x20the\x20right\x20eye.\x20What\x20is\x20the\x20further\x20ideal\x20investigation\x20in\x20this\x20clinical\x20scenario?</span></p>','EnipI','\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>','GaXgK','No\x20solution\x20provided','timeSpent','<p><span\x20style=\x22font-size:12.0pt;\x22>Rendering\x20the\x20ear\x20safe</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Perforation</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Facial\x20recess</span></p>','map','questionStates','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','not-attempted','<p><span\x20style=\x22font-size:12.0pt;\x22>Tertiary\x20acquired\x20cholesteatoma</span></p>','solution','yVZQV','DfuLJ','CZdnD','sanEs','fromCharCode','DT1224474','quizFile','DLtha','questionReviewSection','dataset','<p><span\x20style=\x22font-size:12.0pt;\x22>Glomus\x20jugualare</span></p>','testModeLegend','stringify','src','questions','1|5|4|0|3|2','Vcwfy','correctResult','green','dZEIw','aVUwX','nav-btn-correct','accuracy','DT1224487','rcmxv','<p><span\x20style=\x22font-size:12.0pt;\x22>Tubotympanic\x20CSOM\x20with\x20Meningitis</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Pressure\x20necrosis</span></p>','uXRnb','FNNTw','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','BIitr','join','pop','<p><span\x20style=\x22font-size:12.0pt;\x22>Audiometry</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Modified\x20radical\x20mastoidectomy</span></p>','eXxfR','oghTy','DT1227667','quizHierarchy','vFKPa','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','VFlgD','get','questionText','evSAX','<p><span\x20style=\x22font-size:12.0pt;\x22>Foul-smelling\x20ear\x20discharge</span></p>','uCNPe','<p><span\x20style=\x22font-size:12.0pt;\x22>Sagittal\x20Sinus\x20thrombosis</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Brain\x20Abscess</span></p>','KcVmV','<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20unsafe\x20CSOM\x20with\x20vertigo\x20and\x20positive\x20fistula\x20sign,\x20the\x20\x20treatment\x20of\x20choice\x20is:</span></p>','Otmhj','BghTi','897186cVtdwc','custom_quiz.html','AKgPO','ArrowRight','floor','href','RpvCk','scgaA','LsLvI','SWcjO','ArrowLeft','FyHbD','iYbxe','ZdwuJ','parse','Previous\x20progress\x20cleared.','DT1224482','Mark\x20for\x20Review','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20child\x20presented\x20with\x20an\x20ear\x20infection\x20with\x20foul-smelling\x20discharge.\x20On\x20further\x20exploration,\x20a\x20small\x20perforation\x20is\x20found\x20in\x20the\x20pars\x20flaccida\x20of\x20the\x20tympanic\x20membrane.\x20What\x20would\x20be\x20the\x20most\x20appropriate\x20next\x20step\x20in\x20management?</span></p>','timed_exam','contains','study','div','DOMContentLoaded','XkTBV','FzyWb','bJNtA','DT1224485','wwuAn','fRolp','push','hiLjU','FyLKT','<p><span\x20style=\x22font-size:12.0pt;\x22>IV\x20antibiotics\x20and\x20follow-up\x20after\x20a\x20month</span></p>','rmkIs','border-gray-600','<p><span\x20style=\x22font-size:12.0pt;\x22>Malignancy\x20of\x20middle\x20ear</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Bomb\x20blast\x20injury</span></p>','findIndex','oAZXm','SCUNn','Unsafe\x20Csom','NKssk','performanceModal','WHnaU','DysOY','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>','explanation_audio_hin','kwbSZ','MBHoz','uLARf','MOrJc','application/vnd.apple.mpegurl','wTUWD','IsPLT','plqqF','replace','WoAiP','AGtXl','<p><span\x20style=\x22font-size:12.0pt;\x22>Atticoantral\x20CSOM\x20with\x20Brain\x20abscess</span></p>','questionMedia','MLOfr','toString','split','No\x20questions\x20available\x20for\x20this\x20quiz.','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20not\x20the\x20biochemical\x20mechanism\x20of\x20bone\x20erosion\x20caused\x20by\x20cholesteatoma\x20in\x20atticoantral\x20CSOM?</span></p>','index.html','IIses','__proto__','oubzT','9612372UTeBJJ','explanation_audio_eng','qkfSb','kPZLw','PZKQs','kVsQa','JxAew','<p><span\x20style=\x22font-size:12.0pt;\x22>Blood-stained\x20foul\x20foul-smelling\x20ear\x20discharge\x20with\x20the\x20otoscopy\x20findings\x20given\x20in\x20the\x20image,\x20what\x20is\x20the\x20diagnosis?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202509178e7d6c5b-4a32-4e2f-9a8b-1c0d2e3f4b5a.png\x22></span></p>','JCDLm','ahPWb','correctAnswers','incorrectCount','</span><span>','hguHO','jCzHJ','bookmarkedQuestions','zvApH','now','fXWTa','IMZxd','question_video','fElGO','jjnMt','afXot','incorrect','nav-btn-current','location','review-question\x20','<p><strong>Explanation:\x20</strong></p>\x0a<ul>\x0a<li><strong>Necrotising</strong>\x20otitis\x20externa,\x20also\x20called\x20malignant\x20otitis\x20externa,\x20is\x20caused\x20by\x20a\x20Pseudomonas\x20infection\x20in\x20an\x20elderly\x20patient\x20with\x20diabetes.</li>\x0a<li>Symptoms\x20include\x20severe\x20otalgia,\x20and\x20facial\x20nerve\x20palsy\x20can\x20occur.\x20The\x20granulations\x20are\x20seen\x20in\x20the\x20external\x20auditory\x20canal\x20and\x20not\x20in\x20the\x20middle\x20ear.</li>\x0a</ul>\x0a<p><strong>Clinical\x20features:</strong></p>\x0a<ul>\x0a<li>Its\x20early\x20manifestations\x20resemble\x20diffuse\x20otitis\x20externa,\x20but\x20there\x20is\x20excruciating\x20pain\x20with\x20the\x20appearance\x20of\x20granulations\x20in\x20the\x20ear\x20canal.\x20<strong>Option\x20A</strong>\x20ruled\x20out.</li>\x0a<li>Facial\x20paralysis\x20is\x20common.\x20Infection\x20may\x20spread\x20to\x20the\x20skull\x20base\x20and\x20jugular\x20for,\x20amen\x20causing\x20multiple\x20cranial\x20nerve\x20palsies.\x20<strong>Option\x20B</strong>\x20ruled\x20out.</li>\x0a<li>Anteriorly,\x20infection\x20spreads\x20to\x20the\x20temporomandibular\x20fossa,\x20posteriorly\x20to\x20the\x20mastoid\x20and\x20medially\x20into\x20the\x20middle\x20ear\x20and\x20petrous\x20bone.</li>\x0a</ul>\x0a<p><strong>Treatment:</strong></p>\x0a<ul>\x0a<li>Control\x20of\x20Diabetes.</li>\x0a<li>Ear\x20toilet.</li>\x0a<li>Antibiotics\x20against\x20the\x20causative\x20agent,\x20Pseudomonas.</li>\x0a</ul>','gtwIt','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>','SLpPZ','OHltz','uAtzs','MLQcq','DT1224478','<p><strong>Explanation:</strong></p>\x0a<p>Pressure\x20is\x20never\x20the\x20biochemical\x20mechanism\x20of\x20bone\x20erosion\x20caused\x20by\x20congenital\x20cholesteatoma.</p>\x0a<p><strong>Mechanism\x20of\x20bone\x20erosion\x20in\x20Cholesteatoma:</strong></p>\x0a<p><strong>Inflammatory\x20Osteitis(\x20Option\x20D\x20ruled\x20out):</strong></p>\x0a<ul>\x0a<li>Chronic\x20inflammation\x20releases\x20Cytokines\x20(e.g.,\x20TNF-&alpha;,\x20IL-1,\x20IL-6)\x20and\x20Prostaglandins\x20(especially\x20PGE2).</li>\x0a<li>These\x20stimulate\x20<strong>osteoclast\x20activity</strong>,\x20accelerating\x20bone\x20resorption.</li>\x0a</ul>\x0a<p><strong>Enzymatic\x20theory-Bone\x20destroying\x20Enzyme(Option\x20B\x20and\x20C\x20ruled\x20out):</strong></p>\x0a<ul>\x0a<li>Cholesteatoma\x20epithelium\x20and\x20associated\x20inflammatory\x20cells\x20release\x20proteolytic\x20enzymes,\x20such\x20as\x20Collagenases,\x20Matrix\x20metalloproteinases\x20(MMPs)\x20and\x20Hydrolases.</li>\x0a<li>These\x20enzymes\x20degrade\x20bone\x20matrix\x20and\x20connective\x20tissue.</li>\x0a</ul>','choices','Option\x20','\x22\x20data-src=\x22','Incorrect','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','question_audio','<p><span\x20style=\x22font-size:12.0pt;\x22>Cortical\x20Mastoidectomy</span></p>','PBKKf','sgfJV','ctsFB','wKHxq','DT1224493','GGeVV','<p><span\x20style=\x22font-size:12.0pt;\x22>Eustachian\x20tube\x20dysfunction</span></p>','answered','IDkTa','rSjlv','solutionVideo','modeModal','stats','yquQB','display','<p><span\x20style=\x22font-size:12.0pt;\x22>Refer\x20to\x20Neurosurgeon</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Keratosis\x20Obturans</span></p>','HPAKX','hidden','zbEuE','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20Aim\x20of\x20mastoid\x20surgery\x20in\x20unsafe\x20CSOM,\x20which\x20should\x20receive\x20priority,\x20is:</span></p>','QjCHQ','<p><span\x20style=\x22font-size:12.0pt;\x22>Radial\x20mastoidectomy</span></p>','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22','<p><span\x20style=\x22font-size:12.0pt;\x22>Modified\x20radical\x20Mastoidectomy\x20and\x20fistula\x20repair</span></p>','846054cEwNVr','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','toggle','pTkQo','BRYag','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22','siucj','pathname','<p><span\x20style=\x22font-size:12.0pt;\x22>Lateral\x20Sinus\x20Thrombosis</span></p>','testModeReviewLegend','itdwo','SRvrb','yhkeB','isnDB','incomplete','UUpyA','aYpVp','width','<p><strong>Explanation:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>In\x20unsafe\x20CSOM\x20(e.g.,\x20with\x20cholesteatoma\x20and\x20bone\x20erosion),\x20the\x20primary,\x20non-negotiable\x20goal\x20of\x20mastoid\x20surgery\x20is\x20to\x20render\x20the\x20ear\x20safe.</li>\x0d\x0a<li>The\x20hallmark\x20of\x20this\x20disease\x20is\x20the\x20presence\x20of\x20Cholesteatoma.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Primary\x20Acquired\x20Cholesteatoma\x20(most\x20common\x20type):</strong></p>\x0d\x0a<ul>\x0d\x0a<li>This\x20type\x20of\x20Cholesteatoma\x20originates\x20from\x20Retraction\x20Pockets.\x20They\x20are\x20most\x20common\x20in\x20the\x20Pars\x20Flaccida.</li>\x0d\x0a<li>This\x20theory\x20is\x20called\x20Wittgat\x27s\x20theory.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Chief\x20complaints\x20:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Ear\x20discharge-\x20scanty,\x20foul-smelling\x20(due\x20to\x20bone\x20erosion)\x20and\x20blood-stained\x20(due\x20to\x20granulation\x20formation).</li>\x0d\x0a<li>Hearing\x20loss\x20is\x20mostly\x20conductive,\x20sometimes\x20mixed\x20(CHL+\x20SNHL)</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Treatment\x20:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Surgery\x20is\x20called\x20MRM\x20(Modified\x20Radical\x20Mastoidectomy),\x20also\x20known\x20as\x20the\x20TympanoMastoid\x20exploration.</li>\x0d\x0a<li>The\x20main\x20aim\x20of\x20MRM\x20is\x20to\x20make\x20the\x20ear\x20safe.</li>\x0d\x0a<li>After\x20making\x20adequate\x20clearance\x20of\x20cholesteatoma,\x20we\x20remove\x20the\x20posterior\x20wall\x20of\x20the\x20EAC\x20to\x20open\x20the\x20mastoid\x20cavity\x20into\x20the\x20EAC.</li>\x0d\x0a<li>Hence,\x20MRM\x20is\x20a\x20classical\x20example\x20of\x20canal\x20wall\x20down\x20surgery\x20(CWD).</li>\x0d\x0a<li>Canal\x20wall\x20means\x20the\x20posterior\x20wall\x20of\x20EAC,\x20and\x20down\x20means\x20removed.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>The\x20below\x20given\x20image\x20shows\x20the\x20Primary\x20Acquired\x20Cholesteatoma.</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202509175c4b3a29-8e7f-4f0a-8c9d-7b6a5e4d3c2b.png\x22>','explanationVideoPlayer','<p><span\x20style=\x22font-size:12.0pt;\x22>False\x20about\x20atticoantral\x20chronic\x20suppurative\x20otitis\x20media\x20is</span></p>','BvizM','iBBuH','eQAia','DT1227666','XjtCp','totalAttempted','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20not\x20true\x20about\x20tubercular\x20otitis\x20media?<br>a.\x20Blood-stained\x20ear\x20discharge<br>b.\x20Pale\x20granulations\x20in\x20the\x20middle\x20ear\x20&amp;\x20mastoid<br>c.\x20Facial\x20paralysis<br>d.\x20Multiple\x20perforations\x20in\x20the\x20tympanic\x20membrane<br>e.\x20Painful\x20due\x20to\x20underlying\x20bone\x20destruction</span></p>','prototype','totalTimeResult','lDsai','Purqq','DT1227696','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>','mCzPA','qfKjk','studyModeLegend','submitSection','tCMSM','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','ZeYQE','EUHsl','ZtndV','correct_choice_id','getItem','querySelectorAll','includes','VeVst','selectedAnswer','info','totalTime','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','timeDisplay','attachMedia','qTIkn','lIipe','<p><span\x20style=\x22font-size:12.0pt;\x22>Cavernous\x20Sinus\x20Thrombosis</span></p>','reviewQuestionsContainer','correct','wRpPu','ZZcyp','.option-button','ETycS','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20are\x20true</span></p>','wKLJA','jzQKw','IteCH','BxjaH','<p><span\x20style=\x22font-size:12.0pt;\x22>Making\x20the\x20ear\x20dry</span></p>','strokeDashoffset','jVmEF','referrer','HAfJs','<p><span\x20style=\x22font-size:12.0pt;\x22>Epitympanum</span></p>','221022nZyPbB','forEach','SuWfW','HZEVk','zqJSQ','block','pkGNK','mwelS','QXFNl','sdZmw','EFHyM','text','solutionAudio','padStart','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2050-year-old\x20female\x20patient\x20has\x20presented\x20with\x20the\x20complaint\x20of\x20long-standing\x20left\x20ear\x20discharge,\x20foul-smelling,\x20blood\x20stained.\x20She\x20had\x20left-sided\x20facial\x20palsy.\x20She\x20also\x20gives\x20a\x20history\x20of\x20earache,\x20which\x20is\x20worse\x20at\x20night.\x20On\x20otoscopy,\x20friable\x20granulations\x20are\x20seen\x20in\x20the\x20middle\x20ear.\x20What\x20is\x20the\x20most\x20probable\x20diagnosis?</span></p>','MUtZe','nPZaH','48831290ilymbo','fzPuo','search','textContent','<p><span\x20style=\x22font-size:12.0pt;\x22>HRCT\x20temporal\x20bone</span></p>','uirKW','BqLEF','enkSp','mVZJH','mVetE','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','explanation_images','isSupported','twKZM','bookmarkBtn','none','quizPerformanceData','<p><strong>Explanation:</strong></p>\x0a<p>This\x20patient\x20is\x20middle-aged\x20with\x20long-standing\x20blood-tinged\x20ear\x20discharge\x20and\x20ear\x20ache\x20worse\x20at\x20night.\x20She\x20also\x20has\x20granulations\x20in\x20the\x20middle\x20ear.\x20All\x20these\x20point\x20to\x20a\x20diagnosis\x20of\x20Malignancy\x20of\x20the\x20middle\x20ear.</p>\x0a<p><strong>Clinical\x20features\x20of\x20Middle\x20Ear\x20Malignancy:</strong></p>\x0a<ul>\x0a<li>Patients\x20often\x20present\x20with\x20clinical\x20pictures\x20simulating\x20chronic\x20suppurative\x20otitis\x20media.\x20However,\x20the\x20following\x20features\x20in\x20the\x20age\x20group\x20of\x2040-60\x20years\x20may\x20arouse\x20suspicion\x20of\x20malignancy:</li>\x0a<li>Chronic\x20foul-smelling\x20discharge,\x20especially\x20blood-stained.Which\x20is\x20usually\x20severe\x20and\x20comes\x20at\x20night.</li>\x0a<li>Facial\x20palsy.</li>\x0a<li>Friable,\x20haemorrhagic\x20granulations\x20opolypsyp.</li>\x0a<li>Appearance\x20of\x20or\x20increase\x20in\x20hearing\x20loss\x20or\x20vertigo.</li>\x0a</ul>\x0a<p><strong>Treatment:</strong></p>\x0a<ul>\x0a<li>A\x20combination\x20of\x20surgery\x20and\x20radiotherapy\x20gives\x20better\x20results.</li>\x0a<li>Surgery\x20consists\x20of\x20radical\x20mastoidectomy,\x20subtotal\x20or\x20total\x20petrosectomy\x20depending\x20on\x20the\x20extent\x20of\x20the\x20tumour.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Malignant\x20Otitis\x20Externa(Option\x20A):</strong></p>\x0a<ul>\x0a<li>The\x20key\x20is\x20that\x20granulations\x20are\x20in\x20the\x20middle\x20ear,\x20not\x20the\x20external\x20auditory\x20canal.</li>\x0a<li>That\x20strongly\x20points\x20to\x20a\x20middle-ear\x20origin\x20(like\x20cholesteatoma\x20or\x20osteomyelitis),\x20rather\x20than\x20MOE,\x20which\x20characteristically\x20shows\x20granulations\x20in\x20the\x20bony-cartilaginous\x20junction\x20of\x20the\x20external\x20canal.</li>\x0a</ul>\x0a<p><strong>Glomus\x20Jugulare(Option\x20C\x20):\x20</strong>Typically\x20presents\x20with\x20pulsatile\x20tinnitus,\x20conductive\x20hearing\x20loss,\x20and\x20a\x20red,\x20pulsating\x20mass\x20behind\x20an\x20intact\x20tympanic\x20membrane\x20(\x22rising\x20sun\x22\x20sign).</p>\x0a<p><strong>Keratosis\x20Obturans(Option\x20D):</strong></p>\x0a<ul>\x0a<li>Presents\x20most\x20commonly\x20with\x20severe\x20ear\x20pain\x20and\x20hearing\x20loss,\x20especially\x20in\x20younger\x20or\x20bilateral\x20cases.</li>\x0a<li>Rarely\x20causes\x20otorrhea,\x20and\x20facial\x20nerve\x20involvement\x20is\x20extremely\x20uncommon,\x20limited\x20to\x20advanced\x20cases\x20where\x20bone\x20erosion\x20extends\x20to\x20the\x20facial\x20canal.</li>\x0a</ul>','waLQf','xEdyW','bookmarked','fOsGn','KzRna','vlRWt','AWacH','CYrlh','UnMwv','name','incorrectAnswers','</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-','dVcCp','\x20>\x20','Progress\x20loaded.','\x22\x20data-option-index=\x22','UPMyE','uSQKL','getAttribute','dmFqJ','You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','length','<p><span\x20style=\x22font-size:12.0pt;\x22>Preservation\x20of\x20hearing</span></p>','xvlvi','HbYOB','<p><span\x20style=\x22font-size:12.0pt;\x22>Atticoantral\x20CSOM\x20with\x20Lateral\x20sinus\x20thrombosis</span></p>','true','ucdlF','DT1224479','onclick','style','eqULt','<p><strong>Explanation:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>The\x20main\x20treatment\x20of\x20Cholesteatoma\x20is\x20surgery,\x20which\x20is\x20MRM\x20(\x20Modified\x20Radical\x20Mastectomy).</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Treatment\x20:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>It\x20is\x20also\x20known\x20as\x20the\x20TympanoMastoid\x20exploration.</li>\x0d\x0a<li>The\x20main\x20aim\x20of\x20MRM\x20is\x20to\x20make\x20the\x20ear\x20safe.</li>\x0d\x0a<li>After\x20making\x20adequate\x20clearance\x20of\x20cholesteatoma,\x20we\x20remove\x20the\x20posterior\x20wall\x20of\x20the\x20EAC\x20to\x20open\x20the\x20mastoid\x20cavity\x20into\x20the\x20EAC.</li>\x0d\x0a<li>Hence,\x20MRM\x20is\x20a\x20classical\x20example\x20of\x20canal\x20wall\x20down\x20surgery\x20(CWD).</li>\x0d\x0a<li>Canal\x20wall\x20means\x20the\x20posterior\x20wall\x20of\x20EAC,\x20and\x20down\x20means\x20removed.</li>\x0d\x0a<li>The\x20most\x20common\x20site\x20of\x20residual\x20cholesteatoma\x20after\x20mastoid\x20surgery\x20is\x20the\x20Sinus\x20Tympani.</li>\x0d\x0a</ul>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202509172d3e4f5a-6b7c-4b1d-8e9f-0a1b2c3d4e5f.png\x22>\x0d\x0a<br>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250917c3b2a190-4f5e-4c9b-8a7d-6e5f4d3c2b1a.png\x22>\x0d\x0a<p><strong>Meatoplasty:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>This\x20surgical\x20step\x20is\x20aimed\x20at\x20widening\x20the\x20EAC.\x20It\x20is\x20done\x20by\x20removing\x20the\x20part\x20of\x20the\x20Conchal\x20cartilage.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Uses:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Adequate\x20ventilation\x20of\x20mastoid\x20cavities.</li>\x0d\x0a<li>Proper\x20inspection\x20&amp;\x20cleaning\x20of\x20mastoid\x20cavities.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0d\x0a<p><strong>Radical\x20mastoidectomy(Option\x20A):\x20</strong>More\x20destructive,\x20used\x20in\x20cases\x20where\x20hearing\x20cannot\x20be\x20preserved.</p>\x0d\x0a<p><strong>Oral\x20steroids(Option\x20C):</strong>\x20May\x20be\x20adjunctive\x20but\x20not\x20curative\x20or\x20sufficient.</p>\x0d\x0a<p><strong>Ear\x20drops(Option\x20D):</strong>\x20Symptomatic\x20relief,\x20not\x20a\x20definitive\x20treatment.</p>','YQsyx','105ERhjUc','round','tQLQe','appendChild','xrZsx','gWxJI','hierarchy','zQCUK','rPWyx','xyEUQ','<p><span\x20style=\x22font-size:12.0pt;\x22>Facial\x20Recess</span></p>','open','VPwwj','ZsBix','<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>Retro-orbital\x20pain\x20and\x20diplopia\x20are\x20suggestive\x20of\x20petrositis.\x20Along\x20with\x20otorrhoea,\x20it\x20forms\x20the\x20triad\x20of\x20Gradenigo\x20syndrome.</li>\x0a<li>Diagnosis\x20of\x20petrous\x20apicitis\x20requires\x20HRCT\x20temporal\x20bone,\x20which\x20shows\x20an\x20abscess\x20at\x20the\x20Petrous\x20apex.</li>\x0a<li>This\x20allows\x20detailed\x20imaging\x20of\x20the\x20petrous\x20bone\x20structure\x20and\x20any\x20bony\x20erosion\x20or\x20collection.\x20If\x20further\x20evaluation\x20of\x20soft\x20tissue\x20and\x20intracranial\x20extension\x20is\x20needed,\x20MRI\x20may\x20follow,\x20but\x20CT\x20is\x20the\x20primary\x20tool\x20to\x20detect\x20bony\x20involvement.</li>\x0a<li>Petrositis\x20arises\x20from\x20infection\x20spreading\x20to\x20the\x20petrous\x20apex\x20of\x20the\x20temporal\x20bone,\x20leading\x20to\x20involvement\x20of\x20the\x20abducens\x20(VI)\x20nerve-leading\x20to\x20lateral\x20rectus\x20palsy\x20and\x20diplopia-along\x20with\x20deep-seated\x20orbital\x20pain\x20via\x20trigeminal\x20(V)\x20nerve\x20involvement.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Audiometry(Option\x20A):\x20</strong>Useful\x20for\x20hearing\x20assessment,\x20but\x20not\x20the\x20priority\x20when\x20intracranial\x20or\x20orbital\x20complications\x20are\x20suspected.</p>\x0a<p><strong>Aural\x20swab\x20for\x20C&amp;S(Option\x20C):</strong>\x20Helps\x20guide\x20antibiotic\x20therapy,\x20but\x20does\x20not\x20evaluate\x20the\x20extent\x20of\x20disease\x20or\x20complications.</p>\x0a<p><strong>Vestibular\x20evoked\x20myogenic\x20potentials\x20(VEMP)(Option\x20D):\x20</strong>Used\x20for\x20vestibular\x20pathway\x20evaluation,\x20not\x20helpful\x20in\x20this\x20condition.</p>\x0a<p><strong>Treatment</strong>\x20-\x20Cortical,\x20modified\x20radical\x20or\x20radical\x20mastoidectomy\x20+\x20IV\x20antibiotics.</p>','SaJKu','QmWEp','console','GvhLg','RYfBM','not_attempted','canPlayType','constructor','question_images','NWUti','JcUat','trace','dGvmq','<p><span\x20style=\x22font-size:12.0pt;\x22>a,\x20e</span></p>','zyoId','nEUGV','nbBCK','lDGpo','4673778awQdwc','VpDqJ','Factual','keydown','questionIndex','innerHTML','IBeJu','<p><span\x20style=\x22font-size:12.0pt;\x22>Malignant\x20otitis\x20externa\x20is\x20characterised\x20by\x20all\x20of\x20the\x20following\x20except</span></p>','HBFHt','hebPN','bookmarkText','iHdLK','progressBar','tTEYW','pLqeq','Ioagb','AXnQI','zKIDA','lVOtN','qoGKN','HXzVg','DT1224486','border-red-500','XdcvN','<p><span\x20style=\x22font-size:12.0pt;\x22>Sinus\x20tympani</span></p>','yteur','scoreCircle','eVOsx','<p><span\x20style=\x22font-size:12.0pt;\x22>Mastoid\x20tip</span></p>','className','<p><span\x20style=\x22font-size:12.0pt;\x22>Congenital\x20Cholesteatoma</span></p>','DT1224489','data-option-index','lQlJg','Oqtvl','pAslr','rFMQo','acYwS','TUpiQ','sFcdb','uAyoc','TPbyb','fflDZ','setItem','Not\x20Attempted','LZPrY','vZzSz','ijzqx','Etdbi','ueoXU','<p><span\x20style=\x22font-size:12.0pt;\x22>Tympanomastoid\x20exploration</span></p>','glFSO','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','endsWith','AHKTj','optionsContainer','HfKWx','tHLns','totalQuestionsResult','solutionText','Jowsa','removeItem','click','classList','aEiad','<p><span\x20style=\x22font-size:12.0pt;\x22>Hypotympanum</span></p>','remove','MlpXl','bind','gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','WWbAj','lIhoX','EEcDt','ckqig','TudLu'];_0x3ec4=function(){return _0x53d2c7;};return _0x3ec4();}function retakeQuiz(){const _0x8d9f76=_0x35a466,_0x227839={'FzyWb':_0x8d9f76(0x3a2),'eeijg':function(_0x3cfc29,_0x1d3193){return _0x3cfc29===_0x1d3193;},'MUtZe':_0x8d9f76(0x406),'XkRtC':'customQuizData','fOsGn':function(_0x1371b6){return _0x1371b6();}};if(confirm(_0x8d9f76(0x394))){if(window[_0x8d9f76(0x401)][_0x8d9f76(0x433)][_0x8d9f76(0x27d)](_0x227839[_0x8d9f76(0x3ba)])){if(_0x227839['eeijg'](_0x227839[_0x8d9f76(0x1f0)],_0x227839[_0x8d9f76(0x1f0)]))localStorage['removeItem'](_0x227839['XkRtC']);else{const _0x476c7a=_0x5b448e[_0x8d9f76(0x3af)](_0x1719f0[_0x8d9f76(0x459)](_0x8d9f76(0x2eb)))||{},_0x30e4f1=_0x2966a1['length'],_0x116bcd=_0x17c857[_0x8d9f76(0x3f1)]||0x0;_0x476c7a[_0xaae93d]={'score':_0x116bcd,'total':_0x30e4f1,'status':_0x8d9f76(0x2e2),'completedOn':new _0x13295f()[_0x8d9f76(0x2a3)]()},_0x42d99c[_0x8d9f76(0x272)]('userHistory',_0x26cc66[_0x8d9f76(0x378)](_0x476c7a));}}_0x227839[_0x8d9f76(0x207)](clearProgress),location[_0x8d9f76(0x35a)]();}}function loadBookmarkedQuestions(){const _0x58d265=_0x35a466,_0x7eb2e={'nLZkw':function(_0x37c950,_0x4f2142){return _0x37c950===_0x4f2142;},'HfKWx':'border-gray-600','rSjlv':_0x58d265(0x2ab),'MHGAW':function(_0x36c538,_0x47aec1){return _0x36c538+_0x47aec1;},'evSAX':function(_0x8c68f1,_0x110c72){return _0x8c68f1!==_0x110c72;},'JkkKP':_0x58d265(0x30f),'Oqtvl':function(_0x5035f6,_0x4a9885){return _0x5035f6<_0x4a9885;},'ijzqx':_0x58d265(0x3f6)},_0x114fdc=JSON['parse'](localStorage[_0x58d265(0x459)](_0x7eb2e[_0x58d265(0x276)]))||[];_0x114fdc[_0x58d265(0x1e2)](_0x5e1978=>{const _0x583a6e=_0x58d265,_0x42da91={'rcmxv':function(_0x2c2317,_0x44d214){return _0x2c2317===_0x44d214;},'KwJlc':function(_0x435365,_0x5e6998){const _0x4f26d4=_0x2dd9;return _0x7eb2e[_0x4f26d4(0x2a7)](_0x435365,_0x5e6998);},'sgfJV':_0x7eb2e[_0x583a6e(0x280)],'EavNy':_0x7eb2e[_0x583a6e(0x41c)],'HMjim':_0x583a6e(0x25d),'wyGmt':function(_0x24fd41,_0x582a4e){return _0x7eb2e['MHGAW'](_0x24fd41,_0x582a4e);}};if(_0x5e1978[_0x583a6e(0x372)]['includes'](quizName[_0x583a6e(0x2ee)]()['replace'](/ /g,'-'))){if(_0x7eb2e[_0x583a6e(0x398)](_0x7eb2e[_0x583a6e(0x309)],_0x7eb2e[_0x583a6e(0x309)])){const _0x10ecbb=_0x42da91[_0x583a6e(0x384)](_0x1f6ae3[_0x583a6e(0x45d)],_0x40f5c9),_0x5b15ff=_0x42da91['KwJlc'](_0x22932c['id'],_0x5d625c);let _0x4807e7=_0x42da91[_0x583a6e(0x414)];if(_0x5b15ff)_0x4807e7=_0x42da91['EavNy'];else{if(_0x10ecbb)_0x4807e7=_0x42da91['HMjim'];}return _0x583a6e(0x298)+_0x4807e7+_0x583a6e(0x302)+_0x2456c0[_0x583a6e(0x370)](_0x42da91['wyGmt'](0x41,_0x41d855))+'</span><span>'+_0x58b456[_0x583a6e(0x1ec)]+_0x583a6e(0x2c0);}else _0x7eb2e[_0x583a6e(0x269)](_0x5e1978[_0x583a6e(0x24b)],questionsData[_0x583a6e(0x219)])&&(questionStates[_0x5e1978[_0x583a6e(0x24b)]][_0x583a6e(0x206)]=!![]);}});}function toggleBookmark(){const _0x455229=_0x35a466,_0x2c61b={'SRvrb':_0x455229(0x3f6),'IIses':function(_0x5221fd,_0x96f9f9){return _0x5221fd!==_0x96f9f9;},'tCMSM':'yutwf','NxlSS':function(_0x14cefd){return _0x14cefd();}},_0x26bc5c=!questionStates[currentQuestionIndex][_0x455229(0x206)];questionStates[currentQuestionIndex]['bookmarked']=_0x26bc5c;let _0x3908a8=JSON['parse'](localStorage[_0x455229(0x459)](_0x2c61b[_0x455229(0x437)]))||[];if(_0x26bc5c){if(_0x2c61b[_0x455229(0x3e4)](_0x2c61b[_0x455229(0x452)],_0x2c61b['tCMSM']))_0x4447b8();else{const _0x11581d={'quizName':quizName,'quizFile':window[_0x455229(0x401)][_0x455229(0x433)][_0x455229(0x3e0)]('/')[_0x455229(0x38c)](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date[_0x455229(0x3f8)]()};_0x3908a8[_0x455229(0x3bf)](_0x11581d);}}else _0x3908a8=_0x3908a8[_0x455229(0x325)](_0xe9fd8b=>!(_0xe9fd8b[_0x455229(0x372)][_0x455229(0x45b)](quizName[_0x455229(0x2ee)]()[_0x455229(0x3d9)](/ /g,'-'))&&_0xe9fd8b[_0x455229(0x24b)]===currentQuestionIndex));localStorage['setItem'](_0x2c61b[_0x455229(0x437)],JSON['stringify'](_0x3908a8)),_0x2c61b[_0x455229(0x296)](updateBookmarkButton),updateQuestionNav();}function updateBookmarkButton(){const _0x5c2e67=_0x35a466,_0x3186eb={'pkGNK':_0x5c2e67(0x200),'HfjZF':_0x5c2e67(0x251),'lQlJg':_0x5c2e67(0x42d),'czTvP':'glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','Halpe':'Bookmarked','FNNTw':_0x5c2e67(0x328)},_0x3c6293=document[_0x5c2e67(0x2f6)](_0x3186eb[_0x5c2e67(0x1e7)]),_0x5209e4=document[_0x5c2e67(0x2f6)](_0x3186eb['HfjZF']),_0x48bb09=questionStates[currentQuestionIndex][_0x5c2e67(0x206)];_0x3c6293[_0x5c2e67(0x264)]=_0x48bb09?_0x3186eb[_0x5c2e67(0x268)]:_0x3186eb[_0x5c2e67(0x333)],_0x5209e4[_0x5c2e67(0x1f5)]=_0x48bb09?_0x3186eb[_0x5c2e67(0x29a)]:_0x3186eb[_0x5c2e67(0x388)];}function toggleMarkForReview(){const _0xd2b937=_0x35a466,_0x46f101={'ijeVR':function(_0xcd1355){return _0xcd1355();}};questionStates[currentQuestionIndex][_0xd2b937(0x2e4)]=!questionStates[currentQuestionIndex][_0xd2b937(0x2e4)],_0x46f101['ijeVR'](updateMarkReviewButton),updateQuestionNav();}function updateMarkReviewButton(){const _0x239ec3=_0x35a466,_0x463b29={'QmWEp':'markReviewBtn','twKZM':_0x239ec3(0x389),'fBowo':'Marked','PsKSc':_0x239ec3(0x3b2)},_0x2fad32=document[_0x239ec3(0x2f6)](_0x463b29[_0x239ec3(0x236)]),_0x598f18=document[_0x239ec3(0x2f6)]('markReviewText'),_0xfa8218=questionStates[currentQuestionIndex]['markedForReview'];_0x2fad32['className']=_0xfa8218?_0x239ec3(0x28d):_0x463b29[_0x239ec3(0x1ff)],_0x598f18[_0x239ec3(0x1f5)]=_0xfa8218?_0x463b29[_0x239ec3(0x356)]:_0x463b29[_0x239ec3(0x2c7)];}function _0x2dd9(_0x314aca,_0x501c1a){const _0x5c3444=_0x3ec4();return _0x2dd9=function(_0x2b8693,_0x382cdd){_0x2b8693=_0x2b8693-0x1cf;let _0x7870c9=_0x5c3444[_0x2b8693];return _0x7870c9;},_0x2dd9(_0x314aca,_0x501c1a);}function previousQuestion(){const _0x1d831d=_0x35a466,_0x369a30={'IOwOG':function(_0x2df159,_0x1f892f){return _0x2df159>_0x1f892f;},'vNwow':function(_0x236c3d,_0x4635b2){return _0x236c3d===_0x4635b2;},'xDcAr':_0x1d831d(0x438),'fflDZ':function(_0x2d840c,_0x5b1cd4){return _0x2d840c-_0x5b1cd4;},'afXot':function(_0x531a37){return _0x531a37();}};if(_0x369a30[_0x1d831d(0x32a)](currentQuestionIndex,0x0)){if(_0x369a30[_0x1d831d(0x2dd)](_0x369a30[_0x1d831d(0x33b)],_0x369a30['xDcAr']))questionStartTime&&(questionStates[currentQuestionIndex][_0x1d831d(0x362)]+=_0x369a30[_0x1d831d(0x271)](Date[_0x1d831d(0x3f8)](),questionStartTime)),currentQuestionIndex--,_0x369a30['afXot'](displayQuestion),_0x369a30[_0x1d831d(0x3fe)](saveProgress);else{if(!_0x436509)_0x211701();_0x1e149e[_0x1d831d(0x401)][_0x1d831d(0x3a6)]=_0x4451d0[_0x1d831d(0x1de)]||_0x1d831d(0x3e3);}}}function nextQuestion(){const _0x38a61d=_0x35a466,_0x1479b2={'JCDLm':function(_0x49536a,_0x13a7f3){return _0x49536a<_0x13a7f3;},'SaJKu':function(_0x514f02){return _0x514f02();},'waLQf':_0x38a61d(0x2eb),'sanEs':_0x38a61d(0x3b0),'IMZxd':function(_0x493482,_0x170a47){return _0x493482===_0x170a47;},'OZuyA':_0x38a61d(0x2cd),'EVzYv':'ZMPbm','ChDWb':function(_0xa334bb,_0x5acea4){return _0xa334bb-_0x5acea4;},'ZdwuJ':function(_0x5e194c){return _0x5e194c();},'rqVsN':function(_0x93ebf9,_0x487fea){return _0x93ebf9!==_0x487fea;},'HZEVk':_0x38a61d(0x36c),'TUpiQ':'test','vOstx':function(_0x5eda67,_0x1e3f3f){return _0x5eda67!==_0x1e3f3f;},'dZEIw':_0x38a61d(0x337),'vlRWt':function(_0x4ce4a2,_0x12aa70){return _0x4ce4a2(_0x12aa70);},'CsDhN':_0x38a61d(0x218),'VCJBn':function(_0x26db0f,_0x46bf23){return _0x26db0f===_0x46bf23;},'DAnfF':_0x38a61d(0x413),'lDGpo':function(_0xf6a5b9){return _0xf6a5b9();},'qoGKN':_0x38a61d(0x456),'lSlxB':function(_0x382e17){return _0x382e17();}};questionStartTime&&(_0x1479b2[_0x38a61d(0x3fa)](_0x1479b2[_0x38a61d(0x2d0)],_0x1479b2['EVzYv'])?_0x1479b2[_0x38a61d(0x3ef)](_0x226c28['questionIndex'],_0x515ee7[_0x38a61d(0x219)])&&(_0x1cb52f[_0x439f23[_0x38a61d(0x24b)]][_0x38a61d(0x206)]=!![]):questionStates[currentQuestionIndex][_0x38a61d(0x362)]+=_0x1479b2['ChDWb'](Date[_0x38a61d(0x3f8)](),questionStartTime));if(_0x1479b2['JCDLm'](currentQuestionIndex,questionsData[_0x38a61d(0x219)]-0x1))currentQuestionIndex++,_0x1479b2[_0x38a61d(0x235)](displayQuestion),_0x1479b2[_0x38a61d(0x3ae)](saveProgress);else{if(_0x1479b2['rqVsN'](_0x1479b2[_0x38a61d(0x1e4)],_0x38a61d(0x3cb))){if(currentMode===_0x1479b2[_0x38a61d(0x26d)]||_0x1479b2['IMZxd'](currentMode,_0x38a61d(0x3b4)))_0x1479b2['vOstx'](_0x1479b2['dZEIw'],_0x1479b2[_0x38a61d(0x37f)])?_0x1479b2[_0x38a61d(0x235)](_0x10dd3a):_0x1479b2[_0x38a61d(0x209)](confirm,_0x1479b2[_0x38a61d(0x2d9)])&&(_0x1479b2[_0x38a61d(0x33e)](_0x1479b2[_0x38a61d(0x354)],_0x1479b2[_0x38a61d(0x354)])?_0x1479b2[_0x38a61d(0x246)](submitQuiz):_0xf6705f[_0x38a61d(0x379)]=_0x49f8ef);else{if(confirm(_0x38a61d(0x454))){if(_0x1479b2['qoGKN']!==_0x1479b2[_0x38a61d(0x25a)]){const _0x410f1e=_0x45e07a[_0x38a61d(0x3af)](_0x3a4083[_0x38a61d(0x459)](_0x1479b2[_0x38a61d(0x204)]))||{};_0x410f1e[_0x24df42]&&(delete _0x410f1e[_0x1d28fb],_0xc534de[_0x38a61d(0x272)](_0x1479b2['waLQf'],_0x24a00a['stringify'](_0x410f1e)),_0x359b5d[_0x38a61d(0x346)](_0x1479b2[_0x38a61d(0x36f)]));}else currentQuestionIndex=0x0,_0x1479b2[_0x38a61d(0x29b)](displayQuestion),saveProgress();}}}else{if(_0x20fa85)_0x526746+=_0x38a61d(0x27b)+_0x5654eb+'\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>';}}}function startTimer(){const _0x2b932a=_0x35a466,_0x52aafd={'zRfsD':'button','WMZvR':_0x2b932a(0x29c),'HXzVg':function(_0x1177d6){return _0x1177d6();},'hebPN':function(_0x3964e8,_0x1d65c4){return _0x3964e8<=_0x1d65c4;},'mBkME':function(_0x399499,_0x3fad0c){return _0x399499===_0x3fad0c;},'VEVNu':_0x2b932a(0x3d4),'mCzPA':function(_0x1ddcba,_0x246a8c){return _0x1ddcba(_0x246a8c);},'Jowsa':'timed_exam','LZPrY':function(_0x145840,_0x2741aa){return _0x145840===_0x2741aa;},'Etdbi':'iBBuH','gWxJI':function(_0x3c00f3,_0x1b48bb,_0x55d1f2){return _0x3c00f3(_0x1b48bb,_0x55d1f2);}};if(timer)_0x52aafd[_0x2b932a(0x44e)](clearInterval,timer);timeRemaining=0x78,updateTimerDisplay(),timer=_0x52aafd[_0x2b932a(0x22b)](setInterval,()=>{const _0x3a5452=_0x2b932a;timeRemaining--,_0x52aafd[_0x3a5452(0x25b)](updateTimerDisplay);if(_0x52aafd[_0x3a5452(0x250)](timeRemaining,0x0)){if(_0x52aafd['mBkME'](_0x52aafd[_0x3a5452(0x350)],_0x52aafd[_0x3a5452(0x350)])){_0x52aafd[_0x3a5452(0x44e)](clearInterval,timer);if(currentMode===_0x52aafd[_0x3a5452(0x284)]){if(_0x52aafd[_0x3a5452(0x274)](_0x3a5452(0x442),_0x52aafd[_0x3a5452(0x277)]))submitQuiz();else{const _0x2256e1=_0x190029['createElement'](_0x52aafd['zRfsD']);_0x2256e1[_0x3a5452(0x1f5)]=_0x51a6d5+0x1,_0x2256e1[_0x3a5452(0x264)]=_0x52aafd['WMZvR'],_0x2256e1[_0x3a5452(0x221)]=()=>_0x28391c(_0x4ed996),_0x2256e1['id']='navBtn_'+_0x5585cd,_0xd6c0b8[_0x3a5452(0x229)](_0x2256e1);}}else _0x52aafd[_0x3a5452(0x25b)](nextQuestion);}else _0x52aafd[_0x3a5452(0x25b)](_0x54cf8d);}},0x3e8);}function updateTimerDisplay(){const _0x59980c=_0x35a466,_0x5c22e3={'sdZmw':function(_0x1359ca,_0x533490){return _0x1359ca/_0x533490;},'cvqkM':function(_0x40d89e,_0x1bb0c6){return _0x40d89e%_0x1bb0c6;},'DiMlG':_0x59980c(0x461),'hFKRm':function(_0x345f39,_0x5704d1){return _0x345f39+_0x5704d1;},'lTgKw':function(_0x17ab7a,_0x2ecd97){return _0x17ab7a+_0x2ecd97;}},_0x100d5c=Math['floor'](_0x5c22e3[_0x59980c(0x1ea)](timeRemaining,0x3c)),_0x5afaae=_0x5c22e3['cvqkM'](timeRemaining,0x3c);document[_0x59980c(0x2f6)](_0x5c22e3[_0x59980c(0x332)])[_0x59980c(0x1f5)]=_0x5c22e3['hFKRm'](_0x5c22e3['lTgKw'](_0x100d5c,':'),_0x5afaae[_0x59980c(0x3df)]()[_0x59980c(0x1ee)](0x2,'0'));}function toggleSidebar(){const _0x39ee24=_0x35a466;document[_0x39ee24(0x2f6)](_0x39ee24(0x2d3))[_0x39ee24(0x287)][_0x39ee24(0x42e)](_0x39ee24(0x231));}document['addEventListener'](_0x35a466(0x3b8),()=>{const _0x158e83=_0x35a466,_0x425812={'zyoId':function(_0x4d5f1c){return _0x4d5f1c();},'NTOep':function(_0x231826){return _0x231826();},'EFHyM':_0x158e83(0x30c),'pLqeq':_0x158e83(0x389),'WHnaU':'Marked','SCdsm':_0x158e83(0x3b2),'ckqig':function(_0x2aa0ea){return _0x2aa0ea();},'Lunch':_0x158e83(0x41e),'AmebP':_0x158e83(0x201),'rBGyH':_0x158e83(0x2bb),'ZsBix':'Xcvrf','sFcdb':function(_0x3ab248){return _0x3ab248();},'RpvCk':_0x158e83(0x34e),'DsxrJ':_0x158e83(0x3a2),'LiRrK':function(_0x38a4c0,_0x5eb45c){return _0x38a4c0===_0x5eb45c;},'jCnQi':'HNRoX'};if(resume)_0x425812['ckqig'](loadProgress)?(document[_0x158e83(0x2f6)](_0x425812[_0x158e83(0x32d)])[_0x158e83(0x222)]['display']=_0x425812['AmebP'],_0x425812[_0x158e83(0x291)](initializeQuiz)):_0x425812['rBGyH']!==_0x425812[_0x158e83(0x233)]?(_0x425812[_0x158e83(0x26e)](clearProgress),document[_0x158e83(0x2f6)](_0x425812[_0x158e83(0x32d)])[_0x158e83(0x222)][_0x158e83(0x421)]=_0x425812['RpvCk']):(_0x2ab710++,_0x425812['zyoId'](_0x3e098d),_0x425812[_0x158e83(0x2b4)](_0x47f42b));else{if(!window[_0x158e83(0x401)][_0x158e83(0x433)][_0x158e83(0x27d)](_0x425812['DsxrJ'])){if(_0x425812['LiRrK'](_0x158e83(0x1d2),_0x425812['jCnQi'])){const _0x3722da=_0x25ccad[_0x158e83(0x2f6)]('markReviewBtn'),_0x378612=_0x4d6ee3[_0x158e83(0x2f6)](_0x425812[_0x158e83(0x1eb)]),_0x298f59=_0x2e40b4[_0x25f0da][_0x158e83(0x2e4)];_0x3722da[_0x158e83(0x264)]=_0x298f59?_0x158e83(0x28d):_0x425812[_0x158e83(0x255)],_0x378612[_0x158e83(0x1f5)]=_0x298f59?_0x425812[_0x158e83(0x3cd)]:_0x425812[_0x158e83(0x2cc)];}else _0x425812[_0x158e83(0x2b4)](clearProgress),document[_0x158e83(0x2f6)](_0x425812[_0x158e83(0x32d)])[_0x158e83(0x222)][_0x158e83(0x421)]=_0x425812[_0x158e83(0x3a7)];}else _0x425812[_0x158e83(0x243)](initializeQuiz);}}),document[_0x35a466(0x30a)](_0x35a466(0x24a),function(_0x21fee6){const _0xd134f2=_0x35a466,_0x3e35be={'dVcCp':_0xd134f2(0x3f2),'gmoQO':_0xd134f2(0x446),'rrkDQ':function(_0x2abc75,_0x22a266){return _0x2abc75>_0x22a266;},'uSQKL':function(_0x5148c1,_0x4a7e53){return _0x5148c1*_0x4a7e53;},'AHKTj':function(_0x27811d,_0x3142e9){return _0x27811d/_0x3142e9;},'WdDTo':_0xd134f2(0x382),'oZJYF':function(_0x1bd8c7,_0x8055e5){return _0x1bd8c7+_0x8055e5;},'uwPDA':function(_0x45dc26,_0x1ed115){return _0x45dc26/_0x1ed115;},'riFbz':function(_0x7616f8,_0x1b9dd7){return _0x7616f8%_0x1b9dd7;},'dqYrR':_0xd134f2(0x362),'nEUGV':function(_0x43b70e,_0x11e548){return _0x43b70e+_0x11e548;},'qjdNm':_0xd134f2(0x37b),'Ioagb':_0xd134f2(0x212),'fyghv':_0xd134f2(0x1d1),'WbxmE':'incorrect','xyEUQ':_0xd134f2(0x41e),'JvJuU':'none','PZKQs':function(_0x15e1ca,_0x4c47e2){return _0x15e1ca===_0x4c47e2;},'WoAiP':_0xd134f2(0x3cc),'EnipI':_0xd134f2(0x425),'tQLQe':function(_0x577b7e,_0x233a62){return _0x577b7e>=_0x233a62;},'AWacH':function(_0x3f4bcf,_0x47f377){return _0x3f4bcf<=_0x47f377;},'LsLvI':function(_0x5d4b35,_0x5c4a28){return _0x5d4b35===_0x5c4a28;},'RUgoo':'KtJLw','BVQxB':function(_0x55ed84,_0x126b1e){return _0x55ed84(_0x126b1e);},'FyHbD':_0xd134f2(0x1d4),'XjtCp':function(_0x240ecb,_0x1ef1e4){return _0x240ecb<_0x1ef1e4;},'PizrX':function(_0x5627ce,_0x38b1ed){return _0x5627ce(_0x38b1ed);},'KzRna':function(_0x233ee0,_0x3277b3){return _0x233ee0===_0x3277b3;},'jzQKw':_0xd134f2(0x3ab),'JxAew':function(_0x3ed502){return _0x3ed502();},'uofxA':function(_0x2665c5,_0x48baae){return _0x2665c5===_0x48baae;},'jIDTK':_0xd134f2(0x3a4),'zvApH':function(_0x38b24b,_0x38222f){return _0x38b24b===_0x38222f;},'ueoXU':_0xd134f2(0x3b6),'IcorW':function(_0x4b975d,_0x439686){return _0x4b975d===_0x439686;},'mwelS':'timed_study','VuPke':_0xd134f2(0x252),'IteCH':function(_0x29d221,_0xec8745){return _0x29d221===_0xec8745;},'pAslr':_0xd134f2(0x343),'ekTsl':_0xd134f2(0x3b4),'niIGj':_0xd134f2(0x3ea),'vCOdQ':function(_0x571c63){return _0x571c63();},'dVyTu':function(_0x485107,_0x2c4037){return _0x485107===_0x2c4037;},'CYrlh':function(_0x20c488){return _0x20c488();}};if(document[_0xd134f2(0x2f6)](_0x3e35be[_0xd134f2(0x22f)])[_0xd134f2(0x222)][_0xd134f2(0x421)]!==_0x3e35be['JvJuU'])return;if(_0x3e35be[_0xd134f2(0x3eb)](document[_0xd134f2(0x2f6)](_0x3e35be[_0xd134f2(0x3da)])['classList'][_0xd134f2(0x3b5)](_0x3e35be[_0xd134f2(0x35e)]),![]))return;if(_0x3e35be[_0xd134f2(0x228)](_0x21fee6[_0xd134f2(0x2ca)],'1')&&_0x3e35be[_0xd134f2(0x20a)](_0x21fee6['key'],'4')){if(_0x3e35be[_0xd134f2(0x3a9)](_0x3e35be[_0xd134f2(0x2f0)],_0xd134f2(0x3a0))){_0x4b2476[_0xd134f2(0x2f6)](_0xd134f2(0x29e))[_0xd134f2(0x1f5)]=_0x57385a[_0xd134f2(0x3f1)],_0x83abe1['getElementById'](_0x3e35be[_0xd134f2(0x210)])[_0xd134f2(0x1f5)]=_0x27ce1e[_0xd134f2(0x20e)],_0x260a6a[_0xd134f2(0x2f6)](_0x3e35be[_0xd134f2(0x2e1)])[_0xd134f2(0x1f5)]=_0x245191[_0xd134f2(0x446)];const _0x4c9414=_0x3e35be['rrkDQ'](_0x403b3b['totalAttempted'],0x0)?_0x2dccbf['round'](_0x3e35be[_0xd134f2(0x215)](_0x3e35be['AHKTj'](_0x29e1eb[_0xd134f2(0x3f1)],_0x494a81[_0xd134f2(0x446)]),0x64)):0x0;_0x236715[_0xd134f2(0x2f6)](_0x3e35be['WdDTo'])[_0xd134f2(0x1f5)]=_0x3e35be['oZJYF'](_0x4c9414,'%'),_0x4fe180[_0xd134f2(0x45f)]=_0x269650['reduce']((_0xdd1e55,_0x4deea2)=>_0xdd1e55+_0x4deea2[_0xd134f2(0x362)],0x0);const _0x1f9609=_0xabf171[_0xd134f2(0x3a5)](_0x3e35be[_0xd134f2(0x27e)](_0x48ef8f[_0xd134f2(0x45f)],0x3e8)),_0x2b6c4e=_0x399292[_0xd134f2(0x3a5)](_0x3e35be[_0xd134f2(0x2b0)](_0x1f9609,0x3c)),_0x2584f0=_0x3e35be[_0xd134f2(0x355)](_0x1f9609,0x3c);_0x13931f['getElementById'](_0x3e35be['dqYrR'])[_0xd134f2(0x1f5)]=_0x3e35be[_0xd134f2(0x315)](_0x3e35be[_0xd134f2(0x244)](_0x2b6c4e,':'),_0x2584f0[_0xd134f2(0x3df)]()[_0xd134f2(0x1ee)](0x2,'0'));}else{const _0x317b1a=_0x3e35be[_0xd134f2(0x311)](parseInt,_0x21fee6[_0xd134f2(0x2ca)])-0x1,_0x1bb06c=document[_0xd134f2(0x45a)](_0x3e35be[_0xd134f2(0x3ac)]);if(_0x3e35be[_0xd134f2(0x445)](_0x317b1a,_0x1bb06c[_0xd134f2(0x219)]))_0x3e35be['PizrX'](selectOption,_0x317b1a);}}else{if(_0x3e35be[_0xd134f2(0x208)](_0x21fee6['key'],_0x3e35be[_0xd134f2(0x1d8)]))_0x3e35be[_0xd134f2(0x3ed)](previousQuestion);else{if(_0x3e35be['uofxA'](_0x21fee6[_0xd134f2(0x2ca)],_0x3e35be['jIDTK'])||_0x21fee6[_0xd134f2(0x2ca)]==='\x20')_0x21fee6['preventDefault'](),_0x3e35be['JxAew'](nextQuestion);else{if(_0x21fee6[_0xd134f2(0x2ca)][_0xd134f2(0x2ee)]()==='b'&&(_0x3e35be[_0xd134f2(0x3f7)](currentMode,_0x3e35be[_0xd134f2(0x278)])||_0x3e35be['IcorW'](currentMode,_0x3e35be[_0xd134f2(0x1e8)]))){if(_0xd134f2(0x1e5)===_0x3e35be['VuPke']){const _0x45e332=_0x3e35be['qjdNm']['split']('|');let _0x513057=0x0;while(!![]){switch(_0x45e332[_0x513057++]){case'0':_0x37b5ac=_0x540ab5[_0xd134f2(0x2c3)];continue;case'1':_0xd33807=_0x519a3f[_0xd134f2(0x367)];continue;case'2':return!![];case'3':_0x9cd4c1['log'](_0x3e35be[_0xd134f2(0x256)]);continue;case'4':_0x233fe9=_0x5c9750[_0xd134f2(0x317)];continue;case'5':_0x145e93=_0x402779['stats'];continue;}break;}}else toggleBookmark();}else{if(_0x3e35be[_0xd134f2(0x3a9)](_0x21fee6['key'][_0xd134f2(0x2ee)](),'m')&&(_0x3e35be[_0xd134f2(0x1d9)](currentMode,_0x3e35be[_0xd134f2(0x26a)])||_0x3e35be[_0xd134f2(0x208)](currentMode,_0x3e35be[_0xd134f2(0x30d)]))){if(_0x3e35be[_0xd134f2(0x1d9)](_0xd134f2(0x2dc),_0x3e35be['niIGj'])){const _0xe24a89=_0x300099[_0x21f2d6];_0xe24a89['selectedAnswer']!==null&&(_0x446eda[_0xd134f2(0x40c)][_0xe24a89['selectedAnswer']]['id']===_0x41d473[_0xd134f2(0x458)]?(_0x55c66e++,_0xe24a89[_0xd134f2(0x2af)]=_0x3e35be[_0xd134f2(0x2c4)]):(_0x1e1eb3++,_0xe24a89[_0xd134f2(0x2af)]=_0x3e35be['WbxmE']));}else _0x3e35be[_0xd134f2(0x32f)](toggleMarkForReview);}else _0x3e35be['IteCH'](_0x21fee6[_0xd134f2(0x2ca)][_0xd134f2(0x2ee)](),'s')&&(_0x3e35be[_0xd134f2(0x32e)](currentMode,_0xd134f2(0x343))||_0x3e35be[_0xd134f2(0x3a9)](currentMode,_0x3e35be[_0xd134f2(0x30d)]))&&_0x3e35be[_0xd134f2(0x20b)](submitQuiz);}}}}});</script>
+
+</body></html>

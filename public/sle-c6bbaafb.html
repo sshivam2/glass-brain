@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sle - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / qBank / Medicine
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">19</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>const _0x2c9575=_0x86f1;(function(_0x57d270,_0x4bbaa2){const _0xbbf589=_0x86f1,_0x10442c=_0x57d270();while(!![]){try{const _0x60933a=-parseInt(_0xbbf589(0x21c))/0x1*(parseInt(_0xbbf589(0x35a))/0x2)+parseInt(_0xbbf589(0x39f))/0x3*(parseInt(_0xbbf589(0x1cf))/0x4)+parseInt(_0xbbf589(0x323))/0x5+-parseInt(_0xbbf589(0x308))/0x6*(parseInt(_0xbbf589(0x278))/0x7)+-parseInt(_0xbbf589(0x360))/0x8+-parseInt(_0xbbf589(0x391))/0x9+parseInt(_0xbbf589(0x181))/0xa;if(_0x60933a===_0x4bbaa2)break;else _0x10442c['push'](_0x10442c['shift']());}catch(_0x13f088){_0x10442c['push'](_0x10442c['shift']());}}}(_0x458c,0x1af07));const _0x27ec0b=(function(){const _0x17e581=_0x86f1,_0x97dfac={'ZQjDe':_0x17e581(0x28c),'wAwmX':_0x17e581(0x39c)};let _0x2a6529=!![];return function(_0x2bb0a8,_0x38c0b8){const _0x4ab44f=_0x2a6529?function(){const _0x11655a=_0x86f1;if(_0x38c0b8){if(_0x97dfac[_0x11655a(0x1b4)]!==_0x97dfac['wAwmX']){const _0x32c400=_0x38c0b8[_0x11655a(0x2bb)](_0x2bb0a8,arguments);return _0x38c0b8=null,_0x32c400;}else _0xf4a72c();}}:function(){};return _0x2a6529=![],_0x4ab44f;};}()),_0x8d34a=_0x27ec0b(this,function(){const _0x5345c6=_0x86f1,_0x51df81={'LpaIr':_0x5345c6(0x221)};return _0x8d34a[_0x5345c6(0x289)]()[_0x5345c6(0x3b6)](_0x5345c6(0x221))['toString']()['constructor'](_0x8d34a)[_0x5345c6(0x3b6)](_0x51df81[_0x5345c6(0x359)]);});_0x8d34a();const _0x15ece2=(function(){const _0x746d7=_0x86f1,_0x139653={'CGgLD':function(_0x5e7225,_0x303290){return _0x5e7225!==_0x303290;},'vYEGB':_0x746d7(0x3d3),'mYEhq':_0x746d7(0x22e)};let _0x81433b=!![];return function(_0x5c0da3,_0x4249ba){const _0x49d48c=_0x81433b?function(){const _0x2f3397=_0x86f1;if(_0x4249ba){if(_0x139653[_0x2f3397(0x337)](_0x139653['vYEGB'],_0x139653[_0x2f3397(0x1d3)])){const _0x11dd56=_0x4249ba[_0x2f3397(0x2bb)](_0x5c0da3,arguments);return _0x4249ba=null,_0x11dd56;}else{const _0x533f1b=_0x1b1a5c?function(){const _0x2db09a=_0x2f3397;if(_0x4c61d6){const _0x4dddff=_0x4198f7[_0x2db09a(0x2bb)](_0x40e5a6,arguments);return _0x1bbb75=null,_0x4dddff;}}:function(){};return _0x3b5f37=![],_0x533f1b;}}}:function(){};return _0x81433b=![],_0x49d48c;};}()),_0x56c4b3=_0x15ece2(this,function(){const _0x2a894f=_0x86f1,_0x3beab9={'hxHia':function(_0x2436f7){return _0x2436f7();},'zanWq':_0x2a894f(0x244),'LYeYh':'button','qraMo':function(_0xc4e946,_0x3afb85){return _0xc4e946===_0x3afb85;},'rJPGY':'DFMSz','gJSoZ':function(_0x4bfbef,_0x158a96){return _0x4bfbef(_0x158a96);},'hwQtN':function(_0x37b0df,_0x17f6be){return _0x37b0df+_0x17f6be;},'xicjE':'{}.constructor(\x22return\x20this\x22)(\x20)','FPjZX':_0x2a894f(0x3d4),'ZwqZO':_0x2a894f(0x2fc),'csMJX':_0x2a894f(0x205),'znOPM':_0x2a894f(0x20c),'scpdI':'exception','uBNSL':_0x2a894f(0x3e3),'XXLno':function(_0x3860ca,_0x59b7de){return _0x3860ca<_0x59b7de;}},_0x2b7a6d=function(){const _0x4c13ca=_0x2a894f,_0x59eeba={'IYueg':function(_0x4ad0f8,_0x40fcd4){return _0x4ad0f8-_0x40fcd4;},'aRUbg':function(_0x2a7f58){return _0x3beab9['hxHia'](_0x2a7f58);},'vlbLg':_0x3beab9[_0x4c13ca(0x224)],'jZQWw':_0x3beab9[_0x4c13ca(0x386)],'dBybj':_0x4c13ca(0x281),'oOLhQ':function(_0x19d273){const _0xff868d=_0x4c13ca;return _0x3beab9[_0xff868d(0x1ad)](_0x19d273);}};if(_0x3beab9['qraMo'](_0x3beab9['rJPGY'],_0x3beab9[_0x4c13ca(0x1f7)])){let _0x2238ef;try{_0x2238ef=_0x3beab9[_0x4c13ca(0x2d9)](Function,_0x3beab9[_0x4c13ca(0x222)](_0x4c13ca(0x1e1)+_0x3beab9[_0x4c13ca(0x305)],');'))();}catch(_0x590e1f){_0x3beab9[_0x4c13ca(0x250)]==='WMdLe'?(_0x565805&&(_0x257fc9[_0x17f63d][_0x4c13ca(0x1ef)]+=_0x59eeba[_0x4c13ca(0x2aa)](_0x20ebd8['now'](),_0x19fbf0)),_0x39a88a--,_0x7b01c6(),_0x59eeba['aRUbg'](_0x45d34b)):_0x2238ef=window;}return _0x2238ef;}else{const _0x4f205e=_0x2b62d2[_0x4c13ca(0x1f4)](_0x59eeba[_0x4c13ca(0x287)]);_0x4f205e['innerHTML']='';for(let _0x2d670f=0x0;_0x2d670f<_0x2babfb[_0x4c13ca(0x190)];_0x2d670f++){const _0x3f1580=_0x2f2e39[_0x4c13ca(0x2c5)](_0x59eeba[_0x4c13ca(0x252)]);_0x3f1580['textContent']=_0x2d670f+0x1,_0x3f1580[_0x4c13ca(0x293)]=_0x59eeba['dBybj'],_0x3f1580[_0x4c13ca(0x2ea)]=()=>_0x329b76(_0x2d670f),_0x3f1580['id']='navBtn_'+_0x2d670f,_0x4f205e[_0x4c13ca(0x231)](_0x3f1580);}_0x59eeba[_0x4c13ca(0x331)](_0x5359c0);}},_0x295947=_0x3beab9[_0x2a894f(0x1ad)](_0x2b7a6d),_0x57cad3=_0x295947['console']=_0x295947[_0x2a894f(0x381)]||{},_0x32fc19=[_0x2a894f(0x18c),_0x3beab9[_0x2a894f(0x2b7)],_0x3beab9[_0x2a894f(0x1bf)],_0x3beab9[_0x2a894f(0x38a)],_0x3beab9[_0x2a894f(0x3d8)],_0x3beab9['uBNSL'],'trace'];for(let _0xfb5ba0=0x0;_0x3beab9[_0x2a894f(0x3fd)](_0xfb5ba0,_0x32fc19[_0x2a894f(0x190)]);_0xfb5ba0++){const _0xa68810=_0x15ece2[_0x2a894f(0x3e9)][_0x2a894f(0x207)]['bind'](_0x15ece2),_0x3cd399=_0x32fc19[_0xfb5ba0],_0xf6bc20=_0x57cad3[_0x3cd399]||_0xa68810;_0xa68810[_0x2a894f(0x2ac)]=_0x15ece2[_0x2a894f(0x3f7)](_0x15ece2),_0xa68810['toString']=_0xf6bc20[_0x2a894f(0x289)][_0x2a894f(0x3f7)](_0xf6bc20),_0x57cad3[_0x3cd399]=_0xa68810;}});_0x56c4b3();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':_0x2c9575(0x36d)},{'id':0x2,'text':_0x2c9575(0x1e3)},{'id':0x3,'text':_0x2c9575(0x3cc)},{'id':0x4,'text':_0x2c9575(0x230)}],'text':_0x2c9575(0x3b9),'unique_key':'DT1197613','question_audio':null,'question_video':null,'map_id':0x12462d,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>This\x20question\x20addresses\x20a\x20classic\x20complication\x20of\x20<strong>neonatal\x20lupus</strong>,\x20which\x20occurs\x20due\x20to\x20passive\x20transplacental\x20transfer\x20of\x20maternal\x20autoantibodies,\x20particularly\x20<strong>anti-Ro\x20(SSA)</strong>\x20and\x20<strong>anti-La\x20(SSB)</strong>.</li>\x0a<li>The\x20most\x20feared\x20and\x20<strong>life-threatening\x20complication</strong>\x20is\x20<strong>congenital\x20heart\x20block</strong>,\x20a\x20result\x20of\x20damage\x20to\x20the\x20fetal\x20cardiac\x20conduction\x20system,\x20especially\x20the\x20<strong>atrioventricular\x20(AV)\x20node</strong>.\x20This\x20damage\x20leads\x20to\x20<strong>third-degree\x20AV\x20block</strong>,\x20as\x20seen\x20in\x20the\x20provided\x20fetal\x20ECG\x20image\x20(prolonged\x20PR\x20interval,\x20atrial\x20and\x20ventricular\x20dissociation).</li>\x0a<li>Importantly,\x20<strong>anti-Ro\x20antibody\x20is\x20the\x20strongest\x20serologic\x20predictor</strong>\x20of\x20congenital\x20complete\x20heart\x20block.\x20This\x20manifestation\x20is\x20independent\x20of\x20whether\x20the\x20mother\x20has\x20active\x20lupus\x20symptoms.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Anti-dsDNA\x20antibody\x20(Option\x20A):\x20</strong>While\x20associated\x20with\x20<strong>lupus\x20nephritis</strong>\x20and\x20overall\x20disease\x20activity\x20in\x20SLE,\x20it\x20is\x20<strong>not\x20linked\x20to\x20congenital\x20heart\x20block</strong>.</p>\x0a<p><strong>Anti-Sm\x20antibody\x20(Option\x20C):</strong>\x20This\x20antibody\x20is\x20specific\x20for\x20SLE\x20but\x20<strong>not\x20predictive\x20of\x20fetal\x20complications</strong>\x20like\x20congenital\x20heart\x20block.</p>\x0a<p><strong>ANA\x20antibody\x20(Option\x20D):</strong>\x20Though\x20present\x20in\x20most\x20patients\x20with\x20SLE,\x20ANA\x20is\x20<strong>non-specific</strong>\x20and\x20does\x20not\x20correlate\x20with\x20neonatal\x20lupus\x20or\x20congenital\x20heart\x20manifestations.</p>','correct_choice_id':0x2,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':_0x2c9575(0x303)},{'id':0xc,'text':_0x2c9575(0x384)},{'id':0xd,'text':_0x2c9575(0x315)},{'id':0xe,'text':_0x2c9575(0x2cf)}],'text':_0x2c9575(0x382),'unique_key':'DT1197641','question_audio':null,'question_video':null,'map_id':0x124649,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x373),'correct_choice_id':0xd,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':_0x2c9575(0x188)},{'id':0x16,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Complete\x20heart\x20block\x20of\x20the\x20fetus\x20can\x20be\x20reversed\x20with\x20Dexamethasone</span></p>'},{'id':0x17,'text':_0x2c9575(0x22b)},{'id':0x18,'text':_0x2c9575(0x3ff)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2027-year-old\x20patient\x20with\x20systemic\x20lupus\x20erythematosus\x20attends\x20the\x20obstetric\x20clinic\x20at\x2025\x20weeks\x20into\x20her\x20pregnancy.\x20The\x20fetal\x20heart\x20rate\x20is\x2045\x20beats\x20per\x20minute.\x20Foetal\x20echocardiography\x20shows\x20complete\x20heart\x20block.\x20Which\x20one\x20of\x20the\x20following\x20is\x20false?</span></p>','unique_key':_0x2c9575(0x2c9),'question_audio':null,'question_video':null,'map_id':0x124652,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x264),'correct_choice_id':0x16,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Drug-induced\x20lupus,\x20Anti-histone\x20antibody</span></p>'},{'id':0x20,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Systemic\x20Lupus\x20Erythematosus,\x20Anti-histone\x20antibody</span></p>'},{'id':0x21,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Drug-induced\x20lupus,\x20Anti-Smith\x20antibody</span></p>'},{'id':0x22,'text':_0x2c9575(0x263)}],'text':_0x2c9575(0x372),'unique_key':_0x2c9575(0x40c),'question_audio':null,'question_video':null,'map_id':0x12462a,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>The\x20question\x20deals\x20with\x20<strong>inflammatory\x20arthritis</strong>(joint\x20pain\x20with\x20stiffness)\x20in\x20a\x20female\x20of\x20reproductive\x20age.</li>\x0a<li>A\x20<strong>raised\x20ESR,\x20CRP</strong>\x20also\x20point\x20towards\x20an\x20inflammatory\x20cause.\x20The\x20<strong>most\x20common\x20cause\x20of\x20inflammatory\x20arthritis</strong>\x20in\x20females\x20of\x20reproductive\x20age\x20is</li>\x0a<li>If\x20we\x20look\x20more\x20into\x20the\x20details\x20given,\x20it\x20is\x20said\x20that\x20she\x20is\x20on\x20<strong>Minocycline</strong>,\x20which\x20is\x20implicated\x20in\x20drug-induced\x20lupus.\x20So\x20it\x20is\x20not\x20simple\x20SLE,\x20but\x20<strong>drug-induced\x20lupus(DIL).</strong></li>\x0a<li>The\x20<strong>homogeneous\x20ANA\x20pattern</strong>\x20is\x20most\x20often\x20associated\x20with\x20<strong>anti-histone\x20antibodies</strong>.</li>\x0a</ul>\x0a<p><strong>Drug\x20induced\x20Lupus(DIL):</strong></p>\x0a<ul>\x0a<li><strong>Positive\x20ANA</strong></li>\x0a<li><strong>Fever,\x20malaise,\x20arthritis\x20or\x20intense\x20arthralgias/myalgias,\x20serositis,\x20and/\x20or\x20rash.</strong></li>\x0a<li>Rarely\x20involving\x20the\x20kidney\x20and\x20brain.</li>\x0a<li>Associated\x20with\x20<strong>anti-histone\x20antibodies.</strong></li>\x0a<li>It\x20resolves\x20over\x20weeks\x20after\x20discontinuation\x20of\x20medications.</li>\x0a<li>Asymptomatic\x20ANA\x20positivity\x20is\x20also\x20seen\x20on\x20exposure\x20to\x20the\x20drugs.</li>\x0a<li>SHIP\x20Pnemonic\x20may\x20be\x20used\x20to\x20remember\x20a\x20few.\x20S-\x20Sulfasalazine,\x20H-Hydralazine,\x20I-Isoniazid,\x20P-Procainamide,\x20P-Phenytoin</li>\x0a<li>TNF\x20alpha\x20inhibitors\x20can\x20also\x20cause\x20this.</li>\x0a<li>The\x20incidence\x20of\x20Drug-Induced\x20Lupus\x20is\x20less\x20in\x20females\x20and\x20more\x20in\x20whites.</li>\x0a</ul>\x0a<p><strong>Common\x20drugs\x20that\x20can\x20cause\x20lupus.</strong></p>\x0a<p>Hydrochlorothiazide,\x20Angiotensin-converting\x20enzyme\x20inhibitors,\x20beta\x20blockers,\x20Propylthiouracil,\x20lithium,\x20phenytoin,\x20isoniazid,\x20minocycline,\x20nitrofurantoin,\x20sulfasalazine,\x20lovastatin\x20and\x20simvastatin.</p>\x0a<p><strong>Patterns\x20of\x20staining\x20in\x20IF:</strong></p>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250915aa8ef3bd-7a93-4197-824a-4db1c24ca7a7.png\x22>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Systemic\x20lupus\x20erythematosus,\x20Anti-histone\x20antibody\x20(Option\x20B):\x20</strong>While\x20anti-histone\x20antibodies\x20may\x20be\x20seen\x20in\x20SLE,\x20they\x20are\x20<strong>not\x20the\x20most\x20specific</strong>\x20marker.\x20Anti-dsDNA\x20and\x20anti-Sm\x20are\x20more\x20commonly\x20associated\x20with\x20idiopathic\x20SLE.\x20In\x20this\x20clinical\x20context\x20of\x20drug\x20exposure\x20and\x20lack\x20of\x20systemic\x20features,\x20this\x20is\x20less\x20likely.</p>\x0a<p><strong>Drug-induced\x20lupus,\x20Anti-Sm\x20antibody\x20(Option\x20C):\x20</strong>Anti-Sm\x20antibodies\x20are\x20<strong>highly\x20specific\x20for\x20idiopathic\x20SLE</strong>,\x20not\x20drug-induced\x20lupus.\x20Their\x20presence\x20in\x20DIL\x20is\x20extremely\x20rare.</p>\x0a<p><strong>Systemic\x20lupus\x20erythematosus,\x20Anti-Sm\x20antibody\x20(Option\x20D):\x20</strong>Although\x20this\x20combination\x20is\x20typical\x20in\x20idiopathic\x20SLE,\x20the\x20history\x20of\x20drug\x20use\x20(minocycline),\x20absence\x20of\x20systemic\x20signs,\x20and\x20strong\x20homogeneous\x20ANA\x20pattern\x20favour\x20DIL.</p>','correct_choice_id':0x1f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Erythromycin</span></p>'},{'id':0x2a,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Isotretinoin</span></p>'},{'id':0x2b,'text':_0x2c9575(0x18f)},{'id':0x2c,'text':_0x2c9575(0x351)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2026-year-old\x20woman\x20has\x20acne\x20and\x20is\x20taking\x20oral\x20medication.\x20She\x20develops\x20polyarthritis\x20and\x20has\x20raised\x20liver\x20enzyme\x20tests.\x20Investigations\x20show:\x20AST\x2095\x20U/l\x20(A-3D-\x20ALT\x20170\x20U/l\x20(5-35)\x20Bilirubin\x200.6\x20mg/dl\x20Antinuclear\x20antibodies:\x20Strongly\x20positive\x20at\x201/20\x20Negative\x20at\x201/640\x20Which\x20of\x20the\x20following\x20drugs\x20is\x20she\x20most\x20likely\x20to\x20have\x20been\x20prescribed?</span></p>','unique_key':_0x2c9575(0x1be),'question_audio':null,'question_video':null,'map_id':0x124650,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':'<p><strong>Explanation</strong>:</p>\x0a<p>All\x20other\x20drugs\x20listed\x20above\x20are\x20used\x20in\x20the\x20treatment\x20of\x20acne.</p>\x0a<p>Among\x20the\x20given\x20options,</p>\x0a<ul>\x0a<li><strong>ANA\x20positivity\x20with\x20autoimmune\x20hepatitis</strong>is\x20seen\x20with\x20<strong>Minocycline</strong>.\x20Other\x20drugs\x20which\x20produce\x20the\x20same\x20profile\x20are\x20<strong>Alpha\x20methyl\x20dopa,\x20Hydralazine,\x20and\x20nitrofurantoin</strong>.</li>\x0a<li>These\x20agents\x20<strong>cause\x20autoimmune\x20hepatitis</strong>\x20with\x20anti-LKM2\x20positivity.</li>\x0a<li><strong>Erythromycin</strong>\x20causes\x20cholestatic\x20jaundice\x20and\x20not\x20hepatitis,\x20and\x20is\x20not\x20associated\x20with\x20ANA.\x20<strong>(Option\x20A\x20ruled\x20out)</strong></li>\x0a<li><strong>Oxytetracycline</strong>\x20causes\x20fatty\x20liver\x20and\x20photosensitivity.\x20<strong>(Option\x20D\x20ruled\x20out)</strong></li>\x0a<li><strong>Isotretinoin</strong>\x20is\x20associated\x20with\x20neutropenia\x20and\x20headaches\x20as\x20the\x20common\x20side\x20effects,\x20but\x20hepatitis\x20and\x20arthritis\x20are\x20very\x20rare,\x20and\x20ANA\x20positivity\x20has\x20not\x20been\x20described.\x20<strong>(Option\x20B\x20ruled\x20out)</strong></li>\x0a<li>Usually\x20Drug\x20drug-induced\x20lupus\x20is\x20<strong>anti-dsDNA\x20negative.\x20But\x20anti-dsDNA\x20is\x20positive\x20with\x20DIL\x20caused\x20by\x20Minocycline\x20and\x20TNF\x20inhibitors.</strong></li>\x0a<li><strong>Anti-histone\x20is\x20not\x20specific\x20for\x20DIL,\x20as\x20it\x20may\x20be\x20positive\x20in\x2085%\x20of\x20idiopathic\x20SLE.</strong></li>\x0a</ul>','correct_choice_id':0x2b,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':_0x2c9575(0x282)},{'id':0x34,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>ESR</span></p>'},{'id':0x35,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>CRP</span></p>'},{'id':0x36,'text':_0x2c9575(0x3f0)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20are\x20the\x20parameters\x20that\x20you\x20use\x20in\x20a\x20patient\x20with\x20SLE\x20for\x20assessing\x20the\x20disease\x20activity?</span></p>','unique_key':'DT1231907','question_audio':null,'question_video':null,'map_id':0x12cc23,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<p><strong>Explanation</strong>:</p>\x0a<p><strong>Anti-dsDNA\x20antibody\x20titers</strong>\x20and\x20<strong>serum\x20complement\x20levels\x20(C3/C4)</strong>\x20are\x20the\x20most\x20reliable\x20markers\x20for\x20<strong>monitoring\x20disease\x20activity\x20in\x20SLE</strong>,\x20especially\x20during\x20flares.</p>\x0a<ul>\x0a<li>A\x20<strong>rise\x20in\x20anti-dsDNA\x20levels</strong>\x20or\x20a\x20<strong>fall\x20in\x20complement\x20levels</strong>\x20typically\x20correlates\x20with\x20disease\x20activity,\x20especially\x20renal\x20involvement.</li>\x0a<li><strong>ESR</strong>\x20and\x20<strong>CRP</strong>\x20are\x20nonspecific;\x20ESR\x20may\x20be\x20elevated\x20in\x20active\x20disease,\x20but\x20CRP\x20usually\x20rises\x20only\x20during\x20<strong>infection\x20or\x20serositis</strong>,\x20making\x20them\x20unreliable\x20as\x20sole\x20disease\x20activity\x20markers.</li>\x0a<li><strong>ANA</strong>,\x20though\x20highly\x20sensitive,\x20is\x20not\x20specific\x20and\x20does\x20not\x20correlate\x20with\x20activity-it\x20remains\x20positive\x20irrespective\x20of\x20disease\x20activity.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>ESR\x20(Option\x20B):</strong>\x20Nonspecific\x20marker.\x20It\x20can\x20be\x20elevated\x20during\x20active\x20lupus\x20or\x20any\x20inflammatory\x20state\x20(e.g.,\x20infections),\x20so\x20it\x20<strong>cannot\x20reliably\x20distinguish\x20between\x20flare\x20and\x20infection</strong>.</p>\x0a<p><strong>CRP\x20(Option\x20C):</strong>\x20Usually\x20normal\x20in\x20lupus\x20flares\x20unless\x20there\x20is\x20<strong>infection</strong>\x20or\x20<strong>serositis</strong>.\x20Hence,\x20not\x20a\x20dependable\x20marker\x20for\x20disease\x20activity\x20alone.</p>\x0a<p><strong>ANA\x20(Option\x20D):</strong>\x20Useful\x20for\x20diagnosis\x20(very\x20sensitive)\x20but\x20<strong>not\x20for\x20monitoring</strong>,\x20as\x20it\x20usually\x20remains\x20<strong>persistently\x20positive</strong>\x20in\x20most\x20patients\x20with\x20SLE.</p>','correct_choice_id':0x33,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':_0x2c9575(0x375)},{'id':0x3e,'text':_0x2c9575(0x25d)},{'id':0x3f,'text':_0x2c9575(0x2df)},{'id':0x40,'text':_0x2c9575(0x18e)}],'text':_0x2c9575(0x40a),'unique_key':'DT1197640','question_audio':null,'question_video':null,'map_id':0x124648,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x1c2),'correct_choice_id':0x3e,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':_0x2c9575(0x2c2)},{'id':0x48,'text':_0x2c9575(0x32b)},{'id':0x49,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Fungal\x20Endocarditis</span></p>'},{'id':0x4a,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Non-Bacterial\x20Thrombotic\x20Endocarditis</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20characteristic\x20lesion\x20that\x20can\x20be\x20seen\x20in\x20the\x20heart\x20valves\x20of\x20a\x20patient\x20with\x20SLE?</span></p>','unique_key':'DT1231890','question_audio':null,'question_video':null,'map_id':0x12cc12,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':'<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li>The\x20<strong>hallmark\x20valvular\x20lesion\x20in\x20SLE</strong>\x20is\x20<strong>Libman-Sacks\x20endocarditis</strong>,\x20which\x20is\x20characterised\x20by\x20<strong>sterile\x20verrucous\x20vegetations</strong>.\x20These\x20vegetations:\x0a<ul>\x0a<li>They\x20are\x20composed\x20of\x20<strong>immune\x20complexes,\x20mononuclear\x20cells,\x20fibrin,\x20and\x20platelet\x20thrombi</strong></li>\x0a<li>Most\x20commonly\x20affect\x20the\x20<strong>mitral\x20and\x20aortic\x20valves</strong></li>\x0a<li>May\x20occur\x20on\x20<strong>either\x20side\x20of\x20the\x20leaflet,</strong>\x20and\x20even\x20on\x20the\x20endocardial\x20surface</li>\x0a<li>It\x20can\x20lead\x20to\x20valve\x20dysfunction\x20in\x20some\x20cases.\x20This\x20lesion\x20is\x20<strong>non-infective</strong>\x20and\x20pathognomonic\x20of\x20SLE-related\x20cardiac\x20involvement.</li>\x0a</ul>\x0a</li>\x0a<li>Libman-Sacks\x20endocarditis\x20is\x20more\x20likely\x20in\x20<strong>active\x20lupus</strong>\x20and\x20<strong>antiphospholipid\x20antibody\x20syndrome\x20(APLS)</strong></li>\x0a<li>May\x20present\x20asymptomatically\x20or\x20with\x20symptoms\x20of\x20<strong>valvular\x20regurgitation</strong></li>\x0a<li>Detected\x20by\x20<strong>transesophageal\x20echocardiography\x20(TEE).</strong></li>\x0a</ul>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V2NEETPGMCQ/2024033095104f08-ab69-4002-972b-d8bfee24a576.jpg\x22>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Bacterial\x20Endocarditis\x20(Option\x20B):</strong>\x20Caused\x20by\x20microbial\x20infection\x20with\x20positive\x20blood\x20cultures\x20and\x20fever;\x20vegetations\x20are\x20friable\x20and\x20destructive,\x20unlike\x20sterile\x20vegetations\x20in\x20SLE.</p>\x0a<p><strong>Fungal\x20Endocarditis\x20(Option\x20C):\x20</strong>Occurs\x20in\x20immunocompromised\x20or\x20prosthetic\x20valve\x20patients;\x20rare\x20in\x20SLE\x20and\x20characterised\x20by\x20large\x20vegetations\x20with\x20risk\x20of\x20embolisation<strong>.</strong></p>\x0a<p><strong>Non-bacterial\x20Thrombotic\x20Endocarditis\x20(Option\x20D):\x20</strong>Seen\x20in\x20malignancy\x20or\x20hypercoagulable\x20states,\x20but\x20differs\x20from\x20Libman-Sacks\x20by\x20being\x20less\x20inflammatory\x20and\x20not\x20associated\x20with\x20SLE.</p>','correct_choice_id':0x47,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x9,'choices':[{'id':0x51,'text':_0x2c9575(0x3fc)},{'id':0x52,'text':_0x2c9575(0x183)},{'id':0x53,'text':_0x2c9575(0x358)},{'id':0x54,'text':_0x2c9575(0x39b)}],'text':_0x2c9575(0x37e),'unique_key':_0x2c9575(0x400),'question_audio':null,'question_video':null,'map_id':0x12cc05,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x200),'correct_choice_id':0x51,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xa,'choices':[{'id':0x5b,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>NSIP</span></p>'},{'id':0x5c,'text':_0x2c9575(0x22f)},{'id':0x5d,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Tuberculosis</span></p>'},{'id':0x5e,'text':_0x2c9575(0x345)}],'text':_0x2c9575(0x361),'unique_key':_0x2c9575(0x390),'question_audio':null,'question_video':null,'map_id':0x12cc09,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':'<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li>This\x20patient\x20is\x20suffering\x20from\x20<strong>interstitial\x20lung\x20disease\x20(ILD)</strong>,\x20which\x20is\x20a\x20known\x20pulmonary\x20complication\x20of\x20SLE.</li>\x0a<li>Among\x20ILD\x20subtypes,\x20<strong>Non-Specific\x20Interstitial\x20Pneumonitis\x20(NSIP)</strong>\x20is\x20the\x20most\x20common\x20pattern\x20seen\x20in\x20SLE\x20patients.</li>\x0a</ul>\x0a<p><strong>NSIP\x20presents\x20with:</strong></p>\x0a<ul>\x0a<li><strong>Ground-glass</strong>\x20opacities</li>\x0a<li>Subpleural\x20sparing</li>\x0a<li>Reticular\x20abnormalities</li>\x0a<li>Minimal\x20or\x20absent\x20<strong>honeycombing</strong><br\x20/>\x20It\x20is\x20best\x20diagnosed\x20via\x20<strong>HRCT\x20thorax</strong>,\x20which\x20is\x20the\x20investigation\x20of\x20choice\x20for\x20evaluating\x20suspected\x20interstitial\x20lung\x20disease.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>UIP\x20(Option\x20B):</strong>\x20Usual\x20interstitial\x20pneumonia\x20is\x20the\x20most\x20common\x20ILD\x20pattern\x20seen\x20in\x20idiopathic\x20pulmonary\x20fibrosis,\x20not\x20SLE.\x20It\x20shows\x20basal-predominant\x20honeycombing\x20and\x20traction\x20bronchiectasis.</p>\x0a<p><strong>Tuberculosis\x20(Option\x20C):</strong>\x20Though\x20patients\x20with\x20SLE\x20are\x20immunocompromised\x20and\x20at\x20higher\x20risk\x20for\x20TB,\x20the\x20chronic\x20interstitial\x20changes\x20on\x20HRCT\x20here\x20are\x20more\x20suggestive\x20of\x20ILD,\x20not\x20infectious\x20aetiology.</p>\x0a<p><strong>PAH\x20(Option\x20D):</strong>\x20Pulmonary\x20arterial\x20hypertension\x20can\x20occur\x20in\x20SLE\x20but\x20presents\x20with\x20dyspnoea\x20and\x20right\x20heart\x20strain\x20on\x20ECHO,\x20not\x20with\x20interstitial\x20infiltrates\x20on\x20HRCT.</p>','correct_choice_id':0x5b,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xb,'choices':[{'id':0x65,'text':_0x2c9575(0x358)},{'id':0x66,'text':_0x2c9575(0x2e4)},{'id':0x67,'text':_0x2c9575(0x29d)},{'id':0x68,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20of\x20the\x20above</span></p>'}],'text':_0x2c9575(0x2ee),'unique_key':_0x2c9575(0x24b),'question_audio':null,'question_video':null,'map_id':0x12cc0b,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x2c9575(0x314),'correct_choice_id':0x67,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xc,'choices':[{'id':0x6f,'text':_0x2c9575(0x1e2)},{'id':0x70,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x203\x20and\x204</span></p>'},{'id':0x71,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>1\x20and\x203</span></p>'},{'id':0x72,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>1\x20and\x204</span></p>'}],'text':_0x2c9575(0x2c7),'unique_key':'DT1231885','question_audio':null,'question_video':null,'map_id':0x12cc0d,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x1a3),'correct_choice_id':0x6f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xd,'choices':[{'id':0x79,'text':_0x2c9575(0x30b)},{'id':0x7a,'text':_0x2c9575(0x29a)},{'id':0x7b,'text':_0x2c9575(0x1c4)},{'id':0x7c,'text':_0x2c9575(0x27b)}],'text':_0x2c9575(0x3f4),'unique_key':'DT1197623','question_audio':null,'question_video':null,'map_id':0x124637,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x23f),'correct_choice_id':0x7c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xe,'choices':[{'id':0x83,'text':_0x2c9575(0x27c)},{'id':0x84,'text':_0x2c9575(0x332)},{'id':0x85,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Class\x20IV\x20-\x20Diffuse\x20proliferative\x20GN,\x20renal\x20failure</span></p>'},{'id':0x86,'text':_0x2c9575(0x3c2)}],'text':_0x2c9575(0x240),'unique_key':'DT1197634','question_audio':null,'question_video':null,'map_id':0x124642,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x2a3),'correct_choice_id':0x85,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xf,'choices':[{'id':0x8d,'text':_0x2c9575(0x196)},{'id':0x8e,'text':_0x2c9575(0x358)},{'id':0x8f,'text':_0x2c9575(0x2e4)},{'id':0x90,'text':_0x2c9575(0x367)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20statements\x20are\x20true\x20regarding\x20the\x20management\x20of\x20Lupus\x20nephritis?<br>\x201.\x20HCQS\x20should\x20be\x20included\x20as\x20treatment\x20for\x20all\x20classes\x20since\x20it\x20reduces\x20the\x20accrual\x20of\x20tissue\x20damage.\x20<br>2.\x20Management\x20of\x20Class\x20I\x20and\x20Class\x20II\x20should\x20be\x20guided\x20by\x20the\x20extra\x20renal\x20manifestations.<br>\x203.\x20Class\x20III\x20and\x20IV\x20require\x20aggressive\x20immunosuppression.\x20<br>4.\x20Isolated\x20Class\x20V\x20has\x20got\x20better\x20prognosis\x20than\x20Class\x20IV.<br>\x205.\x20Isolated\x20class\x20V\x20without\x20nephrotic\x20range\x20proteinuria\x20requires\x20only\x20supportive</span></p>','unique_key':_0x2c9575(0x2b4),'question_audio':null,'question_video':null,'map_id':0x12cc29,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x3fe),'correct_choice_id':0x8d,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x10,'choices':[{'id':0x97,'text':_0x2c9575(0x1e2)},{'id':0x98,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x203\x20and\x204</span></p>'},{'id':0x99,'text':_0x2c9575(0x358)},{'id':0x9a,'text':_0x2c9575(0x367)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2015-year-old\x20female\x20who\x20is\x20diagnosed\x20with\x20SLE\x20has\x20come\x20to\x20your\x20OP\x20for\x20review.\x20Which\x20of\x20the\x20following\x20statements\x20is\x20true?<br>\x201.\x20Permanent\x20remission\x20is\x20seen\x20only\x20in\x20<5%\x20individuals.\x20<br>\x202.\x20The\x20aim\x20of\x20treatment\x20is\x20disease\x20remission\x20on\x20treatment\x20or\x20Low\x20Lupus\x20Disease\x20Activity.\x20<br>\x203.\x20Anti-dsDNA\x20or\x20C3\x20levels\x20are\x20used\x20as\x20markers\x20of\x20disease\x20flare\x20<br>\x204.\x20SLEDAI\x202k\x20score\x20of\x20>3\x20indicates\x20active\x20disease.</span></p>','unique_key':_0x2c9575(0x248),'question_audio':null,'question_video':null,'map_id':0x12cc0f,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x366),'correct_choice_id':0x99,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x11,'choices':[{'id':0xa1,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-Ro\x20antibody</span></p>'},{'id':0xa2,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-GBM\x20antibody</span></p>'},{'id':0xa3,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-cardiolipin\x20antibody</span></p>'},{'id':0xa4,'text':_0x2c9575(0x2d6)}],'text':_0x2c9575(0x217),'unique_key':'DT1197653','question_audio':null,'question_video':null,'map_id':0x124655,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x243),'correct_choice_id':0xa3,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x12,'choices':[{'id':0xab,'text':_0x2c9575(0x3fc)},{'id':0xac,'text':_0x2c9575(0x265)},{'id':0xad,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>2\x20and\x204</span></p>'},{'id':0xae,'text':_0x2c9575(0x1c3)}],'text':_0x2c9575(0x3ad),'unique_key':'DT1231888','question_audio':null,'question_video':null,'map_id':0x12cc10,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x24d),'correct_choice_id':0xae,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':[_0x2c9575(0x216)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x13,'choices':[{'id':0xb5,'text':_0x2c9575(0x203)},{'id':0xb6,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Prednisolone\x20has\x20to\x20be\x20changed\x20to\x20Dexamethasone,\x20HCQS\x20is\x20safe\x20and\x20may\x20be\x20continued</span></p>'},{'id':0xb7,'text':_0x2c9575(0x2b8)},{'id':0xb8,'text':_0x2c9575(0x3e4)}],'text':_0x2c9575(0x33f),'unique_key':'DT1231889','question_audio':null,'question_video':null,'map_id':0x12cc11,'difficulty_level':_0x2c9575(0x1ed),'subjects_id':[0x1],'solution':_0x2c9575(0x2d7),'correct_choice_id':0xb5,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x2c9575(0x1db),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName=_0x2c9575(0x236);const quizFilename=_0x2c9575(0x1d9);let hierarchy=['DocTutorial',_0x2c9575(0x371),_0x2c9575(0x1f3)];function _0x458c(){const _0x201d74=['BArJE','button','-600\x20text-white\x22>','cxZGY','href','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','incorrectCount','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20statements\x20are\x20true\x20regarding\x20SLE?<br>1.\x20Hip\x20joint\x20pain\x20in\x20a\x20patient\x20who\x20is\x20on\x20treatment\x20for\x20SLE\x20should\x20raise\x20suspicion\x20of\x20ischemic\x20bone\x20necrosis.<br>2.\x20Leucopenia\x20in\x20SLE\x20predisposes\x20to\x20life\x20threatening\x20infections<br>3.\x20Thrombocytopenia\x20in\x20SLE\x20is\x20a\x20recurrent\x20problem<br>4.\x20The\x20most\x20common\x20ocular\x20manifestation\x20is\x20Optic\x20neuritis</span></p>','WlpoG','open','console','<p><span\x20style=\x22font-size:12.0pt;\x22>Besides\x20Anti-ds\x20DNA,\x20which\x20antibody\x20is\x20reflective\x20of\x20disease\x20activity\x20in\x20SLE,\x20although\x20it\x20is\x20not\x20very\x20specific?</span></p>','nBakC','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-neuronal\x20antibody</span></p>','NngaO','LYeYh','markedForReview','fill','tttiv','znOPM','tDuAx','solutionImages','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','uLRSY','DT1231881','1831347ltzzXa','AcojQ','AArrw','kQQGx','endsWith','contains','bookmarkBtn','AOmaj','getAttribute','notAttemptedResult','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20of\x20the\x20above</span></p>','HlUSc','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','igxfT','57846UQMVbs','rBlkM','WmXob','WqIWm','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','avgTimeResult','tQpRD','scoreCircle','join','hAvuQ','optionsContainer','toLowerCase','SMoLR','RwOYM','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2026-year-old\x20female\x20who\x20is\x20planning\x20to\x20conceive\x20has\x20come\x20to\x20you\x20for\x20advice.\x20She\x20has\x20a\x20history\x20of\x20stroke\x206\x20years\x20back\x20and\x20was\x20diagnosed\x20with\x20Antiphospholipid\x20Syndrome\x20and\x20is\x20on\x20Warfarin.\x20Which\x20of\x20the\x20following\x20statements\x20is\x20incorrect?<br>\x201.\x20Warfarin\x20has\x20to\x20be\x20stopped\x20before\x20a\x20planned\x20pregnancy\x20as\x20it\x20is\x20teratogenic.<br>\x202.\x20The\x20patient\x20has\x20to\x20be\x20started\x20only\x20on\x20a\x20prophylactic\x20dose\x20of\x20heparin\x20as\x20it\x20is\x20her\x20first\x20pregnancy.\x20<br>3.\x20The\x20patient\x20has\x20to\x20be\x20started\x20on\x20a\x20therapeutic\x20dose\x20of\x20heparin\x20as\x20she\x20gives\x20a\x20history\x20of\x20thrombosis\x20in\x20the\x20past.\x20<br>4.\x20Newer\x20oral\x20anticoagulants\x20are\x20approved\x20for\x20the\x20treatment\x20of\x20APS.<br>\x205.\x20With\x20anticoagulation,\x20the\x20risk\x20of\x20IUGR\x20decreases\x20substantially.</span></p>','cFWAL','quizFile','rkcPN','solutionText','totalQuestionsResult','sdkGs','UfDID','uMdPM','search','Gwsuy','pathname','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20Female\x20with\x20SLE\x20becomes\x20pregnant.\x20Which\x20of\x20the\x20following\x20antibodies\x20is\x20responsible\x20for\x20the\x20below\x20shown\x20life-threatening\x20manifestation\x20in\x20the\x20fetus?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/2025091527d48331-1bae-4f1d-b3fd-e8089cc01d06.png\x22></span></p>','GLkzn','LwHVM','key','pBQON','hHINg','nkWMv','PKsJH','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','<p><span\x20style=\x22font-size:12.0pt;\x22>Class\x20V\x20-\x20Membranous\x20GN\x20with\x20wire\x20loop\x20lesions,\x20thrombosis</span></p>','innerHTML','EMGJT','EFBmO','TmUwY','get','FuilU','FXxZE','toggle','No\x20questions\x20available\x20for\x20this\x20quiz.','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-Smith\x20antibody-\x20glomerulonephritis</span></p>','PMBZE','bsKxQ','SzIma','eBMAP','itOLQ','questionText','msgfM','kzNqe','vRhsa','dxSYq','gray','scpdI','tYzKP','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20','yWhAN','HDNDH','sUkHr','filter','</span></div>','UsyFK','Arovc','questionReviewSection','table','<p><span\x20style=\x22font-size:12.0pt;\x22>No\x20need\x20to\x20continue\x20treatment\x20as\x20the\x20disease\x20is\x20well\x20controlled</span></p>','MLbSD','nav-btn-answered','cXNKK','notAttempted','constructor','mPeLI','AFqiL','accuracyScore','Xxphh','EGThw','yTXOZ','<p><span\x20style=\x22font-size:12.0pt;\x22>ANA</span></p>','ZvVwa','CaqbL','wzMce','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2020-year-old\x20female\x20with\x20systemic\x20lupus\x20erythematosus\x20has\x20arthralgia\x20involving\x20her\x20upper\x20limbs.\x20She\x20also\x20has\x20a\x20butterfly\x20facial\x20rash\x20and\x20a\x20rash\x20on\x20the\x20trunk.\x20Urine\x20dipstick\x20shows\x20no\x20Proteinuria\x20or\x20haematuria.\x20Her\x20renal\x20function\x20is\x20normal.\x20Which\x20one\x20of\x20the\x20following\x20medications\x20is\x20most\x20appropriate\x20as\x20the\x20front-line\x20therapy?</span></p>','.option-button','SEney','bind','attachMedia','totalQuestions','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','Progress\x20loaded.','<p><span\x20style=\x22font-size:12.0pt;\x22>1\x20and\x203</span></p>','XXLno','<p><strong>Explanation:</strong></p>\x0a<p>The\x20question\x20deals\x20with\x20the\x20<strong>management\x20and\x20prognosis\x20of\x20Lupus\x20Nephritis.\x20</strong></p>\x0a<ul>\x0a<li><strong>HCQ\x20should\x20be\x20in\x20the\x20management\x20of\x20all\x20classes\x20of\x20lupus\x20nephritis.\x20</strong></li>\x0a<li><strong>Class\x20I\x20and\x20II\x20should\x20be\x20treated</strong>\x20mainly\x20based\x20on\x20the\x20<strong>extra-renal\x20manifestations</strong>.</li>\x0a<li><strong>Class\x20III\x20and\x20IV</strong>\x20are\x20the\x20proliferative\x20and\x20serious\x20forms\x20and\x20<strong>require\x20aggressive\x20immunosuppression</strong>\x20with\x20high-dose\x20glucocorticoid\x20with\x20either\x20MMF\x20or\x20Cyclophosphamide.</li>\x0a<li><strong>Isolated\x20Class\x20V\x20presents\x20with\x20proteinuria\x20alone\x20and\x20has\x20got\x20better\x20outcome\x20than\x20Class\x20IV.</strong>\x20But\x20class\x20V\x20often\x20coexists\x20with\x20class\x20III\x20and\x20IV.\x20Class\x20V\x20with\x20nephrotic\x20range\x20proteinuria\x20should\x20be\x20treated\x20with\x20immunosuppression,\x20usually\x20steroids\x20with\x20calcineurin\x20inhibitors.</li>\x0a<li><strong>Isolated\x20class\x20V</strong>\x20without\x20nephrotic\x20range\x20proteinuria\x20requires\x20only\x20<strong>supportive\x20management.</strong></li>\x0a</ul>\x0a<p><strong>All\x20statements\x20are\x20true.</strong></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Structural\x20heart\x20disease\x20can\x20also\x20be\x20associated\x20with\x20anti-Ro\x20antibodies</span></p>','DT1231877','fKDcH','gJxxR','pGdWe','EJEPp','display','FIIuS','prevBtn','blOyW','not-attempted','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20an\x20incorrect\x20statement\x20for\x20SLE?</span></p>','wlAyo','DT1197610','No\x20question\x20text\x20available','JpLTq','fksxw','4720010fllWtR','add','<p><span\x20style=\x22font-size:12.0pt;\x22>2\x20and\x204</span></p>','GsnPY','querySelectorAll','lbznZ','modeModal','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-Ro\x20(SSA)\x20antibody\x20will\x20be\x20seen\x20in\x20the\x20maternal\x20serum</span></p>','BeCvy','zkdDF','VPUft','log','hqzuS','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20most\x20frequent\x20haematological\x20manifestation\x20is\x20anaemia</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Minocycline</span></p>','length','flex','removeItem','strokeDasharray','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22','jextR','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20are\x20correct</span></p>','qyNsD','question_images','\x22\x20data-option-index=\x22','ZuEtE','wOSjR','nav-btn-marked-review','PTDZx','eIhEb','Mark\x20for\x20Review','rNHrn','canPlayType','ceLXe','<p><strong>Explanation</strong>:</p>\x0a<p><strong>Arthritis\x20management</strong>:</p>\x0a<ul>\x0a<li>1<sup>st</sup>line:\x20<strong>NSAIDS\x20and\x20HCQ</strong>.\x20Dehydroepiandosterone\x20in\x20mild\x20disease</li>\x0a<li>2<sup>nd</sup>line:\x20Low\x20dose\x20steroids,\x20Belimumab(anti\x20baff),\x20Anifrolumab\x20(\x20anti\x20TNF)</li>\x0a</ul>\x0a<p><strong>Dermatitis\x20management</strong>:</p>\x0a<ul>\x0a<li>1<sup>st</sup>line:\x20Topical\x20sunscreen,\x20hydroxychloroquine,\x20topical\x20steroids,</li>\x0a<li>2<sup>nd</sup>line:\x20MMF,\x20Azathioprine,\x20Methotrexate,\x20Belimumab,\x20Anifrolumab\x20is\x20highly\x20effective.</li>\x0a</ul>\x0a<p><strong>Refractory</strong>:\x20topical\x20tacrolimus\x20with\x20systemic\x20<strong>Dapsone,\x20tacrolimus\x20or\x20lenalidomide</strong>.</p>\x0a<p><strong>For\x20life/organ-threatening\x20disease</strong>:</p>\x0a<ul>\x0a<li><strong>High-dose\x20Glucocorticoid\x20with\x20MMF/\x20Cyclophosphamide.</strong></li>\x0a<li>Followed\x20by\x20maintenance\x20with\x20MMF\x20and\x20Azathioprine.</li>\x0a<li>With\x20persistent\x20response,\x20taper\x20off\x20all\x20drugs.</li>\x0a</ul>\x0a<p><strong>For</strong>\x20<strong>HUS/TTP:</strong></p>\x0a<ul>\x0a<li>Plasma\x20exchange</li>\x0a</ul>\x0a<p><strong>All\x20statements\x20are\x20true.</strong></p>','solutionContainer','text','reload','<div\x20class=\x22p-3\x20rounded-lg\x20border\x20','studyModeLegend','mOIig','yRVmP','sMRfn','GwuZf','hxHia','quizPerformanceData','vYImJ','VzNXQ','pExqu','kJhyx','zwERD','ZQjDe','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22','yyJfK','ZUvyM','TZROR','TtDTr','solutionVideo','incorrectAnswers','toISOString','MAlbg','DT1197648','csMJX','parse','not_attempted','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li>SLE\x20most\x20commonly\x20presents\x20with\x20<strong>musculoskeletal\x20involvement\x20(Option\x20A)</strong>,\x20especially\x20<strong>arthritis\x20and\x20arthralgia</strong>.</li>\x0a<li>However,\x20unlike\x20<strong>rheumatoid\x20arthritis\x20(RA)</strong>,\x20the\x20<strong>arthritis\x20of\x20SLE</strong>\x20is\x20characteristically\x20<strong>non-erosive</strong>,\x20even\x20in\x20longstanding\x20disease.</li>\x0a<li>Imaging\x20studies\x20like\x20X-rays\x20typically\x20do\x20<strong>not</strong>\x20show\x20joint\x20erosions\x20in\x20SLE\x20patients.</li>\x0a<li>The\x20<strong>malar\x20or\x20butterfly\x20rash</strong>\x20is\x20the\x20most\x20classic\x20<strong>acute\x20cutaneous\x20manifestation</strong>\x20of\x20SLE\x20and\x20is\x20seen\x20in\x20a\x20significant\x20proportion\x20of\x20patients<strong>\x20(Option\x20C).</strong></li>\x0a<li><strong>Anaemia</strong>\x20is\x20the\x20most\x20frequent\x20haematological\x20finding\x20in\x20SLE\x20and\x20may\x20be\x20due\x20to\x20chronic\x20disease,\x20renal\x20involvement,\x20or\x20autoimmune\x20haemolysis.\x20<strong>(Option\x20D)</strong></li>\x0a</ul>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250915c8baea5e-20eb-4020-a071-83e7e2f220c4.PNG\x22>','<p><span\x20style=\x22font-size:12.0pt;\x22>2,4\x20and\x205</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Azathioprine</span></p>','tByfn','vlhIK','Wqlbu','DBNNW','zOFbk','No\x20solution\x20provided','incomplete','explanation_audio_hin','uWtMp','KObph','32RaeVxG','correctAnswers','eXvkP','soySi','mYEhq','cGBeP','vBCUg','nlZcV','FvjEi','OULRF','sle-c6bbaafb.html','ArrowRight','bottom','arIet','Bookmarked','dataset','bhBmO','Option\x20','return\x20(function()\x20','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20are\x20true</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-Ro\x20antibody-\x20heart\x20block</span></p>','\x20-\x20Brain\x20And\x20Scalpel','hflnz','zUGGU','LtDdW','DWDAO','ZcBJI','jKQGY','uOYQC','style','intermediate','bookmarkText','timeSpent','currentQuestion','lgihz','reviewQuestionsContainer','Medicine','getElementById','status','No\x20solution\x20available.','rJPGY','red','click','bbguJ','Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?','solution','uWPFU','location','isArray','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li>This\x20question\x20deals\x20with\x20the\x20<strong>non-life-threatening\x20symptoms\x20of\x20SLE</strong>.</li>\x0a<li>The\x20most\x20common\x20is\x20Musculoskeletal\x20(95%),\x20followed\x20by\x20Haematological\x20(85%)</li>\x0a<li><strong>Monoarthritis\x20of\x20large\x20joints\x20in\x20patients\x20with\x20SLE&rarr;\x20suspect\x20Ischemic\x20necrosis\x20of\x20bone\x20due\x20to\x20steroids</strong></li>\x0a<li>Myopathy\x20can\x20be\x20a\x20manifestation\x20of\x20disease,\x20or\x20a\x20complication\x20of\x20steroids\x20or\x20HCQ</li>\x0a<li>The\x20most\x20common\x20haematological\x20manifestation\x20is\x20anaemia.</li>\x0a<li>The\x20most\x20common\x20cause\x20of\x20anaemia\x20is\x20chronic\x20inflammation.</li>\x0a<li>Autoimmune\x20haemolytic\x20anaemia\x20is\x20also\x20seen.</li>\x0a<li><strong>Leukopenia</strong>\x20and\x20lymphocytopenia\x20are\x20seen,\x20<strong>but\x20they\x20do\x20not\x20predispose\x20to\x20infections.\x20(Statement\x202\x20is\x20false)</strong></li>\x0a<li><strong>Thrombocytopenia</strong>\x20is\x20seen.\x20It\x20is\x20usually\x20<strong>recurrent</strong>.\x20The\x20first\x20few\x20episodes\x20respond\x20to\x20steroids.\x20Rituximab\x20or\x20platelet\x20growth\x20factors,\x20or\x20splenectomy\x20in\x20refractory\x20cases</li>\x0a<li>The\x20<strong>most\x20common\x20ocular\x20manifestation\x20is\x20SICCA</strong>\x20syndrome\x20and\x20non-specific\x20conjunctivitis.\x20Vision-threatening\x20diseases\x20include\x20retinal\x20vasculitis\x20and\x20optic\x20neuritis.\x20<strong>(Statement\x204\x20is\x20false)</strong></li>\x0a</ul>','zkwxu','gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','<p><span\x20style=\x22font-size:12.0pt;\x22>It\x20is\x20safe\x20to\x20continue\x20both\x20prednisolone\x20and\x20HCQs</span></p>','hWqiQ','info','koclZ','prototype','wzzIz','totalTimeResult','IKonA','question_video','error','rtAcw','pfItc','.m3u8','YAjLz','APXeu','FGdOM','explanation_images','UUASY','markReviewText','Factual','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2040-year-old\x20woman\x20presents\x20with\x20left\x20flank\x20pain.\x20On\x20examination\x20she\x20was\x20febrile,\x20had\x20livedo\x20reticularis\x20and\x20a\x20blood\x20pressure\x20of\x20190/100\x20mmHg.\x20She\x20has\x20also\x20had\x20a\x20history\x20of\x20a\x20butterfly\x20rash\x20in\x20the\x20past.<br>Investigations\x20revealed:<br>Hb\x2013.9\x20g/dL<br>WBC\x206.5\x20x\x2010^9/L<br>Platelet\x20count\x20110\x20x\x2010^9/L<br>Serum\x20Creatinine\x200.9\x20mg/dL<br>Urine\x20dipstick\x20analysis:\x20blood\x20++,\x20protein\x20-<br>Which\x20one\x20of\x20the\x20following\x20tests\x20is\x20likely\x20to\x20be\x20positive?</span></p>','Bfmok','ihVGH','YZDHV','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20','59548bwKDOy','correctResult','FhrhO','zBAei','</span><span>','(((.+)+)+)+$','hwQtN','RZzOh','zanWq','EqzuE','pPIcL','tiWBA','MMHnV','findIndex','zMYGF','<p><span\x20style=\x22font-size:12.0pt;\x22>HCQ\x20should\x20be\x20given\x20to\x20mothers\x20with\x20a\x20previous\x20history\x20of\x20CHB\x20in\x20the\x20fetus</span></p>','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','WmOzn','YQktu','<p><span\x20style=\x22font-size:12.0pt;\x22>UIP</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>ANA\x20antibody-\x20skin\x20rash</span></p>','appendChild','test','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>','none','now','Sle','kzdMg','svsEY','explanation_video','fromCharCode','zRawH','vKcIt','width','statsBar','<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>Our\x20patient\x20is\x20having\x20non-life-threatening\x20symptoms.</li>\x0a<li><strong>Hydroxychloroquine</strong>\x20is\x20the\x20first-line\x20drug\x20that\x20can\x20be\x20given\x20for\x20both\x20<strong>rash\x20and\x20arthritis.\x20</strong></li>\x0a<li>NSAIDs\x20can\x20also\x20be\x20given\x20to\x20this\x20patient.\x20Hence,\x20the\x20most\x20appropriate\x20answer\x20is\x20<strong>hydroxychloroquine</strong>.</li>\x0a<li>Hydroxychloroquine\x20is\x20well\x20tolerated\x20and\x20<strong>reduces\x20flares</strong>,\x20especially\x20in\x20patients\x20with\x20mild\x20disease.\x20In\x20contrast,\x20immunosuppressants\x20and\x20corticosteroids\x20are\x20typically\x20reserved\x20for\x20<strong>moderate-to-severe\x20or\x20organ-threatening</strong>\x20manifestations\x20of\x20SLE.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Methotrexate\x20(Option\x20A):</strong>\x20Primarily\x20used\x20for\x20<strong>inflammatory\x20arthritis</strong>\x20such\x20as\x20rheumatoid\x20arthritis;\x20used\x20in\x20SLE\x20for\x20severe\x20arthritis,\x20but\x20not\x20as\x20first-line\x20therapy\x20in\x20mild\x20disease.</p>\x0a<p><strong>Prednisolone\x20(Option\x20B):</strong>\x20Although\x20effective,\x20corticosteroids\x20are\x20generally\x20reserved\x20for\x20<strong>flare\x20control</strong>\x20or\x20<strong>organ\x20involvement</strong>.\x20Long-term\x20use\x20is\x20associated\x20with\x20significant\x20adverse\x20effects\x20and\x20is\x20not\x20preferred\x20first-line\x20treatment\x20in\x20mild\x20disease.</p>\x0a<p><strong>Azathioprine\x20(Option\x20C):</strong>\x20An\x20<strong>immunosuppressive\x20agent</strong>\x20reserved\x20for\x20moderate\x20to\x20severe\x20manifestations\x20such\x20as\x20<strong>lupus\x20nephritis</strong>\x20or\x20systemic\x20symptoms.\x20Not\x20indicated\x20in\x20mild,\x20cutaneous-joint-limited\x20disease.</p>','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20known\x20patient\x20of\x20systemic\x20lupus\x20erythematosus\x20(SLE)\x20presents\x20with\x20new-onset\x20proteinuria.\x20A\x20renal\x20biopsy\x20is\x20performed,\x20which\x20reveals\x20diffuse\x20proliferative\x20glomerulonephritis.\x20Which\x20of\x20the\x20following\x20stages\x20of\x20SLE\x20does\x20the\x20biopsy\x20specify,\x20and\x20what\x20is\x20the\x20specific\x20complication\x20associated\x20with\x20this\x20stage?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGMCQ/20250822ced48426-0f2c-4b08-b61c-f4e137ece354.jpg\x22></span></p>','igOVq','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>','<p><strong>Explanation:</strong></p>\x0a<ul>\x0a<li>This\x20patient\x20shows\x20signs\x20of\x20<strong>antiphospholipid\x20antibody\x20syndrome\x20(APLS)</strong>,\x20which\x20frequently\x20coexists\x20with\x20SLE.\x20The\x20key\x20features\x20supporting\x20this\x20diagnosis\x20are:\x0a<ul>\x0a<li><strong>Hypertension\x20and\x20hematuria</strong>\x20without\x20significant\x20proteinuria</li>\x0a<li><strong>Livedo\x20reticularis</strong>\x20(classic\x20skin\x20finding\x20in\x20APLS)</li>\x0a<li><strong>Recurrent\x20pregnancy\x20loss</strong>\x20(a\x20hallmark\x20criterion\x20for\x20APLS)</li>\x0a</ul>\x0a</li>\x0a<li><strong>Anti-cardiolipin\x20antibodies</strong>\x20are\x20one\x20of\x20the\x20three\x20antiphospholipid\x20antibodies\x20used\x20to\x20diagnose\x20APLS.\x20These\x20antibodies\x20can\x20cause\x20both\x20arterial\x20and\x20venous\x20thrombosis\x20and\x20pregnancy-related\x20complications.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Anti-Ro\x20antibody\x20(Option\x20A):</strong>\x20Seen\x20in\x20SLE,\x20especially\x20subacute\x20cutaneous\x20lupus\x20or\x20neonatal\x20lupus,\x20but\x20not\x20specifically\x20associated\x20with\x20pregnancy\x20loss\x20or\x20thrombotic\x20events.</p>\x0a<p><strong>Anti-GBM\x20antibody\x20(Option\x20B):</strong>\x20Seen\x20in\x20Goodpasture\x20syndrome.\x20It\x20causes\x20rapidly\x20progressive\x20glomerulonephritis\x20with\x20pulmonary\x20haemorrhage,\x20not\x20related\x20to\x20livedo\x20or\x20pregnancy\x20loss.</p>\x0a<p><strong>ASOT\x20(Option\x20D):</strong>\x20Antistreptolysin\x20O\x20titer\x20is\x20used\x20to\x20detect\x20recent\x20<strong>Streptococcal\x20infections</strong>,\x20and\x20has\x20no\x20relevance\x20in\x20SLE\x20or\x20APLS.</p>','questionNav','jdJBC','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','jUovw','DT1231887','EgFOm','selectedAnswer','DT1231883','title','<p><strong>Explanation</strong>:</p>\x0a<p>This\x20question\x20deals\x20with\x20the\x20recommendations\x20for\x20<strong>anticoagulation\x20in\x20Antiphospholipid\x20Syndrome\x20(APS).</strong></p>\x0a<p><strong>Statement\x201:</strong>\x20It\x20is\x20a\x20known\x20fact\x20that\x20<strong>Warfarin\x20is\x20teratogenic</strong>,\x20which\x20makes\x20<strong>statement\x20\x201\x20true.</strong></p>\x0a<p><strong>Statements\x202\x20and\x203</strong>:\x20These\x20statements\x20deal\x20with\x20recommendations\x20for\x20anticoagulation\x20in\x20pregnancy\x20in\x20patients\x20with\x20APS.</p>\x0a<ul>\x0a<li>Patients\x20who\x20have\x20had\x20a\x20<strong>previous\x20history\x20of\x20thrombosis\x20due\x20to\x20APS</strong>,\x20<strong>regardless\x20of\x20their\x20previous\x20pregnancy\x20morbidity</strong>,\x20should\x20receive\x20a\x20<strong>therapeutic\x20dose</strong>(1mg/kg\x20LMWH\x20twice\x20daily)\x20of\x20heparin\x20and\x20warfarin\x20postpartum\x20that\x20has\x20to\x20be\x20<strong>continued\x20lifelong.</strong></li>\x0a<li>In\x20patients\x20with\x20APS\x20<strong>and\x20previous\x20pregnancy\x20morbidity(\x20defined\x20as\x20&ge;\x201\x20fetal\x20loss\x20or\x20&ge;\x203\x20embryonic\x20loss),\x20but\x20no\x20history\x20of\x20thrombosis\x20prophylactic\x20dose\x20of\x20heparin(\x200.5mg/kg\x20LMWH\x20once\x20daily)\x20should\x20be\x20given\x20with\x20low-dose\x20aspirin,\x20throughout\x20pregnancy\x20and\x20continued\x204-6\x20weeks\x20postpartum.</strong></li>\x0a<li>In\x20patients\x20with\x20diagnosed\x20APS\x20and\x20a\x20first\x20pregnancy,\x20no\x20treatment\x20is\x20required.</li>\x0a</ul>\x0a<p>So\x20<strong>statement\x202\x20is\x20incorrect,\x20and\x20statement\x203\x20is\x20correct.</strong></p>\x0a<p><strong>Statement\x204:</strong>\x20<strong>DOACs\x20are\x20not\x20recommended</strong>\x20in\x20the\x20<strong>treatment\x20of\x20APS,</strong>\x20and\x20hence\x20it\x20is\x20incorrect.</p>\x0a<p><strong>Statement\x205:</strong>\x20<strong>Even\x20with\x20therapeutic\x20anticoagulation,\x20IUGR\x20can\x20occur\x20in\x20APS;</strong>\x20hence,\x20it\x20is\x20wrong</p>\x0a<p>So\x20<strong>statements\x202,\x204\x20and\x205\x20are\x20wrong.</strong></p>\x0a<p><strong>Treatment\x20of\x20APS\x20in\x20general</strong></p>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250915d5492691-8b76-4bc3-969c-6f434e660159.PNG\x22>','elPGI','LJKRV','FPjZX','vxvlJ','jZQWw','JgBmk','getItem','floor','mhglJ','0|5|3|4|2|1','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22','iNEDu','Incorrect','WYnhR','userHistory','<p><span\x20style=\x22font-size:12.0pt;\x22>Most\x20arthritis\x20in\x20SLE\x20is\x20erosive\x20on\x20XRAY</span></p>','hidden','AyWqd','ibVjH','NmmAC','customQuizData','<p><span\x20style=\x22font-size:12.0pt;\x22>Systemic\x20Lupus\x20Erythematosus,\x20Anti-Smith\x20antibody</span></p>','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li><strong>Complete\x20heart\x20block</strong>,\x20once\x20developed,\x20always\x20requires\x20<strong>pacing</strong>.</li>\x0a<li><strong>Dexamethasone</strong>\x20is\x20given\x20to\x20the\x20mother\x20for\x20<strong>first\x20and\x20second-degree\x20heart\x20block\x20in\x20the\x20fetus</strong>,\x20so\x20that\x20progression\x20to\x20CHB\x20is\x20prevented.</li>\x0a</ul>\x0a<p>NEONATAL\x20LUPUS:</p>\x0a<ul>\x0a<li><strong>Congenital\x20heart\x20block</strong>\x20with\x20or\x20without\x20cardiomyopathy-\x20life-threatening</li>\x0a<li>Vigilant\x20monitoring\x20of\x20heart\x20rate\x20in\x20<strong>Ro\x20antibody-positive\x20mothers</strong>.</li>\x0a<li><strong>Anti-Ro/SSA\x20antibodies\x20</strong>are\x20commonly\x20found\x20in\x20mothers\x20whose\x20fetuses\x20develop\x20CHB.\x20They\x20<strong>cross\x20the\x20placenta\x20and\x20damage\x20the\x20fetal\x20conduction\x20system.\x20(Option\x20A)</strong></li>\x0a<li><strong>HCQ</strong>\x20treatment\x20of\x20an\x20<strong>anti-Ro-positive\x20mother</strong>\x20reduces\x20the\x20chance\x20that\x20subsequent\x20fetuses\x20will\x20develop\x20heart\x20block.\x20<strong>(Option\x20C)</strong></li>\x0a<li>No\x20treatment\x20for\x20heart\x20block.\x20Dexamethasone(and\x20not\x20prednisolone,\x20since\x20fluorinated\x20steroids\x20cross\x20the\x20placenta)\x20treatment\x20of\x20a\x20mother\x20in\x20whom\x20fetal\x20first-\x20or\x20second-degree\x20heart\x20block\x20is\x20detected\x20<strong>only\x20prevents\x20progression</strong>to\x20complete\x20heart\x20block.</li>\x0a<li><strong>Structural\x20heart\x20diseases\x20like\x20ASD,\x20VSD,\x20PDA,\x20and\x20PFO</strong>\x20can\x20be\x20seen\x20with\x20neonatal\x20lupus.\x20<strong>(Option\x20D)</strong></li>\x0a<li>Rash\x20is\x20similar\x20to\x20subacute\x20cutaneous\x20lupus.</li>\x0a</ul>','<p><span\x20style=\x22font-size:12.0pt;\x22>1\x20and\x204</span></p>','ZpbHL','YNwTT','round','referrer','TKzjW','split','Bookmark','currentMode','forEach','kFGwH','FNNnm','ngCbB','border-red-500','nav-btn-correct','block','LCSME','application/vnd.apple.mpegurl','MLMSR','1019501Cugubw','map','ftVBH','<p><span\x20style=\x22font-size:12.0pt;\x22>Hydroxychloroquine</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Class\x20II\x20-\x20Mesangial\x20hypercellularity\x20with\x20deposits,\x20hypertension</span></p>','JgGsU','custom_quiz.html','questionIndex','border-green-500','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-dsDNA\x20and\x20serum\x20Complement\x20levels</span></p>','HDHzY','GnANV','{}.constructor(\x22return\x20this\x22)(\x20)','incorrect','vlbLg','RmSQp','toString','LJCOu','GwPkX','BmZNU','explanation_audio_eng','KfQgX','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>','QZSot','BlVDw','Bdcbh','className','UKxDy','stringify','addEventListener','QtdNv','gFUIc','krKPY','<p><span\x20style=\x22font-size:12.0pt;\x22>Prednisolone</span></p>','timed_exam','yfclI','<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x203,\x204\x20and\x205</span></p>','yRHkZ','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','wBRwA','nbnbn','UKuuR','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li><strong>Class\x20IV\x20lupus\x20nephritis</strong>,\x20also\x20known\x20as\x20<strong>diffuse\x20proliferative\x20glomerulonephritis</strong>,\x20is\x20the\x20most\x20common\x20and\x20severe\x20form\x20of\x20lupus\x20nephritis.</li>\x0a<li>It\x20involves\x20<strong>&ge;50%\x20of\x20glomeruli</strong>\x20and\x20typically\x20presents\x20with:\x0a<ul>\x0a<li>Heavy\x20<strong>proteinuria</strong></li>\x0a<li><strong>Hematuria</strong></li>\x0a<li><strong>Active\x20urinary\x20sediment</strong></li>\x0a<li>Progression\x20to\x20<strong>renal\x20failure</strong>\x20if\x20not\x20treated\x20aggressively</li>\x0a</ul>\x0a</li>\x0a<li>Histologic\x20findings\x20include\x20<strong>endocapillary\x20proliferation</strong>,\x20<strong>subendothelial\x20immune\x20complex\x20deposition</strong>,\x20and\x20<strong>wire\x20loop\x20lesions</strong>.</li>\x0a<li>This\x20class\x20carries\x20the\x20highest\x20risk\x20of\x20progression\x20to\x20<strong>end-stage\x20renal\x20disease\x20(ESRD)</strong>,\x20making\x20<strong>renal\x20failure</strong>\x20its\x20most\x20specific\x20and\x20feared\x20complication.</li>\x0a</ul>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202509157ced4670-3eba-425f-8f02-79e8906e0558.PNG\x22>','CPrNM','rOSaa','SSOxD','selected','oaDxz','WolhI','IYueg','correct_choice_id','__proto__','rWQMO','NQdSg','totalAttempted','ALaAo','TfCMA','bsJKw','You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','DT1231913','answered','oJTog','ZwqZO','<p><span\x20style=\x22font-size:12.0pt;\x22>Prednisolone\x20is\x20safe\x20and\x20can\x20be\x20continued,\x20but\x20HCQS\x20has\x20to\x20be\x20stopped</span></p>','nav-btn-incorrect','totalTime','apply','target','EDVFV','ivLqL','You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','src','WKhtv','<p><span\x20style=\x22font-size:12.0pt;\x22>Libman-\x20Sacks\x20Endocarditis</span></p>','swnNi','HAvUo','createElement','Rxxoc','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20true\x20regarding\x20the\x20treatment\x20of\x20SLE?<br>1.\x20Arthritis\x20can\x20be\x20well\x20controlled\x20with\x20NSAIDS\x20or\x20HCQS<br>2.\x20Refractory\x20lupus\x20dermatitis\x20can\x20be\x20treated\x20with\x20Dapsone,\x20thalidomide\x20or\x20Lenalidomide.<br>3.\x20Life\x20or\x20organ\x20threatening\x20manifestations\x20in\x20SLE\x20requires\x20aggressive\x20immunosuppression\x20with\x20High\x20dose\x20glucocorticoids\x20along\x20with\x20either\x20MMF\x20or\x20Cyclophosphamide.<br>4.\x20HUS\x20in\x20SLE\x20is\x20managed\x20by\x20plasma\x20exchange.</span></p>','rWscN','DT1197650','qeYtP','strokeDashoffset','true','YOQiI','TNMBa','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-RNP\x20antibody</span></p>','Gjmqs','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22','VtitK','wWLOe','ZGDLX','ZahTQ','<p><span\x20style=\x22font-size:12.0pt;\x22>ASOT</span></p>','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li>In\x20patients\x20with\x20SLE\x20who\x20become\x20pregnant,\x20<strong>continuing\x20immunomodulatory\x20therapy\x20is\x20essential</strong>\x20to\x20avoid\x20flare-ups\x20and\x20reduce\x20fetal\x20complications.</li>\x0a<li><strong>Prednisolone</strong>\x20is\x20the\x20preferred\x20steroid\x20in\x20pregnancy.\x20It\x20is\x20<strong>inactivated\x20by\x2011&beta;-hydroxysteroid\x20dehydrogenase\x20in\x20the\x20placenta</strong>,\x20preventing\x20fetal\x20exposure.</li>\x0a<li><strong>Hydroxychloroquine\x20(HCQ)</strong>\x20is\x20<strong>FDA-approved\x20for\x20use\x20in\x20pregnancy</strong>\x20and\x20is\x20shown\x20to\x20<strong>reduce\x20disease\x20activity\x20and\x20prevent\x20flares</strong>\x20in\x20pregnant\x20SLE\x20patients.</li>\x0a<li>Discontinuing\x20treatment\x20may\x20increase\x20the\x20risk\x20of\x20<strong>SLE\x20flares,\x20fetal\x20loss,\x20lupus\x20nephritis,\x20and\x20hypertensive\x20complications</strong>.</li>\x0a<li>Therefore,\x20<strong>both\x20drugs\x20should\x20be\x20continued\x20during\x20pregnancy</strong>\x20if\x20the\x20disease\x20is\x20controlled.</li>\x0a</ul>\x0a<p><strong>Drugs\x20used\x20in\x20the\x20treatment\x20of\x20SLE\x20in\x20pregnancy:</strong></p>\x0a<p><strong>First-line\x20agents</strong>:\x20prednisone,\x20prednisolone,\x20HCQ</p>\x0a<p><strong>Second\x20line\x20agents</strong>:\x20Azathioprine.\x20(May\x20cause\x20fetal\x20harm)</p>\x0a<p>Breastfeeding\x20is\x20contraindicated\x20with\x20immunosuppressants</p>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Prednisolone\x20has\x20to\x20be\x20changed\x20to\x20Dexamethasone,\x20HCQ\x20is\x20safe\x20and\x20may\x20be\x20continued\x20(Option\x20B):</strong>\x20Dexamethasone\x20is\x20<strong>not\x20preferred\x20during\x20pregnancy</strong>\x20because\x20it\x20is\x20<strong>not\x20inactivated\x20by\x20the\x20placenta</strong>,\x20thus\x20exposing\x20the\x20fetus\x20to\x20steroids.</p>\x0a<p><strong>Prednisolone\x20is\x20safe\x20and\x20can\x20be\x20continued,\x20but\x20HCQ\x20has\x20to\x20be\x20stopped\x20(Option\x20C):</strong>\x20\x20HCQ\x20is\x20<strong>safe\x20and\x20essential</strong>\x20in\x20SLE\x20during\x20pregnancy.</p>\x0a<p><strong>No\x20need\x20to\x20continue\x20treatment\x20as\x20the\x20disease\x20is\x20well\x20controlled\x20(Option\x20D):</strong>\x20<strong>Discontinuing\x20therapy\x20increases\x20the\x20risk</strong>\x20of\x20flares\x20and\x20complications\x20during\x20pregnancy.\x20</p>','remove','gJSoZ','testModeReviewLegend','nLWfK','aSNCE','timed_study','testModeLegend','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20most\x20common\x20acute\x20cutaneous\x20lesion\x20is\x20a\x20butterfly\x20rash</span></p>','JCkcx','nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','nav-btn-bookmarked','stats','<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x203\x20and\x205</span></p>','JebkN','bookmarked','ctOMo','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','navBtn_','onclick','CMAZV','GXfEB','SOzLp','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20true\x20regarding\x20life\x20threatening\x20manifestations\x20of\x20SLE?<br>1.\x20Cognitive\x20dysfunction\x20is\x20the\x20most\x20common\x20neurological\x20manifestation.<br>2.\x20Vaso\x20occlusion\x20in\x20SLE\x20is\x20closely\x20related\x20to\x20the\x20presence\x20of\x20anti\x20phospholipid\x20antibodies.<br>3.\x20Increased\x20ALT\x20and\x20AST\x20are\x20seen\x20during\x20disease\x20flares.<br>4.\x20Nausea,\x20vomiting\x20and\x20diarrhoea\x20are\x20common\x20during\x20disease\x20flares.<br>5.\x20Head\x20ache\x20and\x20psychosis\x20can\x20occur\x20due\x20to\x20complication\x20of\x20treatment\x20for\x20SLE\x0d\x0a</span></p>','solutionAudio','currentQuestionIndex','IUwDf','choices','includes','rqpDn','JMqJG','replace','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','rRupp','pop','completed','dBayG','warn','zIEHK','fHFQk','hierarchy','RIaLC','Lnhir','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-ribosomal\x20p\x20antibody</span></p>','AHDeB','xicjE','accuracy','UTbIJ','6IzkPcv','RbowC','question_audio','<p><span\x20style=\x22font-size:12.0pt;\x22>Methotrexate</span></p>','aVsuD','gsjQe','video[data-src]','startAt','Correct','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>','npLUl','LzsLH','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li><strong>Neurological\x20manifestations</strong>\x20(seen\x20in\x2060%\x20of\x20patients):\x20May\x20be\x20due\x20to\x20vasoocclusion\x20or\x20primary\x20neurological\x20disease\x20like\x20cognitive\x20dysfunction,\x20headache,\x20seizure\x20and\x20psychosis.</li>\x0a<li><strong>Headache\x20and\x20psychosis\x20can\x20occur\x20as\x20a\x20complication\x20of\x20treatment\x20with\x20steroids</strong>.</li>\x0a<li><strong>Vasoocclusive\x20features</strong>\x20(\x20seen\x20in\x2015%):\x20The\x20Risk\x20of\x20vasoocclusion\x20is\x20high\x20in\x20people\x20with\x20SLE\x20and\x20is\x20<strong>not\x20related\x20to\x20the\x20presence\x20of\x20APLA.\x20(Statement\x202\x20is\x20false)</strong></li>\x0a<li><strong>Pulmonary\x20features\x20</strong>(seen\x20in60%):\x0a<ul>\x0a<li>MC\x20is\x20pleurisy</li>\x0a<li>Life-threatening\x20conditions\x20are\x20pulmonary\x20haemorrhage\x20and\x20interstitial\x20fibrosis</li>\x0a</ul>\x0a</li>\x0a<li><strong>Cardiac\x20features</strong>\x20(seen\x20in\x2060%):\x0a<ul>\x0a<li>Pericarditis\x20is\x20the\x20most\x20common\x20manifestation.\x20Life-threatening\x20conditions\x20are\x20myocarditis\x20and\x20endocarditis</li>\x0a</ul>\x0a</li>\x0a<li><strong>Gastrointestinal\x20symptoms\x20(Seen\x20in\x2040%):\x20nausea,\x20vomiting\x20and\x20diarrhoea\x20and\x20raised\x20liver\x20enzymes\x20are\x20common\x20with\x20lupus\x20flare.</strong></li>\x0a<li>Life-threatening\x20complications\x20include\x20peritonitis\x20and\x20mesenteric\x20ischemia.</li>\x0a</ul>','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-C1q\x20antibody</span></p>','azCLq','setItem','isSupported','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','nsAiX','TvQvb','sCDmU','MUEOI','TfuVc','performanceModal','textContent','TmHAE','DRrbC','1054545SsFzUe','iXcQJ','GTlrU','XXJmH','div','PlAbQ','questionStates','closest','<p><span\x20style=\x22font-size:12.0pt;\x22>Bacterial\x20Endocarditis</span></p>','rJvqk','aGHRp','yOjtg','padStart','orHTX','oOLhQ','<p><span\x20style=\x22font-size:12.0pt;\x22>Class\x20III\x20-\x20Focal\x20segmental\x20or\x20global\x20proliferative\x20GN,\x20nephrotic\x20syndrome</span></p>','KeVgx','iLNOL','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22','correct','CGgLD','cPXQs','ebFkg','wdKQy','classList','yOpzO','study','ZwPeE','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2026-year-old\x20patient\x20who\x20is\x20a\x20known\x20case\x20of\x20SLE\x20is\x20coming\x20to\x20you\x20with\x20a\x20positive\x20UPT.\x20She\x20is\x20on\x205mg\x20prednisolone\x20and\x20200\x20mg\x20HCQ\x20daily,\x20and\x20her\x20disease\x20is\x20well\x20controlled.\x20What\x20advice\x20will\x20you\x20give\x20her?</span></p>','mBByb','ZeFnF','KMvil','Xatle','NOHCy','<p><span\x20style=\x22font-size:12.0pt;\x22>PAH</span></p>','UcedU','pDdbt','Marked','nav-btn-current','\x20>\x20','yKeJk','KmRoe','xfSZI','QsfMF','chSqn','bookmarkedQuestions','<p><span\x20style=\x22font-size:12.0pt;\x22>Oxytetracycline</span></p>','MIaoh','questions','OUanG','GqJSn','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','ysvVC','<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x202\x20and\x203</span></p>','LpaIr','6aXxacO','correctCount','qFPdt','ehUaf','incorrectResult','aaWih','1592424pDeOQq','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20patient\x20who\x20is\x20a\x20known\x20case\x20of\x20systemic\x20lupus\x20erythematosus\x20(SLE)\x20now\x20presents\x20with\x20a\x20history\x20of\x20dry\x20cough\x20and\x20exertional\x20dyspnoea.\x20The\x20HRCT\x20image\x20of\x20the\x20patient\x20is\x20given\x20below.\x20Which\x20of\x20the\x20following\x20is\x20the\x20anticipated\x20complication\x20of\x20SLE\x20depicted\x20in\x20the\x20image?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250915e51d78d9-5594-46af-83b4-de5d7a802cef.png\x22></span></p>','vagPo','DOMContentLoaded','qtcDU','TjJQq','<p><strong>Explanation</strong>:</p>\x0a<p>The\x20question\x20deals\x20with\x20<strong>treatment\x20endpoints\x20in\x20SLE</strong>.</p>\x0a<ul>\x0a<li>Complete\x20<strong>permanent\x20remission</strong>(no\x20disease\x20activity\x20without\x20any\x20treatment)\x20is\x20seen\x20in\x20<strong>&lt;5%.</strong></li>\x0a<li><strong>The\x20aim\x20of\x20treatment</strong>\x20in\x20SLE\x20is\x20<strong>disease\x20remission\x20on\x20treatment\x20or\x20low-level\x20disease\x20activity.</strong></li>\x0a<li>Disease\x20activity\x20is\x20measured\x20using\x20the\x20SLEDAI\x202k\x20score,\x20and\x20a\x20score\x20of\x20&gt;\x204\x20indicates\x20an\x20active\x20disease.</li>\x0a<li><strong>Anti-DS\x20DNA\x20titres\x20and\x20C3\x20complement\x20levels</strong>\x20are\x20used\x20as\x20<strong>markers\x20of\x20disease\x20flare</strong>.</li>\x0a<li>SLEDAI-2K\x20score\x20<strong>&gt;3</strong>\x20is\x20<strong>not\x20sufficient\x20alone</strong>\x20to\x20define\x20active\x20disease\x20unless\x20supported\x20by\x20other\x20clinical\x20features;\x20active\x20disease\x20is\x20usually\x20considered\x20at\x20a\x20<strong>score\x20&ge;6</strong>\x20in\x20most\x20clinical\x20trials.\x20<strong>(Statement\x204\x20is\x20false</strong>)</li>\x0a</ul>','<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x202\x20and\x204</span></p>','JLTHQ','juCbI','jpEjE','NGhqP','\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-dsDNA\x20antibody\x20-\x20rash,\x20liver\x20disease</span></p>','dTZHP','push','EQXRt','qBank','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2019-year-old\x20girl\x20presents\x20with\x20a\x206-week\x20history\x20of\x20pain\x20in\x20multiple\x20joints\x20with\x20early\x20morning\x20stiffness.\x20Her\x20symptoms\x20responded\x20well\x20initially\x20to\x20Ibuprofen\x20but\x20then\x20they\x20worsened\x20again.\x20She\x20has\x20no\x20other\x20systemic\x20symptoms.\x20She\x20had\x20been\x20taking\x20Minocycline\x20for\x20her\x20acne.\x20Investigations\x20show:\x20ESR\x20140\x20mm/hr,\x20CRP\x20110\x20mg/l,\x20Rheumatoid\x20Factor\x20negative,\x20ANA\x20strongly\x20positive\x20(1:1600),\x20showing\x20a\x20homogeneous\x20(diffuse)\x20immunofluorescence\x20pattern\x20on\x20indirect\x20immunofluorescence.\x20What\x20is\x20the\x20most\x20probable\x20diagnosis\x20and\x20the\x20most\x20likely\x20associated\x20antibody?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/2025091588f5cfb8-bbba-4ff5-81d2-fc82c21256e0.png\x22></span></p>','<p><strong>Explanation</strong>:</p>\x0a<ul>\x0a<li><strong>Anti-C1q\x20antibodies</strong>\x20are\x20not\x20specific\x20or\x20highly\x20sensitive\x20for\x20SLE\x20overall.\x20However,\x20they\x20are\x20<strong>strongly\x20associated\x20with\x20active\x20lupus\x20nephritis</strong>.</li>\x0a<li>The\x20levels\x20of\x20anti-C1q\x20antibodies\x20tend\x20to\x20<strong>fluctuate\x20with\x20disease\x20activity</strong>,\x20particularly\x20reflecting\x20<strong>renal\x20flare-ups</strong>.</li>\x0a<li>Hence,\x20although\x20not\x20specific,\x20they\x20can\x20serve\x20as\x20a\x20<strong>useful\x20marker\x20for\x20monitoring\x20disease\x20activity</strong>\x20in\x20patients\x20with\x20lupus\x20nephritis.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Anti-ribosomal\x20P\x20antibody\x20(Option\x20A):</strong>\x20Associated\x20with\x20<strong>neuropsychiatric\x20manifestations</strong>\x20of\x20SLE,\x20such\x20as\x20psychosis\x20and\x20mood\x20disorders.\x20Not\x20a\x20reliable\x20marker\x20for\x20overall\x20disease\x20activity.</p>\x0a<p><strong>Anti-neuronal\x20antibody\x20(Option\x20B):</strong>\x20Seen\x20in\x20SLE\x20patients\x20with\x20<strong>CNS\x20involvement</strong>,\x20but\x20lacks\x20clinical\x20utility\x20for\x20monitoring\x20disease\x20activity.</p>\x0a<p><strong>Anti-RNP\x20antibody\x20(Option\x20D):</strong>\x20Primarily\x20associated\x20with\x20<strong>mixed\x20connective\x20tissue\x20disease\x20(MCTD)</strong>,\x20and\x20not\x20a\x20reliable\x20marker\x20of\x20disease\x20activity\x20in\x20isolated\x20SLE.</p>','DdyBI','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20most\x20common\x20symptom\x20complex\x20of\x20SLE\x20is\x20musculoskeletal</span></p>','IwbQI'];_0x458c=function(){return _0x201d74;};return _0x458c();}if(window[_0x2c9575(0x1fe)]['pathname'][_0x2c9575(0x395)](_0x2c9575(0x27e))){const customData=JSON['parse'](localStorage['getItem'](_0x2c9575(0x262)));if(customData){const TCNOxS='0|3|1|2|5|4'['split']('|');let aeboyJ=0x0;while(!![]){switch(TCNOxS[aeboyJ++]){case'0':questionsData=customData[_0x2c9575(0x353)];continue;case'1':hierarchy=customData[_0x2c9575(0x2ff)];continue;case'2':document[_0x2c9575(0x24c)]=quizName+_0x2c9575(0x1e4);continue;case'3':quizName=customData['name'];continue;case'4':document['getElementById']('quizHierarchy')[_0x2c9575(0x320)]=hierarchy['join'](_0x2c9575(0x34a));continue;case'5':document[_0x2c9575(0x1f4)](_0x2c9575(0x3f9))[_0x2c9575(0x320)]=questionsData[_0x2c9575(0x190)];continue;}break;}}}let currentQuestionIndex=0x0,selectedOption=null,currentMode=_0x2c9575(0x33d),timer=null,timeRemaining=0x0,questionStartTime=Date[_0x2c9575(0x235)](),quizStartTime=Date['now'](),isQuizCompleted=![],questionStates=new Array(questionsData['length'])[_0x2c9575(0x388)](null)[_0x2c9575(0x279)](()=>({'status':_0x2c9575(0x1c1),'bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData[_0x2c9575(0x190)]};function saveProgress(){const _0x4bfebc=_0x2c9575,_0x2a0d42={'GTlrU':_0x4bfebc(0x25c),'GLkzn':_0x4bfebc(0x1cb)};if(isQuizCompleted)return;const _0x44936d=JSON['parse'](localStorage[_0x4bfebc(0x254)](_0x2a0d42[_0x4bfebc(0x325)]))||{};_0x44936d[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0x2a0d42[_0x4bfebc(0x3ba)],'lastSeen':new Date()[_0x4bfebc(0x1bc)]()},localStorage[_0x4bfebc(0x317)](_0x2a0d42[_0x4bfebc(0x325)],JSON['stringify'](_0x44936d));}function loadProgress(){const _0xb84fc3=_0x2c9575,_0x52b4d3={'ogaYq':_0xb84fc3(0x25c),'LzBWV':_0xb84fc3(0x257),'DdyBI':_0xb84fc3(0x3fb)},_0x5a798a=JSON[_0xb84fc3(0x1c0)](localStorage[_0xb84fc3(0x254)](_0x52b4d3['ogaYq']))||{},_0x421f75=_0x5a798a[quizFilename];if(_0x421f75){const _0x65e7f9=_0x52b4d3['LzBWV'][_0xb84fc3(0x26b)]('|');let _0x493d20=0x0;while(!![]){switch(_0x65e7f9[_0x493d20++]){case'0':questionStates=_0x421f75[_0xb84fc3(0x329)];continue;case'1':return!![];case'2':console[_0xb84fc3(0x18c)](_0x52b4d3[_0xb84fc3(0x374)]);continue;case'3':currentQuestionIndex=_0x421f75[_0xb84fc3(0x2f0)];continue;case'4':currentMode=_0x421f75[_0xb84fc3(0x26d)];continue;case'5':stats=_0x421f75[_0xb84fc3(0x2e3)];continue;}break;}}return![];}function clearProgress(){const _0x4a37b6=_0x2c9575,_0x42e00c={'cPXQs':_0x4a37b6(0x25c),'RZzOh':'Previous\x20progress\x20cleared.'},_0x3bc9eb=JSON[_0x4a37b6(0x1c0)](localStorage[_0x4a37b6(0x254)](_0x42e00c[_0x4a37b6(0x338)]))||{};_0x3bc9eb[quizFilename]&&(delete _0x3bc9eb[quizFilename],localStorage[_0x4a37b6(0x317)](_0x42e00c[_0x4a37b6(0x338)],JSON['stringify'](_0x3bc9eb)),console[_0x4a37b6(0x18c)](_0x42e00c[_0x4a37b6(0x223)]));}function markQuizAsCompleted(){const _0x3b19a4=_0x2c9575,_0x232acc={'RbowC':_0x3b19a4(0x25c),'EGThw':_0x3b19a4(0x2fa)},_0x41a847=JSON['parse'](localStorage[_0x3b19a4(0x254)](_0x232acc['RbowC']))||{},_0x200372=questionsData[_0x3b19a4(0x190)],_0x3bb42e=stats[_0x3b19a4(0x1d0)]||0x0;_0x41a847[quizFilename]={'score':_0x3bb42e,'total':_0x200372,'status':_0x232acc[_0x3b19a4(0x3ee)],'completedOn':new Date()['toISOString']()},localStorage[_0x3b19a4(0x317)](_0x232acc[_0x3b19a4(0x309)],JSON[_0x3b19a4(0x295)](_0x41a847));}const urlParams=new URLSearchParams(window[_0x2c9575(0x1fe)][_0x2c9575(0x3b6)]),startAt=parseInt(urlParams[_0x2c9575(0x3c7)](_0x2c9575(0x30f))),resume=urlParams[_0x2c9575(0x3c7)]('resume')===_0x2c9575(0x2cc);function goBack(){const _0x64ee7d=_0x2c9575,_0x170fe8={'dTZHP':function(_0x57e128){return _0x57e128();},'XCHDl':'index.html'};if(!isQuizCompleted)_0x170fe8[_0x64ee7d(0x36e)](saveProgress);window[_0x64ee7d(0x1fe)][_0x64ee7d(0x37b)]=document['referrer']||_0x170fe8['XCHDl'];}function selectMode(_0x5b1965){const _0x4ccf9f=_0x2c9575,_0x426113={'wzzIz':_0x4ccf9f(0x187),'zUGGU':_0x4ccf9f(0x234),'qeYtP':function(_0x470b6c){return _0x470b6c();}};currentMode=_0x5b1965,document['getElementById'](_0x426113[_0x4ccf9f(0x208)])[_0x4ccf9f(0x1ec)][_0x4ccf9f(0x405)]=_0x426113[_0x4ccf9f(0x1e6)],_0x426113[_0x4ccf9f(0x2ca)](initializeQuiz);}function initializeQuiz(){const _0x5581f3=_0x2c9575,_0x134a12={'ehUaf':_0x5581f3(0x397),'wzMce':'markReviewBtn','Gwsuy':_0x5581f3(0x2da),'juCbI':_0x5581f3(0x232),'ZUvyM':function(_0x14ca5f,_0x18e6e5){return _0x14ca5f===_0x18e6e5;},'ZeFnF':_0x5581f3(0x29b),'TvQvb':_0x5581f3(0x23e),'FtaMC':_0x5581f3(0x1a8),'svsEY':'none','vYImJ':_0x5581f3(0x2de),'VzNXQ':_0x5581f3(0x274),'ofooM':'submitSection','YAjLz':_0x5581f3(0x191),'oKnVe':function(_0x4b5eb9,_0x1effe5){return _0x4b5eb9===_0x1effe5;},'XQJAG':_0x5581f3(0x2dd),'puBwT':'timerContainer','YNwTT':function(_0x4330aa,_0x251b47){return _0x4330aa(_0x251b47);},'jKQGY':function(_0x52ac83,_0x413db9){return _0x52ac83>=_0x413db9;},'GzvJg':function(_0x1557ce,_0x3e5979){return _0x1557ce<_0x3e5979;},'JLTHQ':function(_0x544cd8){return _0x544cd8();},'xturX':function(_0x1a6d08){return _0x1a6d08();}};quizStartTime=Date[_0x5581f3(0x235)]();const _0x306d4c=document[_0x5581f3(0x1f4)](_0x134a12[_0x5581f3(0x35d)]),_0x4cb126=document[_0x5581f3(0x1f4)](_0x134a12[_0x5581f3(0x3f3)]),_0x2222e4=document[_0x5581f3(0x1f4)](_0x134a12[_0x5581f3(0x3b7)]),_0xab017f=currentMode===_0x134a12[_0x5581f3(0x369)]||_0x134a12[_0x5581f3(0x1b7)](currentMode,_0x134a12[_0x5581f3(0x341)]);document['getElementById'](_0x134a12[_0x5581f3(0x31b)])[_0x5581f3(0x1ec)][_0x5581f3(0x405)]=_0xab017f?_0x5581f3(0x234):'block',document['getElementById'](_0x134a12['FtaMC'])[_0x5581f3(0x1ec)]['display']=_0xab017f?_0x134a12[_0x5581f3(0x238)]:_0x5581f3(0x274),document[_0x5581f3(0x1f4)](_0x134a12[_0x5581f3(0x1af)])[_0x5581f3(0x1ec)]['display']=_0xab017f?_0x134a12[_0x5581f3(0x1b0)]:_0x134a12['svsEY'],document[_0x5581f3(0x1f4)](_0x134a12['ofooM'])[_0x5581f3(0x1ec)][_0x5581f3(0x405)]=_0xab017f?_0x134a12['VzNXQ']:_0x134a12['svsEY'],_0x306d4c[_0x5581f3(0x1ec)]['display']=_0xab017f?'none':_0x5581f3(0x191),_0x4cb126['style'][_0x5581f3(0x405)]=_0xab017f?_0x134a12[_0x5581f3(0x210)]:_0x134a12['svsEY'],_0x2222e4[_0x5581f3(0x1ec)][_0x5581f3(0x405)]=_0xab017f?_0x134a12['YAjLz']:'none',(_0x134a12['oKnVe'](currentMode,_0x134a12['XQJAG'])||currentMode===_0x5581f3(0x29b))&&document[_0x5581f3(0x1f4)](_0x134a12['puBwT'])[_0x5581f3(0x33b)]['remove'](_0x5581f3(0x25e)),!_0x134a12[_0x5581f3(0x267)](isNaN,startAt)&&_0x134a12[_0x5581f3(0x1ea)](startAt,0x0)&&_0x134a12['GzvJg'](startAt,questionsData[_0x5581f3(0x190)])&&(currentQuestionIndex=startAt),_0x134a12[_0x5581f3(0x368)](loadBookmarkedQuestions),generateQuestionNav(),_0x134a12[_0x5581f3(0x368)](updateStats),_0x134a12['xturX'](displayQuestion);}function generateQuestionNav(){const _0x3bc7ac=_0x2c9575,_0x21be45={'EJEPp':_0x3bc7ac(0x244),'iCyiX':function(_0x45ba91,_0xfd63df){return _0x45ba91<_0xfd63df;},'SEney':function(_0xabcdc,_0x5dd8f5){return _0xabcdc+_0x5dd8f5;},'yOjtg':'w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','pExqu':function(_0x578fbb){return _0x578fbb();}},_0x3cc173=document[_0x3bc7ac(0x1f4)](_0x21be45[_0x3bc7ac(0x404)]);_0x3cc173['innerHTML']='';for(let _0x27621c=0x0;_0x21be45['iCyiX'](_0x27621c,questionsData[_0x3bc7ac(0x190)]);_0x27621c++){const _0x16e725=document['createElement']('button');_0x16e725[_0x3bc7ac(0x320)]=_0x21be45[_0x3bc7ac(0x3f6)](_0x27621c,0x1),_0x16e725[_0x3bc7ac(0x293)]=_0x21be45[_0x3bc7ac(0x32e)],_0x16e725[_0x3bc7ac(0x2ea)]=()=>jumpToQuestion(_0x27621c),_0x16e725['id']=_0x3bc7ac(0x2e9)+_0x27621c,_0x3cc173[_0x3bc7ac(0x231)](_0x16e725);}_0x21be45[_0x3bc7ac(0x1b1)](updateQuestionNav);}function updateQuestionNav(){const _0x38352e=_0x2c9575,_0x535652={'gFUIc':function(_0x4ea96a,_0x2f8e08){return _0x4ea96a+_0x2f8e08;},'WqsSX':function(_0x33aa2f,_0x1fd7e7){return _0x33aa2f+_0x1fd7e7;},'yftzZ':'return\x20(function()\x20','TKzjW':_0x38352e(0x285),'QZSot':_0x38352e(0x27e),'Rxxoc':_0x38352e(0x262),'yWhAN':function(_0x2bf554){return _0x2bf554();},'mrFOD':function(_0x5b3644,_0xb8de47){return _0x5b3644!==_0xb8de47;},'ceLXe':_0x38352e(0x352),'qyNsD':function(_0x3cb5c3,_0x44bb91){return _0x3cb5c3===_0x44bb91;},'nsAiX':_0x38352e(0x2f4),'BJihi':_0x38352e(0x349),'QtdNv':_0x38352e(0x2e2),'ZahTQ':_0x38352e(0x19c),'jextR':function(_0x246a62,_0xffccbb){return _0x246a62===_0xffccbb;},'uOYQC':_0x38352e(0x2dd),'AyWqd':_0x38352e(0x3bf),'zwERD':'nav-btn-correct','YxPOw':_0x38352e(0x2b9),'GsnPY':_0x38352e(0x2e1),'jUovw':function(_0x1615fd,_0x158961){return _0x1615fd!==_0x158961;},'igxfT':_0x38352e(0x3e6)};for(let _0x4a75d9=0x0;_0x4a75d9<questionsData[_0x38352e(0x190)];_0x4a75d9++){if(_0x535652['mrFOD'](_0x535652[_0x38352e(0x1a2)],_0x38352e(0x352))){let _0x2515c3;try{_0x2515c3=_0x2cbd74(IwDDKF[_0x38352e(0x298)](IwDDKF['WqsSX'](IwDDKF['yftzZ'],IwDDKF[_0x38352e(0x26a)]),');'))();}catch(_0x13770e){_0x2515c3=_0x4cb43e;}return _0x2515c3;}else{const _0x8344ac=document[_0x38352e(0x1f4)]('navBtn_'+_0x4a75d9),_0x5ccb9f=questionStates[_0x4a75d9];let _0x596b1b='';if(_0x4a75d9===currentQuestionIndex)_0x535652[_0x38352e(0x197)](_0x38352e(0x33a),_0x535652[_0x38352e(0x31a)])?(_0x23c910[_0x38352e(0x1fe)][_0x38352e(0x3b8)][_0x38352e(0x395)](_0x535652[_0x38352e(0x290)])&&_0x47ce4f['removeItem'](_0x535652[_0x38352e(0x2c6)]),_0x3cf21f(),_0x594a26['reload']()):_0x596b1b=_0x535652['BJihi'];else{if(_0x5ccb9f[_0x38352e(0x2e6)])_0x596b1b=_0x535652[_0x38352e(0x297)];else{if(_0x5ccb9f[_0x38352e(0x387)])_0x596b1b=_0x535652[_0x38352e(0x2d5)];else{if(_0x535652[_0x38352e(0x195)](currentMode,'study')||_0x535652[_0x38352e(0x195)](currentMode,_0x535652[_0x38352e(0x1eb)])){if(_0x535652[_0x38352e(0x25f)]!==_0x535652[_0x38352e(0x25f)])_0x535652[_0x38352e(0x3db)](_0xcfb121);else{if(_0x5ccb9f[_0x38352e(0x1f5)]===_0x38352e(0x336))_0x596b1b=_0x535652[_0x38352e(0x1b3)];else{if(_0x535652[_0x38352e(0x195)](_0x5ccb9f[_0x38352e(0x1f5)],'incorrect'))_0x596b1b=_0x535652['YxPOw'];else _0x596b1b=_0x535652[_0x38352e(0x184)];}}}else{if(_0x535652[_0x38352e(0x247)](_0x5ccb9f[_0x38352e(0x24a)],null))_0x596b1b=_0x535652[_0x38352e(0x39e)];else _0x596b1b='nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20';}}}}_0x8344ac['className']=_0x38352e(0x3da)+_0x596b1b;}}}function jumpToQuestion(_0x3ddcd2){const _0x5595f9=_0x2c9575,_0x38f475={'UKuuR':function(_0x113bca,_0x30a8c2){return _0x113bca<_0x30a8c2;},'sJZpi':'arIet','oJTog':function(_0xe806ce){return _0xe806ce();}};_0x3ddcd2>=0x0&&_0x38f475[_0x5595f9(0x2a2)](_0x3ddcd2,questionsData[_0x5595f9(0x190)])&&(_0x5595f9(0x1dc)===_0x38f475['sJZpi']?(questionStartTime&&(questionStates[currentQuestionIndex][_0x5595f9(0x1ef)]+=Date[_0x5595f9(0x235)]()-questionStartTime),currentQuestionIndex=_0x3ddcd2,_0x38f475[_0x5595f9(0x2b6)](displayQuestion),_0x38f475[_0x5595f9(0x2b6)](saveProgress)):_0x5dea7a[_0x5595f9(0x3c3)]+=_0x5595f9(0x1b5)+_0x570dea['explanation_audio_hin']+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>');}function updateStats(){const _0x21bce6=_0x2c9575,_0x2f776a={'tQpRD':function(_0x40d89a,_0x4c20ad){return _0x40d89a===_0x4c20ad;},'azCLq':_0x21bce6(0x33d),'btZrk':function(_0x1b0d22,_0x190a57){return _0x1b0d22===_0x190a57;},'gJxxR':'timed_study','WYnhR':_0x21bce6(0x35b),'zBAei':_0x21bce6(0x37d),'AAGZN':function(_0x1150be,_0x45770d){return _0x1150be>_0x45770d;},'IKonA':_0x21bce6(0x306),'GqJSn':function(_0x7a2119,_0xa257cc){return _0x7a2119+_0xa257cc;},'VtitK':function(_0x2ea454,_0x19336a){return _0x2ea454/_0x19336a;},'Gjmqs':function(_0x37c2f1,_0x34a05b){return _0x37c2f1/_0x34a05b;},'yMPxG':function(_0x5bff2b,_0x4c6915){return _0x5bff2b%_0x4c6915;},'uMdPM':'timeSpent','ZuEtE':function(_0x38bd75,_0x46e0d5){return _0x38bd75+_0x46e0d5;}};if(_0x2f776a[_0x21bce6(0x3a5)](currentMode,_0x2f776a[_0x21bce6(0x316)])||_0x2f776a['btZrk'](currentMode,_0x2f776a[_0x21bce6(0x402)])){document[_0x21bce6(0x1f4)](_0x2f776a[_0x21bce6(0x25b)])[_0x21bce6(0x320)]=stats[_0x21bce6(0x1d0)],document[_0x21bce6(0x1f4)](_0x2f776a[_0x21bce6(0x21f)])[_0x21bce6(0x320)]=stats[_0x21bce6(0x1bb)],document[_0x21bce6(0x1f4)](_0x21bce6(0x2af))['textContent']=stats[_0x21bce6(0x2af)];const _0x2599ed=_0x2f776a['AAGZN'](stats[_0x21bce6(0x2af)],0x0)?Math[_0x21bce6(0x268)](stats['correctAnswers']/stats['totalAttempted']*0x64):0x0;document[_0x21bce6(0x1f4)](_0x2f776a[_0x21bce6(0x20a)])[_0x21bce6(0x320)]=_0x2f776a[_0x21bce6(0x355)](_0x2599ed,'%'),stats[_0x21bce6(0x2ba)]=questionStates['reduce']((_0x103201,_0x479b67)=>_0x103201+_0x479b67['timeSpent'],0x0);const _0x58026c=Math[_0x21bce6(0x255)](_0x2f776a[_0x21bce6(0x2d2)](stats[_0x21bce6(0x2ba)],0x3e8)),_0x2a6b0d=Math[_0x21bce6(0x255)](_0x2f776a[_0x21bce6(0x2d0)](_0x58026c,0x3c)),_0xe447f9=_0x2f776a['yMPxG'](_0x58026c,0x3c);document['getElementById'](_0x2f776a[_0x21bce6(0x3b5)])['textContent']=_0x2f776a[_0x21bce6(0x19a)](_0x2a6b0d,':')+_0xe447f9[_0x21bce6(0x289)]()[_0x21bce6(0x32f)](0x2,'0');}}function setupVideo(_0x37a530,_0x141c2c){const _0x289259=_0x2c9575,_0x488157={'bbguJ':function(_0x36b4d1,_0x4c4804){return _0x36b4d1(_0x4c4804);},'CPrNM':'You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','gsjQe':function(_0xe001d6){return _0xe001d6();},'fHFQk':function(_0x5ddb7d,_0x3bd355){return _0x5ddb7d!==_0x3bd355;},'Xatle':'ZwPeE','ylaep':_0x289259(0x276)};if(Hls[_0x289259(0x318)]()){if(_0x488157[_0x289259(0x2fe)](_0x488157[_0x289259(0x343)],_0x289259(0x33e)))_0x488157[_0x289259(0x1fa)](_0x55912a,_0x488157[_0x289259(0x2a4)])&&_0x488157[_0x289259(0x30d)](_0x2c8403);else{const _0x107139=new Hls();_0x107139['loadSource'](_0x141c2c),_0x107139[_0x289259(0x3f8)](_0x37a530);}}else _0x37a530[_0x289259(0x1a1)](_0x488157['ylaep'])&&(_0x37a530[_0x289259(0x2c0)]=_0x141c2c);}function displayQuestion(){const _0x56dbc6=_0x2c9575,_0x48b253={'ftVBH':function(_0x1bfddb,_0x40865f){return _0x1bfddb+_0x40865f;},'RwOYM':function(_0x57ea90,_0xbe26f3){return _0x57ea90===_0xbe26f3;},'wWLOe':'selected','Wqlbu':function(_0x30443d,_0x12b5d4){return _0x30443d+_0x12b5d4;},'MyjFx':_0x56dbc6(0x1e0),'WlpoG':_0x56dbc6(0x2e2),'TjJQq':_0x56dbc6(0x3f5),'PMBZE':_0x56dbc6(0x241),'koclZ':function(_0x56654f,_0x30c3fa){return _0x56654f(_0x30c3fa);},'WTnvZ':'data-option-index','aSNCE':'0|1|3|4|5|2','AHDeB':function(_0x4c5ac8,_0x592b14){return _0x4c5ac8-_0x592b14;},'KMvil':function(_0x2b9827,_0x3eadac){return _0x2b9827===_0x3eadac;},'ivLqL':'questionText','CaqbL':_0x56dbc6(0x3cb),'qtcDU':function(_0x2a5f15,_0x20a79f){return _0x2a5f15/_0x20a79f;},'SfVnf':_0x56dbc6(0x1f0),'KmRoe':function(_0x55879e){return _0x55879e();},'vRhsa':_0x56dbc6(0x407),'cGBeP':_0x56dbc6(0x1a4),'KYqno':'hidden','KesVO':'questionMedia','bsJKw':_0x56dbc6(0x3a9),'sUkHr':'bjODU','ngCbB':function(_0x18f137){return _0x18f137();},'QgImz':function(_0x31668b,_0x373851){return _0x31668b===_0x373851;},'IRVaU':function(_0xf6b110,_0x4f1308){return _0xf6b110===_0x4f1308;},'kFGwH':_0x56dbc6(0x340),'BTWPr':_0x56dbc6(0x2ec)};if(!questionsData||_0x48b253[_0x56dbc6(0x342)](questionsData[_0x56dbc6(0x190)],0x0)){document[_0x56dbc6(0x1f4)](_0x48b253[_0x56dbc6(0x2be)])[_0x56dbc6(0x3c3)]=_0x48b253[_0x56dbc6(0x3f2)];return;};const _0x1889f0=questionsData[currentQuestionIndex];questionStartTime=Date[_0x56dbc6(0x235)](),selectedOption=questionStates[currentQuestionIndex][_0x56dbc6(0x24a)];const _0x19c026=_0x48b253[_0x56dbc6(0x364)](_0x48b253[_0x56dbc6(0x1c7)](currentQuestionIndex,0x1),questionsData[_0x56dbc6(0x190)])*0x64;document[_0x56dbc6(0x1f4)]('progressBar')[_0x56dbc6(0x1ec)][_0x56dbc6(0x23d)]=_0x48b253['Wqlbu'](_0x19c026,'%'),document[_0x56dbc6(0x1f4)](_0x48b253['SfVnf'])[_0x56dbc6(0x320)]=_0x48b253[_0x56dbc6(0x1c7)](currentQuestionIndex,0x1),_0x48b253[_0x56dbc6(0x34c)](updateQuestionNav),document[_0x56dbc6(0x1f4)](_0x48b253[_0x56dbc6(0x3d5)])['disabled']=_0x48b253[_0x56dbc6(0x342)](currentQuestionIndex,0x0),document[_0x56dbc6(0x1f4)](_0x48b253[_0x56dbc6(0x1d4)])['classList'][_0x56dbc6(0x182)](_0x48b253['KYqno']),document[_0x56dbc6(0x1f4)](_0x48b253[_0x56dbc6(0x2be)])[_0x56dbc6(0x3c3)]=_0x1889f0[_0x56dbc6(0x1a5)]||_0x56dbc6(0x17e);let _0x556797='';if(_0x1889f0[_0x56dbc6(0x30a)])_0x556797+=_0x56dbc6(0x3c1)+_0x1889f0['question_audio']+_0x56dbc6(0x356);if(_0x1889f0[_0x56dbc6(0x20b)])_0x556797+=_0x56dbc6(0x2d1)+_0x1889f0[_0x56dbc6(0x20b)]+'\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>';_0x1889f0[_0x56dbc6(0x198)]&&_0x1889f0['question_images'][_0x56dbc6(0x26e)](_0x5818e0=>{const _0x5e3a4a=_0x56dbc6;if(_0x5818e0)_0x556797+=_0x5e3a4a(0x2f7)+_0x5818e0+_0x5e3a4a(0x36c);});document[_0x56dbc6(0x1f4)](_0x48b253['KesVO'])['innerHTML']=_0x556797;const _0x49d31a=document[_0x56dbc6(0x1f4)](_0x48b253[_0x56dbc6(0x2b2)]);_0x49d31a[_0x56dbc6(0x3c3)]='',_0x49d31a['classList'][_0x56dbc6(0x2d8)]('answered');if(_0x1889f0[_0x56dbc6(0x2f2)]&&Array[_0x56dbc6(0x1ff)](_0x1889f0[_0x56dbc6(0x2f2)])){if(_0x48b253['RwOYM'](_0x48b253[_0x56dbc6(0x3dd)],_0x48b253[_0x56dbc6(0x3dd)]))_0x1889f0[_0x56dbc6(0x2f2)][_0x56dbc6(0x26e)]((_0x201d42,_0x10b176)=>{const _0x18394e=_0x56dbc6,_0x5b42ec=String[_0x18394e(0x23a)](_0x48b253[_0x18394e(0x27a)](0x41,_0x10b176)),_0x243cc4=_0x48b253[_0x18394e(0x3ac)](selectedOption,_0x10b176),_0x58b28d=document[_0x18394e(0x2c5)]('div');_0x58b28d[_0x18394e(0x3c3)]=_0x18394e(0x21b)+(_0x243cc4?_0x48b253[_0x18394e(0x2d3)]:'')+_0x18394e(0x199)+_0x10b176+_0x18394e(0x28f)+_0x5b42ec+_0x18394e(0x39d)+(_0x201d42[_0x18394e(0x1a5)]||_0x48b253[_0x18394e(0x1c7)](_0x48b253['MyjFx'],_0x10b176+0x1))+_0x18394e(0x3a3),_0x49d31a[_0x18394e(0x231)](_0x58b28d);}),_0x49d31a[_0x56dbc6(0x296)](_0x56dbc6(0x1f9),function(_0x1c4d93){const _0x42b33e=_0x56dbc6,_0x2a02f2={'ibVjH':_0x48b253[_0x42b33e(0x37f)]},_0x5f2364=_0x1c4d93[_0x42b33e(0x2bc)][_0x42b33e(0x32a)](_0x48b253[_0x42b33e(0x365)]);if(_0x5f2364){if(_0x48b253[_0x42b33e(0x3cd)]===_0x42b33e(0x241)){const _0x4a3ca6=_0x48b253[_0x42b33e(0x206)](parseInt,_0x5f2364[_0x42b33e(0x399)](_0x48b253['WTnvZ']));selectOption(_0x4a3ca6);}else _0x25f799=_0x2a02f2[_0x42b33e(0x260)];}});else{const _0x5a7289=_0x48b253[_0x56dbc6(0x2dc)][_0x56dbc6(0x26b)]('|');let _0x2520f7=0x0;while(!![]){switch(_0x5a7289[_0x2520f7++]){case'0':_0x3dcf8b=_0x5cf541[_0x56dbc6(0x329)];continue;case'1':_0x20a36f=_0x34736b[_0x56dbc6(0x2e3)];continue;case'2':return!![];case'3':_0x3c5921=_0x31f848['currentQuestionIndex'];continue;case'4':_0x475f82=_0x1799f9[_0x56dbc6(0x26d)];continue;case'5':_0x3a5fd6['log'](_0x56dbc6(0x3fb));continue;}break;}}}updateBookmarkButton(),_0x48b253[_0x56dbc6(0x271)](updateMarkReviewButton),(_0x48b253['RwOYM'](currentMode,_0x56dbc6(0x2dd))||_0x48b253['QgImz'](currentMode,_0x56dbc6(0x29b)))&&!isQuizCompleted&&(_0x48b253['IRVaU'](_0x48b253[_0x56dbc6(0x26f)],_0x48b253['BTWPr'])?_0x2f0fb0[_0x1121ee][_0x56dbc6(0x1ef)]+=_0x48b253[_0x56dbc6(0x304)](_0x2106ce[_0x56dbc6(0x235)](),_0x72ddda):_0x48b253[_0x56dbc6(0x271)](startTimer));}function selectOption(_0x30858f){const _0x71ce5b=_0x2c9575,_0x56be02={'Bfmok':_0x71ce5b(0x31f),'vKcIt':function(_0x1fcf39,_0x13e42e){return _0x1fcf39>_0x13e42e;},'jpEjE':function(_0x3678a3,_0x159699){return _0x3678a3+_0x159699;},'yTXOZ':function(_0x9b2cd6,_0x4b20cf){return _0x9b2cd6*_0x4b20cf;},'NQtyL':function(_0x1eb426,_0x59f614){return _0x1eb426/_0x59f614;},'DRrbC':function(_0x580dc8,_0x2ec884){return _0x580dc8*_0x2ec884;},'NngaO':function(_0x25d597,_0x366990){return _0x25d597-_0x366990;},'puwgY':function(_0x5a8111,_0x421403){return _0x5a8111*_0x421403;},'tiWBA':function(_0x165618,_0x1b01b1){return _0x165618/_0x1b01b1;},'eXvkP':_0x71ce5b(0x3ec),'AYqXW':_0x71ce5b(0x3b2),'orHTX':'correctResult','oaDxz':_0x71ce5b(0x35e),'LJCOu':'totalTimeResult','AcojQ':function(_0x26c83d,_0x3f36c7){return _0x26c83d/_0x3f36c7;},'aVsuD':function(_0x2776cd,_0x31ccc0){return _0x2776cd%_0x31ccc0;},'hflnz':_0x71ce5b(0x3a4),'bsKxQ':_0x71ce5b(0x25e),'IwbQI':_0x71ce5b(0x2a7),'AplIA':_0x71ce5b(0x3a9),'uLRSY':_0x71ce5b(0x2b5),'pGdWe':function(_0x1490bb,_0x57e271){return _0x1490bb===_0x57e271;},'orjRW':'study','wlAyo':'timed_study','HAvUo':function(_0x4a6883,_0x548f56){return _0x4a6883===_0x548f56;},'LzsLH':_0x71ce5b(0x1c1),'krKPY':function(_0x1a8c30){return _0x1a8c30();},'TfuVc':function(_0xbe73ef){return _0xbe73ef();}},_0x32da23=document['getElementById'](_0x56be02['AplIA']);if(_0x32da23['classList'][_0x71ce5b(0x396)](_0x56be02[_0x71ce5b(0x38f)]))return;if(questionStartTime){if(_0x56be02[_0x71ce5b(0x403)](_0x71ce5b(0x3c6),_0x71ce5b(0x393))){const _0x3dc6a2=_0xa86570['getElementById'](_0x56be02[_0x71ce5b(0x218)]),_0x576083=_0x56be02[_0x71ce5b(0x23c)](_0x56be02['jpEjE'](_0x383a25,_0x1109ad),0x0)?_0x180f31[_0x71ce5b(0x268)](_0x56be02[_0x71ce5b(0x3ef)](_0x56be02['NQtyL'](_0x4bedfb,_0x56be02[_0x71ce5b(0x36a)](_0x5c8868,_0x4238cd)),0x64)):0x0,_0x8ec82=_0x56be02[_0x71ce5b(0x322)](0x2,_0x40dbf7['PI'])*0x41,_0x2a8b8d=_0x117463[_0x71ce5b(0x1f4)]('scoreCircle');_0x2a8b8d['style']['strokeDasharray']=_0x8ec82+'\x20'+_0x8ec82,_0x2a8b8d[_0x71ce5b(0x1ec)][_0x71ce5b(0x2cb)]=_0x56be02[_0x71ce5b(0x385)](_0x8ec82,_0x56be02['puwgY'](_0x56be02['tiWBA'](_0x576083,0x64),_0x8ec82)),_0x4f8569[_0x71ce5b(0x1f4)](_0x56be02[_0x71ce5b(0x1d1)])[_0x71ce5b(0x320)]=_0x576083+'%',_0x5eb5bf['getElementById'](_0x56be02['AYqXW'])[_0x71ce5b(0x320)]=_0x3e9eea[_0x71ce5b(0x190)],_0x34dbdc['getElementById'](_0x56be02[_0x71ce5b(0x330)])[_0x71ce5b(0x320)]=_0x161682,_0x583ef6[_0x71ce5b(0x1f4)](_0x56be02[_0x71ce5b(0x2a8)])[_0x71ce5b(0x320)]=_0x1f0114,_0x275f24[_0x71ce5b(0x1f4)](_0x71ce5b(0x39a))[_0x71ce5b(0x320)]=_0x47db78;const _0x88f224=_0x4f9cd4[_0x71ce5b(0x255)](_0x2aa8f3/0xea60),_0xdf30ef=_0x49fd52[_0x71ce5b(0x255)](_0x56be02[_0x71ce5b(0x227)](_0x2903e0%0xea60,0x3e8));_0x10655e['getElementById'](_0x56be02[_0x71ce5b(0x28a)])[_0x71ce5b(0x320)]=_0x88f224+':'+_0xdf30ef[_0x71ce5b(0x289)]()[_0x71ce5b(0x32f)](0x2,'0');const _0x4520ac=_0x56be02[_0x71ce5b(0x227)](_0x341654,_0x574b2b['length']),_0x57bd20=_0x2592ce[_0x71ce5b(0x255)](_0x56be02[_0x71ce5b(0x392)](_0x4520ac,0xea60)),_0xcf437c=_0xfcd976[_0x71ce5b(0x255)](_0x56be02[_0x71ce5b(0x30c)](_0x4520ac,0xea60)/0x3e8);_0x5c08f5[_0x71ce5b(0x1f4)](_0x56be02[_0x71ce5b(0x1e5)])[_0x71ce5b(0x320)]=_0x57bd20+':'+_0xcf437c['toString']()['padStart'](0x2,'0'),_0x3dc6a2[_0x71ce5b(0x33b)]['remove'](_0x56be02[_0x71ce5b(0x3ce)]);}else questionStates[currentQuestionIndex][_0x71ce5b(0x1ef)]+=Date['now']()-questionStartTime,questionStartTime=Date[_0x71ce5b(0x235)]();}selectedOption=_0x30858f,questionStates[currentQuestionIndex][_0x71ce5b(0x24a)]=_0x30858f,document[_0x71ce5b(0x185)](_0x71ce5b(0x3f5))[_0x71ce5b(0x26e)]((_0x260f97,_0x4c303c)=>{const _0x4f8ca0=_0x71ce5b;_0x260f97[_0x4f8ca0(0x33b)]['toggle'](_0x56be02[_0x4f8ca0(0x376)],_0x4c303c===_0x30858f);}),_0x56be02[_0x71ce5b(0x403)](currentMode,_0x56be02['orjRW'])||currentMode===_0x56be02[_0x71ce5b(0x40b)]?processAnswer():(_0x56be02[_0x71ce5b(0x2c4)](questionStates[currentQuestionIndex]['status'],_0x56be02[_0x71ce5b(0x313)])&&(questionStates[currentQuestionIndex]['status']=_0x56be02[_0x71ce5b(0x38f)],stats['totalAttempted']++,stats[_0x71ce5b(0x3e8)]--),_0x56be02[_0x71ce5b(0x299)](updateQuestionNav)),_0x56be02[_0x71ce5b(0x31e)](saveProgress);}function processAnswer(){const _0x38b4f8=_0x2c9575,_0x6aef62={'rRupp':function(_0x3cb723,_0x22e7a5){return _0x3cb723>_0x22e7a5;},'bhBmO':function(_0x1ca09d,_0x114cff){return _0x1ca09d-_0x114cff;},'pfItc':function(_0xdb44f0){return _0xdb44f0();},'GwPkX':function(_0xc45886,_0x1f4bf0){return _0xc45886===_0x1f4bf0;},'ALaAo':_0x38b4f8(0x1c1),'vsRai':function(_0x43d475,_0x273d56){return _0x43d475!==_0x273d56;},'dBayG':_0x38b4f8(0x3bd),'RDXQB':_0x38b4f8(0x336),'BArJE':'incorrect'},_0x557ad4=questionsData[currentQuestionIndex],_0x50deab=_0x557ad4[_0x38b4f8(0x2ab)];if(_0x6aef62[_0x38b4f8(0x28b)](selectedOption,null))return;const _0x1720db=_0x557ad4['choices'][selectedOption],_0x273cb7=_0x6aef62[_0x38b4f8(0x28b)](_0x1720db['id'],_0x50deab);if(questionStates[currentQuestionIndex][_0x38b4f8(0x1f5)]===_0x6aef62[_0x38b4f8(0x2b0)]){if(_0x6aef62['vsRai'](_0x6aef62[_0x38b4f8(0x2fb)],_0x38b4f8(0x3bd)))_0x6aef62[_0x38b4f8(0x2f8)](_0x4c379a,0x0)&&(_0x3c337b&&(_0x3c9f21[_0x2d4164][_0x38b4f8(0x1ef)]+=_0x6aef62[_0x38b4f8(0x1df)](_0x17417c[_0x38b4f8(0x235)](),_0x3c4e7e)),_0xe1c487--,_0x6aef62['pfItc'](_0x373320),_0x6aef62[_0x38b4f8(0x20e)](_0x1663e0));else{stats[_0x38b4f8(0x2af)]++,stats['notAttempted']--;if(_0x273cb7)stats[_0x38b4f8(0x1d0)]++;else stats['incorrectAnswers']++;}}questionStates[currentQuestionIndex][_0x38b4f8(0x1f5)]=_0x273cb7?_0x6aef62['RDXQB']:_0x6aef62[_0x38b4f8(0x377)],_0x6aef62[_0x38b4f8(0x20e)](updateStats),showInlineFeedback(_0x273cb7),updateQuestionNav();}function showInlineFeedback(_0x512f03){const _0x56b1c9=_0x2c9575,_0x5cb2bf={'hWqiQ':function(_0x1d6944,_0xd03cf){return _0x1d6944===_0xd03cf;},'YZDHV':_0x56b1c9(0x336),'JebkN':function(_0x38ecd5,_0x153279){return _0x38ecd5===_0x153279;},'WeXMR':function(_0x666bed,_0x5ddc5f){return _0x666bed!==_0x5ddc5f;},'vagPo':_0x56b1c9(0x33d),'vsoPU':'.option-button','WmOzn':_0x56b1c9(0x2b5)};if(_0x5cb2bf['WeXMR'](currentMode,_0x5cb2bf[_0x56b1c9(0x362)])&&currentMode!==_0x56b1c9(0x2dd))return;const _0x5dfaeb=document[_0x56b1c9(0x1f4)](_0x56b1c9(0x3a9)),_0x546483=_0x5dfaeb[_0x56b1c9(0x185)](_0x5cb2bf['vsoPU']),_0x120310=questionsData[currentQuestionIndex],_0x483bea=_0x120310[_0x56b1c9(0x2ab)];let _0x1dd7b6=_0x120310[_0x56b1c9(0x2f2)][_0x56b1c9(0x229)](_0x3c85bf=>_0x3c85bf['id']===_0x483bea);_0x5dfaeb[_0x56b1c9(0x33b)][_0x56b1c9(0x182)](_0x5cb2bf[_0x56b1c9(0x22d)]),_0x546483[_0x56b1c9(0x26e)]((_0x58fdcf,_0x1bddb1)=>{const _0x3e0d29=_0x56b1c9;_0x58fdcf[_0x3e0d29(0x33b)][_0x3e0d29(0x2d8)](_0x3e0d29(0x2a7));if(_0x5cb2bf[_0x3e0d29(0x204)](_0x1bddb1,_0x1dd7b6))_0x58fdcf[_0x3e0d29(0x33b)][_0x3e0d29(0x182)](_0x5cb2bf[_0x3e0d29(0x21a)]);else{if(_0x5cb2bf[_0x3e0d29(0x2e5)](_0x1bddb1,selectedOption)&&!_0x512f03)_0x58fdcf[_0x3e0d29(0x33b)][_0x3e0d29(0x182)]('incorrect');}}),showSolution();}function showSolution(){const _0x20e4aa=_0x2c9575,_0x448ec4={'TfCMA':_0x20e4aa(0x20f),'lgihz':_0x20e4aa(0x30e),'MMHnV':function(_0x2b99c1,_0x2a9d9d){return _0x2b99c1!==_0x2a9d9d;},'CtJLa':_0x20e4aa(0x33d),'NDXVV':function(_0x2b49bd,_0x301ca2){return _0x2b49bd!==_0x301ca2;},'lbznZ':_0x20e4aa(0x2dd),'lQtQO':_0x20e4aa(0x3b1),'npLUl':_0x20e4aa(0x1ca),'tttiv':'explanationVideoPlayer','wMjkt':_0x20e4aa(0x25e),'WmXob':function(_0x4680f2,_0x3a33ca){return _0x4680f2===_0x3a33ca;},'DBNNW':'vEHRg','sdkGs':_0x20e4aa(0x1a4)};if(_0x448ec4[_0x20e4aa(0x228)](currentMode,_0x448ec4['CtJLa'])&&_0x448ec4['NDXVV'](currentMode,_0x448ec4[_0x20e4aa(0x186)]))return;const _0x484d13=questionsData[currentQuestionIndex];document['getElementById'](_0x448ec4['lQtQO'])[_0x20e4aa(0x3c3)]=_0x484d13[_0x20e4aa(0x1fc)]||_0x448ec4[_0x20e4aa(0x312)];const _0x52a24e=document[_0x20e4aa(0x1f4)](_0x20e4aa(0x1ba)),_0x4f5fcc=document[_0x20e4aa(0x1f4)](_0x448ec4[_0x20e4aa(0x389)]),_0x117864=_0x484d13[_0x20e4aa(0x239)];if(_0x117864){_0x52a24e[_0x20e4aa(0x33b)][_0x20e4aa(0x2d8)](_0x448ec4['wMjkt']);if(_0x117864[_0x20e4aa(0x2f3)](_0x20e4aa(0x20f)))setupVideo(_0x4f5fcc,_0x117864);else _0x4f5fcc['src']=_0x117864;}else _0x52a24e[_0x20e4aa(0x33b)][_0x20e4aa(0x182)](_0x448ec4['wMjkt']);const _0x10c3ca=document[_0x20e4aa(0x1f4)](_0x20e4aa(0x2ef));_0x10c3ca['innerHTML']='';_0x484d13[_0x20e4aa(0x28d)]&&(_0x448ec4[_0x20e4aa(0x3a1)](_0x448ec4[_0x20e4aa(0x1c8)],_0x448ec4[_0x20e4aa(0x1c8)])?_0x10c3ca['innerHTML']+=_0x20e4aa(0x258)+_0x484d13['explanation_audio_eng']+_0x20e4aa(0x356):_0x3ca3fa[_0x20e4aa(0x185)](_0x448ec4[_0x20e4aa(0x1f1)])['forEach'](_0x36af4c=>{const _0x43ffc0=_0x20e4aa,_0x500da6=_0x36af4c[_0x43ffc0(0x1de)][_0x43ffc0(0x2c0)];if(_0x500da6&&_0x500da6[_0x43ffc0(0x2f3)](_0x448ec4[_0x43ffc0(0x2b1)]))_0x435584(_0x36af4c,_0x500da6);else _0x500da6&&(_0x36af4c[_0x43ffc0(0x2c0)]=_0x500da6);}));_0x484d13[_0x20e4aa(0x1cc)]&&(_0x10c3ca[_0x20e4aa(0x3c3)]+=_0x20e4aa(0x1b5)+_0x484d13[_0x20e4aa(0x1cc)]+_0x20e4aa(0x356));const _0xd03af8=document['getElementById'](_0x20e4aa(0x38c));_0xd03af8[_0x20e4aa(0x3c3)]='',_0x484d13[_0x20e4aa(0x213)]&&_0x484d13[_0x20e4aa(0x213)]['forEach'](_0x789384=>{const _0x1827e2=_0x20e4aa;if(_0x789384)_0xd03af8[_0x1827e2(0x3c3)]+='<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0x789384+_0x1827e2(0x37c);}),document['getElementById'](_0x448ec4[_0x20e4aa(0x3b3)])[_0x20e4aa(0x33b)][_0x20e4aa(0x2d8)](_0x20e4aa(0x25e));}function submitQuiz(){const _0x2d41d5=_0x2c9575,_0x277b3b={'VPUft':function(_0x3f2aa2,_0x568378){return _0x3f2aa2===_0x568378;},'blOyW':_0x2d41d5(0x326),'zRawH':function(_0x5a2584,_0x30ba2f){return _0x5a2584!==_0x30ba2f;},'tByfn':_0x2d41d5(0x286),'yyJfK':function(_0x4f244f,_0x187034){return _0x4f244f(_0x187034);},'MLMSR':function(_0x1c9e53,_0x2200e3){return _0x1c9e53(_0x2200e3);},'hqzuS':function(_0x406f6b,_0x438671){return _0x406f6b-_0x438671;},'SSOxD':function(_0x5e150c,_0x59f1b0){return _0x5e150c-_0x59f1b0;},'LwHVM':function(_0x463af4,_0x440e42,_0x3aff59,_0x2ddb17,_0x79048c){return _0x463af4(_0x440e42,_0x3aff59,_0x2ddb17,_0x79048c);},'sCDmU':function(_0x4d6c03,_0x1695f5){return _0x4d6c03-_0x1695f5;},'GwuZf':function(_0x43cc45,_0x1e4a39){return _0x43cc45+_0x1e4a39;}};if(timer)_0x277b3b[_0x2d41d5(0x1b6)](clearInterval,timer);if(!_0x277b3b[_0x2d41d5(0x277)](confirm,_0x2d41d5(0x1fb)))return;isQuizCompleted=!![];let _0x421131=0x0,_0x3459ca=0x0;const _0x1c9f36=_0x277b3b[_0x2d41d5(0x18d)](Date[_0x2d41d5(0x235)](),quizStartTime);questionsData[_0x2d41d5(0x26e)]((_0xe7e82,_0xf9b918)=>{const _0x1b1f0d=_0x2d41d5;if(_0x277b3b[_0x1b1f0d(0x18b)](_0x277b3b[_0x1b1f0d(0x408)],_0x277b3b[_0x1b1f0d(0x408)])){const _0x1fc069=questionStates[_0xf9b918];_0x277b3b[_0x1b1f0d(0x23b)](_0x1fc069['selectedAnswer'],null)&&(_0x277b3b['VPUft'](_0xe7e82[_0x1b1f0d(0x2f2)][_0x1fc069[_0x1b1f0d(0x24a)]]['id'],_0xe7e82[_0x1b1f0d(0x2ab)])?(_0x421131++,_0x1fc069['status']=_0x1b1f0d(0x336)):(_0x3459ca++,_0x1fc069['status']=_0x277b3b[_0x1b1f0d(0x1c5)]));}else _0x2ba9ea=_0x13a6bc;});const _0x328761=JSON[_0x2d41d5(0x1c0)](localStorage[_0x2d41d5(0x254)](_0x2d41d5(0x1ae)))||[];_0x328761['push']({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date[_0x2d41d5(0x235)](),'totalTime':_0x1c9f36,'stats':{'correct':_0x421131,'incorrect':_0x3459ca,'notAttempted':_0x277b3b[_0x2d41d5(0x2a6)](questionsData[_0x2d41d5(0x190)],_0x421131+_0x3459ca)}}),localStorage[_0x2d41d5(0x317)](_0x2d41d5(0x1ae),JSON[_0x2d41d5(0x295)](_0x328761)),stats[_0x2d41d5(0x1d0)]=_0x421131,stats[_0x2d41d5(0x1bb)]=_0x3459ca,markQuizAsCompleted(),_0x277b3b[_0x2d41d5(0x3bb)](showPerformanceAnalysis,_0x421131,_0x3459ca,_0x277b3b[_0x2d41d5(0x31c)](questionsData['length'],_0x277b3b[_0x2d41d5(0x1ac)](_0x421131,_0x3459ca)),_0x1c9f36);}function showPerformanceAnalysis(_0x292bf1,_0xd9c2c3,_0x2f42c4,_0x4090c7){const _0xd6736f=_0x2c9575,_0xd7c389={'iLNOL':'performanceModal','tYzKP':function(_0x27edcb,_0x1b1cfe){return _0x27edcb>_0x1b1cfe;},'NOHCy':function(_0x32d238,_0x29bb99){return _0x32d238*_0x29bb99;},'OpDKl':function(_0x3e1c77,_0x25d981){return _0x3e1c77/_0x25d981;},'PlAbQ':function(_0x4783ff,_0x5e1d76){return _0x4783ff+_0x5e1d76;},'RmSQp':_0xd6736f(0x3a6),'pPIcL':function(_0x2baba8,_0x78147c){return _0x2baba8*_0x78147c;},'LtDdW':function(_0x4d5506,_0x1761ea){return _0x4d5506/_0x1761ea;},'rNHrn':_0xd6736f(0x3ec),'KWuOJ':_0xd6736f(0x21d),'sMRfn':_0xd6736f(0x35e),'LJKRV':_0xd6736f(0x39a),'yRVmP':function(_0x9bd8e2,_0x495f62){return _0x9bd8e2%_0x495f62;},'KkySP':_0xd6736f(0x209),'SnqDL':function(_0x3284f3,_0x3e32f7){return _0x3284f3/_0x3e32f7;},'yKeJk':function(_0x1cf428,_0x2c8694){return _0x1cf428/_0x2c8694;},'nbnbn':'avgTimeResult'},_0x247039=document[_0xd6736f(0x1f4)](_0xd7c389[_0xd6736f(0x334)]),_0x5d3018=_0xd7c389[_0xd6736f(0x3d9)](_0x292bf1+_0xd9c2c3,0x0)?Math[_0xd6736f(0x268)](_0xd7c389[_0xd6736f(0x344)](_0xd7c389['OpDKl'](_0x292bf1,_0xd7c389[_0xd6736f(0x328)](_0x292bf1,_0xd9c2c3)),0x64)):0x0,_0x44f43e=_0xd7c389['NOHCy'](0x2*Math['PI'],0x41),_0x21c494=document[_0xd6736f(0x1f4)](_0xd7c389[_0xd6736f(0x288)]);_0x21c494[_0xd6736f(0x1ec)][_0xd6736f(0x193)]=_0x44f43e+'\x20'+_0x44f43e,_0x21c494[_0xd6736f(0x1ec)]['strokeDashoffset']=_0x44f43e-_0xd7c389[_0xd6736f(0x226)](_0xd7c389[_0xd6736f(0x1e7)](_0x5d3018,0x64),_0x44f43e),document[_0xd6736f(0x1f4)](_0xd7c389[_0xd6736f(0x1a0)])[_0xd6736f(0x320)]=_0x5d3018+'%',document[_0xd6736f(0x1f4)](_0xd6736f(0x3b2))[_0xd6736f(0x320)]=questionsData[_0xd6736f(0x190)],document[_0xd6736f(0x1f4)](_0xd7c389['KWuOJ'])[_0xd6736f(0x320)]=_0x292bf1,document[_0xd6736f(0x1f4)](_0xd7c389[_0xd6736f(0x1ab)])[_0xd6736f(0x320)]=_0xd9c2c3,document['getElementById'](_0xd7c389[_0xd6736f(0x24f)])[_0xd6736f(0x320)]=_0x2f42c4;const _0x77985f=Math[_0xd6736f(0x255)](_0x4090c7/0xea60),_0x6036f7=Math[_0xd6736f(0x255)](_0xd7c389[_0xd6736f(0x1aa)](_0x4090c7,0xea60)/0x3e8);document['getElementById'](_0xd7c389['KkySP'])[_0xd6736f(0x320)]=_0x77985f+':'+_0x6036f7[_0xd6736f(0x289)]()[_0xd6736f(0x32f)](0x2,'0');const _0x26e841=_0xd7c389['SnqDL'](_0x4090c7,questionsData[_0xd6736f(0x190)]),_0xd77e87=Math[_0xd6736f(0x255)](_0xd7c389[_0xd6736f(0x34b)](_0x26e841,0xea60)),_0x58b899=Math[_0xd6736f(0x255)](_0xd7c389[_0xd6736f(0x1e7)](_0xd7c389[_0xd6736f(0x1aa)](_0x26e841,0xea60),0x3e8));document[_0xd6736f(0x1f4)](_0xd7c389[_0xd6736f(0x2a1)])[_0xd6736f(0x320)]=_0xd77e87+':'+_0x58b899[_0xd6736f(0x289)]()[_0xd6736f(0x32f)](0x2,'0'),_0x247039[_0xd6736f(0x33b)][_0xd6736f(0x2d8)]('hidden');}function closePerformanceModal(){const _0x3149d7=_0x2c9575,_0x8181e4={'mOIig':_0x3149d7(0x31f)};document['getElementById'](_0x8181e4[_0x3149d7(0x1a9)])[_0x3149d7(0x33b)][_0x3149d7(0x182)](_0x3149d7(0x25e));}function _0x86f1(_0x1215e7,_0x4a7703){const _0x449650=_0x458c();return _0x86f1=function(_0x56c4b3,_0x15ece2){_0x56c4b3=_0x56c4b3-0x17e;let _0x3d2876=_0x449650[_0x56c4b3];return _0x3d2876;},_0x86f1(_0x1215e7,_0x4a7703);}function reviewQuestions(){const _0x1e6ad1=_0x2c9575,_0x27fb35={'BeCvy':function(_0x56b634){return _0x56b634();},'hAvuQ':'modeModal','QsfMF':_0x1e6ad1(0x191),'eBMAP':function(_0x1cba39,_0x2424ce){return _0x1cba39===_0x2424ce;},'zOFbk':_0x1e6ad1(0x280),'EgFOm':_0x1e6ad1(0x272),'oFKAq':function(_0x1cd62a,_0x3ad271){return _0x1cd62a+_0x3ad271;},'UUASY':_0x1e6ad1(0x262),'EqzuE':function(_0x1427a1,_0x5595ae){return _0x1427a1!==_0x5595ae;},'uWtMp':_0x1e6ad1(0x354),'aGHRp':_0x1e6ad1(0x3d1),'rJvqk':_0x1e6ad1(0x409),'mhglJ':'Not\x20Attempted','MLbSD':function(_0x4ebee4,_0x24b26d){return _0x4ebee4!==_0x24b26d;},'wOSjR':_0x1e6ad1(0x336),'vBCUg':_0x1e6ad1(0x310),'elPGI':_0x1e6ad1(0x286),'FNNnm':_0x1e6ad1(0x25a),'JMqJG':_0x1e6ad1(0x327),'FvjEi':function(_0x3ddf67,_0x41c219){return _0x3ddf67+_0x41c219;},'pDdbt':function(_0xd5a66b,_0x1f6d1e){return _0xd5a66b===_0x1f6d1e;},'ZByiP':'green','RIaLC':_0x1e6ad1(0x3d7),'rkcPN':_0x1e6ad1(0x1f6),'JpLTq':_0x1e6ad1(0x3e2),'PKsJH':_0x1e6ad1(0x1f2)};document[_0x1e6ad1(0x1f4)](_0x27fb35[_0x1e6ad1(0x17f)])[_0x1e6ad1(0x33b)][_0x1e6ad1(0x2d8)](_0x1e6ad1(0x25e));const _0x5445a8=document[_0x1e6ad1(0x1f4)](_0x27fb35[_0x1e6ad1(0x3c0)]);_0x5445a8[_0x1e6ad1(0x3c3)]='',questionsData['forEach']((_0x3997bc,_0x87dce2)=>{const _0xdbc708=_0x1e6ad1,_0x395cae={'BlVDw':_0x27fb35[_0xdbc708(0x214)]};if(_0x27fb35[_0xdbc708(0x225)](_0x27fb35[_0xdbc708(0x1cd)],_0x27fb35[_0xdbc708(0x32d)])){const _0x30952a=questionStates[_0x87dce2],_0x29495f=_0x3997bc[_0xdbc708(0x2ab)];let _0x5cfa05=_0x27fb35[_0xdbc708(0x32c)],_0x3bb13f=_0x27fb35[_0xdbc708(0x256)];if(_0x27fb35[_0xdbc708(0x3e5)](_0x30952a['selectedAnswer'],null)){const _0x3f6ea6=_0x3997bc[_0xdbc708(0x2f2)][_0x30952a[_0xdbc708(0x24a)]];_0x27fb35[_0xdbc708(0x3d0)](_0x3f6ea6['id'],_0x29495f)?_0xdbc708(0x1d2)!=='XHAiF'?(_0x5cfa05=_0x27fb35[_0xdbc708(0x19b)],_0x3bb13f=_0x27fb35[_0xdbc708(0x1d5)]):(_0x27fb35[_0xdbc708(0x189)](_0x27038d),_0x5f264f['getElementById'](_0x27fb35[_0xdbc708(0x3a8)])[_0xdbc708(0x1ec)][_0xdbc708(0x405)]=_0x27fb35[_0xdbc708(0x34e)]):(_0x5cfa05=_0x27fb35[_0xdbc708(0x24e)],_0x3bb13f=_0x27fb35[_0xdbc708(0x270)]);}const _0x3695c7=document[_0xdbc708(0x2c5)](_0x27fb35[_0xdbc708(0x2f5)]);_0x3695c7['className']='review-question\x20'+_0x5cfa05;let _0x1cd3f4=(_0x3997bc[_0xdbc708(0x2f2)]||[])[_0xdbc708(0x279)]((_0x2254a2,_0x152618)=>{const _0x4b52b4=_0xdbc708,_0x4fccef=_0x27fb35[_0x4b52b4(0x3d0)](_0x30952a[_0x4b52b4(0x24a)],_0x152618),_0x3db021=_0x2254a2['id']===_0x29495f;let _0x3590ae='border-gray-600';if(_0x3db021)_0x3590ae=_0x27fb35[_0x4b52b4(0x1c9)];else{if(_0x4fccef)_0x3590ae=_0x27fb35[_0x4b52b4(0x249)];}return _0x4b52b4(0x1a7)+_0x3590ae+_0x4b52b4(0x2e8)+String[_0x4b52b4(0x23a)](_0x27fb35['oFKAq'](0x41,_0x152618))+_0x4b52b4(0x220)+_0x2254a2[_0x4b52b4(0x1a5)]+_0x4b52b4(0x3df);})[_0xdbc708(0x3a7)]('');const _0x3b317a=_0x3997bc[_0xdbc708(0x239)]?'<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-'+_0x87dce2+'\x22\x20data-src=\x22'+_0x3997bc[_0xdbc708(0x239)]+_0xdbc708(0x22c):'';let _0x5215db='';if(_0x3997bc[_0xdbc708(0x28d)])_0x5215db+=_0xdbc708(0x194)+_0x3997bc[_0xdbc708(0x28d)]+_0xdbc708(0x356);if(_0x3997bc[_0xdbc708(0x1cc)])_0x5215db+=_0xdbc708(0x335)+_0x3997bc['explanation_audio_hin']+_0xdbc708(0x356);let _0x4e110c=(_0x3997bc['explanation_images']||[])['map'](_0x19671d=>_0x19671d?'<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0x19671d+_0xdbc708(0x37c):'')[_0xdbc708(0x3a7)]('');_0x3695c7[_0xdbc708(0x3c3)]=_0xdbc708(0x319)+_0x27fb35[_0xdbc708(0x1d7)](_0x87dce2,0x1)+'</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-'+(_0x27fb35[_0xdbc708(0x347)](_0x5cfa05,_0x27fb35['wOSjR'])?_0x27fb35['ZByiP']:_0x27fb35['pDdbt'](_0x5cfa05,_0x27fb35[_0xdbc708(0x24e)])?_0xdbc708(0x1f8):_0x27fb35[_0xdbc708(0x300)])+_0xdbc708(0x379)+_0x3bb13f+_0xdbc708(0x233)+_0x3997bc['text']+_0xdbc708(0x242)+_0x1cd3f4+_0xdbc708(0x311)+(_0x3997bc[_0xdbc708(0x1fc)]||_0x27fb35[_0xdbc708(0x3b0)])+_0xdbc708(0x302)+_0x3b317a+_0xdbc708(0x3fa)+_0x5215db+_0xdbc708(0x3fa)+_0x4e110c+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>',_0x5445a8[_0xdbc708(0x231)](_0x3695c7);}else _0x406cf0[_0xdbc708(0x192)](_0x395cae[_0xdbc708(0x291)]);}),_0x27fb35['BeCvy'](initializeReviewVideos);}function initializeReviewVideos(){const _0x5145c9=_0x2c9575,_0x258e9e={'OCcry':function(_0x3dd0e0){return _0x3dd0e0();},'FXxZE':function(_0x15a183){return _0x15a183();},'nLWfK':_0x5145c9(0x20f),'rBlkM':'swnNi','ZGDLX':function(_0x152b25,_0x58c06a,_0x4af800){return _0x152b25(_0x58c06a,_0x4af800);},'nBakC':function(_0x567804,_0x4cf666){return _0x567804!==_0x4cf666;},'Xxphh':_0x5145c9(0x27d),'FhrhO':'video[data-src]'};document[_0x5145c9(0x185)](_0x258e9e[_0x5145c9(0x21e)])[_0x5145c9(0x26e)](_0x41181f=>{const _0x1d46a0=_0x5145c9,_0x45d682=_0x41181f[_0x1d46a0(0x1de)]['src'];if(_0x45d682&&_0x45d682['includes'](_0x258e9e[_0x1d46a0(0x2db)]))_0x258e9e[_0x1d46a0(0x3a0)]!==_0x1d46a0(0x2c3)?(_0x30894c++,_0x258e9e['OCcry'](_0x42fcbb),_0x258e9e[_0x1d46a0(0x3c9)](_0x4fe4eb)):_0x258e9e[_0x1d46a0(0x2d4)](setupVideo,_0x41181f,_0x45d682);else{if(_0x45d682){if(_0x258e9e[_0x1d46a0(0x383)](_0x258e9e[_0x1d46a0(0x3ed)],_0x258e9e['Xxphh'])){_0x468d92[_0x1d46a0(0x2af)]++,_0x40ff2c['notAttempted']--;if(_0x1a1c40)_0x2d1438[_0x1d46a0(0x1d0)]++;else _0x20c3e9[_0x1d46a0(0x1bb)]++;}else _0x41181f[_0x1d46a0(0x2c0)]=_0x45d682;}}});}function retakeQuiz(){const _0x42aea7=_0x2c9575,_0x595ae5={'rtAcw':function(_0x1e3198,_0x59603e){return _0x1e3198===_0x59603e;},'OULRF':_0x42aea7(0x273),'YKVFb':function(_0x213856,_0x13183a){return _0x213856===_0x13183a;},'zkwxu':_0x42aea7(0x286),'NmmAC':_0x42aea7(0x2b9),'cxZGY':_0x42aea7(0x2e1),'TMwia':function(_0x2664fc,_0x2d8aea){return _0x2664fc(_0x2d8aea);},'ednLk':function(_0xab0b01,_0x5e462d){return _0xab0b01!==_0x5e462d;},'DWDAO':_0x42aea7(0x1bd),'hcgJv':function(_0x5b680a){return _0x5b680a();}};if(_0x595ae5['TMwia'](confirm,_0x42aea7(0x38d))){if(window['location'][_0x42aea7(0x3b8)][_0x42aea7(0x395)]('custom_quiz.html')){if(_0x595ae5['ednLk'](_0x595ae5[_0x42aea7(0x1e8)],'MAlbg')){if(_0x595ae5[_0x42aea7(0x20d)](_0x2f7366[_0x42aea7(0x1f5)],_0x42aea7(0x336)))_0x414dfd=_0x595ae5[_0x42aea7(0x1d8)];else{if(_0x595ae5['YKVFb'](_0x56b7da[_0x42aea7(0x1f5)],_0x595ae5[_0x42aea7(0x201)]))_0x44b86e=_0x595ae5[_0x42aea7(0x261)];else _0x424842=_0x595ae5[_0x42aea7(0x37a)];}}else localStorage['removeItem'](_0x42aea7(0x262));}_0x595ae5['hcgJv'](clearProgress),location[_0x42aea7(0x1a6)]();}}function loadBookmarkedQuestions(){const _0x8170a0=_0x2c9575,_0x9184a0={'cDNMt':function(_0x4cc876,_0x46c231){return _0x4cc876<_0x46c231;},'SMoLR':_0x8170a0(0x350)},_0x57a412=JSON[_0x8170a0(0x1c0)](localStorage['getItem'](_0x9184a0[_0x8170a0(0x3ab)]))||[];_0x57a412[_0x8170a0(0x26e)](_0x267592=>{const _0x553496=_0x8170a0;_0x267592[_0x553496(0x3af)][_0x553496(0x2f3)](quizName[_0x553496(0x3aa)]()[_0x553496(0x2f6)](/ /g,'-'))&&(_0x9184a0['cDNMt'](_0x267592[_0x553496(0x27f)],questionsData['length'])&&(questionStates[_0x267592[_0x553496(0x27f)]][_0x553496(0x2e6)]=!![]));});}function toggleBookmark(){const _0x30bf18=_0x2c9575,_0x4fb871={'MUEOI':function(_0x339980){return _0x339980();},'ihVGH':function(_0x240ecc){return _0x240ecc();}},_0x45c5fa=!questionStates[currentQuestionIndex][_0x30bf18(0x2e6)];questionStates[currentQuestionIndex][_0x30bf18(0x2e6)]=_0x45c5fa;let _0x34777c=JSON[_0x30bf18(0x1c0)](localStorage[_0x30bf18(0x254)](_0x30bf18(0x350)))||[];if(_0x45c5fa){const _0x452463={'quizName':quizName,'quizFile':window[_0x30bf18(0x1fe)][_0x30bf18(0x3b8)][_0x30bf18(0x26b)]('/')[_0x30bf18(0x2f9)](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date[_0x30bf18(0x235)]()};_0x34777c[_0x30bf18(0x36f)](_0x452463);}else _0x34777c=_0x34777c[_0x30bf18(0x3de)](_0x10f52d=>!(_0x10f52d['quizFile']['includes'](quizName[_0x30bf18(0x3aa)]()[_0x30bf18(0x2f6)](/ /g,'-'))&&_0x10f52d[_0x30bf18(0x27f)]===currentQuestionIndex));localStorage[_0x30bf18(0x317)]('bookmarkedQuestions',JSON[_0x30bf18(0x295)](_0x34777c)),_0x4fb871[_0x30bf18(0x31d)](updateBookmarkButton),_0x4fb871[_0x30bf18(0x219)](updateQuestionNav);}function updateBookmarkButton(){const _0x175fc6=_0x2c9575,_0x3c7c3c={'KeVgx':_0x175fc6(0x397),'EFBmO':_0x175fc6(0x1ee),'SOzLp':_0x175fc6(0x38e),'UfDID':_0x175fc6(0x29f)},_0x3f5d2f=document[_0x175fc6(0x1f4)](_0x3c7c3c[_0x175fc6(0x333)]),_0x48ddac=document[_0x175fc6(0x1f4)](_0x3c7c3c[_0x175fc6(0x3c5)]),_0x80062=questionStates[currentQuestionIndex]['bookmarked'];_0x3f5d2f[_0x175fc6(0x293)]=_0x80062?_0x3c7c3c[_0x175fc6(0x2ed)]:_0x3c7c3c[_0x175fc6(0x3b4)],_0x48ddac[_0x175fc6(0x320)]=_0x80062?_0x175fc6(0x1dd):_0x175fc6(0x26c);}function toggleMarkForReview(){const _0x719e9=_0x2c9575,_0x5afa28={'LGxPi':function(_0x36e5c0){return _0x36e5c0();}};questionStates[currentQuestionIndex]['markedForReview']=!questionStates[currentQuestionIndex][_0x719e9(0x387)],_0x5afa28['LGxPi'](updateMarkReviewButton),updateQuestionNav();}function updateMarkReviewButton(){const _0x2a5faa=_0x2c9575,_0x3237ac={'iXcQJ':'markReviewBtn','hHINg':_0x2a5faa(0x215),'AFqiL':_0x2a5faa(0x202),'PFqkT':_0x2a5faa(0x348)},_0x3bcdd4=document[_0x2a5faa(0x1f4)](_0x3237ac[_0x2a5faa(0x324)]),_0x200d77=document[_0x2a5faa(0x1f4)](_0x3237ac[_0x2a5faa(0x3be)]),_0x1e04c9=questionStates[currentQuestionIndex][_0x2a5faa(0x387)];_0x3bcdd4[_0x2a5faa(0x293)]=_0x1e04c9?_0x3237ac[_0x2a5faa(0x3eb)]:_0x2a5faa(0x246),_0x200d77[_0x2a5faa(0x320)]=_0x1e04c9?_0x3237ac['PFqkT']:_0x2a5faa(0x19f);}function previousQuestion(){const _0x1893ea=_0x2c9575,_0x5db4e7={'hZiRV':function(_0x54bbc3,_0x4c395c){return _0x54bbc3>_0x4c395c;},'JWSqu':function(_0x19c0a4,_0x4cc610){return _0x19c0a4-_0x4cc610;},'zMYGF':function(_0x528597){return _0x528597();}};_0x5db4e7['hZiRV'](currentQuestionIndex,0x0)&&(questionStartTime&&(questionStates[currentQuestionIndex][_0x1893ea(0x1ef)]+=_0x5db4e7['JWSqu'](Date[_0x1893ea(0x235)](),questionStartTime)),currentQuestionIndex--,_0x5db4e7[_0x1893ea(0x22a)](displayQuestion),_0x5db4e7[_0x1893ea(0x22a)](saveProgress));}function nextQuestion(){const _0x44ab22=_0x2c9575,_0x3294d3={'qFPdt':_0x44ab22(0x378),'ZcBJI':function(_0x46a193,_0x2e269a){return _0x46a193-_0x2e269a;},'dxSYq':function(_0x411a7a,_0x21a583){return _0x411a7a<_0x21a583;},'GnANV':function(_0xde4a4f,_0x33fd67){return _0xde4a4f-_0x33fd67;},'TZROR':function(_0x5aba1){return _0x5aba1();},'vxvlJ':function(_0x32b30e,_0x51ade4){return _0x32b30e!==_0x51ade4;},'UTALx':_0x44ab22(0x2ce),'eIhEb':'Qrxeg','EQXRt':function(_0x217d2d,_0x5b5b47){return _0x217d2d===_0x5b5b47;},'KxrWH':'test','zkdDF':_0x44ab22(0x29b),'tDuAx':_0x44ab22(0x3f1),'hAhWk':_0x44ab22(0x283),'FIIuS':function(_0x4334a6,_0x2b7349){return _0x4334a6(_0x2b7349);},'vzAZc':_0x44ab22(0x2bf),'wBRwA':function(_0x4b07d3,_0x919bfa){return _0x4b07d3!==_0x919bfa;},'yfclI':'iCBMf','nlZcV':_0x44ab22(0x211),'uWPFU':function(_0x1be09d,_0x13a51c){return _0x1be09d(_0x13a51c);},'rOSaa':_0x44ab22(0x2b3)};questionStartTime&&(questionStates[currentQuestionIndex][_0x44ab22(0x1ef)]+=_0x3294d3[_0x44ab22(0x1e9)](Date[_0x44ab22(0x235)](),questionStartTime));if(_0x3294d3[_0x44ab22(0x3d6)](currentQuestionIndex,_0x3294d3[_0x44ab22(0x284)](questionsData[_0x44ab22(0x190)],0x1)))currentQuestionIndex++,_0x3294d3[_0x44ab22(0x1b8)](displayQuestion),_0x3294d3[_0x44ab22(0x1b8)](saveProgress);else{if(_0x3294d3[_0x44ab22(0x251)](_0x3294d3['UTALx'],_0x3294d3[_0x44ab22(0x19e)])){if(_0x3294d3[_0x44ab22(0x370)](currentMode,_0x3294d3['KxrWH'])||_0x3294d3[_0x44ab22(0x370)](currentMode,_0x3294d3[_0x44ab22(0x18a)])){if(_0x3294d3[_0x44ab22(0x251)](_0x3294d3[_0x44ab22(0x38b)],_0x3294d3['hAhWk'])){if(_0x3294d3[_0x44ab22(0x406)](confirm,_0x3294d3['vzAZc'])){if(_0x3294d3[_0x44ab22(0x2a0)](_0x3294d3[_0x44ab22(0x29c)],_0x3294d3[_0x44ab22(0x1d6)]))submitQuiz();else{const _0x2f24f5=_0x124c63[_0x44ab22(0x3e9)][_0x44ab22(0x207)][_0x44ab22(0x3f7)](_0x8742dd),_0x1dc1b5=_0x1bcdd8[_0x25a78a],_0x5b617c=_0x5a1988[_0x1dc1b5]||_0x2f24f5;_0x2f24f5['__proto__']=_0x4911e2[_0x44ab22(0x3f7)](_0xd0b996),_0x2f24f5[_0x44ab22(0x289)]=_0x5b617c['toString'][_0x44ab22(0x3f7)](_0x5b617c),_0x474569[_0x1dc1b5]=_0x2f24f5;}}}else{const _0x5874d8=_0x1be361['createElement'](_0x3294d3[_0x44ab22(0x35c)]);_0x5874d8[_0x44ab22(0x320)]=_0x33e56a+0x1,_0x5874d8[_0x44ab22(0x293)]=_0x44ab22(0x281),_0x5874d8[_0x44ab22(0x2ea)]=()=>_0x4b00b7(_0x159ef8),_0x5874d8['id']='navBtn_'+_0x14fb47,_0x1091ea[_0x44ab22(0x231)](_0x5874d8);}}else _0x3294d3[_0x44ab22(0x1fd)](confirm,_0x3294d3[_0x44ab22(0x2a5)])&&(currentQuestionIndex=0x0,_0x3294d3[_0x44ab22(0x1b8)](displayQuestion),_0x3294d3[_0x44ab22(0x1b8)](saveProgress));}else{if(!_0x1368c1)_0x5700a2();_0x4f9611['location'][_0x44ab22(0x37b)]=_0x322101[_0x44ab22(0x269)]||'index.html';}}}function startTimer(){const _0x42fbbb=_0x2c9575,_0x59725b={'chSqn':_0x42fbbb(0x3d2),'LAJEH':'No\x20questions\x20available\x20for\x20this\x20quiz.','UKxDy':function(_0x2592b1){return _0x2592b1();},'KObph':function(_0xfccb9f,_0x39526e){return _0xfccb9f<=_0x39526e;},'YOQiI':function(_0x587939,_0x4d6d10){return _0x587939===_0x4d6d10;},'PTDZx':_0x42fbbb(0x2bd),'aPicJ':_0x42fbbb(0x2a9),'fKDcH':function(_0x4f98be,_0x17ca43){return _0x4f98be(_0x17ca43);},'HMivD':function(_0x596dfc,_0x1f45ab,_0x308c1f){return _0x596dfc(_0x1f45ab,_0x308c1f);}};if(timer)_0x59725b[_0x42fbbb(0x401)](clearInterval,timer);timeRemaining=0x78,_0x59725b[_0x42fbbb(0x294)](updateTimerDisplay),timer=_0x59725b['HMivD'](setInterval,()=>{const _0x1cd6ae=_0x42fbbb,_0x28371d={'Arovc':_0x59725b[_0x1cd6ae(0x34f)],'xfSZI':_0x59725b['LAJEH']};if('WtoyA'!==_0x1cd6ae(0x292)){timeRemaining--,_0x59725b[_0x1cd6ae(0x294)](updateTimerDisplay);if(_0x59725b[_0x1cd6ae(0x1ce)](timeRemaining,0x0)){if(_0x59725b['YOQiI'](_0x59725b[_0x1cd6ae(0x19d)],_0x59725b['aPicJ'])){_0x2363f5[_0x1cd6ae(0x1f4)](_0x28371d[_0x1cd6ae(0x3e1)])[_0x1cd6ae(0x3c3)]=_0x28371d[_0x1cd6ae(0x34d)];return;}else _0x59725b['fKDcH'](clearInterval,timer),_0x59725b[_0x1cd6ae(0x2cd)](currentMode,_0x1cd6ae(0x29b))?submitQuiz():nextQuestion();}}else _0x17d83c();},0x3e8);}function updateTimerDisplay(){const _0x1194e4=_0x2c9575,_0x2326bf={'Pgrch':function(_0x451fd3,_0x1ae39d){return _0x451fd3/_0x1ae39d;},'cXNKK':'timeDisplay','WDPgg':function(_0x512132,_0xfb997d){return _0x512132+_0xfb997d;}},_0x4144d2=Math[_0x1194e4(0x255)](_0x2326bf['Pgrch'](timeRemaining,0x3c)),_0x5594b7=timeRemaining%0x3c;document['getElementById'](_0x2326bf[_0x1194e4(0x3e7)])[_0x1194e4(0x320)]=_0x2326bf['WDPgg'](_0x4144d2+':',_0x5594b7[_0x1194e4(0x289)]()['padStart'](0x2,'0'));}function toggleSidebar(){const _0x766985=_0x2c9575,_0x485d0d={'WKhtv':'quizSidebar','eksxh':_0x766985(0x380)};document[_0x766985(0x1f4)](_0x485d0d[_0x766985(0x2c1)])[_0x766985(0x33b)][_0x766985(0x3ca)](_0x485d0d['eksxh']);}document[_0x2c9575(0x296)](_0x2c9575(0x363),()=>{const _0x3d9435=_0x2c9575,_0x4316ef={'SzIma':_0x3d9435(0x221),'WqIWm':function(_0x54dd63,_0x120b74){return _0x54dd63!==_0x120b74;},'kzdMg':_0x3d9435(0x336),'UcedU':'incorrect','NGhqP':function(_0x4ef97e,_0x587194){return _0x4ef97e!==_0x587194;},'NQdSg':_0x3d9435(0x1c6),'Lnhir':function(_0x5e6f20){return _0x5e6f20();},'JgBmk':_0x3d9435(0x187),'EMGJT':'none','FuilU':function(_0x2f5b01,_0x22fb6c){return _0x2f5b01!==_0x22fb6c;},'dAXXn':_0x3d9435(0x3e0),'mPeLI':'LHREz','iNEDu':function(_0xcd61cd){return _0xcd61cd();},'CMAZV':_0x3d9435(0x191),'fsRVW':_0x3d9435(0x27e),'LCSME':function(_0x487561,_0x3ba2fb){return _0x487561!==_0x3ba2fb;},'TtDTr':_0x3d9435(0x3dc),'RgMvy':function(_0x2173da){return _0x2173da();}};if(resume){if(_0x4316ef[_0x3d9435(0x36b)](_0x4316ef[_0x3d9435(0x2ae)],_0x4316ef['NQdSg']))return _0x43b3d7[_0x3d9435(0x289)]()['search'](TvbepE[_0x3d9435(0x3cf)])['toString']()[_0x3d9435(0x3e9)](_0x3c17a5)[_0x3d9435(0x3b6)](TvbepE['SzIma']);else _0x4316ef[_0x3d9435(0x301)](loadProgress)?(document[_0x3d9435(0x1f4)](_0x4316ef[_0x3d9435(0x253)])[_0x3d9435(0x1ec)][_0x3d9435(0x405)]=_0x4316ef[_0x3d9435(0x3c4)],_0x4316ef[_0x3d9435(0x301)](initializeQuiz)):_0x4316ef[_0x3d9435(0x3c8)](_0x4316ef['dAXXn'],_0x4316ef[_0x3d9435(0x3ea)])?(_0x4316ef[_0x3d9435(0x259)](clearProgress),document[_0x3d9435(0x1f4)](_0x4316ef[_0x3d9435(0x253)])[_0x3d9435(0x1ec)][_0x3d9435(0x405)]=_0x4316ef[_0x3d9435(0x2eb)]):_0x212a86();}else{if(!window[_0x3d9435(0x1fe)]['pathname'][_0x3d9435(0x395)](_0x4316ef['fsRVW'])){if(_0x4316ef[_0x3d9435(0x275)](_0x4316ef[_0x3d9435(0x1b9)],_0x3d9435(0x3dc))){const _0xc7869=_0x245855[_0xc0b206];_0x4316ef[_0x3d9435(0x3a2)](_0xc7869[_0x3d9435(0x24a)],null)&&(_0x3af747[_0x3d9435(0x2f2)][_0xc7869[_0x3d9435(0x24a)]]['id']===_0x4edb56[_0x3d9435(0x2ab)]?(_0x4738b8++,_0xc7869[_0x3d9435(0x1f5)]=_0x4316ef[_0x3d9435(0x237)]):(_0x43f31b++,_0xc7869[_0x3d9435(0x1f5)]=_0x4316ef[_0x3d9435(0x346)]));}else _0x4316ef[_0x3d9435(0x301)](clearProgress),document[_0x3d9435(0x1f4)](_0x4316ef[_0x3d9435(0x253)])[_0x3d9435(0x1ec)][_0x3d9435(0x405)]=_0x4316ef[_0x3d9435(0x2eb)];}else _0x4316ef['RgMvy'](initializeQuiz);}}),document[_0x2c9575(0x296)]('keydown',function(_0x440f36){const _0x102f4a=_0x2c9575,_0x1bd6d4={'MrgSx':'Incorrect','AOmaj':function(_0x319724,_0x12132f){return _0x319724!==_0x12132f;},'fksxw':_0x102f4a(0x234),'TmHAE':function(_0x25e654,_0x52f5ab){return _0x25e654===_0x52f5ab;},'UTbIJ':'performanceModal','ctOMo':function(_0x3303cd,_0xe4efa4){return _0x3303cd<=_0xe4efa4;},'yOpzO':function(_0x2f51da,_0x99a177){return _0x2f51da!==_0x99a177;},'dvaZW':_0x102f4a(0x2e0),'ebFkg':'umjCJ','ZpbHL':function(_0x4017c4,_0x193850){return _0x4017c4-_0x193850;},'zIEHK':function(_0x310db6,_0x4e2c4a){return _0x310db6(_0x4e2c4a);},'rWQMO':'.option-button','rWscN':function(_0xe6752e,_0x4672f5){return _0xe6752e<_0x4672f5;},'aaWih':'ArrowLeft','cFWAL':function(_0x2c949a){return _0x2c949a();},'HIBhk':'study','ysvVC':function(_0x24f905,_0x4dfdd4){return _0x24f905===_0x4dfdd4;},'kQQGx':_0x102f4a(0x2dd),'FGdOM':function(_0x2e045c,_0x598f5e){return _0x2e045c===_0x598f5e;},'IUwDf':_0x102f4a(0x29e),'KfQgX':'test','kJhyx':_0x102f4a(0x29b)};if(_0x1bd6d4[_0x102f4a(0x398)](document[_0x102f4a(0x1f4)](_0x102f4a(0x187))[_0x102f4a(0x1ec)][_0x102f4a(0x405)],_0x1bd6d4[_0x102f4a(0x180)]))return;if(_0x1bd6d4[_0x102f4a(0x321)](document[_0x102f4a(0x1f4)](_0x1bd6d4[_0x102f4a(0x307)])[_0x102f4a(0x33b)][_0x102f4a(0x396)](_0x102f4a(0x25e)),![]))return;if(_0x440f36[_0x102f4a(0x3bc)]>='1'&&_0x1bd6d4[_0x102f4a(0x2e7)](_0x440f36[_0x102f4a(0x3bc)],'4')){if(_0x1bd6d4[_0x102f4a(0x33c)](_0x1bd6d4['dvaZW'],_0x1bd6d4[_0x102f4a(0x339)])){const _0x1fae6c=_0x1bd6d4[_0x102f4a(0x266)](_0x1bd6d4[_0x102f4a(0x2fd)](parseInt,_0x440f36[_0x102f4a(0x3bc)]),0x1),_0x395006=document[_0x102f4a(0x185)](_0x1bd6d4[_0x102f4a(0x2ad)]);if(_0x1bd6d4[_0x102f4a(0x2c8)](_0x1fae6c,_0x395006[_0x102f4a(0x190)]))_0x1bd6d4[_0x102f4a(0x2fd)](selectOption,_0x1fae6c);}else _0x35899b=_0x102f4a(0x286),_0x40fa87=_0x1bd6d4['MrgSx'];}else{if(_0x1bd6d4[_0x102f4a(0x321)](_0x440f36[_0x102f4a(0x3bc)],_0x1bd6d4[_0x102f4a(0x35f)]))_0x1bd6d4['cFWAL'](previousQuestion);else{if(_0x440f36['key']===_0x102f4a(0x1da)||_0x1bd6d4[_0x102f4a(0x321)](_0x440f36[_0x102f4a(0x3bc)],'\x20'))_0x440f36['preventDefault'](),_0x1bd6d4['cFWAL'](nextQuestion);else{if(_0x1bd6d4[_0x102f4a(0x321)](_0x440f36[_0x102f4a(0x3bc)][_0x102f4a(0x3aa)](),'b')&&(currentMode===_0x1bd6d4['HIBhk']||_0x1bd6d4[_0x102f4a(0x357)](currentMode,_0x1bd6d4[_0x102f4a(0x394)])))_0x1bd6d4[_0x102f4a(0x212)](_0x102f4a(0x245),_0x1bd6d4[_0x102f4a(0x2f1)])?_0x204def[_0xafbf8d[_0x102f4a(0x27f)]][_0x102f4a(0x2e6)]=!![]:_0x1bd6d4[_0x102f4a(0x3ae)](toggleBookmark);else{if(_0x1bd6d4[_0x102f4a(0x357)](_0x440f36[_0x102f4a(0x3bc)][_0x102f4a(0x3aa)](),'m')&&(currentMode===_0x1bd6d4[_0x102f4a(0x28e)]||_0x1bd6d4[_0x102f4a(0x321)](currentMode,_0x1bd6d4[_0x102f4a(0x1b2)])))_0x1bd6d4[_0x102f4a(0x3ae)](toggleMarkForReview);else _0x440f36['key'][_0x102f4a(0x3aa)]()==='s'&&(currentMode===_0x1bd6d4[_0x102f4a(0x28e)]||currentMode===_0x1bd6d4[_0x102f4a(0x1b2)])&&submitQuiz();}}}}});</script>
+
+</body></html>

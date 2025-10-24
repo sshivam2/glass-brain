@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mch Indicator - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / qBank / PSM
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">18</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>const _0x30f72e=_0x9787;(function(_0xcf6fc3,_0x15211c){const _0x434e02=_0x9787,_0x5d0816=_0xcf6fc3();while(!![]){try{const _0x502974=-parseInt(_0x434e02(0x24c))/0x1+-parseInt(_0x434e02(0x2a7))/0x2*(parseInt(_0x434e02(0x252))/0x3)+parseInt(_0x434e02(0x16a))/0x4+parseInt(_0x434e02(0x37d))/0x5+-parseInt(_0x434e02(0x3ae))/0x6+parseInt(_0x434e02(0x27f))/0x7*(-parseInt(_0x434e02(0x136))/0x8)+parseInt(_0x434e02(0x3af))/0x9*(parseInt(_0x434e02(0x346))/0xa);if(_0x502974===_0x15211c)break;else _0x5d0816['push'](_0x5d0816['shift']());}catch(_0x52e4bf){_0x5d0816['push'](_0x5d0816['shift']());}}}(_0xf056,0xd4cba));function _0xf056(){const _0x34eb8a=['ZLwkv','canPlayType','JNBUi','AcgCY','tKvol','querySelectorAll','questionText','RZZGj','WxCei','rDeQL','<p><span\x20style=\x22font-size:12.0pt;\x22>CDR</span></p>','vDVTA','uyvIq','qhYBh','OyvOz','fqoyE','submitSection','not-attempted','quizFile','urPdf','WljsA','innerHTML','bookmarkText','<p><span\x20style=\x22font-size:12.0pt;\x22>1500g</span></p>','xqlrc','rLDgG','<p><strong>Explanation:</strong></p>\x0a<p>IMR\x20is\x20calculated\x20as\x20the\x20number\x20of\x20infant\x20deaths\x20(&lt;1\x20year)\x20per\x201000\x20live\x20births;\x20here,\x20IMR\x20=\x20(50/400)\x20&#xd7;\x201000\x20=\x20125.</p>\x0a<ul>\x0a<li>Infant\x20Mortality\x20Rate\x20(IMR)\x20is\x20defined\x20as\x20the\x20number\x20of\x20deaths\x20of\x20infants\x20below\x20one\x20year\x20of\x20age\x20per\x201000\x20live\x20births\x20in\x20a\x20given\x20year.</li>\x0a<li>Given\x20data:\x0a<ul>\x0a<li>Total\x20births\x20=\x20456</li>\x0a<li>Stillbirths\x20=\x2056\x20&rarr;\x20Live\x20births\x20=\x20456\x20-\x2056\x20=\x20400</li>\x0a<li>Infant\x20deaths\x20(&lt;1\x20year)\x20=\x20Deaths\x20in\x20first\x20month\x20(20)\x20+\x20deaths\x20in\x20next\x2011\x20months\x20(30)\x20=\x2050</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a<p>IMR\x20=\x20(Number\x20of\x20infant\x20deaths\x20/\x20Number\x20of\x20live\x20births)\x20&#xd7;\x201000\x20=\x20(50\x20/\x20400)\x20&#xd7;\x201000\x20=\x20125</p>','\x20>\x20','DT1231050','JRskn','GcJmH','nZYva','fLMGq','SlADz','border-green-500','XMLBx','SSyAM','DfSjE','.m3u8','.option-button','GfMAG','Not\x20Attempted','LaQTt','Waohi','4719029bSIpBy','ArrowRight','FyTbG','lXvIC','ScaAP','fqnCE','CSdzZ','-600\x20text-white\x22>','totalQuestions','<p><span\x20style=\x22font-size:12.0pt;\x22>IMR\x20-\x201000\x20/\x2010</span></p>','correctResult','xkWem','intermediate','<p><strong>Explanation:</strong></p>\x0a<p><strong>Neonatal\x20Mortality\x20Rate\x20(NMR)</strong>\x20is\x20calculated\x20using\x20neonatal\x20deaths\x20(0-28\x20days)\x20per\x201000\x20live\x20births;\x20here,\x20it\x27s\x20(200/400)\x20X\x201000\x20=\x2050.</p>\x0a<ul>\x0a<li>Neonatal\x20Mortality\x20Rate\x20(NMR)\x20=</li>\x0a<li>(Number\x20of\x20neonatal\x20deaths\x20(0-28\x20days)/\x20Number\x20of\x20live\x20births)\x20X\x201000</li>\x0a<li>From\x20the\x20question:\x0a<ul>\x0a<li>Total\x20births\x20=\x204050</li>\x0a<li>Stillbirths\x20=\x2050</li>\x0a<li>&rArr;\x20Live\x20births\x20=\x204050\x20-\x2050\x20=\x204000</li>\x0a<li>Neonatal\x20deaths\x20=\x2050\x20(within\x200-7\x20days)\x20+\x20150\x20(within\x208-28\x20days)\x20=\x20200</li>\x0a</ul>\x0a</li>\x0a<li>So,</li>\x0a</ul>\x0a<p>NMR\x20=\x20(200/400)\x20X\x201000\x20=\x2050</p>','uPiET','LkCqT','OxTTe','AaNmi','selectedAnswer','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','YKQlU','<p><span\x20style=\x22font-size:12.0pt;\x22>Under-5\x20Mortality\x20Rate\x20(U5MR)</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Child\x20Survival\x20Index\x20is\x20calculated\x20by\x20which\x20of\x20the\x20following\x20formulas?</span></p>','jBClx','<p><strong>Explanation:</strong></p>\x0a<p>The\x20target\x20<strong>neonatal\x20mortality\x20rate\x20(NMR)</strong>\x20to\x20be\x20achieved\x20by\x202030\x20is\x208\x20per\x201000\x20live\x20births.</p>\x0a<ul>\x0a<li>The\x20Sustainable\x20Development\x20Goals\x20(SDGs)\x20adopted\x20by\x20the\x20United\x20Nations\x20aim\x20to\x20reduce\x20the\x20neonatal\x20mortality\x20rate\x20to\x20at\x20least\x20as\x20low\x20as\x2012\x20per\x201000\x20live\x20births\x20by\x202030\x20globally.</li>\x0a<li>However,\x20India\x20has\x20set\x20a\x20more\x20ambitious\x20national\x20target\x20under\x20its\x20National\x20Health\x20Policy\x20and\x20India\x20Newborn\x20Action\x20Plan\x20(INAP)\x20to\x20achieve\x20a\x20single-digit\x20NMR\x20of\x208\x20per\x201000\x20live\x20births\x20by\x202030.</li>\x0a<li>This\x20target\x20aligns\x20with\x20efforts\x20to\x20reduce\x20preventable\x20newborn\x20deaths\x20through\x20interventions\x20such\x20as\x20skilled\x20birth\x20attendance,\x20improved\x20neonatal\x20care,\x20and\x20strengthened\x20health\x20systems.</li>\x0a</ul>','bYIpR','div','DyLtx','<p><span\x20style=\x22font-size:12.0pt;\x22>25</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>28\x20days</span></p>','CBwJl','log','<p><span\x20style=\x22font-size:12.0pt;\x22>Infant\x20Mortality\x20Rate\x20(IMR)</span></p>','padStart','<p><span\x20style=\x22font-size:12.0pt;\x22>CPR</span></p>','VRNAH','SXtfq','<p><span\x20style=\x22font-size:12.0pt;\x22>197.4</span></p>','KZrYB','<p><span\x20style=\x22font-size:12.0pt;\x22>50</span></p>','2iouAMm','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22','correct_choice_id','MmZMb','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','XhgBA','<p><span\x20style=\x22font-size:12.0pt;\x22>500g</span></p>','qnxDU','DT1230927','ePGtZ','UlUuN','zbqNQ','XASqn','qgpPp','\x22\x20data-src=\x22','qBank','hKyGd','wIBRe','attachMedia','nUlDW','totalTime','kLlyh','ODauC','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20','gcBLm','<p><strong>Explanation:</strong></p>\x0a<p>At\x20any\x20given\x20time,\x20about\x20one-fourth\x20(25%)\x20of\x20the\x20annual\x20expected\x20pregnancies\x20will\x20be\x20ongoing\x20and\x20thus\x20should\x20be\x20registered.</p>\x0a<ul>\x0a<li>In\x20community\x20health,\x20the\x20expected\x20number\x20of\x20pregnancies\x20in\x20a\x20year\x20is\x20used\x20for\x20planning\x20and\x20tracking\x20maternal\x20and\x20child\x20health\x20services.</li>\x0a<li>Since\x20a\x20pregnancy\x20lasts\x20approximately\x209\x20months,\x20at\x20any\x20point\x20in\x20time,\x20the\x20number\x20of\x20currently\x20pregnant\x20women\x20in\x20the\x20area\x20will\x20be\x20about\x20three-fourths\x20of\x20a\x20year\x27s\x20worth\x20of\x20pregnancies,\x20divided\x20over\x2012\x20months.</li>\x0a<li>This\x20averages\x20to\x20about\x201/4th\x20of\x20the\x20annual\x20expected\x20pregnancies\x20being\x20pregnant\x20and\x20requiring\x20registration\x20at\x20a\x20particular\x20point\x20in\x20time.</li>\x0a<li>Thus,\x20if\x20100\x20pregnancies\x20are\x20expected\x20in\x20a\x20year,\x20approximately\x2025\x20would\x20be\x20registered\x20at\x20any\x20given\x20point\x20in\x20time.</li>\x0a</ul>','questionNav','FkVyW','No\x20solution\x20available.','<p><span\x20style=\x22font-size:12.0pt;\x22>\x2013.8</span></p>','SuUpJ','Factual','kswtO','totalAttempted','HtTgu','RGHVt','(((.+)+)+)+$','</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-','toISOString','keydown','dtWhp','SiPcE','NLsMc','UkEHR','pCdot','<p><strong>Explanation:</strong></p>\x0a<p><strong>Perinatal\x20Mortality\x20Rate\x20(PMR)</strong>\x20reflects\x20the\x20quality\x20of\x20both\x20obstetric\x20and\x20immediate\x20neonatal\x20care\x20around\x20the\x20time\x20of\x20delivery.</p>\x0a<ul>\x0a<li>Perinatal\x20Mortality\x20Rate\x20(PMR)\x20is\x20the\x20best\x20indicator\x20for\x20assessing\x20care\x20provided\x20during\x20late\x20pregnancy,\x20labor,\x20delivery,\x20and\x20the\x20early\x20neonatal\x20period.</li>\x0a<li>It\x20includes:\x0a<ul>\x0a<li>Stillbirths\x20(fetal\x20deaths\x20after\x2028\x20weeks\x20of\x20gestation),\x20and</li>\x0a<li>Early\x20neonatal\x20deaths\x20(within\x20the\x20first\x207\x20days\x20of\x20life).</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a<p>PMR\x20=\x20(Stillbirths+Early\x20neonatal\x20deaths\x20/\x20Total\x20births\x20(live+stillbirths))\x20X\x201000</p>\x0a<ul>\x0a<li>Because\x20it\x20captures\x20deaths\x20occurring\x20close\x20to\x20the\x20time\x20of\x20birth,\x20it\x20effectively\x20reflects\x20the\x20quality\x20of\x20antenatal,\x20intrapartum,\x20and\x20immediate\x20newborn\x20care.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Infant\x20Mortality\x20Rate\x20(Option\x20A):</strong>\x20IMR\x20includes\x20all\x20deaths\x20within\x20the\x20first\x20year,\x20not\x20just\x20those\x20related\x20to\x20birth\x20or\x20the\x20immediate\x20neonatal\x20period.</p>\x0a<p><strong>Under-5\x20Mortality\x20Rate\x20(Option\x20C):</strong>\x20U5MR\x20includes\x20deaths\x20up\x20to\x20age\x205\x20and\x20reflects\x20broader\x20child\x20health\x20services\x20and\x20social\x20conditions,\x20not\x20just\x20birth-related\x20care.</p>\x0a<p><strong>Stillbirth\x20Rate\x20(Option\x20D):</strong>\x20It\x20accounts\x20for\x20fetal\x20deaths\x20only\x20and\x20doesn\x27t\x20include\x20neonatal\x20deaths,\x20so\x20it\x20gives\x20an\x20incomplete\x20picture\x20of\x20perinatal\x20care\x20quality.</p>','yMYRT','<p><span\x20style=\x22font-size:12.0pt;\x22>10</span></p>','GHOeE','nrbWQ','<p><span\x20style=\x22font-size:12.0pt;\x22>During\x20lactation,\x208th\x20month</span></p>','testModeReviewLegend','UjPIi','ojqAp','<p><span\x20style=\x22font-size:12.0pt;\x22>MMR</span></p>','OYIei','JiFys','WIATT','GKWmL','<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-','JvDiU','accuracy','TwWFm','zLhRs','<p><span\x20style=\x22font-size:12.0pt;\x22>0-2\x20months</span></p>','CAyrS','mQLph','stringify','NDLuy','gray','OSlTd','<p><span\x20style=\x22font-size:12.0pt;\x22>Life\x20expectancy</span></p>','pgTFY','<p><strong>Explanation:</strong></p>\x0a<p><strong>IMNCI</strong>\x20defines\x20<strong>young\x20infants</strong>\x20as\x20children\x20from\x20birth\x20up\x20to\x2028\x20days\x20of\x20life.</p>\x0a<ul>\x0a<li>In\x20the\x20IMNCI\x20guidelines,\x20age\x20classification\x20is\x20crucial\x20for\x20assessing\x20and\x20managing\x20sick\x20children.</li>\x0a<li>The\x20term\x20\x22young\x20infant\x22\x20specifically\x20refers\x20to\x20children\x20aged\x200\x20to\x2028\x20days.</li>\x0a<li>This\x20age\x20group\x20is\x20distinct\x20because\x20neonates\x20are\x20physiologically\x20and\x20clinically\x20different\x20from\x20older\x20infants\x20and\x20require\x20different\x20diagnostic\x20and\x20treatment\x20approaches.</li>\x0a<li>Children\x20aged\x2029\x20days\x20to\x202\x20months\x20fall\x20into\x20the\x20\x22infant\x22\x20category,\x20and\x20those\x20aged\x202\x20months\x20to\x205\x20years\x20are\x20considered\x20older\x20children\x20under\x20IMNCI.</li>\x0a<li>IMNCI\x20protocols\x20offer\x20tailored\x20case\x20management\x20strategies\x20for\x20young\x20infants\x20due\x20to\x20their\x20high\x20vulnerability\x20to\x20infections\x20and\x20rapid\x20deterioration.</li>\x0a<li>Seven\x20days\x20refers\x20to\x20the\x20early\x20neonatal\x20period.\x20<strong>(Option\x20A\x20ruled\x20out)</strong></li>\x0a<li>Though\x200-2\x20months\x20is\x20used\x20in\x20some\x20contexts,\x20IMNCI\x20classifies\x20\x22young\x20infants\x22\x20strictly\x20as\x20those\x20below\x2028\x20days.\x20<strong>Option\x20C\x20ruled\x20out)</strong></li>\x0a<li>Six\x20months\x20falls\x20in\x20the\x20older\x20infant\x20category.\x20<strong>(Option\x20D\x20ruled\x20out)</strong></li>\x0a</ul>','SXHKF','TkHNZ','<p><strong>Explanation:</strong></p>\x0a<p><strong>Perinatal\x20Mortality\x20Rate</strong>\x20includes\x20late\x20fetal\x20deaths\x20(stillbirths)\x20and\x20early\x20neonatal\x20deaths\x20(within\x20the\x20first\x207\x20days\x20of\x20life).</p>\x0a<ul>\x0a<li>The\x20Perinatal\x20Mortality\x20Rate\x20(PMR)\x20is\x20a\x20critical\x20indicator\x20that\x20reflects\x20the\x20health\x20care\x20provided\x20during\x20late\x20pregnancy\x20and\x20around\x20delivery.</li>\x0a<li>It\x20includes:\x0a<ul>\x0a<li>Stillbirths\x20(fetal\x20deaths\x20after\x2028\x20weeks\x20of\x20gestation),\x20and</li>\x0a<li>Early\x20neonatal\x20deaths\x20are\x20deaths\x20of\x20live-born\x20infants\x20within\x20the\x20first\x207\x20completed\x20days\x20of\x20life.</li>\x0a</ul>\x0a</li>\x0a<li>It\x20is\x20expressed\x20as\x20the\x20number\x20of\x20such\x20deaths\x20per\x201,000\x20total\x20births\x20(live\x20births\x20+\x20stillbirths).</li>\x0a<li>PMR\x20provides\x20insight\x20into\x20maternal\x20care,\x20quality\x20of\x20obstetric\x20and\x20neonatal\x20services,\x20and\x20socioeconomic\x20conditions\x20affecting\x20both\x20mother\x20and\x20child.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Neonatal\x20deaths\x20within\x2030\x20days\x20of\x20birth\x20(Option\x20B):</strong>\x20This\x20defines\x20neonatal\x20mortality,\x20not\x20perinatal\x20mortality.</p>\x0a<p><strong>Abortions\x20and\x20death\x20within\x207\x20days\x20of\x20birth\x20(Option\x20C):</strong>\x20Abortions\x20(before\x20viability)\x20are\x20not\x20included\x20in\x20PMR;\x20only\x20stillbirths\x20(&ge;28\x20weeks)\x20are\x20considered.</p>\x0a<p><strong>Deaths\x20between\x207\x20days\x20and\x2028\x20days\x20of\x20birth\x20(Option\x20D):</strong>\x20This\x20refers\x20to\x20late\x20neonatal\x20mortality,\x20which\x20is\x20not\x20part\x20of\x20PMR.</p>','FSLbH','correctCount','length','qskic','Bookmark','FuITG','hhMsZ','iMArY','kyVuI','jBYMO','error','FKFMY','toString','jtziu','questionIndex','IqgOo','nHUrV','hcvRe','JPlYC','VpljL','JpRwa','ewljU','LCDKp','LuGHG','WsLmY','studyModeLegend','4|0|5|2|1|3','MgBAs','RFRUo','className','<p><span\x20style=\x22font-size:12.0pt;\x22>14.5</span></p>','fromCharCode','Rgyud','question_video','dzzYr','push','rrgmK','pathname','DT1230908','ZimKy','No\x20questions\x20available\x20for\x20this\x20quiz.','Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?','aBWae','rUjtv','<p><span\x20style=\x22font-size:12.0pt;\x22>Perinatal\x20Mortality\x20Rate\x20(PMR)\x20includes\x20which\x20of\x20the\x20following?</span></p>','JkdIl','wOddN','<p><span\x20style=\x22font-size:12.0pt;\x22>1000\x20-\x20U5MR\x20/\x2010</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>During\x20lactation\x201st\x20month</span></p>','nrrmq','itPxb','ymceD','gPdUg','incorrectCount','explanation_audio_hin','contains','UuSoU','mmjgl','onclick','CbGCB','MPcRH','<p><span\x20style=\x22font-size:12.0pt;\x22>100</span></p>','WKiMc','ywave','uiCsW','jspAL','aqqPO','notAttemptedResult','NyNQD','uoEcy','rFkEs','ppMib','pLaLQ','bottom','split','{}.constructor(\x22return\x20this\x22)(\x20)','solutionAudio','QEwez','ejbvg','\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','QupOE','oOMDI','22210AMbKrE','RuhvT','modeModal','key','constructor','hySJo','border-red-500','OBcdg','ynAba','Marked','currentQuestion','<p><span\x20style=\x22font-size:12.0pt;\x22>Deaths\x20between\x207\x20days\x20and\x2028\x20days\x20of\x20birth</span></p>','bTbhF','ArrowLeft','Nttat','HkXRi','YPBii','OuaYH','CrqQA','zMTuM','<p><span\x20style=\x22font-size:12.0pt;\x22>Neonatal\x20deaths\x20within\x2030\x20days\x20of\x20birth</span></p>','incomplete','vpggU','Vjjsm','reviewQuestionsContainer','usoOb','solution','kqOJt','round','progressBar','SVZzT','tjByV','QRDsn','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','AwiIx','oruFO','GKcGq','markReviewText','FOYCB','srsNT','IqXbb','nav-btn-current','lopvH','psVSq','questions','text','timerContainer','<p><span\x20style=\x22font-size:12.0pt;\x22>Head\x20circumference</span></p>','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>','pckWG','oWzTT','wYZdn','efRsn','sXSJW','diNpb','3085090ftJIwl','bookmarkedQuestions','VhBkJ','RHxet','uLdqm','customQuizData','preventDefault','toggle','choices','isArray','incorrectAnswers','QGUEg','<p><span\x20style=\x22font-size:12.0pt;\x22>Maternal\x20Mortality\x20Rate</span></p>','xazRY','<p><span\x20style=\x22font-size:12.0pt;\x22>Infant\x20Mortality\x20Rate</span></p>','correct','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','JscAV','WOucj','Vflca','add','CGUKX','src','lOVuK','answered','endsWith','<p><span\x20style=\x22font-size:12.0pt;\x22>Haemorrhage</span></p>','ljaOt','BEptn','<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20considered\x20the\x20best\x20determinant\x20of\x20the\x20health\x20status\x20of\x20a\x20country?</span></p>','DfoBL','WUeeQ','XzFFp','<p><strong>Explanation:</strong></p>\x0a<p><strong>Infant\x20Mortality\x20Rate\x20(IMR)</strong>\x20is\x20the\x20most\x20sensitive\x20and\x20widely\x20accepted\x20indicator\x20of\x20a\x20nation\x27s\x20health\x20status.</p>\x0a<ul>\x0a<li>IMR\x20reflects\x20the\x20number\x20of\x20deaths\x20of\x20infants\x20under\x20one\x20year\x20of\x20age\x20per\x201,000\x20live\x20births\x20in\x20a\x20given\x20year.</li>\x0a<li>It\x20is\x20influenced\x20by\x20a\x20wide\x20range\x20of\x20factors\x20such\x20as\x20maternal\x20health,\x20quality\x20of\x20and\x20access\x20to\x20medical\x20care,\x20socioeconomic\x20conditions,\x20and\x20public\x20health\x20practices.</li>\x0a<li>It\x20is\x20considered\x20the\x20best\x20single\x20indicator\x20of\x20the\x20overall\x20health\x20status\x20of\x20a\x20population\x20because\x20it\x20reflects\x20not\x20just\x20child\x20health\x20but\x20also\x20maternal\x20health,\x20nutritional\x20status,\x20sanitation,\x20and\x20effectiveness\x20of\x20health\x20services.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>CPR\x20(Option\x20A):</strong>\x20Contraceptive\x20Prevalence\x20Rate\x20indicates\x20the\x20extent\x20of\x20family\x20planning\x20use\x20but\x20does\x20not\x20reflect\x20overall\x20health\x20status.</p>\x0a<p><strong>MMR\x20(Option\x20C):\x20</strong>Maternal\x20Mortality\x20Rate\x20is\x20important\x20but\x20limited\x20to\x20maternal\x20health\x20and\x20less\x20sensitive\x20compared\x20to\x20IMR.</p>\x0a<p><strong>CDR\x20(Option\x20D):</strong>\x20Crude\x20Death\x20Rate\x20includes\x20all\x20deaths,\x20regardless\x20of\x20cause\x20or\x20age,\x20and\x20is\x20less\x20specific\x20or\x20sensitive\x20to\x20healthcare\x20differences.</p>','UvCVb','<p><span\x20style=\x22font-size:12.0pt;\x22>320</span></p>','IVzmI','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','notAttempted','getAttribute','LkyZp','</span></div>','<p><span\x20style=\x22font-size:12.0pt;\x22>Seven\x20days</span></p>','info','kksCS','yItmf','replace','TDHnZ','navBtn_','846654mOScKo','10818igmXmZ','nxWHN','DT1231040','<p><strong>Explanation:</strong></p>\x0a<p><strong>Maternal\x20Mortality\x20Ratio\x20(MMR)</strong>\x20is\x20defined\x20as\x20the\x20number\x20of\x20maternal\x20deaths\x20per\x201,00,000\x20live\x20births\x20in\x20a\x20given\x20time\x20period.</p>\x0a<ul>\x0a<li>The\x20Maternal\x20Mortality\x20Ratio\x20(MMR)\x20is\x20an\x20important\x20indicator\x20of\x20maternal\x20health\x20and\x20the\x20quality\x20of\x20maternal\x20care\x20services\x20in\x20a\x20region.</li>\x0a<li>It\x20reflects\x20the\x20risk\x20of\x20death\x20associated\x20with\x20pregnancy\x20and\x20childbirth.</li>\x0a<li>It\x20is\x20calculated\x20using\x20the\x20formula:</li>\x0a</ul>\x0a<p>MMR\x20=\x20(Number\x20of\x20maternal\x20deaths\x20during\x20a\x20given\x20time\x20period/\x20Number\x20of\x20live\x20births\x20during\x20same\x20period)\x20X\x201,00,000</p>\x0a<ul>\x0a<li>This\x20ratio\x20allows\x20for\x20comparison\x20across\x20regions\x20and\x20time\x20frames,\x20independent\x20of\x20population\x20size.</li>\x0a<li>The\x20use\x20of\x201,00,000\x20as\x20the\x20denominator\x20(instead\x20of\x201,000)\x20helps\x20highlight\x20even\x20small\x20changes\x20in\x20maternal\x20deaths,\x20which\x20are\x20comparatively\x20rare\x20events.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Maternal\x20Mortality\x20Rate\x20(Option\x20A):</strong>\x20This\x20refers\x20to\x20maternal\x20deaths\x20per\x201,00,000\x20women\x20of\x20reproductive\x20age,\x20not\x20per\x20live\x20births.</p>\x0a<p><strong>Infant\x20Mortality\x20Rate\x20(Option\x20C):</strong>\x20Refers\x20to\x20the\x20number\x20of\x20deaths\x20of\x20infants\x20under\x201\x20year\x20of\x20age\x20per\x201,000\x20live\x20births.</p>\x0a<p><strong>Perinatal\x20Mortality\x20Rate\x20(Option\x20D):</strong>\x20Refers\x20to\x20the\x20number\x20of\x20stillbirths\x20plus\x20deaths\x20within\x20the\x20first\x207\x20days\x20of\x20life\x20per\x201,000\x20total\x20births.</p>','apply','textContent','currentMode','vWboJ','lldDB','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','EMKvp','video[data-src]','vOGZg','closest','Gkdtk','NvSfJ','<p><span\x20style=\x22font-size:12.0pt;\x22>According\x20to\x20the\x20IMNCI\x20(Integrated\x20Management\x20of\x20Neonatal\x20and\x20Childhood\x20Illness),\x20a\x20young\x20infant\x20is\x20defined\x20as\x20a\x20child\x20below\x20what\x20age?</span></p>','\x22\x20data-option-index=\x22','gJvAP','DT1231041','<p><span\x20style=\x22font-size:12.0pt;\x22>Neonatal\x20mortality\x20rate</span></p>','awWNM','QKtZK','RHdkf','<p><span\x20style=\x22font-size:12.0pt;\x22>Stillborn\x20and\x20death\x20within\x207\x20days\x20of\x20birth</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Abortions\x20and\x20death\x20within\x207\x20days\x20of\x20birth</span></p>','hdJnK','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20>\x20B\x20>\x20C\x20>\x20D</span></p>','floor','HPRPk','guUFD','uAUkk','markedForReview','HehHF','jczmO','irITB','JYjCw','review-question\x20','mxnNh','open','PSM','dataset','<p><span\x20style=\x22font-size:12.0pt;\x22>D\x20>\x20A\x20>\x20B\x20>\x20C</span></p>','fjEbh','jvfbE','dEexr','hidden','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20of\x20the\x20following\x20deaths\x20are\x20included\x20as\x20causes\x20of\x20maternal\x20death\x20except:</span></p>','ImquH','Bookmarked','removeItem','performanceModal','scoreCircle','<p><strong>Explanation:</strong></p>\x0a<p>Preterm\x20birth\x20complications\x20are\x20the\x20leading\x20cause\x20of\x20neonatal\x20mortality\x20in\x20India,\x20followed\x20by\x20birth\x20asphyxia,\x20sepsis,\x20and\x20congenital\x20anomalies.</p>\x0a<ul>\x0a<li>The\x20major\x20causes\x20of\x20neonatal\x20mortality\x20in\x20India\x20follow\x20a\x20consistent\x20pattern,\x20reflecting\x20both\x20biological\x20vulnerability\x20and\x20healthcare\x20gaps.</li>\x0a<li>According\x20to\x20current\x20data:\x0a<ul>\x0a<li>Preterm\x20complications\x20-\x0a<ul>\x0a<li>Account\x20for\x20the\x20largest\x20proportion\x20of\x20neonatal\x20deaths\x20due\x20to\x20immature\x20organ\x20systems,\x20especially\x20the\x20lungs\x20and\x20immune\x20system.</li>\x0a</ul>\x0a</li>\x0a<li>Birth\x20asphyxia\x20-\x0a<ul>\x0a<li>Results\x20from\x20inadequate\x20oxygen\x20supply\x20during\x20or\x20just\x20after\x20birth;\x20a\x20preventable\x20cause\x20with\x20better\x20intrapartum\x20care.</li>\x0a</ul>\x0a</li>\x0a<li>Sepsis\x20-\x0a<ul>\x0a<li>Due\x20to\x20poor\x20hygiene\x20and\x20infection\x20control\x20practices,\x20especially\x20in\x20rural\x20and\x20low-resource\x20settings.</li>\x0a</ul>\x0a</li>\x0a<li>Congenital\x20anomalies\x20-\x0a<ul>\x0a<li>Although\x20important,\x20they\x20contribute\x20less\x20compared\x20to\x20the\x20above\x20causes.</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a</li>\x0a<li>This\x20ranking\x20reflects\x20both\x20clinical\x20and\x20public\x20health\x20importance\x20and\x20helps\x20in\x20targeting\x20interventions.</li>\x0a</ul>','HVbKt','createElement','LvApf','status','JzuEy','timed_study','jBEZi','YqUdw','now','optionsContainer','UvYvv','quizSidebar','<p><strong>Explanation:</strong></p>\x0a<p>The\x20<strong>Child\x20Survival\x20Index</strong>\x20is\x20calculated\x20using\x20the\x20Under-5\x20Mortality\x20Rate\x20(U5MR)\x20as\x20its\x20core\x20component.</p>\x0a<ul>\x0a<li>The\x20Child\x20Survival\x20Index\x20is\x20a\x20health\x20indicator\x20that\x20reflects\x20the\x20proportion\x20of\x20children\x20surviving\x20up\x20to\x20the\x20age\x20of\x20five.</li>\x0a<li>It\x20is\x20derived\x20using\x20the\x20Under-5\x20Mortality\x20Rate\x20(U5MR),\x20which\x20includes\x20neonatal,\x20infant,\x20and\x20child\x20(1-4\x20years)\x20mortality.</li>\x0a<li>The\x20formula\x20used\x20is:</li>\x0a</ul>\x0a<p>Child\x20Survival\x20Index\x20=\x20(1000\x20-\x20U5MR)\x20/\x2010</p>\x0a<ul>\x0a<li>A\x20lower\x20U5MR\x20implies\x20a\x20higher\x20child\x20survival\x20index,\x20indicating\x20better\x20child\x20health\x20and\x20healthcare\x20delivery.</li>\x0a<li>This\x20index\x20is\x20considered\x20a\x20comprehensive\x20and\x20sensitive\x20measure\x20of\x20child\x20well-being\x20and\x20effectiveness\x20of\x20public\x20health\x20interventions.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>MMR\x20(Option\x20A):</strong>\x20Refers\x20to\x20maternal\x20mortality,\x20not\x20child\x20survival;\x20not\x20used\x20in\x20the\x20child\x20survival\x20index.</p>\x0a<p><strong>IMR\x20(Option\x20B):</strong>\x20A\x20component\x20of\x20U5MR\x20but\x20not\x20sufficient\x20alone\x20to\x20define\x20the\x20index.</p>\x0a<p><strong>Mortality\x20between\x201\x20to\x204\x20years\x20(Option\x20C):</strong>\x20Also\x20part\x20of\x20U5MR,\x20but\x20not\x20the\x20only\x20component;\x20hence,\x20not\x20used\x20alone.</p>','true','16GfZlFj','nav-btn-answered','<p><span\x20style=\x22font-size:12.0pt;\x22>62.5</span></p>','style','HVAgu','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','testModeLegend','bookmarkBtn','includes','getItem','bookmarked','JdyUK','nHxTz','<p><span\x20style=\x22font-size:12.0pt;\x22>During\x20the\x20last\x20trimester,\x20due\x20to\x20APH</span></p>','TJOAK','findIndex','oysMM','userHistory','questionMedia','bind','completed','pop','xBugv','YFEBh','iWIbn','explanation_video','extUC','incorrectResult','UFhAg','uiyCl','<p><span\x20style=\x22font-size:12.0pt;\x22>Under-5\x20mortality</span></p>','reload','display','<p><strong>Explanation:</strong></p>\x0a<p><strong>IMR</strong>\x20is\x20calculated\x20as\x20the\x20number\x20of\x20infant\x20deaths\x20per\x201,000\x20live\x20births;\x20here\x20it\x20is\x2060\x20per\x201,200\x20live\x20births\x20=\x2050\x20per\x201,000.</p>\x0a<ul>\x0a<li>Infant\x20Mortality\x20Rate\x20(IMR)\x20is\x20defined\x20as:</li>\x0a</ul>\x0a<p>IMR\x20=\x20(Number\x20of\x20infant\x20deaths(&lt;1\x20yr\x20of\x20age)/\x20Number\x20of\x20live\x20births)\x20X\x201000</p>\x0a<ul>\x0a<li>Given:\x0a<ul>\x0a<li>Live\x20births\x20=\x201,200</li>\x0a<li>Infant\x20deaths\x20=\x2060</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a<p>IMR\x20=\x20(60/1200)\x20X\x201000\x20=\x2050</p>\x0a<ul>\x0a<li>So,\x20the\x20Infant\x20Mortality\x20Rate\x20is\x2050\x20per\x201,000\x20live\x20births.</li>\x0a</ul>','<p><span\x20style=\x22font-size:12.0pt;\x22>20</span></p>','FlfGO','bUMUH','DT1231011','getElementById','IMjRW','DGxPS','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20number\x20of\x20maternal\x20deaths\x20per\x201,00,000\x20live\x20births\x20is\x20referred\x20to\x20as:</span></p>','ZfRhk','trace','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>','\x20-\x20Brain\x20And\x20Scalpel','AdJib','DT1230925','<p><span\x20style=\x22font-size:12.0pt;\x22>Weight</span></p>','eVStc','Previous\x20progress\x20cleared.','none','6220568IIGDdw','forEach','DocTutorial','AzJJo','Grgvm','href','vmALe','test','IaQtr','<p><span\x20style=\x22font-size:12.0pt;\x22>Height</span></p>','YMgVX','appendChild','WMvmU','DLAkK','TFraJ','target','DsEwD','solutionImages','CTnAI','timed_exam','KpAuE','WBfvw','zQjdg','WkBKJ','hetwz','location','pMvbB','not_attempted','<p><span\x20style=\x22font-size:12.0pt;\x22>12.5</span></p>','loadSource','data-option-index','dTefG','remove','<p><span\x20style=\x22font-size:12.0pt;\x22>Mortality\x20between\x201\x20to\x204\x20years\x20</span></p>','HqlTW','SsHWm','referrer','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','DT1230910','JqqKw','<p><span\x20style=\x22font-size:12.0pt;\x22>IMR</span></p>','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','gNCtE','<div\x20class=\x22mt-4\x22><img\x20src=\x22','JGaER','search','solutionContainer','bvHGM','markReviewBtn','DOMContentLoaded','BWunN','bYHKA','MAdFC','peReB','RPFiJ','owoDF','KoWpx','MZteQ','timeDisplay','startAt','djcqA','QBgSs','green','<p><span\x20style=\x22font-size:12.0pt;\x22>Following\x20abortion</span></p>','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','XeKYu','vStfV','resume','vODAO','Jbzwv','CKsNX','classList','XgPOR','<p><span\x20style=\x22font-size:12.0pt;\x22>Still\x20birth\x20Rate</span></p>','GYjcu','<p><span\x20style=\x22font-size:12.0pt;\x22>5</span></p>','nav-btn-bookmarked','yXhOW','wUhpe','<p><span\x20style=\x22font-size:12.0pt;\x22>49.4</span></p>','NiwHs','nseKj','KxyMc','aEKZa','JArAw','FwyeP','TSnWR','wFnzL','<p><span\x20style=\x22font-size:12.0pt;\x22>C\x20>\x20B\x20>\x20A\x20>\x20D</span></p>','NWqmv','console','tZYou','<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20a\x20town\x20with\x20a\x20population\x20of\x2036,000,\x20there\x20were\x201,200\x20live\x20births\x20and\x2060\x20infant\x20deaths\x20in\x20the\x20current\x20year.\x20What\x20is\x20the\x20Infant\x20Mortality\x20Rate\x20(IMR)?</span></p>','explanation_images','JjGay','uvuUx','BveLP','totalQuestionsResult','join','table','Mark\x20for\x20Review','ZbHKa','onCxa','jXwZA','XZIeF','study','QCxBq','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','CqSEO','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','qKBPk','You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','setItem','stats','YppEA','ivmrz','title','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22','statsBar','aEVcw','nPLZL','explanation_audio_eng','question_audio','IdVbz','<p><span\x20style=\x22font-size:12.0pt;\x22>Maternal\x20Mortality\x20Ratio</span></p>','index.html','GPonk','<p><span\x20style=\x22font-size:12.0pt;\x22>Developmental\x20milestones</span></p>','HhSeK','EjTMa','click','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','rNvxZ','DJsol','block','UMyFf','nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','EqstH','PnAsm','<p><strong>Explanation:</strong></p>\x0a<p><strong>Child\x20Survival\x20Index</strong>\x20is\x20derived\x20by\x20subtracting\x20one-tenth\x20of\x20the\x20Under-5\x20Mortality\x20Rate\x20(U5MR)\x20from\x201000.</p>\x0a<ul>\x0a<li>The\x20Child\x20Survival\x20Index\x20(CSI)\x20is\x20a\x20simple\x20indicator\x20to\x20reflect\x20the\x20health\x20status\x20of\x20children\x20under\x205\x20years\x20of\x20age\x20in\x20a\x20given\x20population.</li>\x0a<li>It\x20is\x20calculated\x20using\x20the\x20formula:</li>\x0a</ul>\x0a<p>CSI\x20=\x201000\x20-\x20(Under-5\x20Mortality\x20Rate(U5MR)\x20/\x2010)</p>\x0a<ul>\x0a<li>For\x20example,\x20if\x20U5MR\x20=\x2070,</li>\x0a</ul>\x0a<p>CSI\x20=\x201000\x20-\x20(70/10)\x20=\x20993</p>','jnjKp','qwwwQ','warn','TeSub','saCrw','<p><span\x20style=\x22font-size:12.0pt;\x22>75</span></p>','tpmDJ','timeSpent','QxtjN','quizHierarchy','qgXQK','return\x20(function()\x20','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20mainly\x20included\x20in\x20the\x20Child\x20Survival\x20Index?</span></p>','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20','BTcCz','PwuQg','gXkLd','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20leading\x20cause\x20of\x20maternal\x20deaths\x20in\x20India\x20is:</span></p>','Option\x20','AJauz','Progress\x20loaded.','DPuwe','flex','width','DT1231049','Incorrect','AqroW','quizPerformanceData','nPJrf','aLHRj','CIsTi','ibFfx','mch-indicator-9013ce41.html','SIpFa','DhgLd','avgTimeResult','incorrect','HvgdN','<p><span\x20style=\x22font-size:12.0pt;\x22>Perinatal\x20Mortality\x20Rate</span></p>','tFHpW','bOxbh','custom_quiz.html','znLnY','Nhzlf','buPSB','selected','toLowerCase','strokeDasharray','0|2|3|1|5|4','vtUcg','Correct','parse','Ahbpq','ETsgJ','solutionText','IvAPt','border-gray-600','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','exTeT','<p><span\x20style=\x22font-size:12.0pt;\x22>1000\x20-\x20IMR\x20/\x2010</span></p>','<p><strong>Explanation:</strong></p>\x0a<p><strong>Weight</strong>\x20is\x20the\x20most\x20sensitive\x20and\x20earliest\x20indicator\x20of\x20changes\x20in\x20a\x20child\x27s\x20growth\x20and\x20nutritional\x20status.</p>\x0a<ul>\x0a<li>Among\x20all\x20anthropometric\x20parameters,\x20weight\x20changes\x20rapidly\x20in\x20response\x20to\x20alterations\x20in\x20health\x20and\x20nutrition,\x20making\x20it\x20the\x20most\x20sensitive\x20indicator\x20of\x20growth.</li>\x0a<li>It\x20is\x20useful\x20for\x20the\x20early\x20detection\x20of\x20growth\x20faltering\x20due\x20to\x20malnutrition\x20or\x20illness.</li>\x0a<li>Height\x20and\x20head\x20circumference\x20are\x20more\x20stable\x20and\x20reflect\x20long-term\x20growth\x20trends,\x20while\x20weight\x20fluctuates\x20more\x20quickly;\x20hence,\x20it\x20is\x20ideal\x20for\x20monitoring\x20acute\x20changes\x20in\x20a\x20child\x27s\x20condition.</li>\x0a<li>Regular\x20weight\x20monitoring\x20helps\x20in\x20timely\x20intervention\x20in\x20cases\x20of\x20undernutrition\x20or\x20illness.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Height\x20(Option\x20A):</strong>\x20Indicates\x20long-term\x20nutritional\x20status;\x20not\x20as\x20rapidly\x20responsive\x20as\x20weight.</p>\x0a<p><strong>Head\x20circumference\x20(Option\x20B):</strong>\x20Reflects\x20brain\x20growth,\x20especially\x20in\x20infancy,\x20but\x20not\x20a\x20general\x20marker\x20of\x20growth.</p>\x0a<p><strong>Developmental\x20milestones\x20(Option\x20D):</strong>\x20Assess\x20neurological\x20and\x20cognitive\x20development,\x20not\x20direct\x20physical\x20growth.</p>','questionStates','qbVQY','OknAu','correctAnswers','JLMbY','reduce','Oagdn','xmLjO','exception','YAORb','SfiGq','DjLdS','<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20best\x20indicator\x20to\x20evaluate\x20obstetric\x20and\x20neonatal\x20care\x20given\x20around\x20the\x20time\x20of\x20birth?</span></p>','DT1230932','totalTimeResult','WcoSd','cUKct','CmabO','WHcop','cJCgG','eRdmb','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20community\x20has\x20a\x20population\x20of\x2010,000\x20and\x20a\x20crude\x20birth\x20rate\x20(CBR)\x20of\x2036\x20per\x201,000.\x20If\x205\x20maternal\x20deaths\x20were\x20reported\x20in\x20the\x20current\x20year,\x20what\x20is\x20the\x20Maternal\x20Mortality\x20Ratio\x20(MMR)?</span></p>','saAaB','1062913ZNIEDR','lHmFY','YPwUM','cBgJY','FdWEr','TeBIm','4253628zvlZeM'];_0xf056=function(){return _0x34eb8a;};return _0xf056();}const _0x25186b=(function(){let _0x39ac4d=!![];return function(_0x3cc930,_0x521db8){const _0x5d8477=_0x39ac4d?function(){const _0x2b9f98=_0x9787;if(_0x521db8){const _0x57a595=_0x521db8[_0x2b9f98(0x3b3)](_0x3cc930,arguments);return _0x521db8=null,_0x57a595;}}:function(){};return _0x39ac4d=![],_0x5d8477;};}()),_0x14b4ac=_0x25186b(this,function(){const _0x5dc420=_0x9787,_0x1fff15={'HkXRi':_0x5dc420(0x2cb)};return _0x14b4ac[_0x5dc420(0x300)]()[_0x5dc420(0x197)](_0x1fff15[_0x5dc420(0x355)])[_0x5dc420(0x300)]()['constructor'](_0x14b4ac)[_0x5dc420(0x197)](_0x5dc420(0x2cb));});_0x14b4ac();const _0x56f3b8=(function(){const _0x20eeea=_0x9787,_0x424f69={'lXvIC':'not_attempted','TJOAK':_0x20eeea(0x395),'YKQlU':function(_0x55e161){return _0x55e161();},'yXhOW':function(_0x2dcc64,_0x1aa15f){return _0x2dcc64!==_0x1aa15f;},'Jbzwv':_0x20eeea(0x191),'qhYBh':function(_0x453f2c,_0x332a88){return _0x453f2c!==_0x332a88;},'rUjtv':_0x20eeea(0x378),'yIhqK':_0x20eeea(0x2b8),'SIpFa':_0x20eeea(0x12d),'DGxPS':_0x20eeea(0x2c8),'YXwbj':function(_0x2f0bdb,_0x23b0c4){return _0x2f0bdb*_0x23b0c4;},'XzFFp':function(_0x3a6aa4,_0x37ae0f){return _0x3a6aa4/_0x37ae0f;},'jXwZA':_0x20eeea(0x2e4),'DJsol':function(_0x36795c,_0x3b4cbc){return _0x36795c+_0x3b4cbc;}};let _0x5bdd77=!![];return function(_0x6cab64,_0x1335e6){const _0x3c224f=_0x20eeea,_0x341345={'nrrmq':function(_0x573125,_0x3cac9a){return _0x573125===_0x3cac9a;},'tZYou':_0x3c224f(0x1d5),'iTmnw':_0x424f69[_0x3c224f(0x219)],'cRFru':_0x3c224f(0x329),'gXkLd':_0x424f69[_0x3c224f(0x15e)],'PhOfU':function(_0x16566c,_0x1b72a5){return _0x424f69['YXwbj'](_0x16566c,_0x1b72a5);},'xazRY':function(_0x49e996,_0x256251){const _0x3dc727=_0x3c224f;return _0x424f69[_0x3dc727(0x39d)](_0x49e996,_0x256251);},'XzXNv':_0x424f69[_0x3c224f(0x1d3)],'OSlTd':function(_0x2c13a6,_0x2828d4){const _0x3af9c8=_0x3c224f;return _0x424f69[_0x3af9c8(0x1f1)](_0x2c13a6,_0x2828d4);},'MgBAs':function(_0x2bb7ff,_0x24fa1f){return _0x2bb7ff/_0x24fa1f;},'NyNQD':function(_0x275480,_0x251fa2){const _0x13e41d=_0x3c224f;return _0x424f69[_0x13e41d(0x39d)](_0x275480,_0x251fa2);},'hySJo':function(_0xc5302b,_0x549ce9){return _0xc5302b%_0x549ce9;},'KZdab':function(_0x712848,_0xb5ac1a){const _0x238dfa=_0x3c224f;return _0x424f69[_0x238dfa(0x1f1)](_0x712848,_0xb5ac1a);}},_0x5ef9ed=_0x5bdd77?function(){const _0x1d865c=_0x3c224f,_0x17f868={'saCrw':_0x424f69[_0x1d865c(0x282)],'SfiGq':_0x424f69[_0x1d865c(0x144)],'DfSjE':function(_0x160461){const _0x517920=_0x1d865c;return _0x424f69[_0x517920(0x293)](_0x160461);}};if(_0x424f69[_0x1d865c(0x1b9)](_0x1d865c(0x191),_0x424f69[_0x1d865c(0x1b1)])){if(_0x341345[_0x1d865c(0x325)](_0x43f809,_0x341345[_0x1d865c(0x1c7)])||_0x341345[_0x1d865c(0x325)](_0x3d0eb6,_0x341345['iTmnw'])){_0x3f3805[_0x1d865c(0x15c)](_0x1d865c(0x2f5))[_0x1d865c(0x3b4)]=_0xe36ed3['correctAnswers'],_0x5899ba['getElementById'](_0x341345['cRFru'])[_0x1d865c(0x3b4)]=_0x50a656[_0x1d865c(0x387)],_0x3c75a9[_0x1d865c(0x15c)](_0x341345[_0x1d865c(0x208)])[_0x1d865c(0x3b4)]=_0x3dfc7d[_0x1d865c(0x2c8)];const _0x527661=_0x32a6b5[_0x1d865c(0x2c8)]>0x0?_0x1f08a5[_0x1d865c(0x362)](_0x341345['PhOfU'](_0x341345[_0x1d865c(0x38a)](_0xc85a77[_0x1d865c(0x238)],_0x3fd1e9[_0x1d865c(0x2c8)]),0x64)):0x0;_0x19bedf[_0x1d865c(0x15c)](_0x341345['XzXNv'])[_0x1d865c(0x3b4)]=_0x341345[_0x1d865c(0x2ed)](_0x527661,'%'),_0x410fa2[_0x1d865c(0x2bb)]=_0x4b4409[_0x1d865c(0x23a)]((_0x583009,_0x2ef378)=>_0x583009+_0x2ef378[_0x1d865c(0x1ff)],0x0);const _0x1e7da8=_0x1a2675[_0x1d865c(0x3cb)](_0x341345[_0x1d865c(0x30f)](_0x568083[_0x1d865c(0x2bb)],0x3e8)),_0x472fd5=_0x366ef1[_0x1d865c(0x3cb)](_0x341345[_0x1d865c(0x338)](_0x1e7da8,0x3c)),_0x26467b=_0x341345[_0x1d865c(0x34b)](_0x1e7da8,0x3c);_0x23d7f0['getElementById'](_0x1d865c(0x1ff))[_0x1d865c(0x3b4)]=_0x341345['KZdab'](_0x472fd5,':')+_0x26467b[_0x1d865c(0x300)]()['padStart'](0x2,'0');}}else{if(_0x1335e6){if(_0x424f69[_0x1d865c(0x260)](_0x424f69[_0x1d865c(0x31f)],_0x424f69['yIhqK'])){const _0x14ee10=_0x1335e6['apply'](_0x6cab64,arguments);return _0x1335e6=null,_0x14ee10;}else _0x2c466c[_0x30ac5b]['status']===_0x17f868[_0x1d865c(0x1fc)]&&(_0x574517[_0x4777d3][_0x1d865c(0x12b)]=_0x17f868[_0x1d865c(0x23f)],_0x28a29a['totalAttempted']++,_0x305a7f[_0x1d865c(0x3a3)]--),_0x17f868[_0x1d865c(0x278)](_0x5754c6);}}}:function(){};return _0x5bdd77=![],_0x5ef9ed;};}()),_0x438efa=_0x56f3b8(this,function(){const _0x262f5c=_0x9787,_0x4a1990={'TSnWR':function(_0x481201,_0x1d4a10){return _0x481201===_0x1d4a10;},'WkBKJ':_0x262f5c(0x3b7),'kLlyh':_0x262f5c(0x33b),'ylxpR':'uPiET','nPLZL':function(_0x101b8c,_0x18cd07){return _0x101b8c(_0x18cd07);},'CrqQA':function(_0x19e84f,_0x7b13e9){return _0x19e84f+_0x7b13e9;},'QRDsn':_0x262f5c(0x203),'eqNft':_0x262f5c(0x33f),'GfMAG':function(_0x34837b,_0x13f40f){return _0x34837b(_0x13f40f);},'mxnNh':function(_0x4c30c3){return _0x4c30c3();},'WpFHy':_0x262f5c(0x29e),'PwuQg':_0x262f5c(0x1fa),'OuaYH':_0x262f5c(0x3a8),'Gkdtk':function(_0x236307,_0x50394c){return _0x236307<_0x50394c;},'ejbvg':function(_0x4cbf82,_0x593b28){return _0x4cbf82===_0x593b28;},'QxtjN':_0x262f5c(0x1fe)},_0x221624=function(){const _0x4f9dfd=_0x262f5c;if(_0x4a1990[_0x4f9dfd(0x1c2)](_0x4a1990[_0x4f9dfd(0x181)],_0x4a1990[_0x4f9dfd(0x2bc)])){_0x37cb7e[_0x4f9dfd(0x1b3)][_0x4f9dfd(0x18a)](_0x4f9dfd(0x120));if(_0xc04ec6[_0x4f9dfd(0x13e)](_0x4f9dfd(0x279)))_0x74357d(_0x193188,_0x51e98a);else _0x46dbd4[_0x4f9dfd(0x393)]=_0x4f5c83;}else{let _0x56d4ea;try{if(_0x4a1990['ylxpR']===_0x4f9dfd(0x28d))_0x56d4ea=_0x4a1990[_0x4f9dfd(0x1e4)](Function,_0x4a1990[_0x4f9dfd(0x358)](_0x4a1990[_0x4f9dfd(0x366)]+_0x4a1990['eqNft'],');'))();else{const _0x4c5593={'quizName':_0x22c263,'quizFile':_0xe26714['location'][_0x4f9dfd(0x319)]['split']('/')[_0x4f9dfd(0x14b)](),'questionIndex':_0x4c4697,'question':_0x59c79c[_0x174610],'hierarchy':_0x3f77c8,'timestamp':_0x3a3ce4[_0x4f9dfd(0x130)]()};_0x23b214[_0x4f9dfd(0x317)](_0x4c5593);}}catch(_0xdad9d0){_0x56d4ea=window;}return _0x56d4ea;}},_0x21c52d=_0x221624(),_0x32a156=_0x21c52d[_0x262f5c(0x1c6)]=_0x21c52d[_0x262f5c(0x1c6)]||{},_0x5deb90=[_0x4a1990['WpFHy'],_0x4a1990[_0x262f5c(0x207)],_0x4a1990[_0x262f5c(0x357)],_0x262f5c(0x2fe),_0x262f5c(0x23d),_0x262f5c(0x1cf),_0x262f5c(0x161)];for(let _0x235d7f=0x0;_0x4a1990[_0x262f5c(0x3bd)](_0x235d7f,_0x5deb90[_0x262f5c(0x2f6)]);_0x235d7f++){if(_0x4a1990[_0x262f5c(0x342)](_0x4a1990[_0x262f5c(0x200)],_0x262f5c(0x1fe))){const _0x45706c=_0x56f3b8[_0x262f5c(0x34a)]['prototype']['bind'](_0x56f3b8),_0xc7d7e1=_0x5deb90[_0x235d7f],_0x6174b0=_0x32a156[_0xc7d7e1]||_0x45706c;_0x45706c['__proto__']=_0x56f3b8['bind'](_0x56f3b8),_0x45706c[_0x262f5c(0x300)]=_0x6174b0[_0x262f5c(0x300)][_0x262f5c(0x149)](_0x6174b0),_0x32a156[_0xc7d7e1]=_0x45706c;}else _0x4a1990[_0x262f5c(0x27b)](_0x484cf9,_0x262f5c(0x1db))&&(_0x3b29ac=0x0,_0x4a1990[_0x262f5c(0x118)](_0x51168e),_0x49cecb());}});_0x438efa();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':_0x30f72e(0x312)},{'id':0x2,'text':_0x30f72e(0x2c4)},{'id':0x3,'text':_0x30f72e(0x158)},{'id':0x4,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>5</span></p>'}],'text':_0x30f72e(0x24a),'unique_key':'DT1230906','question_audio':null,'question_video':null,'map_id':0x12c83a,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p><strong>MMR</strong>\x20is\x20calculated\x20as\x20the\x20number\x20of\x20maternal\x20deaths\x20per\x201,000\x20or\x20100,000\x20live\x20births;\x20here,\x20it\x20is\x2013.8\x20per\x201,000\x20live\x20births.</p>\x0a<ul>\x0a<li>Maternal\x20Mortality\x20Ratio\x20(MMR)\x20is\x20defined\x20as:</li>\x0a</ul>\x0a<p>MMR\x20=\x20(Number\x20of\x20maternal\x20deaths\x20in\x20a\x20year/Number\x20of\x20live\x20births\x20in\x20the\x20same\x20year)\x20X\x201000</p>\x0a<ul>\x0a<li>Given:\x0a<ul>\x0a<li>Population\x20=\x2010,000</li>\x0a<li>Crude\x20Birth\x20Rate\x20(CBR)\x20=\x2036\x20per\x201,000</li>\x0a<li>&rarr;\x20Number\x20of\x20live\x20births\x20=\x20(36/1000)\x20X\x2010000\x20=\x20360</li>\x0a<li>Maternal\x20deaths\x20=\x205</li>\x0a</ul>\x0a</li>\x0a<li>Now\x20applying\x20the\x20formula:</li>\x0a</ul>\x0a<p>MMR\x20=\x20(5/360)\x20X\x201000\x20=\x2013.88\x20approx.\x2013.8</p>\x0a<ul>\x0a<li>So,\x20the\x20MMR\x20=\x2013.8\x20per\x201,000\x20live\x20births.</li>\x0a</ul>','correct_choice_id':0x2,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>50</span></p>'},{'id':0xc,'text':_0x30f72e(0x29b)},{'id':0xd,'text':_0x30f72e(0x2d6)},{'id':0xe,'text':_0x30f72e(0x1b7)}],'text':_0x30f72e(0x1c8),'unique_key':'DT1230907','question_audio':null,'question_video':null,'map_id':0x12c83b,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x157),'correct_choice_id':0xb,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':_0x30f72e(0x2a1)},{'id':0x16,'text':_0x30f72e(0x192)},{'id':0x17,'text':_0x30f72e(0x2dd)},{'id':0x18,'text':_0x30f72e(0x25d)}],'text':_0x30f72e(0x39a),'unique_key':_0x30f72e(0x31a),'question_audio':null,'question_video':null,'map_id':0x12c83c,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x30f72e(0x39e),'correct_choice_id':0x16,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':_0x30f72e(0x3c7)},{'id':0x20,'text':_0x30f72e(0x35a)},{'id':0x21,'text':_0x30f72e(0x3c8)},{'id':0x22,'text':_0x30f72e(0x351)}],'text':_0x30f72e(0x320),'unique_key':_0x30f72e(0x190),'question_audio':null,'question_video':null,'map_id':0x12c83e,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x2f3),'correct_choice_id':0x1f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':_0x30f72e(0x186)},{'id':0x2a,'text':_0x30f72e(0x2a6)},{'id':0x2b,'text':_0x30f72e(0x1bb)},{'id':0x2c,'text':_0x30f72e(0x138)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20a\x20given\x20population,\x20total\x20births\x20in\x20a\x20year\x20are\x204050.\x20There\x20are\x2050\x20stillbirths,\x2050\x20neonates\x20die\x20within\x20the\x20first\x207\x20days\x20of\x20life,\x20and\x20150\x20deaths\x20occur\x20between\x208-28\x20days\x20of\x20life.\x20What\x20is\x20the\x20Neonatal\x20Mortality\x20Rate\x20(NMR)\x20in\x20the\x20population?</span></p>','unique_key':_0x30f72e(0x165),'question_audio':null,'question_video':null,'map_id':0x12c84d,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x28c),'correct_choice_id':0x2a,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':_0x30f72e(0x233)},{'id':0x34,'text':_0x30f72e(0x288)},{'id':0x35,'text':_0x30f72e(0x323)},{'id':0x36,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>U5MR\x20-\x201000\x20/\x2010</span></p>'}],'text':_0x30f72e(0x295),'unique_key':_0x30f72e(0x2af),'question_audio':null,'question_video':null,'map_id':0x12c84f,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x1f7),'correct_choice_id':0x35,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':_0x30f72e(0x3a7)},{'id':0x3e,'text':_0x30f72e(0x29c)},{'id':0x3f,'text':_0x30f72e(0x2e7)},{'id':0x40,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Six\x20months</span></p>'}],'text':_0x30f72e(0x3bf),'unique_key':_0x30f72e(0x242),'question_audio':null,'question_video':null,'map_id':0x12c854,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x2f0),'correct_choice_id':0x3e,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>8</span></p>'},{'id':0x48,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>15</span></p>'},{'id':0x49,'text':_0x30f72e(0x2a6)},{'id':0x4a,'text':_0x30f72e(0x1fd)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20target\x20neonatal\x20mortality\x20rate\x20(NMR)\x20to\x20be\x20achieved\x20by\x20the\x20year\x202030,\x20as\x20per\x20national\x20and\x20international\x20health\x20goals?</span></p>','unique_key':'DT1230957','question_audio':null,'question_video':null,'map_id':0x12c86d,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x297),'correct_choice_id':0x47,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x9,'choices':[{'id':0x51,'text':_0x30f72e(0x2a4)},{'id':0x52,'text':_0x30f72e(0x3a0)},{'id':0x53,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>125</span></p>'},{'id':0x54,'text':_0x30f72e(0x331)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20a\x20village\x20with\x20a\x20population\x20of\x2020,000,\x20there\x20were\x20456\x20births\x20in\x20a\x20year,\x20including\x2056\x20still\x20births.\x20During\x20the\x20same\x20year,\x2020\x20children\x20died\x20within\x20the\x20first\x20month,\x20and\x2030\x20died\x20in\x20the\x20remaining\x2011\x20months.\x20The\x20total\x20number\x20of\x20deaths\x20in\x20the\x20population\x20that\x20year\x20was\x20500.\x20What\x20is\x20the\x20Infant\x20Mortality\x20Rate\x20(IMR)?</span></p>','unique_key':'DT1230959','question_audio':null,'question_video':null,'map_id':0x12c86f,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x26d),'correct_choice_id':0x53,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xa,'choices':[{'id':0x5b,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>25</span></p>'},{'id':0x5c,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>50</span></p>'},{'id':0x5d,'text':_0x30f72e(0x1fd)},{'id':0x5e,'text':_0x30f72e(0x331)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>An\x20Auxiliary\x20Nurse\x20Midwife\x20(ANM)\x20is\x20responsible\x20for\x20the\x20registration\x20of\x20all\x20pregnancies\x20in\x20her\x20sub-centre\x20area.\x20If\x20the\x20expected\x20number\x20of\x20pregnancies\x20in\x20her\x20area\x20in\x20a\x20year\x20is\x20100,\x20approximately\x20how\x20many\x20pregnancies\x20should\x20be\x20registered\x20at\x20any\x20given\x20point\x20in\x20time?</span></p>','unique_key':'DT1230962','question_audio':null,'question_video':null,'map_id':0x12c872,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x2c0),'correct_choice_id':0x5b,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xb,'choices':[{'id':0x65,'text':_0x30f72e(0x1c4)},{'id':0x66,'text':_0x30f72e(0x3ca)},{'id':0x67,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>D\x20>\x20C\x20>\x20B\x20>\x20A</span></p>'},{'id':0x68,'text':_0x30f72e(0x11c)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20the\x20correct\x20order\x20of\x20the\x20most\x20common\x20causes\x20of\x20neonatal\x20mortality\x20in\x20India,\x20starting\x20from\x20the\x20most\x20frequent\x20to\x20the\x20least\x20frequent?<br>A)\x20Sepsis<br>B)\x20Asphyxia<br>C)\x20Preterm\x20complications<br>D)\x20Congenital\x20anomaly</span></p>','unique_key':_0x30f72e(0x15b),'question_audio':null,'question_video':null,'map_id':0x12c8a3,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x30f72e(0x127),'correct_choice_id':0x65,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xc,'choices':[{'id':0x6f,'text':_0x30f72e(0x389)},{'id':0x70,'text':_0x30f72e(0x1e8)},{'id':0x71,'text':_0x30f72e(0x38b)},{'id':0x72,'text':_0x30f72e(0x21e)}],'text':_0x30f72e(0x15f),'unique_key':'DT1231021','question_audio':null,'question_video':null,'map_id':0x12c8ad,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x3b2),'correct_choice_id':0x70,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xd,'choices':[{'id':0x79,'text':_0x30f72e(0x29f)},{'id':0x7a,'text':_0x30f72e(0x21e)},{'id':0x7b,'text':_0x30f72e(0x294)},{'id':0x7c,'text':_0x30f72e(0x1b5)}],'text':_0x30f72e(0x241),'unique_key':'DT1231038','question_audio':null,'question_video':null,'map_id':0x12c8be,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x2d4),'correct_choice_id':0x7a,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xe,'choices':[{'id':0x83,'text':_0x30f72e(0x1a9)},{'id':0x84,'text':_0x30f72e(0x324)},{'id':0x85,'text':_0x30f72e(0x2d9)},{'id':0x86,'text':_0x30f72e(0x143)}],'text':_0x30f72e(0x121),'unique_key':'DT1231039','question_audio':null,'question_video':null,'map_id':0x12c8bf,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p>Maternal\x20deaths\x20are\x20counted\x20up\x20to\x2042\x20days\x20(6\x20weeks)\x20after\x20termination\x20of\x20pregnancy;\x20death\x20during\x20the\x208th\x20month\x20of\x20lactation\x20is\x20not\x20included.</p>\x0a<ul>\x0a<li>According\x20to\x20the\x20WHO\x20definition,\x20maternal\x20death\x20is\x20defined\x20as\x20the\x20death\x20of\x20a\x20woman\x20while\x20pregnant\x20or\x20within\x2042\x20days\x20of\x20termination\x20of\x20pregnancy,\x20irrespective\x20of\x20the\x20duration\x20and\x20site\x20of\x20pregnancy,\x20from\x20any\x20cause\x20related\x20to\x20or\x20aggravated\x20by\x20the\x20pregnancy\x20or\x20its\x20management.</li>\x0a<li>This\x20includes:\x0a<ul>\x0a<li>Death\x20due\x20to\x20abortion\x20(spontaneous\x20or\x20induced)</li>\x0a<li>Deaths\x20during\x20pregnancy\x20or\x20within\x20the\x20first\x2042\x20days\x20of\x20the\x20postpartum\x20period</li>\x0a<li>Deaths\x20from\x20obstetric\x20complications\x20such\x20as\x20antepartum\x20hemorrhage\x20(APH)</li>\x0a</ul>\x0a</li>\x0a<li>However,\x20deaths\x20beyond\x2042\x20days\x20(i.e.,\x20after\x206\x20weeks\x20postpartum)\x20-\x20such\x20as\x20in\x20the\x208th\x20month\x20of\x20lactation\x20-\x20are\x20not\x20considered\x20maternal\x20deaths,\x20unless\x20directly\x20due\x20to\x20pregnancy\x20or\x20childbirth-related\x20causes\x20and\x20classified\x20separately\x20as\x20late\x20maternal\x20deaths.</li>\x0a</ul>','correct_choice_id':0x85,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xf,'choices':[{'id':0x8d,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Anaemia</span></p>'},{'id':0x8e,'text':_0x30f72e(0x397)},{'id':0x8f,'text':_0x30f72e(0x2ee)},{'id':0x90,'text':_0x30f72e(0x3c3)}],'text':_0x30f72e(0x209),'unique_key':_0x30f72e(0x3b1),'question_audio':null,'question_video':null,'map_id':0x12c8c0,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p><strong>Haemorrhage</strong>,\x20especially\x20postpartum\x20haemorrhage\x20(PPH),\x20is\x20the\x20leading\x20direct\x20cause\x20of\x20maternal\x20deaths\x20in\x20India.</p>\x0a<ul>\x0a<li>According\x20to\x20the\x20Sample\x20Registration\x20System\x20(SRS)\x20and\x20National\x20Health\x20Mission\x20(NHM)\x20reports,\x20the\x20most\x20common\x20cause\x20of\x20maternal\x20mortality\x20in\x20India\x20is\x20haemorrhage,\x20particularly\x20postpartum\x20haemorrhage\x20(PPH).</li>\x0a<li>It\x20accounts\x20for\x20approximately\x2025-30%\x20of\x20all\x20maternal\x20deaths.</li>\x0a<li>Other\x20major\x20causes\x20include:\x0a<ul>\x0a<li>Hypertensive\x20disorders</li>\x0a<li>Sepsis</li>\x0a<li>Unsafe\x20abortion</li>\x0a<li>Anaemia\x20(as\x20an\x20indirect\x20cause)\x20<strong>(Option\x20A\x20ruled\x20out)</strong></li>\x0a</ul>\x0a</li>\x0a<li>Haemorrhage\x20remains\x20a\x20preventable\x20cause,\x20and\x20improved\x20antenatal\x20care,\x20skilled\x20birth\x20attendance,\x20and\x20emergency\x20obstetric\x20services\x20are\x20key\x20to\x20reducing\x20its\x20impact.</li>\x0a</ul>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Life\x20expectancy\x20(Option\x20C):</strong>\x20Not\x20a\x20cause\x20of\x20maternal\x20death;\x20it\x27s\x20a\x20general\x20demographic\x20indicator.</p>\x0a<p><strong>Neonatal\x20mortality\x20rate\x20(Option\x20D):</strong>\x20Refers\x20to\x20deaths\x20of\x20newborns;\x20not\x20related\x20to\x20maternal\x20death\x20causes.</p>','correct_choice_id':0x8e,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x10,'choices':[{'id':0x97,'text':_0x30f72e(0x2dd)},{'id':0x98,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>IMR</span></p>'},{'id':0x99,'text':_0x30f72e(0x18b)},{'id':0x9a,'text':_0x30f72e(0x154)}],'text':_0x30f72e(0x204),'unique_key':_0x30f72e(0x3c2),'question_audio':null,'question_video':null,'map_id':0x12c8c1,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x134),'correct_choice_id':0x9a,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x11,'choices':[{'id':0xa1,'text':_0x30f72e(0x173)},{'id':0xa2,'text':_0x30f72e(0x375)},{'id':0xa3,'text':_0x30f72e(0x166)},{'id':0xa4,'text':_0x30f72e(0x1eb)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20most\x20sensitive\x20measure\x20of\x20growth\x20is:</span></p>','unique_key':_0x30f72e(0x210),'question_audio':null,'question_video':null,'map_id':0x12c8c9,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':_0x30f72e(0x234),'correct_choice_id':0xa3,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x12,'choices':[{'id':0xab,'text':_0x30f72e(0x2ad)},{'id':0xac,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>1000g</span></p>'},{'id':0xad,'text':_0x30f72e(0x26a)},{'id':0xae,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>2000g</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2028-week-old\x20foetus\x20normally\x20weighs:</span></p>','unique_key':_0x30f72e(0x26f),'question_audio':null,'question_video':null,'map_id':0x12c8ca,'difficulty_level':_0x30f72e(0x28b),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p>At\x2028\x20weeks\x20of\x20gestation,\x20a\x20fetus\x20typically\x20weighs\x20around\x201000\x20grams\x20(1\x20kg).</p>\x0a<ul>\x0a<li>Foetal\x20growth\x20follows\x20a\x20predictable\x20pattern\x20in\x20terms\x20of\x20weight\x20gain.</li>\x0a<li>By\x20the\x20end\x20of\x20the\x20second\x20trimester\x20(around\x2028\x20weeks),\x20the\x20average\x20foetal\x20weight\x20is\x20approximately\x201000\x20grams\x20(1\x20kg).</li>\x0a<li>This\x20period\x20marks\x20the\x20beginning\x20of\x20the\x20third\x20trimester,\x20during\x20which\x20fetal\x20weight\x20increases\x20rapidly,\x20especially\x20between\x2030-36\x20weeks.</li>\x0a<li>An\x20approximate\x20weight\x20across\x20gestation:\x0a<ul>\x0a<li>24\x20weeks:\x20~600\x20g</li>\x0a<li>28\x20weeks:\x20~1000\x20g</li>\x0a<li>32\x20weeks:\x20~1600-1800\x20g</li>\x0a<li>36\x20weeks:\x20~2500-2700\x20g</li>\x0a<li>Term\x20(40\x20weeks):\x20~3000-3200\x20g</li>\x0a</ul>\x0a</li>\x0a<li>Understanding\x20normal\x20foetal\x20weights\x20is\x20essential\x20for\x20assessing\x20intrauterine\x20growth\x20and\x20identifying\x20conditions\x20like\x20IUGR\x20or\x20macrosomia.</li>\x0a</ul>','correct_choice_id':0xac,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x30f72e(0x33d),'tags':[_0x30f72e(0x2c6)],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName='Mch\x20Indicator';const quizFilename=_0x30f72e(0x218);let hierarchy=[_0x30f72e(0x16c),_0x30f72e(0x2b6),_0x30f72e(0x11a)];if(window['location'][_0x30f72e(0x319)][_0x30f72e(0x396)](_0x30f72e(0x221))){const customData=JSON['parse'](localStorage[_0x30f72e(0x13f)]('customQuizData'));if(customData){const wXuGRl=_0x30f72e(0x30e)[_0x30f72e(0x33e)]('|');let lIPzjH=0x0;while(!![]){switch(wXuGRl[lIPzjH++]){case'0':quizName=customData['name'];continue;case'1':document[_0x30f72e(0x15c)](_0x30f72e(0x287))['textContent']=questionsData[_0x30f72e(0x2f6)];continue;case'2':document[_0x30f72e(0x1e0)]=quizName+_0x30f72e(0x163);continue;case'3':document[_0x30f72e(0x15c)](_0x30f72e(0x201))['textContent']=hierarchy['join'](_0x30f72e(0x26e));continue;case'4':questionsData=customData[_0x30f72e(0x372)];continue;case'5':hierarchy=customData['hierarchy'];continue;}break;}}}let currentQuestionIndex=0x0,selectedOption=null,currentMode=_0x30f72e(0x1d5),timer=null,timeRemaining=0x0,questionStartTime=Date[_0x30f72e(0x130)](),quizStartTime=Date['now'](),isQuizCompleted=![],questionStates=new Array(questionsData[_0x30f72e(0x2f6)])['fill'](null)['map'](()=>({'status':_0x30f72e(0x185),'bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData[_0x30f72e(0x2f6)]};function saveProgress(){const _0x58f6cf=_0x30f72e,_0x21c6f4={'JFkGU':_0x58f6cf(0x35b),'qbVQY':_0x58f6cf(0x147)};if(isQuizCompleted)return;const _0x15136b=JSON[_0x58f6cf(0x22b)](localStorage['getItem'](_0x58f6cf(0x147)))||{};_0x15136b[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0x21c6f4['JFkGU'],'lastSeen':new Date()[_0x58f6cf(0x2cd)]()},localStorage['setItem'](_0x21c6f4[_0x58f6cf(0x236)],JSON[_0x58f6cf(0x2ea)](_0x15136b));}function loadProgress(){const _0x3bf750=_0x30f72e,_0x428e9e={'IuRrl':'performanceModal','BEptn':_0x3bf750(0x120),'htDbs':_0x3bf750(0x147),'cBgJY':function(_0xed1760,_0x36de1b){return _0xed1760!==_0x36de1b;},'ALwsB':_0x3bf750(0x2e0),'vpggU':_0x3bf750(0x228),'djcqA':_0x3bf750(0x20c)},_0x466f05=JSON[_0x3bf750(0x22b)](localStorage[_0x3bf750(0x13f)](_0x428e9e['htDbs']))||{},_0x56f985=_0x466f05[quizFilename];if(_0x56f985){if(_0x428e9e[_0x3bf750(0x24f)](_0x3bf750(0x2e0),_0x428e9e['ALwsB']))_0x424a33[_0x3bf750(0x15c)](_0x428e9e['IuRrl'])['classList']['add'](_0x428e9e[_0x3bf750(0x399)]);else{const _0x2a5020=_0x428e9e[_0x3bf750(0x35c)][_0x3bf750(0x33e)]('|');let _0x30488b=0x0;while(!![]){switch(_0x2a5020[_0x30488b++]){case'0':questionStates=_0x56f985[_0x3bf750(0x235)];continue;case'1':currentMode=_0x56f985[_0x3bf750(0x3b5)];continue;case'2':stats=_0x56f985[_0x3bf750(0x1dd)];continue;case'3':currentQuestionIndex=_0x56f985['currentQuestionIndex'];continue;case'4':return!![];case'5':console[_0x3bf750(0x29e)](_0x428e9e[_0x3bf750(0x1a6)]);continue;}break;}}}return![];}function clearProgress(){const _0x448a05=_0x30f72e,_0x1d29df={'IqgOo':function(_0x19274d){return _0x19274d();},'BWunN':function(_0x15bafd,_0x2a2e71){return _0x15bafd===_0x2a2e71;},'DsEwD':_0x448a05(0x380),'usoOb':_0x448a05(0x168)},_0x519563=JSON[_0x448a05(0x22b)](localStorage['getItem'](_0x448a05(0x147)))||{};_0x519563[quizFilename]&&(_0x1d29df[_0x448a05(0x19c)]('RHxet',_0x1d29df[_0x448a05(0x17a)])?(delete _0x519563[quizFilename],localStorage[_0x448a05(0x1dc)](_0x448a05(0x147),JSON[_0x448a05(0x2ea)](_0x519563)),console[_0x448a05(0x29e)](_0x1d29df[_0x448a05(0x35f)])):_0x1d29df[_0x448a05(0x303)](_0x5784d4));}function markQuizAsCompleted(){const _0xaae8d2=_0x30f72e,_0x398af1={'XgPOR':_0xaae8d2(0x14a)},_0xf38c28=JSON[_0xaae8d2(0x22b)](localStorage[_0xaae8d2(0x13f)]('userHistory'))||{},_0x363b32=questionsData[_0xaae8d2(0x2f6)],_0xd54030=stats[_0xaae8d2(0x238)]||0x0;_0xf38c28[quizFilename]={'score':_0xd54030,'total':_0x363b32,'status':_0x398af1[_0xaae8d2(0x1b4)],'completedOn':new Date()['toISOString']()},localStorage['setItem'](_0xaae8d2(0x147),JSON['stringify'](_0xf38c28));}const urlParams=new URLSearchParams(window[_0x30f72e(0x183)][_0x30f72e(0x197)]),startAt=parseInt(urlParams['get'](_0x30f72e(0x1a5))),resume=urlParams['get'](_0x30f72e(0x1af))===_0x30f72e(0x135);function goBack(){const _0x50ec7b=_0x30f72e,_0x10326e={'gUTBb':function(_0x115e16){return _0x115e16();},'BuUkf':'index.html'};if(!isQuizCompleted)_0x10326e['gUTBb'](saveProgress);window[_0x50ec7b(0x183)][_0x50ec7b(0x16f)]=document[_0x50ec7b(0x18e)]||_0x10326e['BuUkf'];}function selectMode(_0x231c8c){const _0x55dc4c=_0x30f72e,_0x33dae9={'TFraJ':'modeModal','HqlTW':'none','SVZzT':function(_0x2c842b){return _0x2c842b();}};currentMode=_0x231c8c,document[_0x55dc4c(0x15c)](_0x33dae9[_0x55dc4c(0x178)])[_0x55dc4c(0x139)][_0x55dc4c(0x156)]=_0x33dae9[_0x55dc4c(0x18c)],_0x33dae9[_0x55dc4c(0x364)](initializeQuiz);}function initializeQuiz(){const _0xcefcc7=_0x30f72e,_0x1726f3={'XMLBx':_0xcefcc7(0x19a),'GKcGq':_0xcefcc7(0x2da),'qKBPk':function(_0x478e13,_0x5de20d){return _0x478e13===_0x5de20d;},'ZLwkv':'test','EDuuw':function(_0xce99b4,_0x4a7412){return _0xce99b4===_0x4a7412;},'xkWem':_0xcefcc7(0x17d),'rrgmK':_0xcefcc7(0x169),'MZteQ':_0xcefcc7(0x1f2),'BveLP':'studyModeLegend','GKWmL':_0xcefcc7(0x13c),'buPSB':_0xcefcc7(0x263),'vtUcg':'flex','qgXQK':_0xcefcc7(0x374),'ljaOt':'hidden','nseKj':function(_0x362fa9,_0x3817cf){return _0x362fa9(_0x3817cf);},'qCQhu':function(_0x4a825c,_0x20c85f){return _0x4a825c>=_0x20c85f;},'ZbHKa':function(_0x888cec,_0x96cf94){return _0x888cec<_0x96cf94;},'ewljU':function(_0x538d61){return _0x538d61();},'tQVJT':function(_0x2e3a33){return _0x2e3a33();},'gJvAP':function(_0x1dbcc8){return _0x1dbcc8();}};quizStartTime=Date[_0xcefcc7(0x130)]();const _0x998cbf=document[_0xcefcc7(0x15c)](_0xcefcc7(0x13d)),_0xdd02d=document[_0xcefcc7(0x15c)](_0x1726f3[_0xcefcc7(0x276)]),_0x136ecb=document[_0xcefcc7(0x15c)](_0x1726f3[_0xcefcc7(0x36a)]),_0xd1e146=_0x1726f3[_0xcefcc7(0x1da)](currentMode,_0x1726f3[_0xcefcc7(0x253)])||_0x1726f3['EDuuw'](currentMode,_0x1726f3[_0xcefcc7(0x28a)]);document[_0xcefcc7(0x15c)](_0xcefcc7(0x1e2))[_0xcefcc7(0x139)]['display']=_0xd1e146?_0x1726f3[_0xcefcc7(0x318)]:_0x1726f3[_0xcefcc7(0x1a3)],document[_0xcefcc7(0x15c)](_0x1726f3[_0xcefcc7(0x1cc)])[_0xcefcc7(0x139)][_0xcefcc7(0x156)]=_0xd1e146?_0x1726f3[_0xcefcc7(0x318)]:_0x1726f3['MZteQ'],document[_0xcefcc7(0x15c)](_0x1726f3[_0xcefcc7(0x2e1)])['style'][_0xcefcc7(0x156)]=_0xd1e146?_0x1726f3['MZteQ']:_0x1726f3[_0xcefcc7(0x318)],document[_0xcefcc7(0x15c)](_0x1726f3[_0xcefcc7(0x224)])[_0xcefcc7(0x139)][_0xcefcc7(0x156)]=_0xd1e146?_0x1726f3['MZteQ']:_0x1726f3[_0xcefcc7(0x318)],_0x998cbf[_0xcefcc7(0x139)]['display']=_0xd1e146?_0x1726f3['rrgmK']:_0x1726f3[_0xcefcc7(0x229)],_0xdd02d[_0xcefcc7(0x139)][_0xcefcc7(0x156)]=_0xd1e146?_0x1726f3[_0xcefcc7(0x229)]:_0x1726f3[_0xcefcc7(0x318)],_0x136ecb['style'][_0xcefcc7(0x156)]=_0xd1e146?_0x1726f3[_0xcefcc7(0x229)]:_0x1726f3[_0xcefcc7(0x318)],(_0x1726f3['EDuuw'](currentMode,_0xcefcc7(0x12d))||currentMode===_0x1726f3['xkWem'])&&document[_0xcefcc7(0x15c)](_0x1726f3[_0xcefcc7(0x202)])['classList'][_0xcefcc7(0x18a)](_0x1726f3[_0xcefcc7(0x398)]),!_0x1726f3[_0xcefcc7(0x1bd)](isNaN,startAt)&&_0x1726f3['qCQhu'](startAt,0x0)&&_0x1726f3[_0xcefcc7(0x1d1)](startAt,questionsData[_0xcefcc7(0x2f6)])&&(currentQuestionIndex=startAt),_0x1726f3[_0xcefcc7(0x309)](loadBookmarkedQuestions),_0x1726f3['tQVJT'](generateQuestionNav),_0x1726f3[_0xcefcc7(0x309)](updateStats),_0x1726f3[_0xcefcc7(0x3c1)](displayQuestion);}function generateQuestionNav(){const _0x23045c=_0x30f72e,_0x4d9e15={'uRhJR':_0x23045c(0x2c1),'nHUrV':'button','fqoyE':_0x23045c(0x193),'KZrYB':function(_0x2e06ff){return _0x2e06ff();}},_0x5c43f7=document[_0x23045c(0x15c)](_0x4d9e15['uRhJR']);_0x5c43f7[_0x23045c(0x268)]='';for(let _0x2c9de2=0x0;_0x2c9de2<questionsData[_0x23045c(0x2f6)];_0x2c9de2++){const _0x15301=document[_0x23045c(0x129)](_0x4d9e15[_0x23045c(0x304)]);_0x15301['textContent']=_0x2c9de2+0x1,_0x15301['className']=_0x4d9e15[_0x23045c(0x262)],_0x15301[_0x23045c(0x32e)]=()=>jumpToQuestion(_0x2c9de2),_0x15301['id']=_0x23045c(0x3ad)+_0x2c9de2,_0x5c43f7['appendChild'](_0x15301);}_0x4d9e15[_0x23045c(0x2a5)](updateQuestionNav);}function updateQuestionNav(){const _0x484ffc=_0x30f72e,_0x1682ba={'xqlrc':function(_0x58ffa0,_0x1dd7e6){return _0x58ffa0/_0x1dd7e6;},'IqXbb':function(_0x281100,_0x8ebbcc){return _0x281100%_0x8ebbcc;},'XeKYu':_0x484ffc(0x1a4),'jxazP':function(_0x2ad4d5,_0x13b0b0){return _0x2ad4d5+_0x13b0b0;},'UkEHR':function(_0x4e6987,_0x1dc56c){return _0x4e6987===_0x1dc56c;},'AdJib':_0x484ffc(0x38c),'gPdUg':_0x484ffc(0x22a),'WxCei':'Incorrect','DCmag':function(_0x274459,_0x9799f1){return _0x274459<_0x9799f1;},'JpRwa':_0x484ffc(0x36f),'DDsUU':function(_0x29cc82,_0x4c91e5){return _0x29cc82!==_0x4c91e5;},'uoEcy':'kCVcK','TeBIm':_0x484ffc(0x246),'OYIei':_0x484ffc(0x1b8),'UlUuN':function(_0x870e58,_0x3e8fe1){return _0x870e58!==_0x3e8fe1;},'yMYRT':_0x484ffc(0x37a),'iMArY':'aeuXN','QzoLL':'nav-btn-marked-review','RuhvT':function(_0x55f138,_0x11a8de){return _0x55f138===_0x11a8de;},'LCDKp':_0x484ffc(0x1d5),'jnDUi':function(_0x4f0967,_0x1e6281){return _0x4f0967===_0x1e6281;},'zULcX':'timed_study','FuITG':'nav-btn-correct','FkVyW':function(_0x29607c,_0x3b543b){return _0x29607c===_0x3b543b;},'XhgBA':_0x484ffc(0x21c),'NvSfJ':'nav-btn-incorrect','MAdFC':_0x484ffc(0x1f4),'UFhAg':_0x484ffc(0x3d2),'tKvol':function(_0x1ddb65,_0x54f4d4){return _0x1ddb65!==_0x54f4d4;},'CIsTi':_0x484ffc(0x137)};for(let _0x55c66d=0x0;_0x1682ba['DCmag'](_0x55c66d,questionsData[_0x484ffc(0x2f6)]);_0x55c66d++){const _0x38643a=document['getElementById']('navBtn_'+_0x55c66d),_0xd1117f=questionStates[_0x55c66d];let _0xcc26f0='';if(_0x55c66d===currentQuestionIndex)_0xcc26f0=_0x1682ba[_0x484ffc(0x308)];else{if(_0xd1117f[_0x484ffc(0x140)])_0x1682ba['DDsUU'](_0x1682ba[_0x484ffc(0x339)],_0x1682ba[_0x484ffc(0x251)])?_0xcc26f0=_0x1682ba[_0x484ffc(0x2de)]:_0x4beaca[_0x484ffc(0x124)](_0x484ffc(0x382));else{if(_0xd1117f[_0x484ffc(0x3cf)]){if(_0x1682ba[_0x484ffc(0x2b1)](_0x1682ba[_0x484ffc(0x2d5)],_0x1682ba[_0x484ffc(0x2fb)]))_0xcc26f0=_0x1682ba['QzoLL'];else{const _0x24a5b6=_0x20b30d[_0x484ffc(0x3cb)](_0x1682ba[_0x484ffc(0x26b)](_0x35ef5e,0x3c)),_0xf5b2d=_0x1682ba[_0x484ffc(0x36e)](_0x56ddd4,0x3c);_0x554135[_0x484ffc(0x15c)](_0x1682ba[_0x484ffc(0x1ad)])[_0x484ffc(0x3b4)]=_0x1682ba['jxazP'](_0x1682ba['jxazP'](_0x24a5b6,':'),_0xf5b2d[_0x484ffc(0x300)]()['padStart'](0x2,'0'));}}else{if(_0x1682ba[_0x484ffc(0x347)](currentMode,_0x1682ba[_0x484ffc(0x30a)])||_0x1682ba['jnDUi'](currentMode,_0x1682ba['zULcX'])){if(_0xd1117f[_0x484ffc(0x12b)]===_0x1682ba['AdJib'])_0xcc26f0=_0x1682ba[_0x484ffc(0x2f9)];else{if(_0x1682ba[_0x484ffc(0x2c2)](_0xd1117f[_0x484ffc(0x12b)],_0x1682ba[_0x484ffc(0x2ac)]))_0xcc26f0=_0x1682ba[_0x484ffc(0x3be)];else _0xcc26f0=_0x1682ba[_0x484ffc(0x19e)];}}else{if(_0x1682ba[_0x484ffc(0x152)]===_0x1682ba[_0x484ffc(0x152)]){if(_0x1682ba[_0x484ffc(0x257)](_0xd1117f[_0x484ffc(0x291)],null))_0xcc26f0=_0x1682ba[_0x484ffc(0x216)];else _0xcc26f0=_0x1682ba[_0x484ffc(0x19e)];}else{const _0x255fba=_0x176970[_0x484ffc(0x385)][_0xe19395[_0x484ffc(0x291)]];_0x1682ba[_0x484ffc(0x2d2)](_0x255fba['id'],_0x33d6c8)?(_0x4ec923=_0x1682ba[_0x484ffc(0x164)],_0x4b7d59=_0x1682ba[_0x484ffc(0x328)]):(_0x217875=_0x484ffc(0x21c),_0xf50650=_0x1682ba[_0x484ffc(0x25b)]);}}}}}_0x38643a[_0x484ffc(0x311)]=_0x484ffc(0x205)+_0xcc26f0;}}function jumpToQuestion(_0x2060e5){const _0x21b1d9=_0x30f72e,_0x4ef087={'pgTFY':function(_0x46e764,_0x15edb0){return _0x46e764>=_0x15edb0;},'FwyeP':function(_0x474a2e,_0x5b4ab5){return _0x474a2e<_0x5b4ab5;},'Oagdn':function(_0x1d7750,_0x22b210){return _0x1d7750===_0x22b210;},'QEwez':_0x21b1d9(0x3a1)};if(_0x4ef087[_0x21b1d9(0x2ef)](_0x2060e5,0x0)&&_0x4ef087[_0x21b1d9(0x1c1)](_0x2060e5,questionsData[_0x21b1d9(0x2f6)])){if(_0x4ef087[_0x21b1d9(0x23b)](_0x4ef087[_0x21b1d9(0x341)],_0x4ef087['QEwez']))questionStartTime&&(questionStates[currentQuestionIndex][_0x21b1d9(0x1ff)]+=Date[_0x21b1d9(0x130)]()-questionStartTime),currentQuestionIndex=_0x2060e5,displayQuestion(),saveProgress();else{const _0x5ede26=_0x453a75[_0x21b1d9(0x3b3)](_0x3a8e5e,arguments);return _0x12c74e=null,_0x5ede26;}}}function updateStats(){const _0x4eec4c=_0x30f72e,_0x580d44={'ywave':function(_0x480803,_0x521795){return _0x480803===_0x521795;},'JzuEy':_0x4eec4c(0x1d5),'HvgdN':'timed_study','WHcop':_0x4eec4c(0x2f5),'vODAO':_0x4eec4c(0x329),'dTefG':_0x4eec4c(0x2c8),'FdWEr':function(_0x142214,_0x5ce4dc){return _0x142214>_0x5ce4dc;},'YPBii':function(_0x39150f,_0x295fe6){return _0x39150f*_0x295fe6;},'vOGZg':function(_0x49bc8c,_0x56fddb){return _0x49bc8c/_0x56fddb;},'UvCVb':_0x4eec4c(0x2e4),'Ahbpq':function(_0x34bbad,_0xf4c3d3){return _0x34bbad+_0xf4c3d3;},'xvgKc':function(_0x3653a8,_0x2a0131){return _0x3653a8%_0x2a0131;},'XZIeF':_0x4eec4c(0x1ff),'jnjKp':function(_0x370007,_0x8f59e4){return _0x370007+_0x8f59e4;}};if(_0x580d44[_0x4eec4c(0x333)](currentMode,_0x580d44[_0x4eec4c(0x12c)])||_0x580d44[_0x4eec4c(0x333)](currentMode,_0x580d44[_0x4eec4c(0x21d)])){document['getElementById'](_0x580d44[_0x4eec4c(0x247)])[_0x4eec4c(0x3b4)]=stats[_0x4eec4c(0x238)],document['getElementById'](_0x580d44[_0x4eec4c(0x1b0)])[_0x4eec4c(0x3b4)]=stats[_0x4eec4c(0x387)],document[_0x4eec4c(0x15c)](_0x580d44[_0x4eec4c(0x189)])[_0x4eec4c(0x3b4)]=stats['totalAttempted'];const _0x478083=_0x580d44[_0x4eec4c(0x250)](stats[_0x4eec4c(0x2c8)],0x0)?Math[_0x4eec4c(0x362)](_0x580d44[_0x4eec4c(0x356)](_0x580d44[_0x4eec4c(0x3bb)](stats[_0x4eec4c(0x238)],stats[_0x4eec4c(0x2c8)]),0x64)):0x0;document[_0x4eec4c(0x15c)](_0x580d44[_0x4eec4c(0x39f)])[_0x4eec4c(0x3b4)]=_0x580d44[_0x4eec4c(0x22c)](_0x478083,'%'),stats['totalTime']=questionStates[_0x4eec4c(0x23a)]((_0xe34a30,_0x1870d7)=>_0xe34a30+_0x1870d7[_0x4eec4c(0x1ff)],0x0);const _0x1df043=Math[_0x4eec4c(0x3cb)](_0x580d44[_0x4eec4c(0x3bb)](stats[_0x4eec4c(0x2bb)],0x3e8)),_0x426d0f=Math[_0x4eec4c(0x3cb)](_0x580d44['vOGZg'](_0x1df043,0x3c)),_0x556cd5=_0x580d44['xvgKc'](_0x1df043,0x3c);document[_0x4eec4c(0x15c)](_0x580d44[_0x4eec4c(0x1d4)])['textContent']=_0x580d44[_0x4eec4c(0x1f8)](_0x580d44['jnjKp'](_0x426d0f,':'),_0x556cd5[_0x4eec4c(0x300)]()[_0x4eec4c(0x2a0)](0x2,'0'));}}function setupVideo(_0x45e062,_0x5f3eea){const _0x57704b=_0x30f72e,_0x340b0f={'NWqmv':function(_0x4bc2cc,_0x353e8c){return _0x4bc2cc===_0x353e8c;},'pMvbB':function(_0x3d8a46,_0x4167b1){return _0x3d8a46===_0x4167b1;},'TlCvW':_0x57704b(0x185),'onCxa':_0x57704b(0x38c),'TeSub':'incorrect','JLMbY':function(_0x9afad9,_0x29e722){return _0x9afad9(_0x29e722);},'WKiMc':'application/vnd.apple.mpegurl'};if(Hls['isSupported']()){if(_0x57704b(0x369)!==_0x57704b(0x369)){const _0x4d0340=_0x3e5448[_0x3e9613],_0x5be32a=_0x4d0340['correct_choice_id'];if(_0x1b3036===null)return;const _0x847b44=_0x4d0340[_0x57704b(0x385)][_0x12f829],_0x1ee3f8=_0x340b0f[_0x57704b(0x1c5)](_0x847b44['id'],_0x5be32a);if(_0x340b0f[_0x57704b(0x184)](_0x104acf[_0x13c503][_0x57704b(0x12b)],_0x340b0f['TlCvW'])){_0x21d9b9[_0x57704b(0x2c8)]++,_0x17cd8a[_0x57704b(0x3a3)]--;if(_0x1ee3f8)_0x3f8e0c['correctAnswers']++;else _0x2982fb[_0x57704b(0x387)]++;}_0x30370f[_0x2f3301][_0x57704b(0x12b)]=_0x1ee3f8?_0x340b0f[_0x57704b(0x1d2)]:_0x340b0f[_0x57704b(0x1fb)],_0x26d4bf(),_0x340b0f[_0x57704b(0x239)](_0x159824,_0x1ee3f8),_0x30d91c();}else{const _0x5c2aea=new Hls();_0x5c2aea[_0x57704b(0x187)](_0x5f3eea),_0x5c2aea[_0x57704b(0x2b9)](_0x45e062);}}else _0x45e062[_0x57704b(0x254)](_0x340b0f[_0x57704b(0x332)])&&(_0x45e062[_0x57704b(0x393)]=_0x5f3eea);}function displayQuestion(){const _0x2e2efe=_0x30f72e,_0x1a6a93={'aLHRj':_0x2e2efe(0x116),'OxTTe':_0x2e2efe(0x283),'ibFfx':function(_0x593af2,_0x45559b){return _0x593af2+_0x45559b;},'lHmFY':function(_0x32aade,_0x598798){return _0x32aade===_0x598798;},'qlbHj':_0x2e2efe(0x299),'ETsgJ':_0x2e2efe(0x225),'tlSrC':_0x2e2efe(0x20a),'IaQtr':function(_0x24fa07){return _0x24fa07();},'hetwz':_0x2e2efe(0x1e9),'tFHpW':function(_0x312f24,_0x104022){return _0x312f24!==_0x104022;},'extUC':_0x2e2efe(0x244),'JkdIl':'CFOoW','ymceD':function(_0x27df9b,_0x496314){return _0x27df9b(_0x496314);},'hhMsZ':_0x2e2efe(0x188),'zQjdg':function(_0x384b9a,_0x5104b4){return _0x384b9a(_0x5104b4);},'LvApf':'bookmarkBtn','cJCgG':_0x2e2efe(0x269),'WOucj':_0x2e2efe(0x2ab),'FlfGO':_0x2e2efe(0x1d7),'oAcOX':_0x2e2efe(0x2f8),'YppEA':_0x2e2efe(0x259),'LEBTt':_0x2e2efe(0x31c),'TDHnZ':function(_0x4b7b08,_0x555e72){return _0x4b7b08/_0x555e72;},'eVStc':function(_0x16ab8a,_0x277fdc){return _0x16ab8a+_0x277fdc;},'GYjcu':_0x2e2efe(0x350),'awWNM':'prevBtn','lLhDz':function(_0x1d389b,_0x195d9f){return _0x1d389b===_0x195d9f;},'rLDgG':'hidden','QBgSs':'No\x20question\x20text\x20available','yamOE':_0x2e2efe(0x148),'zbqNQ':_0x2e2efe(0x131),'GyLXG':_0x2e2efe(0x395),'bTyBz':_0x2e2efe(0x34d),'kqOJt':function(_0x2cb891){return _0x2cb891();},'xXVjb':_0x2e2efe(0x12d),'ynDWS':function(_0x90bf68,_0x6a3ac){return _0x90bf68!==_0x6a3ac;},'LaQTt':_0x2e2efe(0x1e7)};if(!questionsData||_0x1a6a93[_0x2e2efe(0x24d)](questionsData[_0x2e2efe(0x2f6)],0x0)){document['getElementById'](_0x1a6a93['YppEA'])['innerHTML']=_0x1a6a93['LEBTt'];return;};const _0x3956af=questionsData[currentQuestionIndex];questionStartTime=Date[_0x2e2efe(0x130)](),selectedOption=questionStates[currentQuestionIndex][_0x2e2efe(0x291)];const _0x3d27b1=_0x1a6a93[_0x2e2efe(0x3ac)](_0x1a6a93[_0x2e2efe(0x167)](currentQuestionIndex,0x1),questionsData[_0x2e2efe(0x2f6)])*0x64;document[_0x2e2efe(0x15c)](_0x2e2efe(0x363))[_0x2e2efe(0x139)][_0x2e2efe(0x20f)]=_0x3d27b1+'%',document['getElementById'](_0x1a6a93[_0x2e2efe(0x1b6)])['textContent']=currentQuestionIndex+0x1,_0x1a6a93[_0x2e2efe(0x172)](updateQuestionNav),document[_0x2e2efe(0x15c)](_0x1a6a93[_0x2e2efe(0x3c4)])['disabled']=_0x1a6a93['lLhDz'](currentQuestionIndex,0x0),document[_0x2e2efe(0x15c)](_0x2e2efe(0x198))[_0x2e2efe(0x1b3)]['add'](_0x1a6a93[_0x2e2efe(0x26c)]),document[_0x2e2efe(0x15c)](_0x1a6a93[_0x2e2efe(0x1de)])[_0x2e2efe(0x268)]=_0x3956af[_0x2e2efe(0x373)]||_0x1a6a93[_0x2e2efe(0x1a7)];let _0x15b636='';if(_0x3956af['question_audio'])_0x15b636+=_0x2e2efe(0x1aa)+_0x3956af[_0x2e2efe(0x1e6)]+_0x2e2efe(0x38d);if(_0x3956af[_0x2e2efe(0x315)])_0x15b636+=_0x2e2efe(0x2a8)+_0x3956af[_0x2e2efe(0x315)]+'\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>';_0x3956af['question_images']&&_0x3956af['question_images'][_0x2e2efe(0x16b)](_0x30b569=>{const _0x29708d=_0x2e2efe;if(_0x29708d(0x116)!==_0x1a6a93[_0x29708d(0x215)])_0x3d90d9['innerHTML']+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22'+_0x4fafe3[_0x29708d(0x32a)]+_0x29708d(0x38d);else{if(_0x30b569)_0x15b636+=_0x29708d(0x3b8)+_0x30b569+_0x29708d(0x343);}});document[_0x2e2efe(0x15c)](_0x1a6a93['yamOE'])['innerHTML']=_0x15b636;const _0x2b619c=document[_0x2e2efe(0x15c)](_0x1a6a93[_0x2e2efe(0x2b2)]);_0x2b619c['innerHTML']='',_0x2b619c['classList']['remove'](_0x1a6a93['GyLXG']);_0x3956af[_0x2e2efe(0x385)]&&Array[_0x2e2efe(0x386)](_0x3956af[_0x2e2efe(0x385)])&&(_0x1a6a93[_0x2e2efe(0x21f)](_0x2e2efe(0x34d),_0x1a6a93['bTyBz'])?_0x22d382():(_0x3956af[_0x2e2efe(0x385)]['forEach']((_0x28b027,_0x5a3cd5)=>{const _0x2d07e2=_0x2e2efe;if(_0x1a6a93[_0x2d07e2(0x28f)]===_0x2d07e2(0x283)){const _0x283c70=String[_0x2d07e2(0x313)](_0x1a6a93[_0x2d07e2(0x217)](0x41,_0x5a3cd5)),_0x46492c=_0x1a6a93[_0x2d07e2(0x24d)](selectedOption,_0x5a3cd5),_0x5ef64b=document[_0x2d07e2(0x129)](_0x1a6a93['qlbHj']);_0x5ef64b[_0x2d07e2(0x268)]=_0x2d07e2(0x2be)+(_0x46492c?_0x1a6a93[_0x2d07e2(0x22d)]:'')+_0x2d07e2(0x3c0)+_0x5a3cd5+_0x2d07e2(0x162)+_0x283c70+_0x2d07e2(0x13b)+(_0x28b027[_0x2d07e2(0x373)]||_0x1a6a93['tlSrC']+_0x1a6a93['ibFfx'](_0x5a3cd5,0x1))+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x2b619c[_0x2d07e2(0x175)](_0x5ef64b);}else _0x49fa20=_0x3ddcfe;}),_0x2b619c['addEventListener'](_0x2e2efe(0x1ee),function(_0x3f8538){const _0x23efdd=_0x2e2efe,_0x148cba={'rWGkH':function(_0x37d016){const _0x37ccc0=_0x9787;return _0x1a6a93[_0x37ccc0(0x172)](_0x37d016);},'znLnY':_0x1a6a93[_0x23efdd(0x182)]};if(_0x1a6a93[_0x23efdd(0x21f)](_0x1a6a93[_0x23efdd(0x150)],_0x1a6a93[_0x23efdd(0x321)])){const _0x291b0=_0x3f8538[_0x23efdd(0x179)][_0x23efdd(0x3bc)]('.option-button');if(_0x291b0){const _0x44586f=_0x1a6a93[_0x23efdd(0x327)](parseInt,_0x291b0[_0x23efdd(0x3a4)](_0x1a6a93[_0x23efdd(0x2fa)]));_0x1a6a93[_0x23efdd(0x180)](selectOption,_0x44586f);}}else{if(!_0x329360)_0x148cba['rWGkH'](_0x5c7ea1);_0x3531db[_0x23efdd(0x183)][_0x23efdd(0x16f)]=_0x17f8c3[_0x23efdd(0x18e)]||_0x148cba[_0x23efdd(0x222)];}})));_0x1a6a93[_0x2e2efe(0x172)](updateBookmarkButton),_0x1a6a93[_0x2e2efe(0x361)](updateMarkReviewButton);if((_0x1a6a93[_0x2e2efe(0x24d)](currentMode,_0x1a6a93['xXVjb'])||_0x1a6a93[_0x2e2efe(0x24d)](currentMode,_0x2e2efe(0x17d)))&&!isQuizCompleted){if(_0x1a6a93['ynDWS'](_0x2e2efe(0x1e7),_0x1a6a93[_0x2e2efe(0x27d)])){const _0x335a19=_0x112dba[_0x2e2efe(0x15c)](_0x1a6a93[_0x2e2efe(0x12a)]),_0x1d8857=_0xf65555[_0x2e2efe(0x15c)](_0x1a6a93[_0x2e2efe(0x248)]),_0x1f2b9c=_0x1fa88a[_0x4e4001]['bookmarked'];_0x335a19[_0x2e2efe(0x311)]=_0x1f2b9c?_0x1a6a93[_0x2e2efe(0x38f)]:_0x1a6a93[_0x2e2efe(0x159)],_0x1d8857['textContent']=_0x1f2b9c?_0x2e2efe(0x123):_0x1a6a93['oAcOX'];}else _0x1a6a93[_0x2e2efe(0x361)](startTimer);}}function selectOption(_0x553fec){const _0x1e945b=_0x30f72e,_0x3793d5={'dtWhp':_0x1e945b(0x225),'WwXkk':function(_0x3f83ce,_0xecaa9b){return _0x3f83ce===_0xecaa9b;},'HhSeK':'.m3u8','ojqAp':function(_0x2a5299,_0x5d8ea0,_0x4f879e){return _0x2a5299(_0x5d8ea0,_0x4f879e);},'TcCmg':_0x1e945b(0x131),'bYIpR':_0x1e945b(0x395),'UvYvv':function(_0x344434,_0x4158e8){return _0x344434===_0x4158e8;},'ImquH':function(_0x145a26,_0x3b2bf7){return _0x145a26===_0x3b2bf7;},'QCxBq':'UmfFu','OTLpU':function(_0x149853,_0x4e8264){return _0x149853===_0x4e8264;},'wUhpe':function(_0x128812){return _0x128812();}},_0x5892c6=document[_0x1e945b(0x15c)](_0x3793d5['TcCmg']);if(_0x5892c6['classList'][_0x1e945b(0x32b)](_0x3793d5[_0x1e945b(0x298)]))return;questionStartTime&&(questionStates[currentQuestionIndex][_0x1e945b(0x1ff)]+=Date[_0x1e945b(0x130)]()-questionStartTime,questionStartTime=Date[_0x1e945b(0x130)]()),selectedOption=_0x553fec,questionStates[currentQuestionIndex][_0x1e945b(0x291)]=_0x553fec,document[_0x1e945b(0x258)](_0x1e945b(0x27a))[_0x1e945b(0x16b)]((_0xb6984b,_0x3c3cfe)=>{const _0x4623bc=_0x1e945b;_0xb6984b[_0x4623bc(0x1b3)][_0x4623bc(0x384)](_0x3793d5[_0x4623bc(0x2cf)],_0x3793d5['WwXkk'](_0x3c3cfe,_0x553fec));}),_0x3793d5[_0x1e945b(0x132)](currentMode,'study')||_0x3793d5[_0x1e945b(0x122)](currentMode,_0x1e945b(0x12d))?processAnswer():_0x3793d5[_0x1e945b(0x132)](_0x3793d5[_0x1e945b(0x1d6)],_0x3793d5[_0x1e945b(0x1d6)])?(_0x3793d5['OTLpU'](questionStates[currentQuestionIndex]['status'],_0x1e945b(0x185))&&(questionStates[currentQuestionIndex]['status']=_0x3793d5[_0x1e945b(0x298)],stats[_0x1e945b(0x2c8)]++,stats[_0x1e945b(0x3a3)]--),_0x3793d5[_0x1e945b(0x1ba)](updateQuestionNav)):_0x14374d[_0x1e945b(0x258)]('video[data-src]')['forEach'](_0x1700d4=>{const _0x4ccbd4=_0x1e945b,_0x527102=_0x1700d4['dataset']['src'];if(_0x527102&&_0x527102[_0x4ccbd4(0x13e)](_0x3793d5[_0x4ccbd4(0x1ec)]))_0x3793d5[_0x4ccbd4(0x2dc)](_0x29854e,_0x1700d4,_0x527102);else _0x527102&&(_0x1700d4['src']=_0x527102);}),_0x3793d5[_0x1e945b(0x1ba)](saveProgress);}function processAnswer(){const _0x29638d=_0x30f72e,_0x3b14cb={'oOMDI':function(_0x48c9b9){return _0x48c9b9();},'gNCtE':function(_0x1990eb,_0x2b00e5){return _0x1990eb===_0x2b00e5;},'IMjRW':function(_0x260929,_0x550133){return _0x260929===_0x550133;},'JVXsL':'correct','EjTMa':function(_0xa95ac2){return _0xa95ac2();},'cUKct':function(_0xf526fd,_0x3174ba){return _0xf526fd(_0x3174ba);}},_0x43d458=questionsData[currentQuestionIndex],_0x110b57=_0x43d458[_0x29638d(0x2a9)];if(_0x3b14cb['gNCtE'](selectedOption,null))return;const _0x890a37=_0x43d458['choices'][selectedOption],_0x4906a4=_0x3b14cb[_0x29638d(0x194)](_0x890a37['id'],_0x110b57);if(questionStates[currentQuestionIndex]['status']===_0x29638d(0x185)){if(_0x3b14cb[_0x29638d(0x15d)]('jBYMO',_0x29638d(0x2fd))){stats[_0x29638d(0x2c8)]++,stats['notAttempted']--;if(_0x4906a4)stats['correctAnswers']++;else stats[_0x29638d(0x387)]++;}else _0x493119=0x0,_0x3b14cb[_0x29638d(0x345)](_0x44260f),_0x3b14cb['oOMDI'](_0x18c356);}questionStates[currentQuestionIndex]['status']=_0x4906a4?_0x3b14cb['JVXsL']:_0x29638d(0x21c),_0x3b14cb[_0x29638d(0x1ed)](updateStats),_0x3b14cb[_0x29638d(0x245)](showInlineFeedback,_0x4906a4),_0x3b14cb['EjTMa'](updateQuestionNav);}function showInlineFeedback(_0x24a1f7){const _0x41fe2e=_0x30f72e,_0x2e60ba={'DfoBL':_0x41fe2e(0x38c),'aKmYU':function(_0x3909be,_0x56002b){return _0x3909be===_0x56002b;},'rDeQL':function(_0x5bfee4,_0xa16492){return _0x5bfee4!==_0xa16492;},'psVSq':function(_0x4e9c3d,_0x2ea22d){return _0x4e9c3d!==_0x2ea22d;},'cgXSy':_0x41fe2e(0x12d),'EqstH':_0x41fe2e(0x131),'uyvIq':'answered','saAaB':function(_0x1b3a6d){return _0x1b3a6d();}};if(_0x2e60ba[_0x41fe2e(0x25c)](currentMode,_0x41fe2e(0x1d5))&&_0x2e60ba[_0x41fe2e(0x371)](currentMode,_0x2e60ba['cgXSy']))return;const _0x46cf4b=document['getElementById'](_0x2e60ba[_0x41fe2e(0x1f5)]),_0x1cb3ee=_0x46cf4b['querySelectorAll']('.option-button'),_0x19f631=questionsData[currentQuestionIndex],_0x226491=_0x19f631['correct_choice_id'];let _0x242a64=_0x19f631[_0x41fe2e(0x385)][_0x41fe2e(0x145)](_0x417dde=>_0x417dde['id']===_0x226491);_0x46cf4b[_0x41fe2e(0x1b3)][_0x41fe2e(0x391)](_0x2e60ba[_0x41fe2e(0x25f)]),_0x1cb3ee[_0x41fe2e(0x16b)]((_0x3a6c85,_0x8e8db4)=>{const _0x5e84f9=_0x41fe2e;_0x3a6c85[_0x5e84f9(0x1b3)][_0x5e84f9(0x18a)](_0x5e84f9(0x225));if(_0x8e8db4===_0x242a64)_0x3a6c85[_0x5e84f9(0x1b3)]['add'](_0x2e60ba[_0x5e84f9(0x39b)]);else{if(_0x2e60ba['aKmYU'](_0x8e8db4,selectedOption)&&!_0x24a1f7)_0x3a6c85[_0x5e84f9(0x1b3)][_0x5e84f9(0x391)](_0x5e84f9(0x21c));}}),_0x2e60ba[_0x41fe2e(0x24b)](showSolution);}function showSolution(){const _0x3d4508=_0x30f72e,_0x25cd4e={'LkCqT':function(_0x5c7571){return _0x5c7571();},'hdJnK':function(_0x56cb75,_0x3bfffc){return _0x56cb75!==_0x3bfffc;},'OYIKD':_0x3d4508(0x137),'gcBLm':_0x3d4508(0x21c),'NLsMc':_0x3d4508(0x211),'eGjEa':_0x3d4508(0x1d5),'nGxkw':'timed_study','UMyFf':_0x3d4508(0x22e),'UuSoU':'No\x20solution\x20provided','RZZGj':'solutionVideo','MmZMb':'explanationVideoPlayer','XASqn':function(_0x583ed6,_0x1159d5){return _0x583ed6!==_0x1159d5;},'JNBUi':_0x3d4508(0x17f),'JdyUK':'hidden','YPwUM':_0x3d4508(0x279),'KoWpx':function(_0x16e447,_0x50ac4c,_0xbe557a){return _0x16e447(_0x50ac4c,_0xbe557a);},'pckWG':function(_0x5cfc74,_0x4ca040){return _0x5cfc74===_0x4ca040;},'JjGay':_0x3d4508(0x368),'HPRPk':_0x3d4508(0x17b),'bOxbh':_0x3d4508(0x305),'fLMGq':_0x3d4508(0x198)};if(currentMode!==_0x25cd4e['eGjEa']&&currentMode!==_0x25cd4e['nGxkw'])return;const _0x21149e=questionsData[currentQuestionIndex];document['getElementById'](_0x25cd4e[_0x3d4508(0x1f3)])[_0x3d4508(0x268)]=_0x21149e['solution']||_0x25cd4e[_0x3d4508(0x32c)];const _0x2b5ea5=document[_0x3d4508(0x15c)](_0x25cd4e[_0x3d4508(0x25a)]),_0x575f3d=document['getElementById'](_0x25cd4e[_0x3d4508(0x2aa)]),_0x550acf=_0x21149e[_0x3d4508(0x14f)];if(_0x550acf){if(_0x25cd4e[_0x3d4508(0x2b3)](_0x25cd4e[_0x3d4508(0x255)],_0x3d4508(0x2db))){_0x2b5ea5[_0x3d4508(0x1b3)][_0x3d4508(0x18a)](_0x25cd4e['JdyUK']);if(_0x550acf[_0x3d4508(0x13e)](_0x25cd4e[_0x3d4508(0x24e)]))_0x25cd4e[_0x3d4508(0x1a2)](setupVideo,_0x575f3d,_0x550acf);else _0x575f3d['src']=_0x550acf;}else _0x25cd4e[_0x3d4508(0x28e)](_0x2280fb);}else _0x2b5ea5[_0x3d4508(0x1b3)][_0x3d4508(0x391)]('hidden');const _0x7fc89c=document[_0x3d4508(0x15c)](_0x3d4508(0x340));_0x7fc89c[_0x3d4508(0x268)]='';_0x21149e[_0x3d4508(0x1e5)]&&(_0x7fc89c[_0x3d4508(0x268)]+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22'+_0x21149e[_0x3d4508(0x1e5)]+_0x3d4508(0x38d));if(_0x21149e[_0x3d4508(0x32a)]){if(_0x25cd4e[_0x3d4508(0x377)](_0x3d4508(0x326),_0x25cd4e[_0x3d4508(0x1ca)])){if(_0x25cd4e[_0x3d4508(0x3c9)](_0x59dfcb[_0x3d4508(0x291)],null))_0xcce1df=_0x25cd4e['OYIKD'];else _0x13a1a2='nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20';}else _0x7fc89c[_0x3d4508(0x268)]+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22'+_0x21149e[_0x3d4508(0x32a)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>';}const _0x4bf47b=document[_0x3d4508(0x15c)](_0x25cd4e[_0x3d4508(0x3cc)]);_0x4bf47b['innerHTML']='',_0x21149e[_0x3d4508(0x1c9)]&&(_0x25cd4e[_0x3d4508(0x220)]===_0x3d4508(0x305)?_0x21149e[_0x3d4508(0x1c9)][_0x3d4508(0x16b)](_0x1f8ae5=>{const _0x5ac606=_0x3d4508;if(_0x1f8ae5)_0x4bf47b[_0x5ac606(0x268)]+=_0x5ac606(0x195)+_0x1f8ae5+_0x5ac606(0x292);}):(_0x40f536=_0x25cd4e[_0x3d4508(0x2bf)],_0x50ca1c=_0x25cd4e[_0x3d4508(0x2d1)])),document[_0x3d4508(0x15c)](_0x25cd4e[_0x3d4508(0x273)])['classList']['remove'](_0x25cd4e[_0x3d4508(0x141)]);}function submitQuiz(){const _0x4b159a=_0x30f72e,_0xd12325={'DhgLd':function(_0x1588c0,_0x3d6c8d){return _0x1588c0===_0x3d6c8d;},'PzoWy':_0x4b159a(0x275),'xBugv':_0x4b159a(0x34c),'GPonk':function(_0x1e6ec7,_0x289f93){return _0x1e6ec7+_0x289f93;},'OyvOz':function(_0x8bf40a,_0x40bc83){return _0x8bf40a!==_0x40bc83;},'VXKsk':function(_0xed1d98,_0x5bfe6c){return _0xed1d98!==_0x5bfe6c;},'RHdkf':'fyRRR','OGVJe':_0x4b159a(0x38c),'DyLtx':'incorrect','Vflca':function(_0x4e799e,_0x3729cf){return _0x4e799e(_0x3729cf);},'JvDiU':_0x4b159a(0x213),'houYH':function(_0x347258,_0x44ed6f){return _0x347258-_0x44ed6f;},'fqnCE':function(_0x52508a,_0xa33441){return _0x52508a+_0xa33441;},'JGaER':function(_0x14cf3e){return _0x14cf3e();},'guUFD':function(_0x3f382b,_0x190303,_0x17d098,_0x73d1a0,_0x1c0f27){return _0x3f382b(_0x190303,_0x17d098,_0x73d1a0,_0x1c0f27);},'HehHF':function(_0x56acd5,_0xd803c0){return _0x56acd5-_0xd803c0;}};if(timer)_0xd12325[_0x4b159a(0x390)](clearInterval,timer);if(!confirm(_0x4b159a(0x31d)))return;isQuizCompleted=!![];let _0x195d11=0x0,_0x3be6aa=0x0;const _0x136184=Date[_0x4b159a(0x130)]()-quizStartTime;questionsData[_0x4b159a(0x16b)]((_0x1eb491,_0x4d6c42)=>{const _0x4727e9=_0x4b159a,_0x34d47b=questionStates[_0x4d6c42];if(_0xd12325[_0x4727e9(0x261)](_0x34d47b[_0x4727e9(0x291)],null)){if(_0xd12325['VXKsk'](_0xd12325[_0x4727e9(0x3c6)],_0xd12325[_0x4727e9(0x3c6)])){const _0x5c6969=_0xd12325[_0x4727e9(0x21a)](_0x4ddfe9['selectedAnswer'],_0x2f077d),_0x3afa24=_0xd12325[_0x4727e9(0x21a)](_0x29537e['id'],_0x56859f);let _0x13b48a=_0x4727e9(0x230);if(_0x3afa24)_0x13b48a=_0xd12325['PzoWy'];else{if(_0x5c6969)_0x13b48a=_0xd12325[_0x4727e9(0x14c)];}return'<div\x20class=\x22p-3\x20rounded-lg\x20border\x20'+_0x13b48a+_0x4727e9(0x1d9)+_0x10f225['fromCharCode'](_0xd12325[_0x4727e9(0x1ea)](0x41,_0xc36e4d))+'</span><span>'+_0x3814cc['text']+_0x4727e9(0x3a6);}else _0xd12325[_0x4727e9(0x21a)](_0x1eb491[_0x4727e9(0x385)][_0x34d47b[_0x4727e9(0x291)]]['id'],_0x1eb491[_0x4727e9(0x2a9)])?(_0x195d11++,_0x34d47b[_0x4727e9(0x12b)]=_0xd12325['OGVJe']):(_0x3be6aa++,_0x34d47b[_0x4727e9(0x12b)]=_0xd12325[_0x4727e9(0x29a)]);}});const _0xd9e60d=JSON['parse'](localStorage['getItem'](_0xd12325[_0x4b159a(0x2e3)]))||[];_0xd9e60d[_0x4b159a(0x317)]({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date[_0x4b159a(0x130)](),'totalTime':_0x136184,'stats':{'correct':_0x195d11,'incorrect':_0x3be6aa,'notAttempted':_0xd12325['houYH'](questionsData['length'],_0xd12325[_0x4b159a(0x284)](_0x195d11,_0x3be6aa))}}),localStorage['setItem'](_0x4b159a(0x213),JSON[_0x4b159a(0x2ea)](_0xd9e60d)),stats[_0x4b159a(0x238)]=_0x195d11,stats[_0x4b159a(0x387)]=_0x3be6aa,_0xd12325[_0x4b159a(0x196)](markQuizAsCompleted),_0xd12325[_0x4b159a(0x3cd)](showPerformanceAnalysis,_0x195d11,_0x3be6aa,_0xd12325[_0x4b159a(0x3d0)](questionsData[_0x4b159a(0x2f6)],_0xd12325[_0x4b159a(0x284)](_0x195d11,_0x3be6aa)),_0x136184);}function showPerformanceAnalysis(_0xa1afba,_0x10568e,_0x2ec230,_0xa463a2){const _0xb49996=_0x30f72e,_0x46561f={'joxyP':_0xb49996(0x125),'pLaLQ':function(_0x27e46b,_0xe507a){return _0x27e46b/_0xe507a;},'CGUKX':function(_0x992bb9,_0x176f85){return _0x992bb9+_0x176f85;},'VRNAH':function(_0x9cc9dc,_0xb9ccc1){return _0x9cc9dc*_0xb9ccc1;},'SXHKF':_0xb49996(0x126),'eNIOI':function(_0x2647ca,_0x26a8af){return _0x2647ca-_0x26a8af;},'WMvmU':'accuracyScore','FSLbH':_0xb49996(0x289),'TwWFm':_0xb49996(0x151),'QeEGC':_0xb49996(0x337),'bYHKA':function(_0x112ec6,_0x27ec16){return _0x112ec6%_0x27ec16;},'jtziu':_0xb49996(0x243),'zLhRs':function(_0x2a0b0a,_0x5f50d9){return _0x2a0b0a/_0x5f50d9;},'SiPcE':function(_0x27d93d,_0x151296){return _0x27d93d/_0x151296;},'hKyGd':function(_0x26be7e,_0x20a763){return _0x26be7e%_0x20a763;},'UYyrL':_0xb49996(0x21b)},_0x36cfc0=document[_0xb49996(0x15c)](_0x46561f['joxyP']),_0xb2274e=_0xa1afba+_0x10568e>0x0?Math['round'](_0x46561f['pLaLQ'](_0xa1afba,_0x46561f[_0xb49996(0x392)](_0xa1afba,_0x10568e))*0x64):0x0,_0x3d88e8=_0x46561f[_0xb49996(0x2a2)](0x2*Math['PI'],0x41),_0x57d116=document[_0xb49996(0x15c)](_0x46561f[_0xb49996(0x2f1)]);_0x57d116[_0xb49996(0x139)][_0xb49996(0x227)]=_0x3d88e8+'\x20'+_0x3d88e8,_0x57d116[_0xb49996(0x139)]['strokeDashoffset']=_0x46561f['eNIOI'](_0x3d88e8,_0x46561f[_0xb49996(0x2a2)](_0xb2274e/0x64,_0x3d88e8)),document[_0xb49996(0x15c)](_0x46561f[_0xb49996(0x176)])[_0xb49996(0x3b4)]=_0xb2274e+'%',document[_0xb49996(0x15c)](_0xb49996(0x1cd))['textContent']=questionsData[_0xb49996(0x2f6)],document[_0xb49996(0x15c)](_0x46561f[_0xb49996(0x2f4)])[_0xb49996(0x3b4)]=_0xa1afba,document[_0xb49996(0x15c)](_0x46561f[_0xb49996(0x2e5)])[_0xb49996(0x3b4)]=_0x10568e,document[_0xb49996(0x15c)](_0x46561f['QeEGC'])['textContent']=_0x2ec230;const _0x5595d1=Math[_0xb49996(0x3cb)](_0x46561f[_0xb49996(0x33c)](_0xa463a2,0xea60)),_0x2406f7=Math['floor'](_0x46561f[_0xb49996(0x33c)](_0x46561f[_0xb49996(0x19d)](_0xa463a2,0xea60),0x3e8));document['getElementById'](_0x46561f[_0xb49996(0x301)])[_0xb49996(0x3b4)]=_0x5595d1+':'+_0x2406f7['toString']()['padStart'](0x2,'0');const _0x55396a=_0x46561f[_0xb49996(0x2e6)](_0xa463a2,questionsData['length']),_0x2982ee=Math[_0xb49996(0x3cb)](_0x46561f[_0xb49996(0x33c)](_0x55396a,0xea60)),_0xe92a60=Math[_0xb49996(0x3cb)](_0x46561f[_0xb49996(0x2d0)](_0x46561f[_0xb49996(0x2b7)](_0x55396a,0xea60),0x3e8));document[_0xb49996(0x15c)](_0x46561f['UYyrL'])[_0xb49996(0x3b4)]=_0x2982ee+':'+_0xe92a60[_0xb49996(0x300)]()['padStart'](0x2,'0'),_0x36cfc0[_0xb49996(0x1b3)][_0xb49996(0x18a)](_0xb49996(0x120));}function closePerformanceModal(){const _0x39c0b2=_0x30f72e,_0x4f1ab9={'QGUEg':'hidden'};document[_0x39c0b2(0x15c)]('performanceModal')[_0x39c0b2(0x1b3)][_0x39c0b2(0x391)](_0x4f1ab9[_0x39c0b2(0x388)]);}function reviewQuestions(){const _0x1415a4=_0x30f72e,_0x5690b1={'KhDRK':function(_0x1f1b44){return _0x1f1b44();},'ivmrz':_0x1415a4(0x382),'CAyrS':function(_0x2ac5b1){return _0x2ac5b1();},'KpAuE':'BIGoM','NDLuy':function(_0x37d8ca,_0x45f2d8){return _0x37d8ca===_0x45f2d8;},'exTeT':_0x1415a4(0x275),'xkyit':_0x1415a4(0x34c),'ODauC':function(_0x336a68,_0xb2009e){return _0x336a68+_0xb2009e;},'CBwJl':_0x1415a4(0x264),'tvrnI':_0x1415a4(0x27c),'aqqPO':function(_0x15be97,_0x48b162){return _0x15be97!==_0x48b162;},'SSyAM':function(_0x1276f2,_0xdba178){return _0x1276f2===_0xdba178;},'wFnzL':_0x1415a4(0x160),'eZMuY':_0x1415a4(0x2b4),'sXSJW':_0x1415a4(0x38c),'JArAw':_0x1415a4(0x22a),'RGHVt':_0x1415a4(0x21c),'Waohi':_0x1415a4(0x211),'AqroW':_0x1415a4(0x1a8),'YMgVX':function(_0x3cff82,_0x270458){return _0x3cff82===_0x270458;},'Grgvm':'red','rNvxZ':_0x1415a4(0x2ec),'RzWfu':_0x1415a4(0x2c3),'jspAL':'questionReviewSection','hLeIO':_0x1415a4(0x120),'PnAsm':_0x1415a4(0x35e)};document[_0x1415a4(0x15c)](_0x5690b1[_0x1415a4(0x335)])[_0x1415a4(0x1b3)][_0x1415a4(0x18a)](_0x5690b1['hLeIO']);const _0x57d8ef=document[_0x1415a4(0x15c)](_0x5690b1[_0x1415a4(0x1f6)]);_0x57d8ef[_0x1415a4(0x268)]='',questionsData['forEach']((_0x402da0,_0x153138)=>{const _0x240232=_0x1415a4,_0x296cb4={'VStAD':function(_0x53bbe0){return _0x5690b1['KhDRK'](_0x53bbe0);},'qnxDU':function(_0x547fca,_0x36f4a9){return _0x547fca(_0x36f4a9);},'qwwwQ':_0x5690b1[_0x240232(0x1df)],'Nhzlf':function(_0x13e9d0){const _0x49d887=_0x240232;return _0x5690b1[_0x49d887(0x2e8)](_0x13e9d0);},'UHvQc':function(_0x410902,_0x39dff2){return _0x410902!==_0x39dff2;},'HtTgu':'toppP','UwTqp':_0x5690b1[_0x240232(0x17e)],'nZYva':function(_0x3bc904,_0x28defb){const _0x5ea8d5=_0x240232;return _0x5690b1[_0x5ea8d5(0x2eb)](_0x3bc904,_0x28defb);},'bTbhF':_0x240232(0x230),'BTcCz':_0x5690b1[_0x240232(0x232)],'nHxTz':_0x5690b1['xkyit'],'qskic':function(_0x1c7d62,_0x406fe0){const _0x52927b=_0x240232;return _0x5690b1[_0x52927b(0x2bd)](_0x1c7d62,_0x406fe0);}},_0x3122c1=questionStates[_0x153138],_0x15714a=_0x402da0[_0x240232(0x2a9)];let _0x427cfc=_0x5690b1[_0x240232(0x29d)],_0x4da714=_0x5690b1['tvrnI'];if(_0x5690b1[_0x240232(0x336)](_0x3122c1[_0x240232(0x291)],null)){if(_0x5690b1[_0x240232(0x277)](_0x5690b1[_0x240232(0x1c3)],_0x5690b1['eZMuY']))_0x296cb4['VStAD'](_0x44d50f);else{const _0x191701=_0x402da0[_0x240232(0x385)][_0x3122c1['selectedAnswer']];_0x5690b1['SSyAM'](_0x191701['id'],_0x15714a)?(_0x427cfc=_0x5690b1['sXSJW'],_0x4da714=_0x5690b1[_0x240232(0x1c0)]):(_0x427cfc=_0x5690b1[_0x240232(0x2ca)],_0x4da714=_0x5690b1[_0x240232(0x27e)]);}}const _0x7014ca=document[_0x240232(0x129)]('div');_0x7014ca[_0x240232(0x311)]=_0x240232(0x117)+_0x427cfc;let _0x7eff25=(_0x402da0[_0x240232(0x385)]||[])['map']((_0xf3f9af,_0x19272a)=>{const _0x12fa9c=_0x240232;if(_0x296cb4['UHvQc'](_0x296cb4[_0x12fa9c(0x2c9)],_0x296cb4['UwTqp'])){const _0x55576d=_0x3122c1[_0x12fa9c(0x291)]===_0x19272a,_0x557a44=_0x296cb4[_0x12fa9c(0x272)](_0xf3f9af['id'],_0x15714a);let _0x36dbc5=_0x296cb4[_0x12fa9c(0x352)];if(_0x557a44)_0x36dbc5=_0x296cb4[_0x12fa9c(0x206)];else{if(_0x55576d)_0x36dbc5=_0x296cb4[_0x12fa9c(0x142)];}return'<div\x20class=\x22p-3\x20rounded-lg\x20border\x20'+_0x36dbc5+'\x22><span\x20class=\x22font-bold\x20mr-3\x22>'+String['fromCharCode'](_0x296cb4[_0x12fa9c(0x2f7)](0x41,_0x19272a))+'</span><span>'+_0xf3f9af[_0x12fa9c(0x373)]+'</span></div>';}else _0x296cb4[_0x12fa9c(0x2ae)](_0x11b60a,_0x12fa9c(0x1ab))&&(_0x52f746[_0x12fa9c(0x183)][_0x12fa9c(0x319)][_0x12fa9c(0x396)](_0x12fa9c(0x221))&&_0x2bc861[_0x12fa9c(0x124)](_0x296cb4[_0x12fa9c(0x1f9)]),_0x296cb4[_0x12fa9c(0x223)](_0xc11433),_0x141a0b['reload']());})[_0x240232(0x1ce)]('');const _0x5372cf=_0x402da0['explanation_video']?_0x240232(0x2e2)+_0x153138+_0x240232(0x2b5)+_0x402da0[_0x240232(0x14f)]+_0x240232(0x3a2):'';let _0x53d5ab='';if(_0x402da0[_0x240232(0x1e5)])_0x53d5ab+=_0x240232(0x1e1)+_0x402da0[_0x240232(0x1e5)]+_0x240232(0x38d);if(_0x402da0['explanation_audio_hin'])_0x53d5ab+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22'+_0x402da0[_0x240232(0x32a)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>';let _0x136f02=(_0x402da0[_0x240232(0x1c9)]||[])['map'](_0x442e93=>_0x442e93?_0x240232(0x195)+_0x442e93+_0x240232(0x292):'')[_0x240232(0x1ce)]('');_0x7014ca[_0x240232(0x268)]=_0x240232(0x367)+(_0x153138+0x1)+_0x240232(0x2cc)+(_0x427cfc===_0x5690b1[_0x240232(0x37b)]?_0x5690b1[_0x240232(0x212)]:_0x5690b1[_0x240232(0x174)](_0x427cfc,_0x5690b1[_0x240232(0x2ca)])?_0x5690b1[_0x240232(0x16e)]:_0x5690b1[_0x240232(0x1f0)])+_0x240232(0x286)+_0x4da714+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>'+_0x402da0[_0x240232(0x373)]+_0x240232(0x376)+_0x7eff25+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>'+(_0x402da0[_0x240232(0x360)]||_0x5690b1['RzWfu'])+_0x240232(0x18f)+_0x5372cf+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x53d5ab+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x136f02+_0x240232(0x231),_0x57d8ef[_0x240232(0x175)](_0x7014ca);}),_0x5690b1['CAyrS'](initializeReviewVideos);}function initializeReviewVideos(){const _0x1d489c=_0x30f72e,_0x508872={'mLFUI':function(_0x107601,_0x509d08){return _0x107601-_0x509d08;},'srsNT':function(_0x5a7300){return _0x5a7300();},'IZdxH':function(_0x1511d0,_0xeebddc){return _0x1511d0===_0xeebddc;},'mQLph':_0x1d489c(0x2ba),'CbGCB':_0x1d489c(0x22f),'zMTuM':_0x1d489c(0x279),'aEKZa':function(_0x5dcb6e,_0xcbeb91,_0xda6731){return _0x5dcb6e(_0xcbeb91,_0xda6731);}};document[_0x1d489c(0x258)](_0x1d489c(0x3ba))['forEach'](_0x1c7adc=>{const _0x44b3f5=_0x1d489c;if(_0x508872['IZdxH'](_0x508872[_0x44b3f5(0x2e9)],_0x508872[_0x44b3f5(0x32f)]))_0x36c251&&(_0x2296a0[_0x435715]['timeSpent']+=_0x508872['mLFUI'](_0x35fd89['now'](),_0x1de72b)),_0x4c03ae=_0x20a39c,_0x508872[_0x44b3f5(0x36d)](_0x46f9c0),_0x14a66d();else{const _0xb3323f=_0x1c7adc[_0x44b3f5(0x11b)][_0x44b3f5(0x393)];if(_0xb3323f&&_0xb3323f[_0x44b3f5(0x13e)](_0x508872[_0x44b3f5(0x359)]))_0x508872[_0x44b3f5(0x1bf)](setupVideo,_0x1c7adc,_0xb3323f);else _0xb3323f&&(_0x1c7adc['src']=_0xb3323f);}});}function retakeQuiz(){const _0x2884f2=_0x30f72e,_0x16fab8={'jZSgj':_0x2884f2(0x259),'CqSEO':'No\x20questions\x20available\x20for\x20this\x20quiz.','WKoJp':function(_0x556cb7,_0x498b63){return _0x556cb7(_0x498b63);},'jLomR':_0x2884f2(0x1ab),'vmALe':_0x2884f2(0x221),'DjLdS':function(_0x150273,_0x3b87ac){return _0x150273!==_0x3b87ac;},'yItmf':_0x2884f2(0x23e),'bUMUH':_0x2884f2(0x382)};if(_0x16fab8['WKoJp'](confirm,_0x16fab8['jLomR'])){if(window['location'][_0x2884f2(0x319)][_0x2884f2(0x396)](_0x16fab8[_0x2884f2(0x170)])){if(_0x16fab8[_0x2884f2(0x240)]('YAORb',_0x16fab8[_0x2884f2(0x3aa)])){_0x53bd0f[_0x2884f2(0x15c)](_0x16fab8['jZSgj'])[_0x2884f2(0x268)]=_0x16fab8[_0x2884f2(0x1d8)];return;}else localStorage[_0x2884f2(0x124)](_0x16fab8[_0x2884f2(0x15a)]);}clearProgress(),location[_0x2884f2(0x155)]();}}function loadBookmarkedQuestions(){const _0x3260c0=_0x30f72e,_0x385d1e={'HVbKt':function(_0x4e92a1,_0x39d81c){return _0x4e92a1<_0x39d81c;},'jczmO':_0x3260c0(0x37e)},_0x353b76=JSON['parse'](localStorage['getItem'](_0x385d1e[_0x3260c0(0x3d1)]))||[];_0x353b76[_0x3260c0(0x16b)](_0x5d6943=>{const _0x189ac1=_0x3260c0;_0x5d6943[_0x189ac1(0x265)][_0x189ac1(0x13e)](quizName[_0x189ac1(0x226)]()[_0x189ac1(0x3ab)](/ /g,'-'))&&(_0x385d1e[_0x189ac1(0x128)](_0x5d6943[_0x189ac1(0x302)],questionsData[_0x189ac1(0x2f6)])&&(questionStates[_0x5d6943['questionIndex']][_0x189ac1(0x140)]=!![]));});}function toggleBookmark(){const _0x589857=_0x30f72e,_0x5b373f={'uAUkk':'bookmarkedQuestions'},_0x4c9d57=!questionStates[currentQuestionIndex][_0x589857(0x140)];questionStates[currentQuestionIndex]['bookmarked']=_0x4c9d57;let _0x48fe41=JSON['parse'](localStorage[_0x589857(0x13f)](_0x5b373f['uAUkk']))||[];if(_0x4c9d57){const _0x3ddc21={'quizName':quizName,'quizFile':window[_0x589857(0x183)][_0x589857(0x319)][_0x589857(0x33e)]('/')[_0x589857(0x14b)](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date['now']()};_0x48fe41[_0x589857(0x317)](_0x3ddc21);}else _0x48fe41=_0x48fe41['filter'](_0x3ee91a=>!(_0x3ee91a[_0x589857(0x265)]['includes'](quizName[_0x589857(0x226)]()['replace'](/ /g,'-'))&&_0x3ee91a[_0x589857(0x302)]===currentQuestionIndex));localStorage['setItem'](_0x5b373f[_0x589857(0x3ce)],JSON[_0x589857(0x2ea)](_0x48fe41)),updateBookmarkButton(),updateQuestionNav();}function updateBookmarkButton(){const _0x15b5b3=_0x30f72e,_0x3886fb={'fjEbh':_0x15b5b3(0x269),'NiwHs':'gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','SsHWm':_0x15b5b3(0x1d7),'jValU':_0x15b5b3(0x123),'nsyzD':_0x15b5b3(0x2f8)},_0x2d08ad=document['getElementById']('bookmarkBtn'),_0x2801df=document[_0x15b5b3(0x15c)](_0x3886fb[_0x15b5b3(0x11d)]),_0x362e89=questionStates[currentQuestionIndex]['bookmarked'];_0x2d08ad['className']=_0x362e89?_0x3886fb[_0x15b5b3(0x1bc)]:_0x3886fb[_0x15b5b3(0x18d)],_0x2801df[_0x15b5b3(0x3b4)]=_0x362e89?_0x3886fb['jValU']:_0x3886fb['nsyzD'];}function toggleMarkForReview(){const _0x27ac29=_0x30f72e;questionStates[currentQuestionIndex][_0x27ac29(0x3cf)]=!questionStates[currentQuestionIndex]['markedForReview'],updateMarkReviewButton(),updateQuestionNav();}function updateMarkReviewButton(){const _0x1ead47=_0x30f72e,_0x1d2215={'vDVTA':'markReviewBtn','QupOE':_0x1ead47(0x1ac),'dEexr':_0x1ead47(0x34f),'JiFys':_0x1ead47(0x1d0)},_0x451c47=document[_0x1ead47(0x15c)](_0x1d2215[_0x1ead47(0x25e)]),_0x187f95=document[_0x1ead47(0x15c)](_0x1ead47(0x36b)),_0x103f69=questionStates[currentQuestionIndex][_0x1ead47(0x3cf)];_0x451c47[_0x1ead47(0x311)]=_0x103f69?_0x1d2215[_0x1ead47(0x344)]:_0x1ead47(0x1ef),_0x187f95[_0x1ead47(0x3b4)]=_0x103f69?_0x1d2215[_0x1ead47(0x11f)]:_0x1d2215[_0x1ead47(0x2df)];}function previousQuestion(){const _0x5b1969=_0x30f72e,_0x3625a0={'JPlYC':_0x5b1969(0x13d),'xgOoK':function(_0x5496ea,_0x1142e8){return _0x5496ea===_0x1142e8;},'vWboJ':'test','GPmMn':function(_0x5ce019,_0x289044){return _0x5ce019===_0x289044;},'Rgyud':'timed_exam','kksCS':_0x5b1969(0x1e2),'wYZdn':_0x5b1969(0x169),'YFEBh':_0x5b1969(0x1f2),'VhBkJ':'testModeLegend','AcgCY':'flex','YqUdw':_0x5b1969(0x12d),'AaNmi':function(_0x25a789,_0x888e5e){return _0x25a789===_0x888e5e;},'mLhCh':_0x5b1969(0x374),'LkyZp':_0x5b1969(0x120),'ivYww':function(_0x41adab,_0x406fe1){return _0x41adab(_0x406fe1);},'jBClx':function(_0x224c69,_0x1260e4){return _0x224c69>=_0x1260e4;},'mmjgl':function(_0xfb28d0,_0x12f1fe){return _0xfb28d0<_0x12f1fe;},'nrbWQ':function(_0x2e2317){return _0x2e2317();},'VpljL':function(_0xa98cf6){return _0xa98cf6();},'MPcRH':function(_0x452ea7,_0x1a463d){return _0x452ea7>_0x1a463d;},'xwyyc':'FwLxU','WsLmY':function(_0x54348b,_0x40b88d){return _0x54348b-_0x40b88d;}};if(_0x3625a0[_0x5b1969(0x330)](currentQuestionIndex,0x0)){if(_0x5b1969(0x249)!==_0x3625a0['xwyyc'])questionStartTime&&(questionStates[currentQuestionIndex]['timeSpent']+=_0x3625a0[_0x5b1969(0x30c)](Date['now'](),questionStartTime)),currentQuestionIndex--,_0x3625a0[_0x5b1969(0x2d8)](displayQuestion),_0x3625a0['VpljL'](saveProgress);else{_0x137a64=_0x651adf[_0x5b1969(0x130)]();const _0xdf8cc3=_0x139011[_0x5b1969(0x15c)](_0x3625a0[_0x5b1969(0x306)]),_0x3b6a5b=_0x1bb955['getElementById']('markReviewBtn'),_0x2f5bc4=_0x428d19['getElementById'](_0x5b1969(0x2da)),_0x2094de=_0x3625a0['xgOoK'](_0x12a821,_0x3625a0[_0x5b1969(0x3b6)])||_0x3625a0['GPmMn'](_0xbfbb88,_0x3625a0[_0x5b1969(0x314)]);_0x3fee21['getElementById'](_0x3625a0[_0x5b1969(0x3a9)])[_0x5b1969(0x139)][_0x5b1969(0x156)]=_0x2094de?_0x3625a0[_0x5b1969(0x379)]:_0x5b1969(0x1f2),_0x1044d9[_0x5b1969(0x15c)](_0x5b1969(0x30d))[_0x5b1969(0x139)][_0x5b1969(0x156)]=_0x2094de?_0x3625a0[_0x5b1969(0x379)]:_0x3625a0[_0x5b1969(0x14d)],_0x125d1a['getElementById'](_0x3625a0[_0x5b1969(0x37f)])[_0x5b1969(0x139)][_0x5b1969(0x156)]=_0x2094de?_0x3625a0[_0x5b1969(0x14d)]:_0x3625a0['wYZdn'],_0xcc8d6f['getElementById'](_0x5b1969(0x263))[_0x5b1969(0x139)][_0x5b1969(0x156)]=_0x2094de?_0x3625a0[_0x5b1969(0x14d)]:_0x3625a0[_0x5b1969(0x379)],_0xdf8cc3[_0x5b1969(0x139)][_0x5b1969(0x156)]=_0x2094de?_0x3625a0['wYZdn']:_0x3625a0[_0x5b1969(0x256)],_0x3b6a5b['style'][_0x5b1969(0x156)]=_0x2094de?_0x3625a0[_0x5b1969(0x256)]:_0x3625a0[_0x5b1969(0x379)],_0x2f5bc4[_0x5b1969(0x139)][_0x5b1969(0x156)]=_0x2094de?_0x3625a0[_0x5b1969(0x256)]:_0x3625a0[_0x5b1969(0x379)],(_0x9f8665===_0x3625a0[_0x5b1969(0x12f)]||_0x3625a0[_0x5b1969(0x290)](_0xd276d9,_0x3625a0[_0x5b1969(0x314)]))&&_0x201127[_0x5b1969(0x15c)](_0x3625a0['mLhCh'])[_0x5b1969(0x1b3)][_0x5b1969(0x18a)](_0x3625a0[_0x5b1969(0x3a5)]),!_0x3625a0['ivYww'](_0xed1ffb,_0x27c128)&&_0x3625a0[_0x5b1969(0x296)](_0x4668a8,0x0)&&_0x3625a0[_0x5b1969(0x32d)](_0x39ea58,_0xf3b0bf['length'])&&(_0x24ab3b=_0x19eeac),_0x3625a0[_0x5b1969(0x2d8)](_0x330cb5),_0x3625a0['nrbWQ'](_0x5bdfcf),_0x3625a0[_0x5b1969(0x307)](_0x43ee16),_0x3625a0[_0x5b1969(0x2d8)](_0x274952);}}}function _0x9787(_0xc19c09,_0x2adca1){const _0x4ea2d3=_0xf056();return _0x9787=function(_0x438efa,_0x56f3b8){_0x438efa=_0x438efa-0x116;let _0x475cb2=_0x4ea2d3[_0x438efa];return _0x475cb2;},_0x9787(_0xc19c09,_0x2adca1);}function nextQuestion(){const _0x34aa3b=_0x30f72e,_0x25d4a3={'OLfGi':function(_0x3cf7ff,_0x23c8af){return _0x3cf7ff-_0x23c8af;},'CSdzZ':'.option-button','rgPQs':function(_0x5aedcc,_0x5289c3){return _0x5aedcc<_0x5289c3;},'urPdf':function(_0x1c9154,_0x190321){return _0x1c9154(_0x190321);},'AJauz':function(_0x5e4f39,_0x4ef0ae){return _0x5e4f39-_0x4ef0ae;},'TDHdg':function(_0x249d04,_0x1685ff){return _0x249d04-_0x1685ff;},'GHOeE':function(_0x285d29,_0x31aeab){return _0x285d29===_0x31aeab;},'WljsA':_0x34aa3b(0x274),'yWqqC':function(_0x34b778){return _0x34b778();},'iWIbn':function(_0x2534bf){return _0x2534bf();},'lopvH':_0x34aa3b(0x171),'JRskn':'timed_exam','dzzYr':'You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','Nttat':function(_0x92ab47){return _0x92ab47();},'LuGHG':'You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','owoDF':function(_0x350349){return _0x350349();}};questionStartTime&&(questionStates[currentQuestionIndex][_0x34aa3b(0x1ff)]+=_0x25d4a3[_0x34aa3b(0x20b)](Date[_0x34aa3b(0x130)](),questionStartTime));if(currentQuestionIndex<_0x25d4a3['TDHdg'](questionsData[_0x34aa3b(0x2f6)],0x1)){if(_0x25d4a3[_0x34aa3b(0x2d7)]('SlADz',_0x25d4a3[_0x34aa3b(0x267)]))currentQuestionIndex++,_0x25d4a3['yWqqC'](displayQuestion),_0x25d4a3[_0x34aa3b(0x14e)](saveProgress);else{const _0x1d5c19=_0x25d4a3['OLfGi'](_0x3db039(_0x313a18[_0x34aa3b(0x349)]),0x1),_0x18a836=_0x14c87f[_0x34aa3b(0x258)](_0x25d4a3[_0x34aa3b(0x285)]);if(_0x25d4a3['rgPQs'](_0x1d5c19,_0x18a836[_0x34aa3b(0x2f6)]))_0x25d4a3[_0x34aa3b(0x266)](_0x32bb42,_0x1d5c19);}}else _0x25d4a3[_0x34aa3b(0x2d7)](currentMode,_0x25d4a3[_0x34aa3b(0x370)])||_0x25d4a3[_0x34aa3b(0x2d7)](currentMode,_0x25d4a3[_0x34aa3b(0x270)])?_0x25d4a3[_0x34aa3b(0x266)](confirm,_0x25d4a3[_0x34aa3b(0x316)])&&_0x25d4a3[_0x34aa3b(0x354)](submitQuiz):_0x25d4a3[_0x34aa3b(0x266)](confirm,_0x25d4a3[_0x34aa3b(0x30b)])&&(currentQuestionIndex=0x0,_0x25d4a3[_0x34aa3b(0x1a1)](displayQuestion),saveProgress());}function startTimer(){const _0x3b437c=_0x30f72e,_0x231cf4={'DLAkK':function(_0x175e99,_0x578d94){return _0x175e99<_0x578d94;},'UTLvx':'You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','uiyCl':function(_0x2223f6){return _0x2223f6();},'pCdot':_0x3b437c(0x38c),'dxvLV':'Correct','uLdqm':function(_0x148a82,_0x575d84){return _0x148a82<=_0x575d84;},'jvfbE':_0x3b437c(0x34e),'zRSww':'BJkjZ','SXtfq':function(_0x2afa96,_0x3d82ff){return _0x2afa96(_0x3d82ff);},'FOYCB':_0x3b437c(0x17d),'rFkEs':function(_0x2dc525,_0x4bd8f9){return _0x2dc525===_0x4bd8f9;},'EMKvp':'NdOXT','kswtO':function(_0xd7f211){return _0xd7f211();},'FyTbG':_0x3b437c(0x12e),'tASLS':_0x3b437c(0x365),'rjzLF':function(_0x1f6850){return _0x1f6850();}};if(timer)clearInterval(timer);timeRemaining=0x78,_0x231cf4['rjzLF'](updateTimerDisplay),timer=setInterval(()=>{const _0x1d6ca2=_0x3b437c,_0x96ed80={'ZtHtM':_0x231cf4[_0x1d6ca2(0x2d3)],'AzJJo':_0x231cf4['dxvLV']};timeRemaining--,_0x231cf4[_0x1d6ca2(0x153)](updateTimerDisplay),_0x231cf4[_0x1d6ca2(0x381)](timeRemaining,0x0)&&(_0x231cf4[_0x1d6ca2(0x11e)]===_0x231cf4['zRSww']?(_0x33771d=_0x96ed80['ZtHtM'],_0x351e52=_0x96ed80[_0x1d6ca2(0x16d)]):(_0x231cf4[_0x1d6ca2(0x2a3)](clearInterval,timer),currentMode===_0x231cf4[_0x1d6ca2(0x36c)]?_0x231cf4[_0x1d6ca2(0x33a)](_0x1d6ca2(0x1be),_0x231cf4[_0x1d6ca2(0x3b9)])?_0x231cf4[_0x1d6ca2(0x177)](_0x2c2ef3[_0x1d6ca2(0x302)],_0x172f43[_0x1d6ca2(0x2f6)])&&(_0x4ca5dc[_0x3260b1[_0x1d6ca2(0x302)]][_0x1d6ca2(0x140)]=!![]):_0x231cf4[_0x1d6ca2(0x2c7)](submitQuiz):_0x231cf4[_0x1d6ca2(0x33a)](_0x231cf4[_0x1d6ca2(0x281)],_0x231cf4['tASLS'])?_0x66ca30(_0x231cf4['UTLvx'])&&_0x231cf4['uiyCl'](_0x5a2e4e):_0x231cf4['kswtO'](nextQuestion)));},0x3e8);}function updateTimerDisplay(){const _0x18b5f9=_0x30f72e,_0x20e542={'SuUpJ':function(_0x28e690,_0x1f9402){return _0x28e690/_0x1f9402;},'nPJrf':function(_0x4662a3,_0x45bfc7){return _0x4662a3%_0x45bfc7;},'dcIwu':'timeDisplay','JscAV':function(_0x1673ad,_0x4dd5b5){return _0x1673ad+_0x4dd5b5;}},_0x23f534=Math['floor'](_0x20e542[_0x18b5f9(0x2c5)](timeRemaining,0x3c)),_0x203073=_0x20e542[_0x18b5f9(0x214)](timeRemaining,0x3c);document['getElementById'](_0x20e542['dcIwu'])[_0x18b5f9(0x3b4)]=_0x20e542[_0x18b5f9(0x38e)](_0x23f534+':',_0x203073[_0x18b5f9(0x300)]()[_0x18b5f9(0x2a0)](0x2,'0'));}function toggleSidebar(){const _0x5be6bd=_0x30f72e,_0x224895={'DPuwe':_0x5be6bd(0x119)};document[_0x5be6bd(0x15c)](_0x5be6bd(0x133))[_0x5be6bd(0x1b3)]['toggle'](_0x224895[_0x5be6bd(0x20d)]);}document['addEventListener'](_0x30f72e(0x19b),()=>{const _0x44df25=_0x30f72e,_0x149f01={'WUeeQ':_0x44df25(0x38c),'ePGtZ':_0x44df25(0x334),'crjee':_0x44df25(0x13a),'uvuUx':function(_0x4dd462){return _0x4dd462();},'FKFMY':_0x44df25(0x348),'veieg':function(_0x46fa75,_0xa344f6){return _0x46fa75!==_0xa344f6;},'cLnFI':'QHpkG','QKtZK':_0x44df25(0x37c),'kyVuI':_0x44df25(0x20e),'RFRUo':_0x44df25(0x221),'peReB':function(_0x537949){return _0x537949();}};if(resume)_0x149f01[_0x44df25(0x2b0)]!==_0x149f01['crjee']?_0x149f01['uvuUx'](loadProgress)?(document['getElementById'](_0x149f01[_0x44df25(0x2ff)])[_0x44df25(0x139)][_0x44df25(0x156)]=_0x44df25(0x169),initializeQuiz()):_0x149f01['veieg'](_0x149f01['cLnFI'],_0x149f01[_0x44df25(0x3c5)])?(_0x149f01['uvuUx'](clearProgress),document[_0x44df25(0x15c)](_0x149f01[_0x44df25(0x2ff)])[_0x44df25(0x139)][_0x44df25(0x156)]=_0x149f01['kyVuI']):_0x10feaf[_0x44df25(0x393)]=_0x321aa6:_0x8bc4c9['question_images'][_0x44df25(0x16b)](_0x10b462=>{const _0x4eaad5=_0x44df25;if(_0x10b462)_0x2c429e+='<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22'+_0x10b462+_0x4eaad5(0x343);});else!window[_0x44df25(0x183)][_0x44df25(0x319)][_0x44df25(0x396)](_0x149f01[_0x44df25(0x310)])?_0x44df25(0x17c)!==_0x44df25(0x31e)?(_0x149f01[_0x44df25(0x1cb)](clearProgress),document[_0x44df25(0x15c)](_0x149f01[_0x44df25(0x2ff)])[_0x44df25(0x139)][_0x44df25(0x156)]=_0x149f01[_0x44df25(0x2fc)]):(_0x4b23eb++,_0x578e07[_0x44df25(0x12b)]=_0x149f01[_0x44df25(0x39c)]):_0x149f01[_0x44df25(0x19f)](initializeQuiz);}),document['addEventListener'](_0x30f72e(0x2ce),function(_0x1f9153){const _0x15b5aa=_0x30f72e,_0x51208d={'bvHGM':function(_0x541e0e,_0x12512f){return _0x541e0e!==_0x12512f;},'IlIhD':_0x15b5aa(0x348),'lOVuK':_0x15b5aa(0x169),'vStfV':function(_0x35abd0,_0x595e6c){return _0x35abd0===_0x595e6c;},'ZimKy':'performanceModal','aEVcw':function(_0x2c299f,_0x37701c){return _0x2c299f<=_0x37701c;},'Vjjsm':function(_0x5019f4,_0x52046a){return _0x5019f4-_0x52046a;},'rWlku':function(_0x5d3f4d,_0x13abfa){return _0x5d3f4d(_0x13abfa);},'oysMM':function(_0xe2b88b,_0x1ac3ec){return _0xe2b88b<_0x1ac3ec;},'TkHNZ':function(_0x53737a,_0x393f25){return _0x53737a(_0x393f25);},'OknAu':_0x15b5aa(0x353),'wOddN':function(_0x22abbe){return _0x22abbe();},'RPFiJ':_0x15b5aa(0x280),'BqvPl':_0x15b5aa(0x12d),'GcJmH':_0x15b5aa(0x171),'CKsNX':function(_0x94c64e,_0x5a3ed1){return _0x94c64e===_0x5a3ed1;},'nxWHN':_0x15b5aa(0x17d),'xmLjO':function(_0x9df0a6,_0x4b22c8){return _0x9df0a6===_0x4b22c8;}};if(_0x51208d[_0x15b5aa(0x199)](document[_0x15b5aa(0x15c)](_0x51208d['IlIhD'])['style'][_0x15b5aa(0x156)],_0x51208d[_0x15b5aa(0x394)]))return;if(_0x51208d[_0x15b5aa(0x1ae)](document[_0x15b5aa(0x15c)](_0x51208d[_0x15b5aa(0x31b)])[_0x15b5aa(0x1b3)]['contains'](_0x15b5aa(0x120)),![]))return;if(_0x1f9153[_0x15b5aa(0x349)]>='1'&&_0x51208d[_0x15b5aa(0x1e3)](_0x1f9153[_0x15b5aa(0x349)],'4')){const _0x470ec0=_0x51208d[_0x15b5aa(0x35d)](_0x51208d['rWlku'](parseInt,_0x1f9153[_0x15b5aa(0x349)]),0x1),_0x5918f8=document['querySelectorAll'](_0x15b5aa(0x27a));if(_0x51208d[_0x15b5aa(0x146)](_0x470ec0,_0x5918f8[_0x15b5aa(0x2f6)]))_0x51208d[_0x15b5aa(0x2f2)](selectOption,_0x470ec0);}else{if(_0x51208d[_0x15b5aa(0x1ae)](_0x1f9153[_0x15b5aa(0x349)],_0x51208d[_0x15b5aa(0x237)]))_0x51208d[_0x15b5aa(0x322)](previousQuestion);else{if(_0x51208d['vStfV'](_0x1f9153[_0x15b5aa(0x349)],_0x51208d[_0x15b5aa(0x1a0)])||_0x51208d[_0x15b5aa(0x1ae)](_0x1f9153[_0x15b5aa(0x349)],'\x20'))_0x1f9153[_0x15b5aa(0x383)](),_0x51208d[_0x15b5aa(0x322)](nextQuestion);else{if(_0x51208d['vStfV'](_0x1f9153[_0x15b5aa(0x349)][_0x15b5aa(0x226)](),'b')&&(_0x51208d[_0x15b5aa(0x1ae)](currentMode,_0x15b5aa(0x1d5))||_0x51208d[_0x15b5aa(0x1ae)](currentMode,_0x51208d['BqvPl'])))toggleBookmark();else{if(_0x1f9153[_0x15b5aa(0x349)][_0x15b5aa(0x226)]()==='m'&&(_0x51208d[_0x15b5aa(0x1ae)](currentMode,_0x51208d[_0x15b5aa(0x271)])||_0x51208d[_0x15b5aa(0x1b2)](currentMode,_0x51208d[_0x15b5aa(0x3b0)])))toggleMarkForReview();else _0x51208d['vStfV'](_0x1f9153['key']['toLowerCase'](),'s')&&(currentMode===_0x51208d['GcJmH']||_0x51208d[_0x15b5aa(0x23c)](currentMode,_0x51208d[_0x15b5aa(0x3b0)]))&&submitQuiz();}}}}});</script>
+
+</body></html>

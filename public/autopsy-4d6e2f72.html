@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autopsy - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / qBank / Forensic Medicine
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">8</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>function _0x4ef4(_0x5d4b52,_0x5efe72){const _0x2dbd5a=_0xa5ce();return _0x4ef4=function(_0xdf6c08,_0xd5ccce){_0xdf6c08=_0xdf6c08-0x10a;let _0x4bfb86=_0x2dbd5a[_0xdf6c08];return _0x4bfb86;},_0x4ef4(_0x5d4b52,_0x5efe72);}const _0x471a9b=_0x4ef4;(function(_0x391ee5,_0x41e57d){const _0x271291=_0x4ef4,_0x593b06=_0x391ee5();while(!![]){try{const _0x1399ee=-parseInt(_0x271291(0x203))/0x1+parseInt(_0x271291(0x29d))/0x2+parseInt(_0x271291(0x320))/0x3*(-parseInt(_0x271291(0x15d))/0x4)+-parseInt(_0x271291(0x19b))/0x5+parseInt(_0x271291(0x327))/0x6+-parseInt(_0x271291(0x37d))/0x7+parseInt(_0x271291(0x1e0))/0x8*(parseInt(_0x271291(0x28a))/0x9);if(_0x1399ee===_0x41e57d)break;else _0x593b06['push'](_0x593b06['shift']());}catch(_0x3f594d){_0x593b06['push'](_0x593b06['shift']());}}}(_0xa5ce,0xd2f31));const _0x92503b=(function(){const _0x2bf93a=_0x4ef4,_0x40aa85={'dicPI':function(_0x2b847b,_0x5bace9){return _0x2b847b!==_0x5bace9;},'ZssRi':_0x2bf93a(0x31c),'RuXnr':function(_0x3f0044,_0x3e327e){return _0x3f0044===_0x3e327e;},'AIVZU':_0x2bf93a(0x30a),'WKSMP':_0x2bf93a(0x1bb),'pxPwW':function(_0xef602b,_0x4590ed){return _0xef602b!==_0x4590ed;},'JgFFe':_0x2bf93a(0x2f4),'INEtj':function(_0x8b3d74){return _0x8b3d74();},'qOqiI':function(_0x32c9a9,_0x2810b0){return _0x32c9a9===_0x2810b0;}};let _0x243bdf=!![];return function(_0x5e5a0f,_0x4f4e1c){const _0x1cf464=_0x2bf93a,_0x293a3a={'teSVH':function(_0x387c22,_0x4a3ae9){const _0x447277=_0x4ef4;return _0x40aa85[_0x447277(0x307)](_0x387c22,_0x4a3ae9);},'SnucP':function(_0x228363,_0x3d0425){return _0x228363===_0x3d0425;},'GeCKn':_0x40aa85[_0x1cf464(0x314)],'ophbf':function(_0x597c8f){const _0x342ff9=_0x1cf464;return _0x40aa85[_0x342ff9(0x147)](_0x597c8f);}};if(_0x40aa85[_0x1cf464(0x278)](_0x1cf464(0x275),'TZfsK')){const _0x17d0d3=_0x243bdf?function(){const _0xfb0f40=_0x1cf464;if(_0x40aa85[_0xfb0f40(0x171)](_0x40aa85[_0xfb0f40(0x117)],_0x40aa85[_0xfb0f40(0x117)])){const _0x17f266=_0x288ed3[_0x4a382b];_0x293a3a[_0xfb0f40(0x329)](_0x17f266['selectedAnswer'],null)&&(_0x293a3a[_0xfb0f40(0x297)](_0x127f4b[_0xfb0f40(0x249)][_0x17f266[_0xfb0f40(0x1c5)]]['id'],_0xe9b0ba[_0xfb0f40(0x2ea)])?(_0x34d749++,_0x17f266['status']=_0xfb0f40(0x285)):(_0x568e77++,_0x17f266[_0xfb0f40(0x379)]=_0x293a3a[_0xfb0f40(0x2f2)]));}else{if(_0x4f4e1c){if(_0x40aa85[_0xfb0f40(0x2b7)](_0x40aa85[_0xfb0f40(0x2b6)],_0x40aa85[_0xfb0f40(0x224)]))_0x293a3a[_0xfb0f40(0x1bc)](_0x366486);else{const _0x30fb56=_0x4f4e1c[_0xfb0f40(0x161)](_0x5e5a0f,arguments);return _0x4f4e1c=null,_0x30fb56;}}}}:function(){};return _0x243bdf=![],_0x17d0d3;}else _0x1e337b(_0x1059c7,_0x3afa34);};}()),_0x536c40=_0x92503b(this,function(){const _0x1afd7a=_0x4ef4,_0x31f666={'PIbZI':_0x1afd7a(0x2d9)};return _0x536c40['toString']()[_0x1afd7a(0x271)](_0x31f666[_0x1afd7a(0x32c)])[_0x1afd7a(0x1bf)]()[_0x1afd7a(0x1a5)](_0x536c40)['search'](_0x31f666[_0x1afd7a(0x32c)]);});_0x536c40();const _0xd5ccce=(function(){const _0x4f9cb7=_0x4ef4,_0x398466={'TecMt':_0x4f9cb7(0x346),'EaoMv':_0x4f9cb7(0x361),'OOogE':_0x4f9cb7(0x2be),'vaVJN':function(_0x56c793,_0x456ff3){return _0x56c793===_0x456ff3;},'dctYY':_0x4f9cb7(0x1d6),'dRExY':_0x4f9cb7(0x395),'sbiil':'none','xNDYd':'block','mAvnz':_0x4f9cb7(0x2af),'eLUpS':_0x4f9cb7(0x18e),'SBjWz':_0x4f9cb7(0x1f2),'ZFDdp':_0x4f9cb7(0x17e),'UaphQ':_0x4f9cb7(0x18f),'oQyxR':_0x4f9cb7(0x23f),'ZXqXY':function(_0x372344,_0x490bcf){return _0x372344(_0x490bcf);},'Oubfs':function(_0x497fd4,_0x268a37){return _0x497fd4<_0x268a37;},'CSQTf':function(_0x11f8cc){return _0x11f8cc();},'dOpYD':function(_0x5994ac){return _0x5994ac();},'UelsL':_0x4f9cb7(0x21e),'WnYlK':'QCIVF'};let _0x5ba325=!![];return function(_0x2aee76,_0x6b8a53){const _0x5560c0=_0x4f9cb7;if(_0x398466[_0x5560c0(0x2ce)]!==_0x5560c0(0x2c1)){_0x34bee4=_0xce306c[_0x5560c0(0x1eb)]();const _0xcb7e64=_0x1c147a[_0x5560c0(0x17d)](_0x398466[_0x5560c0(0x253)]),_0xcd3f92=_0x2fc717['getElementById'](_0x398466[_0x5560c0(0x201)]),_0xbc54ad=_0x536689['getElementById'](_0x5560c0(0x38b)),_0x41874e=_0x4d61a8===_0x398466[_0x5560c0(0x2e2)]||_0x398466['vaVJN'](_0x54a7ce,_0x398466['dctYY']);_0x5ae10e['getElementById'](_0x398466[_0x5560c0(0x197)])['style'][_0x5560c0(0x1b8)]=_0x41874e?_0x398466['sbiil']:_0x398466[_0x5560c0(0x32b)],_0x43df01['getElementById'](_0x398466['mAvnz'])[_0x5560c0(0x242)][_0x5560c0(0x1b8)]=_0x41874e?_0x5560c0(0x295):_0x398466['xNDYd'],_0x1e8e22[_0x5560c0(0x17d)](_0x5560c0(0x34e))[_0x5560c0(0x242)][_0x5560c0(0x1b8)]=_0x41874e?_0x398466[_0x5560c0(0x32b)]:_0x398466[_0x5560c0(0x16e)],_0x5b6459[_0x5560c0(0x17d)](_0x398466['eLUpS'])[_0x5560c0(0x242)]['display']=_0x41874e?_0x398466[_0x5560c0(0x32b)]:'none',_0xcb7e64['style'][_0x5560c0(0x1b8)]=_0x41874e?'none':_0x398466[_0x5560c0(0x29e)],_0xcd3f92[_0x5560c0(0x242)][_0x5560c0(0x1b8)]=_0x41874e?_0x398466[_0x5560c0(0x29e)]:_0x398466[_0x5560c0(0x16e)],_0xbc54ad[_0x5560c0(0x242)][_0x5560c0(0x1b8)]=_0x41874e?_0x5560c0(0x1f2):_0x5560c0(0x295),(_0xa3ea0e===_0x398466[_0x5560c0(0x349)]||_0x539541===_0x5560c0(0x1d6))&&_0x4de61e[_0x5560c0(0x17d)](_0x398466[_0x5560c0(0x114)])['classList']['remove'](_0x398466['oQyxR']),!_0x398466[_0x5560c0(0x333)](_0x4483b8,_0x2a8564)&&_0x4f81d1>=0x0&&_0x398466[_0x5560c0(0x2e4)](_0x595ddd,_0x762237[_0x5560c0(0x2ee)])&&(_0x5eb832=_0x12eb2d),_0x398466[_0x5560c0(0x37b)](_0x333446),_0x398466[_0x5560c0(0x123)](_0x29a4c5),_0x398466['CSQTf'](_0x287a7a),_0x26629f();}else{const _0x3d4b82=_0x5ba325?function(){const _0x1dc404=_0x5560c0,_0x5b666d={'guURT':function(_0xc7c2bd){return _0xc7c2bd();}};if(_0x398466[_0x1dc404(0x348)]===_0x1dc404(0x21e)){if(_0x6b8a53){const _0x42e67c=_0x6b8a53[_0x1dc404(0x161)](_0x2aee76,arguments);return _0x6b8a53=null,_0x42e67c;}}else _0x5b666d['guURT'](_0x10348d);}:function(){};return _0x5ba325=![],_0x3d4b82;}};}()),_0xdf6c08=_0xd5ccce(this,function(){const _0x1d9623=_0x4ef4,_0x1b602c={'NIBeX':function(_0x1ebdd2,_0x30bac5){return _0x1ebdd2===_0x30bac5;},'UEsxf':_0x1d9623(0x285),'fjdQQ':_0x1d9623(0x36b),'nCyzv':function(_0xe2c4c1,_0x5f67fe){return _0xe2c4c1===_0x5f67fe;},'gUyss':'incorrect','kckGW':_0x1d9623(0x21b),'RxaiX':_0x1d9623(0x31b),'aaiJN':function(_0x10453d,_0x4afeca){return _0x10453d===_0x4afeca;},'SsBWG':_0x1d9623(0x18c),'BWxan':'GzCpv','TvNiK':function(_0x44814a,_0x142d4a){return _0x44814a+_0x142d4a;},'OQoax':function(_0x3fac63,_0x2b8723){return _0x3fac63+_0x2b8723;},'OajOc':_0x1d9623(0x177),'ijQHs':_0x1d9623(0x111),'IXhzE':_0x1d9623(0x36d),'mFtDg':function(_0x36afeb){return _0x36afeb();},'SHYWe':function(_0x42e2ff,_0x3e30e7){return _0x42e2ff===_0x3e30e7;},'sMUxB':'timed_exam','yluOZ':function(_0x54baf0){return _0x54baf0();},'IfYgY':function(_0x2178ae){return _0x2178ae();},'LIgXN':'log','aXFay':_0x1d9623(0x313),'sMeDQ':_0x1d9623(0x1e3),'pxHIn':_0x1d9623(0x1a6),'HIEBK':_0x1d9623(0x138),'SpeUN':'XzyWx'},_0x14aeec=function(){const _0x1e1d01=_0x1d9623;if(_0x1b602c[_0x1e1d01(0x19d)](_0x1b602c[_0x1e1d01(0x296)],_0x1b602c[_0x1e1d01(0x389)])){const _0x2d2e1f={'quizName':_0x17d7d5,'quizFile':_0x58119b[_0x1e1d01(0x2a9)][_0x1e1d01(0x246)][_0x1e1d01(0x15c)]('/')[_0x1e1d01(0x1c2)](),'questionIndex':_0x113fa9,'question':_0xcf818c[_0x4e1fa4],'hierarchy':_0x968843,'timestamp':_0x21ad71[_0x1e1d01(0x1eb)]()};_0x3bc3af[_0x1e1d01(0x2c7)](_0x2d2e1f);}else{let _0x20e48f;try{_0x20e48f=Function(_0x1b602c[_0x1e1d01(0x35c)](_0x1b602c[_0x1e1d01(0x220)](_0x1b602c[_0x1e1d01(0x27f)],_0x1b602c[_0x1e1d01(0x1d4)]),');'))();}catch(_0x44089b){if(_0x1b602c['NIBeX'](_0x1e1d01(0x36d),_0x1b602c[_0x1e1d01(0x397)]))_0x20e48f=window;else{if(_0x1b602c[_0x1e1d01(0x244)](_0x37aa28[_0x1e1d01(0x379)],_0x1b602c[_0x1e1d01(0x21f)]))_0x921dea=_0x1b602c['fjdQQ'];else{if(_0x1b602c[_0x1e1d01(0x200)](_0x5ce5b2[_0x1e1d01(0x379)],_0x1b602c[_0x1e1d01(0x257)]))_0x4de720=_0x1b602c[_0x1e1d01(0x354)];else _0x4f8d17=_0x1b602c[_0x1e1d01(0x243)];}}}return _0x20e48f;}},_0x3c53af=_0x1b602c[_0x1d9623(0x2f8)](_0x14aeec),_0x312c43=_0x3c53af['console']=_0x3c53af[_0x1d9623(0x1c8)]||{},_0x34aa7e=[_0x1b602c[_0x1d9623(0x19a)],_0x1b602c[_0x1d9623(0x133)],_0x1b602c[_0x1d9623(0x2f1)],'error',_0x1b602c[_0x1d9623(0x174)],_0x1d9623(0x2cb),_0x1b602c[_0x1d9623(0x16f)]];for(let _0x4f2bc6=0x0;_0x4f2bc6<_0x34aa7e['length'];_0x4f2bc6++){if(_0x1b602c[_0x1d9623(0x1fd)]===_0x1b602c[_0x1d9623(0x1fd)]){const _0x5f2b50=_0xd5ccce[_0x1d9623(0x1a5)][_0x1d9623(0x2ab)]['bind'](_0xd5ccce),_0x1429f1=_0x34aa7e[_0x4f2bc6],_0x1aa756=_0x312c43[_0x1429f1]||_0x5f2b50;_0x5f2b50[_0x1d9623(0x33a)]=_0xd5ccce[_0x1d9623(0x382)](_0xd5ccce),_0x5f2b50[_0x1d9623(0x1bf)]=_0x1aa756['toString'][_0x1d9623(0x382)](_0x1aa756),_0x312c43[_0x1429f1]=_0x5f2b50;}else _0x134730--,_0x1b602c[_0x1d9623(0x381)](_0x3f5a0a),_0x5831db<=0x0&&(_0x3e3635(_0x4623a9),_0x1b602c[_0x1d9623(0x2e7)](_0x2b604f,_0x1b602c['sMUxB'])?_0x1b602c['yluOZ'](_0x179900):_0x1b602c['IfYgY'](_0x4e25e3));}});_0xdf6c08();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':_0x471a9b(0x357)},{'id':0x2,'text':_0x471a9b(0x1ea)},{'id':0x3,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20magistrate\x20is\x20the\x20authorising\x20officer\x20in\x20case\x20of\x20exhumation</span></p>'},{'id':0x4,'text':_0x471a9b(0x241)}],'text':_0x471a9b(0x31a),'unique_key':_0x471a9b(0x1ee),'question_audio':null,'question_video':null,'map_id':0x129ef6,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':'<p><strong>Explanation\x20of\x20the\x20answer:</strong></p>\x0a<p>In\x20medico-legal\x20autopsies,\x20<strong>consent\x20from\x20relatives\x20is\x20not\x20required</strong>,\x20as\x20they\x20are\x20conducted\x20under\x20legal\x20authority\x20for\x20investigative\x20purposes.</p>\x0a<p><strong>Preliminaries/Formalities\x20of\x20a\x20Forensic\x20Autopsy:</strong></p>\x0a<ul>\x0a<li><strong>Consent\x20Not\x20Required:</strong>\x0a<ul>\x0a<li><strong>Informed\x20consent\x20</strong>from\x20<strong>legal\x20heirs</strong>\x20is<strong>\x20not\x20necessary\x20</strong>for\x20a\x20forensic\x20autopsy.</li>\x0a<li>Legal\x20heirs\x20are\x20usually\x20informed\x20as\x20a\x20formality.</li>\x0a</ul>\x0a</li>\x0a<li><strong>Body\x20Handling:</strong>\x0a<ul>\x0a<li>The\x20body\x20was\x20handed\x20over\x20to\x20the\x20<strong>autopsy\x20surgeon</strong>\x20by\x20the\x20<strong>legal\x20authority.</strong></li>\x0a<li>After\x20the\x20autopsy,\x20the\x20body\x20was\x20returned\x20to\x20<strong>legal\x20authority.</strong></li>\x0a<li><strong>Legal\x20authority</strong>\x20formally\x20hands\x20over\x20the\x20body\x20to\x20the\x20legal\x20heirs\x20for\x20the\x20last\x20rites.\x20<strong>(Option\x20B)</strong></li>\x0a<li>The\x20chain\x20of\x20custody\x20must\x20be\x20documented\x20at\x20all\x20stages.</li>\x0a</ul>\x0a</li>\x0a<li><strong>Presence\x20Restrictions:</strong>\x0a<ul>\x0a<li>No\x20casual\x20observers\x20are\x20allowed.</li>\x0a<li>Maintain\x20a\x20register\x20of\x20legally\x20authorised\x20persons\x20present\x20during\x20autopsy.</li>\x0a</ul>\x0a</li>\x0a<li><strong>Ideal\x20Location:</strong>\x0a<ul>\x0a<li>Well-equipped,\x20ventilated,\x20illuminated\x20autopsy\x20room\x20near\x20the\x20mortuary\x20is\x20preferred.</li>\x0a<li>Autopsies\x20may\x20also\x20be\x20conducted\x20at:\x0a<ul>\x0a<li>Site\x20of\x20discovery\x20(e.g.,\x20decomposed\x20body)</li>\x0a<li>Exhumation\x20site</li>\x0a<li>Temporary\x20arrangements\x20at\x20disaster\x20sites\x20(e.g.,\x20mass\x20disasters)</li>\x0a</ul>\x0a</li>\x0a<li>In\x20cases\x20of\x20<strong>exhumation</strong>,\x20the\x20<strong>Magistrate\x20</strong>is\x20the<strong>\x20authorising\x20officer.\x20(Option\x20C)</strong></li>\x0a</ul>\x0a</li>\x0a<li><strong>Qualified\x20Personnel:\x20(Option\x20D)</strong>\x0a<ul>\x0a<li>Ideally\x20performed\x20by\x20trained\x20<strong>forensic\x20doctors.</strong></li>\x0a<li>In\x20rural/remote\x20areas\x20of\x20developing\x20countries,\x20<strong>general\x20doctors\x20</strong>may\x20conduct\x20autopsies\x20if\x20forensic\x20experts\x20are\x20unavailable.</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a<p><strong>Reference:&nbsp;</strong></p>\x0a<p><a\x20href=\x22https://www.ncbi.nlm.nih.gov/books/NBK539901/\x22>https://www.ncbi.nlm.nih.gov/books/NBK539901/</a></p>','correct_choice_id':0x1,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':_0x471a9b(0x39c)},{'id':0xc,'text':_0x471a9b(0x132)},{'id':0xd,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>District\x20Magistrate\x20orders</span></p>'},{'id':0xe,'text':_0x471a9b(0x1b0)}],'text':_0x471a9b(0x23b),'unique_key':_0x471a9b(0x113),'question_audio':null,'question_video':null,'map_id':0x129ef7,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x471a9b(0x2a8),'correct_choice_id':0xe,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x471a9b(0x280),'tags':[_0x471a9b(0x268)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>I\x20shaped\x20incision</span></p>'},{'id':0x16,'text':_0x471a9b(0x31f)},{'id':0x17,'text':_0x471a9b(0x324)},{'id':0x18,'text':_0x471a9b(0x223)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20autopsy\x20incision\x20is\x20most\x20appropriate\x20in\x20a\x20case\x20of\x20asphyxial\x20death\x20due\x20to\x20neck\x20compression?</span></p>','unique_key':'DT1220346','question_audio':null,'question_video':null,'map_id':0x129efa,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':_0x471a9b(0x291),'correct_choice_id':0x16,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x471a9b(0x280),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':_0x471a9b(0x1fc)},{'id':0x20,'text':_0x471a9b(0x1c3)},{'id':0x21,'text':_0x471a9b(0x335)},{'id':0x22,'text':_0x471a9b(0x1c4)}],'text':_0x471a9b(0x152),'unique_key':'DT1220351','question_audio':null,'question_video':null,'map_id':0x129eff,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':'<p><strong>Explanation:</strong></p>\x0a<p>In\x20<strong>Letulle\x27s\x20technique</strong>,\x20all\x20cervical,\x20thoracic,\x20abdominal,\x20and\x20pelvic\x20organs\x20are\x20removed\x20together\x20as\x20a\x20single\x20block\x20(<strong>en\x20masse</strong>)\x20and\x20dissected\x20afterwards.</p>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202507185654ba99-98bc-43c8-82db-e01e8b944446.png\x22>','correct_choice_id':0x22,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x471a9b(0x280),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':_0x471a9b(0x30b)},{'id':0x2a,'text':_0x471a9b(0x30d)},{'id':0x2b,'text':_0x471a9b(0x2c6)},{'id':0x2c,'text':_0x471a9b(0x28e)}],'text':_0x471a9b(0x136),'unique_key':_0x471a9b(0x343),'question_audio':null,'question_video':null,'map_id':0x129f01,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':'<p><strong>Explanation\x20of\x20the\x20answer:</strong></p>\x0a<p>The\x20correct\x20answer\x20is<strong>\x201-iii,\x202-iv,\x203-ii,\x204-i.</strong></p>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:\x20auto;\x20display:\x20block;\x20vertical-align:\x20middle;\x20border:\x200;\x22\x20src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250718d9906c26-240e-4db7-82b8-9de47e963ee4.png\x22>','correct_choice_id':0x29,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x471a9b(0x280),'tags':[_0x471a9b(0x268)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':_0x471a9b(0x221)},{'id':0x34,'text':_0x471a9b(0x340)},{'id':0x35,'text':_0x471a9b(0x288)},{'id':0x36,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>1,\x202,\x20and\x203</span></p>'}],'text':_0x471a9b(0x206),'unique_key':_0x471a9b(0x23a),'question_audio':null,'question_video':null,'map_id':0x129f06,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':_0x471a9b(0x2cc),'correct_choice_id':0x36,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':_0x471a9b(0x2ac)},{'id':0x3e,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Mercury</span></p>'},{'id':0x3f,'text':_0x471a9b(0x32a)},{'id':0x40,'text':_0x471a9b(0x321)}],'text':_0x471a9b(0x269),'unique_key':_0x471a9b(0x26d),'question_audio':null,'question_video':null,'map_id':0x129f07,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':_0x471a9b(0x326),'correct_choice_id':0x3f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':_0x471a9b(0x26c)},{'id':0x48,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Thalamus</span></p>'},{'id':0x49,'text':_0x471a9b(0x35d)},{'id':0x4a,'text':_0x471a9b(0x364)}],'text':_0x471a9b(0x142),'unique_key':_0x471a9b(0x125),'question_audio':null,'question_video':null,'map_id':0x129f64,'difficulty_level':_0x471a9b(0x124),'subjects_id':[0x1],'solution':_0x471a9b(0x264),'correct_choice_id':0x47,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x471a9b(0x280),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName=_0x471a9b(0x39a);const quizFilename=_0x471a9b(0x1db);let hierarchy=[_0x471a9b(0x342),'qBank',_0x471a9b(0x24b)];if(window['location']['pathname'][_0x471a9b(0x151)](_0x471a9b(0x315))){const customData=JSON[_0x471a9b(0x165)](localStorage[_0x471a9b(0x1bd)](_0x471a9b(0x36e)));customData&&(questionsData=customData[_0x471a9b(0x2cd)],quizName=customData[_0x471a9b(0x360)],hierarchy=customData['hierarchy'],document[_0x471a9b(0x1f1)]=quizName+_0x471a9b(0x17f),document['getElementById'](_0x471a9b(0x239))[_0x471a9b(0x23d)]=questionsData['length'],document[_0x471a9b(0x17d)](_0x471a9b(0x2d8))['textContent']=hierarchy[_0x471a9b(0x2bc)](_0x471a9b(0x10d)));}let currentQuestionIndex=0x0,selectedOption=null,currentMode='study',timer=null,timeRemaining=0x0,questionStartTime=Date[_0x471a9b(0x1eb)](),quizStartTime=Date['now'](),isQuizCompleted=![],questionStates=new Array(questionsData[_0x471a9b(0x2ee)])['fill'](null)['map'](()=>({'status':_0x471a9b(0x398),'bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData[_0x471a9b(0x2ee)]};function saveProgress(){const _0x1c60b8=_0x471a9b,_0x84d361={'PsbzE':'incomplete','WKLnx':_0x1c60b8(0x27d)};if(isQuizCompleted)return;const _0x54bc5f=JSON[_0x1c60b8(0x165)](localStorage['getItem'](_0x1c60b8(0x27d)))||{};_0x54bc5f[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0x84d361[_0x1c60b8(0x231)],'lastSeen':new Date()[_0x1c60b8(0x169)]()},localStorage['setItem'](_0x84d361[_0x1c60b8(0x373)],JSON[_0x1c60b8(0x270)](_0x54bc5f));}function loadProgress(){const _0x5693a6=_0x471a9b,_0x17eada={'ELygu':_0x5693a6(0x27d),'ddSuq':_0x5693a6(0x2fc)},_0x47ae54=JSON[_0x5693a6(0x165)](localStorage[_0x5693a6(0x1bd)](_0x17eada[_0x5693a6(0x299)]))||{},_0x1abd21=_0x47ae54[quizFilename];if(_0x1abd21){const _0x4ebd82=_0x5693a6(0x11f)[_0x5693a6(0x15c)]('|');let _0x4f1f81=0x0;while(!![]){switch(_0x4ebd82[_0x4f1f81++]){case'0':currentQuestionIndex=_0x1abd21[_0x5693a6(0x205)];continue;case'1':console[_0x5693a6(0x154)](_0x17eada[_0x5693a6(0x20a)]);continue;case'2':return!![];case'3':questionStates=_0x1abd21['questionStates'];continue;case'4':stats=_0x1abd21['stats'];continue;case'5':currentMode=_0x1abd21[_0x5693a6(0x1f7)];continue;}break;}}return![];}function clearProgress(){const _0x2359f4=_0x471a9b,_0x39853f={'MOnic':_0x2359f4(0x2b9),'WHXkS':_0x2359f4(0x27d),'GZuIv':_0x2359f4(0x122),'hGuKr':'OMpDY','gGxQd':'Previous\x20progress\x20cleared.'},_0x5ac42e=JSON['parse'](localStorage['getItem'](_0x39853f[_0x2359f4(0x34c)]))||{};_0x5ac42e[quizFilename]&&(_0x39853f[_0x2359f4(0x2e8)]===_0x39853f[_0x2359f4(0x283)]?_0x201909[_0x2359f4(0x1ba)][_0x2359f4(0x38d)](_0x39853f[_0x2359f4(0x350)],_0x2617c8===_0x10c23c):(delete _0x5ac42e[quizFilename],localStorage[_0x2359f4(0x225)](_0x2359f4(0x27d),JSON[_0x2359f4(0x270)](_0x5ac42e)),console[_0x2359f4(0x154)](_0x39853f['gGxQd'])));}function markQuizAsCompleted(){const _0x24297c=_0x471a9b,_0x5d7d62={'xWvba':'userHistory'},_0x122dc4=JSON[_0x24297c(0x165)](localStorage[_0x24297c(0x1bd)](_0x5d7d62[_0x24297c(0x378)]))||{},_0xebd165=questionsData['length'],_0x4ef6bc=stats[_0x24297c(0x24a)]||0x0;_0x122dc4[quizFilename]={'score':_0x4ef6bc,'total':_0xebd165,'status':'completed','completedOn':new Date()[_0x24297c(0x169)]()},localStorage['setItem'](_0x5d7d62[_0x24297c(0x378)],JSON[_0x24297c(0x270)](_0x122dc4));}const urlParams=new URLSearchParams(window[_0x471a9b(0x2a9)][_0x471a9b(0x271)]),startAt=parseInt(urlParams[_0x471a9b(0x394)](_0x471a9b(0x16b))),resume=urlParams['get'](_0x471a9b(0x36a))==='true';function goBack(){const _0x3ac922=_0x471a9b,_0x27aedb={'dioGB':'index.html'};if(!isQuizCompleted)saveProgress();window[_0x3ac922(0x2a9)][_0x3ac922(0x292)]=document['referrer']||_0x27aedb['dioGB'];}function selectMode(_0x7111ea){const _0x3dbc8d=_0x471a9b,_0x317fc6={'bWFaB':_0x3dbc8d(0x351),'TsuVm':_0x3dbc8d(0x295)};currentMode=_0x7111ea,document[_0x3dbc8d(0x17d)](_0x317fc6['bWFaB'])[_0x3dbc8d(0x242)][_0x3dbc8d(0x1b8)]=_0x317fc6['TsuVm'],initializeQuiz();}function initializeQuiz(){const _0x56746d=_0x471a9b,_0x49209b={'oiFyD':'markReviewBtn','UkFeK':'testModeReviewLegend','abYbC':_0x56746d(0x2be),'Ozjtj':function(_0x34a30d,_0x29a4c9){return _0x34a30d===_0x29a4c9;},'xAGXx':_0x56746d(0x395),'Fsfeo':_0x56746d(0x344),'FhyMk':_0x56746d(0x295),'QnzUg':_0x56746d(0x18e),'mKNVC':'flex','ZgHFg':_0x56746d(0x17e),'beILu':function(_0x5b5276,_0x3b7ba3){return _0x5b5276===_0x3b7ba3;},'ylebT':_0x56746d(0x1d6),'Bvlxf':_0x56746d(0x18f),'sCsyE':'hidden','jfWyl':function(_0x3e35dc,_0x79457){return _0x3e35dc<_0x79457;},'PNdKB':function(_0x53267b){return _0x53267b();},'eRhLd':function(_0x279023){return _0x279023();},'tjDYq':function(_0x4214e7){return _0x4214e7();},'Xqsds':function(_0x152921){return _0x152921();}};quizStartTime=Date[_0x56746d(0x1eb)]();const _0x2addc3=document[_0x56746d(0x17d)](_0x56746d(0x346)),_0x4fc4fb=document['getElementById'](_0x49209b[_0x56746d(0x247)]),_0x5008b2=document['getElementById'](_0x49209b[_0x56746d(0x277)]),_0x414f71=currentMode===_0x49209b['abYbC']||_0x49209b[_0x56746d(0x332)](currentMode,_0x56746d(0x1d6));document[_0x56746d(0x17d)](_0x49209b[_0x56746d(0x14b)])[_0x56746d(0x242)][_0x56746d(0x1b8)]=_0x414f71?_0x56746d(0x295):_0x49209b[_0x56746d(0x1ca)],document[_0x56746d(0x17d)](_0x56746d(0x2af))[_0x56746d(0x242)][_0x56746d(0x1b8)]=_0x414f71?_0x49209b[_0x56746d(0x230)]:_0x56746d(0x344),document['getElementById'](_0x56746d(0x34e))[_0x56746d(0x242)][_0x56746d(0x1b8)]=_0x414f71?_0x49209b[_0x56746d(0x1ca)]:'none',document['getElementById'](_0x49209b['QnzUg'])['style'][_0x56746d(0x1b8)]=_0x414f71?_0x49209b[_0x56746d(0x1ca)]:_0x49209b[_0x56746d(0x230)],_0x2addc3[_0x56746d(0x242)][_0x56746d(0x1b8)]=_0x414f71?_0x56746d(0x295):_0x49209b[_0x56746d(0x155)],_0x4fc4fb[_0x56746d(0x242)][_0x56746d(0x1b8)]=_0x414f71?_0x56746d(0x1f2):_0x56746d(0x295),_0x5008b2['style']['display']=_0x414f71?_0x49209b[_0x56746d(0x155)]:_0x49209b[_0x56746d(0x230)],(currentMode===_0x49209b[_0x56746d(0x259)]||_0x49209b[_0x56746d(0x2a3)](currentMode,_0x49209b[_0x56746d(0x211)]))&&document['getElementById'](_0x49209b[_0x56746d(0x199)])['classList'][_0x56746d(0x35e)](_0x49209b[_0x56746d(0x228)]),!isNaN(startAt)&&startAt>=0x0&&_0x49209b[_0x56746d(0x27e)](startAt,questionsData[_0x56746d(0x2ee)])&&(currentQuestionIndex=startAt),_0x49209b[_0x56746d(0x214)](loadBookmarkedQuestions),_0x49209b['eRhLd'](generateQuestionNav),_0x49209b['tjDYq'](updateStats),_0x49209b[_0x56746d(0x306)](displayQuestion);}function generateQuestionNav(){const _0x18c30d=_0x471a9b,_0x566708={'wqIhz':function(_0x5dcb49,_0x428f80){return _0x5dcb49<_0x428f80;},'boQzW':_0x18c30d(0x238),'ejuvy':function(_0x199796,_0x309687){return _0x199796+_0x309687;}},_0x2b4d2d=document[_0x18c30d(0x17d)](_0x18c30d(0x1a1));_0x2b4d2d['innerHTML']='';for(let _0x3702ca=0x0;_0x566708[_0x18c30d(0x37c)](_0x3702ca,questionsData[_0x18c30d(0x2ee)]);_0x3702ca++){const _0x33447d=document[_0x18c30d(0x13b)](_0x566708['boQzW']);_0x33447d[_0x18c30d(0x23d)]=_0x566708[_0x18c30d(0x170)](_0x3702ca,0x1),_0x33447d[_0x18c30d(0x1d5)]=_0x18c30d(0x38a),_0x33447d[_0x18c30d(0x258)]=()=>jumpToQuestion(_0x3702ca),_0x33447d['id']=_0x18c30d(0x24e)+_0x3702ca,_0x2b4d2d[_0x18c30d(0x1a9)](_0x33447d);}updateQuestionNav();}function updateQuestionNav(){const _0x23e3e2=_0x471a9b,_0x5f1a95={'AYrWc':function(_0x4e7818){return _0x4e7818();},'bULWx':'modeModal','Mdtvj':_0x23e3e2(0x1f2),'lTGKB':function(_0xb60145,_0x1c6902){return _0xb60145<_0x1c6902;},'pdFQH':function(_0x22f6e4,_0x189795){return _0x22f6e4===_0x189795;},'qkEFY':_0x23e3e2(0x146),'hZlOx':_0x23e3e2(0x26f),'RzcPM':function(_0x4535d4,_0x4a7b10){return _0x4535d4!==_0x4a7b10;},'JEQbk':'Ffjlx','dVBiz':_0x23e3e2(0x34a),'CBhpC':_0x23e3e2(0x33d),'YjfuE':function(_0x24bd28,_0xf953e6){return _0x24bd28===_0xf953e6;},'WKRnY':'timed_study','DzvbR':function(_0x2ca428,_0x3ff184){return _0x2ca428!==_0x3ff184;},'TFrOl':_0x23e3e2(0x210),'nSRuR':_0x23e3e2(0x285),'FRWyB':'nav-btn-correct','ecXRL':function(_0x2fb6dc,_0x2d4a19){return _0x2fb6dc===_0x2d4a19;},'agUKB':'incorrect','KJaAY':_0x23e3e2(0x21b),'WEPfM':function(_0x7cbf59,_0x43649b){return _0x7cbf59!==_0x43649b;},'hqGNZ':_0x23e3e2(0x15a)};for(let _0x6e54db=0x0;_0x5f1a95[_0x23e3e2(0x30c)](_0x6e54db,questionsData[_0x23e3e2(0x2ee)]);_0x6e54db++){if(_0x5f1a95[_0x23e3e2(0x353)](_0x5f1a95[_0x23e3e2(0x148)],_0x23e3e2(0x146))){const _0x5e1330=document[_0x23e3e2(0x17d)](_0x23e3e2(0x24e)+_0x6e54db),_0x2a42ea=questionStates[_0x6e54db];let _0x4f440f='';if(_0x6e54db===currentQuestionIndex)_0x4f440f=_0x5f1a95['hZlOx'];else{if(_0x2a42ea['bookmarked'])_0x4f440f=_0x23e3e2(0x341);else{if(_0x2a42ea['markedForReview']){if(_0x5f1a95['RzcPM'](_0x23e3e2(0x2ec),_0x5f1a95['JEQbk']))_0x4f440f=_0x5f1a95[_0x23e3e2(0x12a)];else{_0xbfd3f3['totalAttempted']++,_0x5c9d4f['notAttempted']--;if(_0x4b3563)_0x4dc8d2[_0x23e3e2(0x24a)]++;else _0xf3c087[_0x23e3e2(0x18b)]++;}}else{if(_0x5f1a95[_0x23e3e2(0x353)](currentMode,_0x5f1a95[_0x23e3e2(0x34d)])||_0x5f1a95[_0x23e3e2(0x235)](currentMode,_0x5f1a95['WKRnY'])){if(_0x5f1a95[_0x23e3e2(0x308)](_0x23e3e2(0x36f),_0x5f1a95['TFrOl'])){if(_0x5f1a95[_0x23e3e2(0x353)](_0x2a42ea[_0x23e3e2(0x379)],_0x5f1a95['nSRuR']))_0x4f440f=_0x5f1a95[_0x23e3e2(0x29c)];else{if(_0x5f1a95[_0x23e3e2(0x130)](_0x2a42ea[_0x23e3e2(0x379)],_0x5f1a95[_0x23e3e2(0x158)]))_0x4f440f=_0x5f1a95[_0x23e3e2(0x10b)];else _0x4f440f='nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20';}}else{if(_0x5f5140)_0x1176b5['innerHTML']+=_0x23e3e2(0x1f6)+_0x570f36+_0x23e3e2(0x2fd);}}else{if(_0x5f1a95[_0x23e3e2(0x355)](_0x5f1a95[_0x23e3e2(0x1ce)],_0x5f1a95['hqGNZ'])){const _0x38f2b5=_0x5d4c78[_0x23e3e2(0x161)](_0x17f722,arguments);return _0x3870df=null,_0x38f2b5;}else{if(_0x5f1a95[_0x23e3e2(0x2ef)](_0x2a42ea[_0x23e3e2(0x1c5)],null))_0x4f440f=_0x23e3e2(0x14a);else _0x4f440f=_0x23e3e2(0x31b);}}}}}_0x5e1330['className']=_0x23e3e2(0x2d0)+_0x4f440f;}else _0x5f1a95[_0x23e3e2(0x193)](_0x4e9532),_0x3dcc61[_0x23e3e2(0x17d)](_0x5f1a95[_0x23e3e2(0x345)])[_0x23e3e2(0x242)]['display']=_0x5f1a95[_0x23e3e2(0x21a)];}}function jumpToQuestion(_0x788614){const _0x9f6bde=_0x471a9b,_0x1e70a8={'DYuwr':_0x9f6bde(0x36e),'zfIxf':_0x9f6bde(0x1ac),'Vgows':_0x9f6bde(0x239),'ZqVdG':_0x9f6bde(0x2d8),'pkIUU':_0x9f6bde(0x10d),'KenWL':_0x9f6bde(0x17f),'DQmBQ':function(_0xf8be24,_0x3618c6){return _0xf8be24>=_0x3618c6;},'lEpXx':function(_0x409616,_0x58858e){return _0x409616<_0x58858e;},'jjMkK':function(_0x3bbdb6,_0x528708){return _0x3bbdb6!==_0x528708;},'iPWOy':_0x9f6bde(0x13a),'ZWwMf':function(_0x564060,_0x1b53d0){return _0x564060-_0x1b53d0;},'WOUaa':function(_0x53b3c9){return _0x53b3c9();},'uYBPz':function(_0x43637c){return _0x43637c();}};if(_0x1e70a8[_0x9f6bde(0x300)](_0x788614,0x0)&&_0x1e70a8[_0x9f6bde(0x27c)](_0x788614,questionsData[_0x9f6bde(0x2ee)])){if(_0x1e70a8[_0x9f6bde(0x32e)](_0x1e70a8[_0x9f6bde(0x163)],'TEvul')){const _0x309049=_0x55a260['parse'](_0x1e327c[_0x9f6bde(0x1bd)](_0x1e70a8['DYuwr']));if(_0x309049){const _0x43df3c=_0x1e70a8[_0x9f6bde(0x331)][_0x9f6bde(0x15c)]('|');let _0x1c6ce3=0x0;while(!![]){switch(_0x43df3c[_0x1c6ce3++]){case'0':_0x469264=_0x309049[_0x9f6bde(0x2bf)];continue;case'1':_0x35f1e7[_0x9f6bde(0x17d)](_0x1e70a8[_0x9f6bde(0x337)])[_0x9f6bde(0x23d)]=_0x581394[_0x9f6bde(0x2ee)];continue;case'2':_0x3bbd84=_0x309049[_0x9f6bde(0x360)];continue;case'3':_0x4e2377['getElementById'](_0x1e70a8['ZqVdG'])[_0x9f6bde(0x23d)]=_0x2cb452[_0x9f6bde(0x2bc)](_0x1e70a8['pkIUU']);continue;case'4':_0x5f149b=_0x309049[_0x9f6bde(0x2cd)];continue;case'5':_0x3ac951[_0x9f6bde(0x1f1)]=_0x49307a+_0x1e70a8[_0x9f6bde(0x1a7)];continue;}break;}}}else questionStartTime&&(questionStates[currentQuestionIndex]['timeSpent']+=_0x1e70a8['ZWwMf'](Date[_0x9f6bde(0x1eb)](),questionStartTime)),currentQuestionIndex=_0x788614,_0x1e70a8[_0x9f6bde(0x366)](displayQuestion),_0x1e70a8[_0x9f6bde(0x347)](saveProgress);}}function updateStats(){const _0x5a4f74=_0x471a9b,_0x476d8f={'KQstG':'answered','eGJcL':_0x5a4f74(0x33d),'YEZbp':function(_0x8e1a03,_0x379eae){return _0x8e1a03===_0x379eae;},'yprKU':_0x5a4f74(0x17e),'EvNBb':'ijaHi','OEUfp':_0x5a4f74(0x226),'KpdlG':_0x5a4f74(0x252),'KhOfz':_0x5a4f74(0x1dc),'uZfPx':function(_0x4a7519,_0x31401d){return _0x4a7519*_0x31401d;},'UvAvC':function(_0x45fc24,_0x272251){return _0x45fc24/_0x272251;},'PnfXn':_0x5a4f74(0x2ad),'EYwPd':function(_0x310d86,_0x313971){return _0x310d86/_0x313971;},'oeNHq':function(_0x3705ea,_0x5d7f7f){return _0x3705ea%_0x5d7f7f;},'wMmok':'timeSpent','dRBgK':function(_0x955070,_0x543e05){return _0x955070+_0x543e05;}};if(currentMode===_0x476d8f[_0x5a4f74(0x2b5)]||_0x476d8f['YEZbp'](currentMode,_0x476d8f['yprKU'])){if(_0x476d8f['YEZbp'](_0x5a4f74(0x339),_0x476d8f[_0x5a4f74(0x19c)])){document[_0x5a4f74(0x17d)](_0x476d8f[_0x5a4f74(0x1b9)])[_0x5a4f74(0x23d)]=stats[_0x5a4f74(0x24a)],document[_0x5a4f74(0x17d)](_0x476d8f[_0x5a4f74(0x369)])[_0x5a4f74(0x23d)]=stats[_0x5a4f74(0x18b)],document['getElementById'](_0x476d8f[_0x5a4f74(0x20e)])[_0x5a4f74(0x23d)]=stats[_0x5a4f74(0x1dc)];const _0x465781=stats['totalAttempted']>0x0?Math[_0x5a4f74(0x17c)](_0x476d8f[_0x5a4f74(0x380)](_0x476d8f[_0x5a4f74(0x32d)](stats[_0x5a4f74(0x24a)],stats[_0x5a4f74(0x1dc)]),0x64)):0x0;document[_0x5a4f74(0x17d)](_0x476d8f['PnfXn'])['textContent']=_0x465781+'%',stats[_0x5a4f74(0x196)]=questionStates['reduce']((_0x82ed79,_0x3ee39f)=>_0x82ed79+_0x3ee39f[_0x5a4f74(0x1e1)],0x0);const _0x445eed=Math['floor'](stats[_0x5a4f74(0x196)]/0x3e8),_0x3c4aa4=Math[_0x5a4f74(0x16d)](_0x476d8f['EYwPd'](_0x445eed,0x3c)),_0x314e2d=_0x476d8f[_0x5a4f74(0x2f0)](_0x445eed,0x3c);document[_0x5a4f74(0x17d)](_0x476d8f[_0x5a4f74(0x237)])[_0x5a4f74(0x23d)]=_0x476d8f[_0x5a4f74(0x128)](_0x3c4aa4,':')+_0x314e2d[_0x5a4f74(0x1bf)]()[_0x5a4f74(0x2a5)](0x2,'0');}else _0x20be34[_0x1ce001][_0x5a4f74(0x379)]=_0x476d8f[_0x5a4f74(0x166)],_0x394285[_0x5a4f74(0x1dc)]++,_0x414e30[_0x5a4f74(0x261)]--;}}function setupVideo(_0x169307,_0x242db6){const _0x19520f=_0x471a9b,_0x2b1285={'aSdpl':_0x19520f(0x315),'kAOyL':_0x19520f(0x36e),'wdfpl':function(_0x95ec27){return _0x95ec27();},'lXIuG':function(_0x40157d,_0x5aec72){return _0x40157d!==_0x5aec72;},'VCyoM':_0x19520f(0x25c),'Obcfd':_0x19520f(0x254),'cIhMC':_0x19520f(0x2d4)};if(Hls[_0x19520f(0x390)]()){if(_0x2b1285[_0x19520f(0x1f8)](_0x2b1285[_0x19520f(0x29b)],_0x2b1285[_0x19520f(0x1ab)])){const _0x2dff66=new Hls();_0x2dff66[_0x19520f(0x317)](_0x242db6),_0x2dff66['attachMedia'](_0x169307);}else _0x2a110c[_0x19520f(0x2a9)][_0x19520f(0x246)][_0x19520f(0x151)](_0x2b1285['aSdpl'])&&_0x1528c6[_0x19520f(0x1b4)](_0x2b1285['kAOyL']),_0x2b1285[_0x19520f(0x10c)](_0x359387),_0xb9be79[_0x19520f(0x388)]();}else _0x169307[_0x19520f(0x11b)](_0x2b1285['cIhMC'])&&(_0x169307['src']=_0x242db6);}function displayQuestion(){const _0x136581=_0x471a9b,_0x68730f={'jRsOK':_0x136581(0x27d),'jiWRW':_0x136581(0x227),'buadn':function(_0x107658,_0x408c5d){return _0x107658===_0x408c5d;},'KTXpp':_0x136581(0x2ff),'QuZWW':_0x136581(0x1ae),'UFJmd':_0x136581(0x2b9),'fkxdI':function(_0x46dfbe,_0x4efa00){return _0x46dfbe+_0x4efa00;},'duWeq':_0x136581(0x121),'iQDyp':function(_0x4ae9ca,_0x42283c){return _0x4ae9ca!==_0x42283c;},'qfVkv':'zUFqG','dIqXx':function(_0xbd9869,_0x437786){return _0xbd9869(_0x437786);},'jFOBY':function(_0x351137,_0x256ff7){return _0x351137(_0x256ff7);},'WCfMU':function(_0x2cc9af,_0x15fd3e){return _0x2cc9af===_0x15fd3e;},'yFjoo':'questionText','blHcS':'No\x20questions\x20available\x20for\x20this\x20quiz.','gOLrH':function(_0xdca115,_0x5d2153){return _0xdca115*_0x5d2153;},'ZGWDo':_0x136581(0x22a),'gxUnP':function(_0x2928e1,_0x379428){return _0x2928e1+_0x379428;},'ZAfuF':_0x136581(0x180),'oJjNu':function(_0x51edd3,_0xf253b2){return _0x51edd3+_0xf253b2;},'mxsfX':function(_0x1db16f){return _0x1db16f();},'mLaBl':'prevBtn','NKArV':'solutionContainer','MvToe':_0x136581(0x358),'pxmTX':'YXuxg','ABcKR':'NiUYF','ZvFww':_0x136581(0x371),'UYptJ':_0x136581(0x168),'dGBiL':_0x136581(0x1f4),'tSpKu':function(_0x49eed5){return _0x49eed5();},'iePGZ':function(_0x2a6c92){return _0x2a6c92();},'apiGZ':_0x136581(0x17e),'pCWkF':function(_0x4664fd,_0x481c0a){return _0x4664fd===_0x481c0a;},'zCvlw':function(_0x48e86b){return _0x48e86b();}};if(!questionsData||_0x68730f['WCfMU'](questionsData[_0x136581(0x2ee)],0x0)){document[_0x136581(0x17d)](_0x68730f[_0x136581(0x1d8)])['innerHTML']=_0x68730f['blHcS'];return;};const _0x10a447=questionsData[currentQuestionIndex];questionStartTime=Date[_0x136581(0x1eb)](),selectedOption=questionStates[currentQuestionIndex][_0x136581(0x1c5)];const _0x39e049=_0x68730f[_0x136581(0x27a)](_0x68730f[_0x136581(0x1b3)](currentQuestionIndex,0x1)/questionsData['length'],0x64);document[_0x136581(0x17d)](_0x68730f[_0x136581(0x2fe)])[_0x136581(0x242)][_0x136581(0x311)]=_0x68730f[_0x136581(0x273)](_0x39e049,'%'),document[_0x136581(0x17d)](_0x68730f[_0x136581(0x2c3)])[_0x136581(0x23d)]=_0x68730f[_0x136581(0x156)](currentQuestionIndex,0x1),_0x68730f[_0x136581(0x22d)](updateQuestionNav),document['getElementById'](_0x68730f['mLaBl'])[_0x136581(0x328)]=_0x68730f[_0x136581(0x2f3)](currentQuestionIndex,0x0),document[_0x136581(0x17d)](_0x68730f[_0x136581(0x186)])['classList'][_0x136581(0x266)]('hidden'),document[_0x136581(0x17d)](_0x68730f['yFjoo'])[_0x136581(0x164)]=_0x10a447[_0x136581(0x20b)]||_0x68730f[_0x136581(0x2e6)];let _0x3ecfd1='';if(_0x10a447[_0x136581(0x204)])_0x3ecfd1+=_0x136581(0x18d)+_0x10a447['question_audio']+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>';if(_0x10a447[_0x136581(0x2ae)])_0x3ecfd1+=_0x136581(0x1cd)+_0x10a447['question_video']+_0x136581(0x19f);_0x10a447[_0x136581(0x2df)]&&(_0x68730f[_0x136581(0x279)](_0x68730f[_0x136581(0x1e2)],_0x68730f[_0x136581(0x24d)])?_0x10a447[_0x136581(0x2df)]['forEach'](_0x52a098=>{const _0x675dfb=_0x136581;if(_0x52a098)_0x3ecfd1+=_0x675dfb(0x323)+_0x52a098+_0x675dfb(0x2a0);}):_0x4db8a7=_0x136581(0x34a));document[_0x136581(0x17d)](_0x136581(0x2c4))['innerHTML']=_0x3ecfd1;const _0x4917a5=document[_0x136581(0x17d)](_0x68730f[_0x136581(0x232)]);_0x4917a5['innerHTML']='',_0x4917a5[_0x136581(0x1ba)]['remove'](_0x68730f[_0x136581(0x305)]),_0x10a447[_0x136581(0x249)]&&Array[_0x136581(0x1f3)](_0x10a447['choices'])&&(_0x68730f[_0x136581(0x279)](_0x68730f[_0x136581(0x28c)],_0x68730f[_0x136581(0x28c)])?_0x3d6077():(_0x10a447[_0x136581(0x249)][_0x136581(0x2da)]((_0x3e6865,_0x3eedd5)=>{const _0x19109a=_0x136581,_0x3618fc={'BKtqh':_0x68730f[_0x19109a(0x2b1)],'Nqlpu':_0x68730f['jiWRW']};if(_0x68730f['buadn'](_0x19109a(0x2ff),_0x68730f[_0x19109a(0x28f)])){const _0x30700a=String['fromCharCode'](0x41+_0x3eedd5),_0x397e4a=_0x68730f[_0x19109a(0x262)](selectedOption,_0x3eedd5),_0x14be2b=document[_0x19109a(0x13b)](_0x68730f[_0x19109a(0x13c)]);_0x14be2b[_0x19109a(0x164)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20'+(_0x397e4a?_0x68730f[_0x19109a(0x144)]:'')+_0x19109a(0x202)+_0x3eedd5+_0x19109a(0x38f)+_0x30700a+_0x19109a(0x386)+(_0x3e6865['text']||_0x68730f[_0x19109a(0x1b3)](_0x68730f['duWeq'],_0x3eedd5+0x1))+_0x19109a(0x140),_0x4917a5['appendChild'](_0x14be2b);}else delete _0x275822[_0x198b18],_0x49da4f[_0x19109a(0x225)](_0x3618fc[_0x19109a(0x11d)],_0xaafba9[_0x19109a(0x270)](_0x236cd5)),_0x41fb5e['log'](_0x3618fc['Nqlpu']);}),_0x4917a5[_0x136581(0x368)](_0x136581(0x12b),function(_0x441160){const _0x785129=_0x136581;if(_0x68730f[_0x785129(0x279)](_0x68730f[_0x785129(0x1d1)],_0x68730f[_0x785129(0x1d1)]))_0x112ed2();else{const _0x3e330b=_0x441160[_0x785129(0x39d)][_0x785129(0x1fe)](_0x785129(0x25a));if(_0x3e330b){const _0x9727ac=_0x68730f[_0x785129(0x2c9)](parseInt,_0x3e330b[_0x785129(0x38e)]('data-option-index'));_0x68730f['jFOBY'](selectOption,_0x9727ac);}}}))),_0x68730f[_0x136581(0x1fb)](updateBookmarkButton),_0x68730f[_0x136581(0x1d0)](updateMarkReviewButton),(_0x68730f[_0x136581(0x262)](currentMode,_0x68730f[_0x136581(0x37e)])||_0x68730f[_0x136581(0x21c)](currentMode,_0x136581(0x1d6)))&&!isQuizCompleted&&_0x68730f['zCvlw'](startTimer);}function selectOption(_0x402aa5){const _0x422fbd=_0x471a9b,_0x37aee6={'atzvk':_0x422fbd(0x2b9),'ccjqY':function(_0x55eb4a,_0x455e03){return _0x55eb4a===_0x455e03;},'meomE':function(_0x33a95a,_0x4fbe00){return _0x33a95a===_0x4fbe00;},'Vbddc':function(_0x670679,_0x21698b){return _0x670679+_0x21698b;},'JsrmU':_0x422fbd(0x121),'PTOJe':function(_0x538432,_0x217346){return _0x538432+_0x217346;},'fVPlM':_0x422fbd(0x371),'Dkrzm':'answered','XALow':'YpNCe','yXTdg':_0x422fbd(0x29f),'krXMJ':function(_0x143a75,_0x2d3209){return _0x143a75-_0x2d3209;},'crWCN':_0x422fbd(0x25a),'jRCPX':function(_0x135bd5,_0x2f1d6c){return _0x135bd5===_0x2f1d6c;},'ySJrp':_0x422fbd(0x33d),'KNHwY':_0x422fbd(0x17e),'Stafq':'rMkGl','lFpUX':function(_0x1c559e){return _0x1c559e();},'XOtnT':function(_0x14a581,_0x31ebd9){return _0x14a581!==_0x31ebd9;},'PWGvg':'frpHi','JOAIX':'not_attempted','vhXpl':function(_0x6a3c67){return _0x6a3c67();}},_0x24018b=document[_0x422fbd(0x17d)](_0x37aee6['fVPlM']);if(_0x24018b[_0x422fbd(0x1ba)]['contains'](_0x37aee6['Dkrzm']))return;questionStartTime&&(_0x37aee6[_0x422fbd(0x372)](_0x37aee6[_0x422fbd(0x1f9)],_0x37aee6[_0x422fbd(0x34f)])?(_0x59ce39++,_0xcd6af7[_0x422fbd(0x379)]=_0x422fbd(0x285)):(questionStates[currentQuestionIndex][_0x422fbd(0x1e1)]+=_0x37aee6[_0x422fbd(0x272)](Date[_0x422fbd(0x1eb)](),questionStartTime),questionStartTime=Date[_0x422fbd(0x1eb)]()));selectedOption=_0x402aa5,questionStates[currentQuestionIndex]['selectedAnswer']=_0x402aa5,document[_0x422fbd(0x318)](_0x37aee6[_0x422fbd(0x319)])['forEach']((_0xfb629b,_0x5ba286)=>{const _0x407e8f=_0x422fbd;_0xfb629b[_0x407e8f(0x1ba)][_0x407e8f(0x38d)](_0x37aee6[_0x407e8f(0x195)],_0x37aee6['ccjqY'](_0x5ba286,_0x402aa5));});if(_0x37aee6['jRCPX'](currentMode,_0x37aee6['ySJrp'])||_0x37aee6[_0x422fbd(0x372)](currentMode,_0x37aee6[_0x422fbd(0x222)])){if(_0x37aee6['Stafq']===_0x37aee6['Stafq'])_0x37aee6[_0x422fbd(0x28b)](processAnswer);else{const _0x17d116=_0xcceea6[_0x422fbd(0x399)](0x41+_0x3ac703),_0x3f174f=_0x37aee6['meomE'](_0x59ecdd,_0x54a56a),_0x206a35=_0x4eab6a['createElement'](_0x422fbd(0x1ae));_0x206a35[_0x422fbd(0x164)]=_0x422fbd(0x2f5)+(_0x3f174f?_0x422fbd(0x2b9):'')+'\x22\x20data-option-index=\x22'+_0x5cbfdb+_0x422fbd(0x38f)+_0x17d116+_0x422fbd(0x386)+(_0x50c715[_0x422fbd(0x20b)]||_0x37aee6[_0x422fbd(0x1e7)](_0x37aee6[_0x422fbd(0x22f)],_0x37aee6[_0x422fbd(0x145)](_0x11ea16,0x1)))+_0x422fbd(0x140),_0x5df470['appendChild'](_0x206a35);}}else _0x37aee6[_0x422fbd(0x294)](_0x422fbd(0x25f),_0x37aee6['PWGvg'])?_0x4f9ac1[_0x422fbd(0x172)]=_0x17ceda:(questionStates[currentQuestionIndex][_0x422fbd(0x379)]===_0x37aee6['JOAIX']&&(questionStates[currentQuestionIndex][_0x422fbd(0x379)]=_0x37aee6[_0x422fbd(0x1a0)],stats['totalAttempted']++,stats['notAttempted']--),_0x37aee6[_0x422fbd(0x1a3)](updateQuestionNav));saveProgress();}function processAnswer(){const _0x2095b7=_0x471a9b,_0x129202={'WMFTD':_0x2095b7(0x25a),'Prchh':function(_0x259203,_0x1829ac){return _0x259203(_0x1829ac);},'xjzJF':function(_0x2e2d4e,_0x23b7c5){return _0x2e2d4e===_0x23b7c5;},'MXDUP':function(_0x2fa925,_0x21486e){return _0x2fa925===_0x21486e;},'FRtIE':_0x2095b7(0x398),'UUQjH':function(_0x257b14,_0x1f081d){return _0x257b14!==_0x1f081d;},'YLtvt':_0x2095b7(0x1ad),'GzrpQ':'correct','IeExp':_0x2095b7(0x2f4),'OtrRO':function(_0x4e16ec){return _0x4e16ec();},'RyKbI':function(_0x15f517){return _0x15f517();}},_0x3fb7f7=questionsData[currentQuestionIndex],_0x201f56=_0x3fb7f7[_0x2095b7(0x2ea)];if(_0x129202[_0x2095b7(0x274)](selectedOption,null))return;const _0x450dd8=_0x3fb7f7[_0x2095b7(0x249)][selectedOption],_0x4f28f9=_0x129202['MXDUP'](_0x450dd8['id'],_0x201f56);if(questionStates[currentQuestionIndex]['status']===_0x129202[_0x2095b7(0x1c6)]){if(_0x129202[_0x2095b7(0x2d1)](_0x129202['YLtvt'],_0x2095b7(0x375))){stats['totalAttempted']++,stats[_0x2095b7(0x261)]--;if(_0x4f28f9)stats[_0x2095b7(0x24a)]++;else stats[_0x2095b7(0x18b)]++;}else{const _0x246b1d=_0x30131e[_0x2095b7(0x39d)][_0x2095b7(0x1fe)](_0x129202[_0x2095b7(0x1f0)]);if(_0x246b1d){const _0x3ac63e=_0x129202[_0x2095b7(0x2f9)](_0x23dcff,_0x246b1d['getAttribute'](_0x2095b7(0x1d7)));_0x1a24b9(_0x3ac63e);}}}questionStates[currentQuestionIndex][_0x2095b7(0x379)]=_0x4f28f9?_0x129202[_0x2095b7(0x112)]:_0x129202['IeExp'],_0x129202['OtrRO'](updateStats),_0x129202[_0x2095b7(0x2f9)](showInlineFeedback,_0x4f28f9),_0x129202[_0x2095b7(0x16a)](updateQuestionNav);}function showInlineFeedback(_0x47220a){const _0x10b93c=_0x471a9b,_0x2a87dc={'riHaY':_0x10b93c(0x2b9),'QcRCX':_0x10b93c(0x285),'CCjRG':_0x10b93c(0x2f4),'blIkl':function(_0x38b58a,_0x6dcb85){return _0x38b58a!==_0x6dcb85;},'KGIzR':'timed_study','KRjJl':_0x10b93c(0x371),'MnSKD':_0x10b93c(0x168)};if(currentMode!==_0x10b93c(0x33d)&&_0x2a87dc[_0x10b93c(0x12f)](currentMode,_0x2a87dc['KGIzR']))return;const _0x33a50c=document['getElementById'](_0x2a87dc[_0x10b93c(0x10e)]),_0x4a5870=_0x33a50c[_0x10b93c(0x318)](_0x10b93c(0x25a)),_0x2247fe=questionsData[currentQuestionIndex],_0x45a725=_0x2247fe['correct_choice_id'];let _0x4ed800=_0x2247fe['choices']['findIndex'](_0x31fe52=>_0x31fe52['id']===_0x45a725);_0x33a50c[_0x10b93c(0x1ba)]['add'](_0x2a87dc[_0x10b93c(0x352)]),_0x4a5870[_0x10b93c(0x2da)]((_0x1d7df2,_0x226adc)=>{const _0x4c7667=_0x10b93c;_0x1d7df2['classList'][_0x4c7667(0x35e)](_0x2a87dc['riHaY']);if(_0x226adc===_0x4ed800)_0x1d7df2['classList'][_0x4c7667(0x266)](_0x2a87dc[_0x4c7667(0x22e)]);else{if(_0x226adc===selectedOption&&!_0x47220a)_0x1d7df2[_0x4c7667(0x1ba)][_0x4c7667(0x266)](_0x2a87dc[_0x4c7667(0x116)]);}}),showSolution();}function showSolution(){const _0x328b27=_0x471a9b,_0x6d9e4e={'mcldq':function(_0x393255,_0x2d6d59){return _0x393255===_0x2d6d59;},'wtceH':'not_attempted','ucVFS':'answered','yhIno':function(_0x5a8471){return _0x5a8471();},'MwqKX':'customQuizData','sjOvb':_0x328b27(0x1a4),'KJXBh':function(_0x12bbb7,_0x9147f7){return _0x12bbb7!==_0x9147f7;},'RYyEI':_0x328b27(0x33d),'nqNFC':'timed_study','cpjcc':_0x328b27(0x25e),'oyJBn':'solutionVideo','lcpte':_0x328b27(0x392),'SVqBL':_0x328b27(0x23f),'JLuun':_0x328b27(0x119),'XkSSY':function(_0x2c22f5,_0x449368,_0x354f80){return _0x2c22f5(_0x449368,_0x354f80);},'ctkUj':_0x328b27(0x385),'zWQHs':_0x328b27(0x304)};if(_0x6d9e4e[_0x328b27(0x2b4)](currentMode,_0x6d9e4e['RYyEI'])&&_0x6d9e4e['KJXBh'](currentMode,_0x6d9e4e[_0x328b27(0x1c9)]))return;const _0x5ef4c6=questionsData[currentQuestionIndex];document[_0x328b27(0x17d)](_0x328b27(0x290))[_0x328b27(0x164)]=_0x5ef4c6[_0x328b27(0x236)]||_0x6d9e4e[_0x328b27(0x2ed)];const _0x11c8e4=document['getElementById'](_0x6d9e4e[_0x328b27(0x260)]),_0x482879=document[_0x328b27(0x17d)](_0x6d9e4e[_0x328b27(0x2e1)]),_0x5c9432=_0x5ef4c6['explanation_video'];if(_0x5c9432){_0x11c8e4['classList'][_0x328b27(0x35e)](_0x6d9e4e[_0x328b27(0x219)]);if(_0x5c9432[_0x328b27(0x24c)](_0x6d9e4e[_0x328b27(0x289)]))_0x6d9e4e[_0x328b27(0x126)](setupVideo,_0x482879,_0x5c9432);else _0x482879[_0x328b27(0x172)]=_0x5c9432;}else _0x6d9e4e[_0x328b27(0x2b4)](_0x328b27(0x1ef),_0x6d9e4e[_0x328b27(0x15b)])?_0x11c8e4[_0x328b27(0x1ba)][_0x328b27(0x266)](_0x6d9e4e['SVqBL']):(_0x6d9e4e['mcldq'](_0x39e49f[_0xf7cb9b][_0x328b27(0x379)],_0x6d9e4e[_0x328b27(0x338)])&&(_0x3c2af0[_0x587069][_0x328b27(0x379)]=_0x6d9e4e[_0x328b27(0x33f)],_0x2974e4['totalAttempted']++,_0x2d1d55[_0x328b27(0x261)]--),_0x6d9e4e['yhIno'](_0x17ee6e));const _0x3d93b6=document['getElementById']('solutionAudio');_0x3d93b6[_0x328b27(0x164)]='';_0x5ef4c6['explanation_audio_eng']&&(_0x3d93b6[_0x328b27(0x164)]+=_0x328b27(0x2bd)+_0x5ef4c6[_0x328b27(0x110)]+_0x328b27(0x31d));_0x5ef4c6[_0x328b27(0x190)]&&(_0x3d93b6[_0x328b27(0x164)]+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22'+_0x5ef4c6[_0x328b27(0x190)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>');const _0x3a1e37=document['getElementById'](_0x6d9e4e['zWQHs']);_0x3a1e37[_0x328b27(0x164)]='',_0x5ef4c6[_0x328b27(0x1cc)]&&_0x5ef4c6[_0x328b27(0x1cc)][_0x328b27(0x2da)](_0x3996f5=>{const _0x2e8ff3=_0x328b27;if(_0x6d9e4e['sjOvb']!==_0x6d9e4e[_0x2e8ff3(0x30f)])_0x155817[_0x2e8ff3(0x1b4)](_0x6d9e4e[_0x2e8ff3(0x38c)]);else{if(_0x3996f5)_0x3a1e37[_0x2e8ff3(0x164)]+='<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0x3996f5+_0x2e8ff3(0x2fd);}}),document[_0x328b27(0x17d)](_0x328b27(0x1a8))['classList']['remove'](_0x6d9e4e[_0x328b27(0x219)]);}function submitQuiz(){const _0x252ba9=_0x471a9b,_0x17b5cc={'ZLLWK':function(_0x42db98,_0x23ddf4){return _0x42db98>_0x23ddf4;},'lXIjV':function(_0x4d124c,_0x24bd87){return _0x4d124c-_0x24bd87;},'wztTY':function(_0xfaeaab){return _0xfaeaab();},'uJATO':function(_0x2e3386){return _0x2e3386();},'WaMlh':function(_0x5cb496,_0x35e62d){return _0x5cb496===_0x35e62d;},'jICZs':_0x252ba9(0x285),'YiFOn':'incorrect','phelz':'YAnPM','Kbyov':function(_0x173bf9,_0x4719a0){return _0x173bf9!==_0x4719a0;},'wUDeI':'cwnDJ','prFkR':function(_0x13e66b,_0x51f687){return _0x13e66b!==_0x51f687;},'QACAg':_0x252ba9(0x1af),'mcXsg':'Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?','hDtIx':function(_0x1d61c1,_0x2836d5){return _0x1d61c1-_0x2836d5;},'dVIRv':_0x252ba9(0x187),'PLYLC':function(_0xef8a1c,_0x2434d8){return _0xef8a1c+_0x2434d8;},'mKpZC':function(_0x6f1b54,_0x10bf64,_0x26d33a,_0x56c700,_0x5cc669){return _0x6f1b54(_0x10bf64,_0x26d33a,_0x56c700,_0x5cc669);}};if(timer)clearInterval(timer);if(!confirm(_0x17b5cc['mcXsg']))return;isQuizCompleted=!![];let _0x4518e4=0x0,_0x2cff00=0x0;const _0xcf9916=_0x17b5cc[_0x252ba9(0x2ba)](Date[_0x252ba9(0x1eb)](),quizStartTime);questionsData[_0x252ba9(0x2da)]((_0x26de4d,_0x2626cc)=>{const _0x29b60f=_0x252ba9;if(_0x29b60f(0x1c7)===_0x17b5cc[_0x29b60f(0x2a4)])_0x22ff01=_0x29b60f(0x26f);else{const _0x290142=questionStates[_0x2626cc];if(_0x17b5cc[_0x29b60f(0x234)](_0x290142[_0x29b60f(0x1c5)],null)){if(_0x26de4d['choices'][_0x290142[_0x29b60f(0x1c5)]]['id']===_0x26de4d['correct_choice_id'])_0x17b5cc[_0x29b60f(0x234)]('cwnDJ',_0x17b5cc[_0x29b60f(0x2a6)])?_0x17b5cc[_0x29b60f(0x175)](_0x3905cb,0x0)&&(_0x2a7fd0&&(_0x35e017[_0x5739d1][_0x29b60f(0x1e1)]+=_0x17b5cc[_0x29b60f(0x19e)](_0x8d69c['now'](),_0x210722)),_0x2a0839--,_0x17b5cc[_0x29b60f(0x282)](_0x1ce3fe),_0x17b5cc['uJATO'](_0x2ae0f1)):(_0x4518e4++,_0x290142['status']=_0x17b5cc[_0x29b60f(0x215)]);else{if(_0x17b5cc[_0x29b60f(0x396)](_0x17b5cc['QACAg'],_0x29b60f(0x1af))){_0x2bfd3a[_0x29b60f(0x1ba)][_0x29b60f(0x35e)]('selected');if(_0x17b5cc['WaMlh'](_0x2e7860,_0xda6964))_0x3429ad['classList'][_0x29b60f(0x266)](_0x17b5cc[_0x29b60f(0x215)]);else{if(_0x3d5f7a===_0x30ff52&&!_0x1b8a2b)_0x424cdf[_0x29b60f(0x1ba)][_0x29b60f(0x266)](_0x17b5cc[_0x29b60f(0x2d3)]);}}else _0x2cff00++,_0x290142[_0x29b60f(0x379)]=_0x17b5cc[_0x29b60f(0x2d3)];}}}});const _0x542406=JSON['parse'](localStorage[_0x252ba9(0x1bd)](_0x17b5cc[_0x252ba9(0x1d3)]))||[];_0x542406[_0x252ba9(0x2c7)]({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date[_0x252ba9(0x1eb)](),'totalTime':_0xcf9916,'stats':{'correct':_0x4518e4,'incorrect':_0x2cff00,'notAttempted':_0x17b5cc[_0x252ba9(0x2ba)](questionsData[_0x252ba9(0x2ee)],_0x17b5cc['PLYLC'](_0x4518e4,_0x2cff00))}}),localStorage[_0x252ba9(0x225)](_0x17b5cc['dVIRv'],JSON[_0x252ba9(0x270)](_0x542406)),stats[_0x252ba9(0x24a)]=_0x4518e4,stats[_0x252ba9(0x18b)]=_0x2cff00,_0x17b5cc[_0x252ba9(0x282)](markQuizAsCompleted),_0x17b5cc[_0x252ba9(0x216)](showPerformanceAnalysis,_0x4518e4,_0x2cff00,_0x17b5cc['hDtIx'](questionsData[_0x252ba9(0x2ee)],_0x4518e4+_0x2cff00),_0xcf9916);}function showPerformanceAnalysis(_0x48f4cd,_0x463af3,_0x363e5e,_0x5e20eb){const _0x256005=_0x471a9b,_0x3d617d={'ytjjq':_0x256005(0x286),'TQeMr':function(_0x51aea6,_0x432c0b){return _0x51aea6>_0x432c0b;},'QCdLi':function(_0x3630d1,_0x298e03){return _0x3630d1+_0x298e03;},'WtBMD':function(_0x33852b,_0x409229){return _0x33852b*_0x409229;},'HVsiB':function(_0x323a6c,_0x2edb2a){return _0x323a6c+_0x2edb2a;},'ICkNU':function(_0xf153d7,_0x3844ac){return _0xf153d7*_0x3844ac;},'QmGWe':_0x256005(0x1aa),'jvXmN':function(_0x5ed2e0,_0x230150){return _0x5ed2e0-_0x230150;},'kQhJU':function(_0x442d7c,_0x440384){return _0x442d7c/_0x440384;},'QWDAQ':_0x256005(0x2dc),'noywA':'incorrectResult','IUJNr':_0x256005(0x2b8),'JMZhY':function(_0x2bd36c,_0x276800){return _0x2bd36c/_0x276800;},'hfWXM':function(_0xcba6e3,_0x2e07d0){return _0xcba6e3%_0x2e07d0;},'Lyvrk':_0x256005(0x20f),'uyTSv':function(_0x37f896,_0x3b6e99){return _0x37f896/_0x3b6e99;},'typzB':function(_0x2e5e7a,_0x2bd9f4){return _0x2e5e7a/_0x2bd9f4;},'ktWNw':function(_0x2ab72a,_0x23963e){return _0x2ab72a/_0x23963e;}},_0x35c7ca=document[_0x256005(0x17d)](_0x3d617d[_0x256005(0x25d)]),_0x4444ee=_0x3d617d[_0x256005(0x10f)](_0x3d617d['QCdLi'](_0x48f4cd,_0x463af3),0x0)?Math[_0x256005(0x17c)](_0x3d617d[_0x256005(0x17a)](_0x48f4cd/_0x3d617d[_0x256005(0x25b)](_0x48f4cd,_0x463af3),0x64)):0x0,_0x925d14=_0x3d617d[_0x256005(0x176)](0x2,Math['PI'])*0x41,_0x1adb8=document[_0x256005(0x17d)](_0x3d617d[_0x256005(0x265)]);_0x1adb8[_0x256005(0x242)][_0x256005(0x310)]=_0x925d14+'\x20'+_0x925d14,_0x1adb8[_0x256005(0x242)][_0x256005(0x2e0)]=_0x3d617d[_0x256005(0x391)](_0x925d14,_0x3d617d[_0x256005(0x176)](_0x3d617d[_0x256005(0x233)](_0x4444ee,0x64),_0x925d14)),document['getElementById'](_0x256005(0x30e))[_0x256005(0x23d)]=_0x4444ee+'%',document[_0x256005(0x17d)]('totalQuestionsResult')[_0x256005(0x23d)]=questionsData[_0x256005(0x2ee)],document[_0x256005(0x17d)](_0x3d617d[_0x256005(0x1a2)])['textContent']=_0x48f4cd,document['getElementById'](_0x3d617d[_0x256005(0x302)])['textContent']=_0x463af3,document[_0x256005(0x17d)](_0x3d617d['IUJNr'])[_0x256005(0x23d)]=_0x363e5e;const _0x2242b1=Math[_0x256005(0x16d)](_0x3d617d[_0x256005(0x233)](_0x5e20eb,0xea60)),_0x564a75=Math[_0x256005(0x16d)](_0x3d617d[_0x256005(0x191)](_0x3d617d['hfWXM'](_0x5e20eb,0xea60),0x3e8));document[_0x256005(0x17d)](_0x3d617d[_0x256005(0x29a)])['textContent']=_0x2242b1+':'+_0x564a75[_0x256005(0x1bf)]()[_0x256005(0x2a5)](0x2,'0');const _0xcd1d3c=_0x3d617d['uyTSv'](_0x5e20eb,questionsData[_0x256005(0x2ee)]),_0x44ab8b=Math['floor'](_0x3d617d[_0x256005(0x267)](_0xcd1d3c,0xea60)),_0x354f25=Math[_0x256005(0x16d)](_0x3d617d[_0x256005(0x298)](_0xcd1d3c%0xea60,0x3e8));document['getElementById'](_0x256005(0x137))['textContent']=_0x44ab8b+':'+_0x354f25[_0x256005(0x1bf)]()[_0x256005(0x2a5)](0x2,'0'),_0x35c7ca['classList']['remove'](_0x256005(0x23f));}function closePerformanceModal(){const _0x120d07=_0x471a9b,_0x45d45f={'IMzjV':_0x120d07(0x286),'RuBCm':'hidden'};document[_0x120d07(0x17d)](_0x45d45f[_0x120d07(0x33e)])[_0x120d07(0x1ba)][_0x120d07(0x266)](_0x45d45f[_0x120d07(0x363)]);}function reviewQuestions(){const _0xd570fe=_0x471a9b,_0x53460d={'epTfg':_0xd570fe(0x2c5),'QdLfQ':function(_0x23e55d,_0x7c8d58){return _0x23e55d===_0x7c8d58;},'bajzg':'border-gray-600','PSsLQ':function(_0x3e486b,_0x48ffee){return _0x3e486b+_0x48ffee;},'VDRpv':_0xd570fe(0x162),'tzYZA':_0xd570fe(0x2c0),'UuSNh':_0xd570fe(0x276),'yMupq':function(_0x79a61,_0xf29f8b){return _0x79a61!==_0xf29f8b;},'GxEHU':_0xd570fe(0x2d2),'QUQrX':_0xd570fe(0x37a),'KxnYk':function(_0x1ffd1e,_0x4821e8){return _0x1ffd1e===_0x4821e8;},'wBoZd':'correct','UFjWf':'Correct','FylcW':_0xd570fe(0x2f4),'BJXmx':_0xd570fe(0x1b5),'AgftW':_0xd570fe(0x209),'UXnSB':function(_0x252cc4,_0x229652){return _0x252cc4===_0x229652;},'JYBAM':_0xd570fe(0x27b),'MtSsj':_0xd570fe(0x309),'QKpFB':_0xd570fe(0x189),'daShz':_0xd570fe(0x23f),'GoKaG':_0xd570fe(0x2a7),'lMqNB':function(_0xf1707d){return _0xf1707d();}};document[_0xd570fe(0x17d)](_0x53460d[_0xd570fe(0x2e9)])[_0xd570fe(0x1ba)][_0xd570fe(0x35e)](_0x53460d['daShz']);const _0x5bd7cd=document[_0xd570fe(0x17d)](_0x53460d[_0xd570fe(0x11e)]);_0x5bd7cd['innerHTML']='',questionsData['forEach']((_0x34767b,_0x142eb3)=>{const _0x17030e=_0xd570fe,_0x3d0d73={'jTCfg':_0x53460d[_0x17030e(0x37f)],'RAsiD':'open','UDWAB':function(_0x2b26f3,_0x5b05e6){const _0x1bf1ee=_0x17030e;return _0x53460d[_0x1bf1ee(0x281)](_0x2b26f3,_0x5b05e6);},'IVzQb':_0x53460d[_0x17030e(0x143)],'tIcgQ':function(_0x206d6b,_0x3e9100){const _0x299256=_0x17030e;return _0x53460d[_0x299256(0x14e)](_0x206d6b,_0x3e9100);}};if(_0x53460d[_0x17030e(0x281)](_0x53460d['VDRpv'],_0x53460d[_0x17030e(0x157)]))_0x4f7b4e[_0x17030e(0x164)]+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22'+_0x5383b6['explanation_audio_hin']+_0x17030e(0x31d);else{const _0x2a706e=questionStates[_0x142eb3],_0x3db718=_0x34767b['correct_choice_id'];let _0x38ed1f=_0x17030e(0x13d),_0x674644=_0x53460d[_0x17030e(0x141)];if(_0x53460d[_0x17030e(0x213)](_0x2a706e[_0x17030e(0x1c5)],null)){if(_0x53460d[_0x17030e(0x213)](_0x53460d[_0x17030e(0x1ec)],_0x53460d['QUQrX'])){const _0x4bced0=_0x34767b['choices'][_0x2a706e[_0x17030e(0x1c5)]];_0x53460d[_0x17030e(0x127)](_0x4bced0['id'],_0x3db718)?(_0x38ed1f=_0x53460d[_0x17030e(0x240)],_0x674644=_0x53460d['UFjWf']):(_0x38ed1f=_0x53460d[_0x17030e(0x1ed)],_0x674644=_0x53460d['BJXmx']);}else _0x5311fa[_0x17030e(0x17d)](_0x3d0d73['jTCfg'])[_0x17030e(0x1ba)][_0x17030e(0x38d)](_0x3d0d73['RAsiD']);}const _0xff07b8=document[_0x17030e(0x13b)](_0x17030e(0x1ae));_0xff07b8['className']=_0x17030e(0x2e5)+_0x38ed1f;let _0x3eeb89=(_0x34767b[_0x17030e(0x249)]||[])[_0x17030e(0x26b)]((_0x552fdd,_0x2040ac)=>{const _0x194d01=_0x17030e,_0x51088d=_0x3d0d73[_0x194d01(0x20c)](_0x2a706e[_0x194d01(0x1c5)],_0x2040ac),_0x5766c6=_0x3d0d73['UDWAB'](_0x552fdd['id'],_0x3db718);let _0x298bf4=_0x3d0d73[_0x194d01(0x159)];if(_0x5766c6)_0x298bf4=_0x194d01(0x1e4);else{if(_0x51088d)_0x298bf4=_0x194d01(0x173);}return _0x194d01(0x212)+_0x298bf4+_0x194d01(0x181)+String[_0x194d01(0x399)](_0x3d0d73[_0x194d01(0x14d)](0x41,_0x2040ac))+'</span><span>'+_0x552fdd[_0x194d01(0x20b)]+_0x194d01(0x1c0);})[_0x17030e(0x2bc)]('');const _0x19f2fe=_0x34767b[_0x17030e(0x1e5)]?_0x17030e(0x2e3)+_0x142eb3+_0x17030e(0x293)+_0x34767b[_0x17030e(0x1e5)]+_0x17030e(0x160):'';let _0x2090a1='';if(_0x34767b[_0x17030e(0x110)])_0x2090a1+=_0x17030e(0x2d6)+_0x34767b['explanation_audio_eng']+_0x17030e(0x31d);if(_0x34767b[_0x17030e(0x190)])_0x2090a1+=_0x17030e(0x393)+_0x34767b['explanation_audio_hin']+_0x17030e(0x31d);let _0xbb99ea=(_0x34767b['explanation_images']||[])['map'](_0x2e5a06=>_0x2e5a06?'<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0x2e5a06+_0x17030e(0x2fd):'')[_0x17030e(0x2bc)]('');_0xff07b8[_0x17030e(0x164)]=_0x17030e(0x14f)+(_0x142eb3+0x1)+_0x17030e(0x256)+(_0x38ed1f===_0x53460d['wBoZd']?_0x53460d['AgftW']:_0x53460d['UXnSB'](_0x38ed1f,_0x53460d['FylcW'])?_0x17030e(0x18a):_0x53460d[_0x17030e(0x185)])+_0x17030e(0x336)+_0x674644+_0x17030e(0x2db)+_0x34767b['text']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>'+_0x3eeb89+_0x17030e(0x1d9)+(_0x34767b[_0x17030e(0x236)]||_0x53460d['MtSsj'])+_0x17030e(0x245)+_0x19f2fe+_0x17030e(0x1ff)+_0x2090a1+_0x17030e(0x1ff)+_0xbb99ea+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>',_0x5bd7cd[_0x17030e(0x1a9)](_0xff07b8);}}),_0x53460d[_0xd570fe(0x35b)](initializeReviewVideos);}function initializeReviewVideos(){const _0x32e313=_0x471a9b,_0x1c9371={'QKIEE':'.m3u8'};document[_0x32e313(0x318)]('video[data-src]')[_0x32e313(0x2da)](_0x1c9544=>{const _0xe0df4e=_0x32e313,_0x485764=_0x1c9544['dataset'][_0xe0df4e(0x172)];if(_0x485764&&_0x485764[_0xe0df4e(0x24c)](_0x1c9371[_0xe0df4e(0x22c)]))setupVideo(_0x1c9544,_0x485764);else _0x485764&&(_0x1c9544['src']=_0x485764);});}function retakeQuiz(){const _0x2ce884=_0x471a9b,_0x3e4d23={'TswkW':function(_0x3d7d92,_0x64be62){return _0x3d7d92(_0x64be62);},'TUaKK':_0x2ce884(0x374),'yualq':'custom_quiz.html','XRFPP':'customQuizData','WEqqT':function(_0x397897){return _0x397897();}};_0x3e4d23[_0x2ce884(0x229)](confirm,_0x3e4d23['TUaKK'])&&(window[_0x2ce884(0x2a9)][_0x2ce884(0x246)][_0x2ce884(0x151)](_0x3e4d23[_0x2ce884(0x1b6)])&&localStorage[_0x2ce884(0x1b4)](_0x3e4d23[_0x2ce884(0x17b)]),_0x3e4d23[_0x2ce884(0x356)](clearProgress),location[_0x2ce884(0x388)]());}function loadBookmarkedQuestions(){const _0x282f77=_0x471a9b,_0x3ddedc={'TuZkx':function(_0x29f3af){return _0x29f3af();},'rEOcj':function(_0x4d9cb6,_0x29d8dd){return _0x4d9cb6<_0x29d8dd;},'FTISJ':function(_0x57857d,_0x5d59b7){return _0x57857d!==_0x5d59b7;},'KmPrn':_0x282f77(0x118),'CwLFV':_0x282f77(0x370)},_0x9f4a85=JSON[_0x282f77(0x165)](localStorage[_0x282f77(0x1bd)](_0x3ddedc[_0x282f77(0x367)]))||[];_0x9f4a85[_0x282f77(0x2da)](_0x4c80c5=>{const _0x2a6624=_0x282f77,_0x312f6a={'JXuCn':function(_0x72d145){const _0x4c15fe=_0x4ef4;return _0x3ddedc[_0x4c15fe(0x1cb)](_0x72d145);}};_0x4c80c5[_0x2a6624(0x14c)]['includes'](quizName[_0x2a6624(0x28d)]()['replace'](/ /g,'-'))&&(_0x3ddedc[_0x2a6624(0x1dd)](_0x4c80c5['questionIndex'],questionsData[_0x2a6624(0x2ee)])&&(_0x3ddedc['FTISJ'](_0x3ddedc['KmPrn'],_0x3ddedc[_0x2a6624(0x322)])?(_0x586c20[_0xdcd9c0][_0x2a6624(0x153)]=!_0x4164e7[_0x2218f4][_0x2a6624(0x153)],_0x312f6a[_0x2a6624(0x2f6)](_0xb95237),_0x312f6a[_0x2a6624(0x2f6)](_0x4ad176)):questionStates[_0x4c80c5['questionIndex']]['bookmarked']=!![]));});}function toggleBookmark(){const _0x34c9c7=_0x471a9b,_0x11915a={'aeKtf':_0x34c9c7(0x370),'vTYvm':function(_0x44fae5){return _0x44fae5();},'EwUFP':function(_0xfb93d){return _0xfb93d();}},_0x1c1de3=!questionStates[currentQuestionIndex][_0x34c9c7(0x1b1)];questionStates[currentQuestionIndex]['bookmarked']=_0x1c1de3;let _0x2a4ce1=JSON[_0x34c9c7(0x165)](localStorage[_0x34c9c7(0x1bd)](_0x34c9c7(0x370)))||[];if(_0x1c1de3){const _0x5c892c={'quizName':quizName,'quizFile':window[_0x34c9c7(0x2a9)][_0x34c9c7(0x246)][_0x34c9c7(0x15c)]('/')[_0x34c9c7(0x1c2)](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date[_0x34c9c7(0x1eb)]()};_0x2a4ce1['push'](_0x5c892c);}else _0x2a4ce1=_0x2a4ce1[_0x34c9c7(0x33b)](_0x5e42e4=>!(_0x5e42e4[_0x34c9c7(0x14c)]['includes'](quizName[_0x34c9c7(0x28d)]()[_0x34c9c7(0x179)](/ /g,'-'))&&_0x5e42e4[_0x34c9c7(0x377)]===currentQuestionIndex));localStorage[_0x34c9c7(0x225)](_0x11915a[_0x34c9c7(0x120)],JSON[_0x34c9c7(0x270)](_0x2a4ce1)),_0x11915a[_0x34c9c7(0x1df)](updateBookmarkButton),_0x11915a[_0x34c9c7(0x2fa)](updateQuestionNav);}function updateBookmarkButton(){const _0x43bfcc=_0x471a9b,_0xb48e22={'yDmRm':'bookmarkText','NhkLC':_0x43bfcc(0x35f),'ImqMg':_0x43bfcc(0x12d),'qoOpv':_0x43bfcc(0x2c2),'seVmv':_0x43bfcc(0x383)},_0x4ee6fc=document[_0x43bfcc(0x17d)]('bookmarkBtn'),_0x3d4821=document[_0x43bfcc(0x17d)](_0xb48e22['yDmRm']),_0x19d927=questionStates[currentQuestionIndex][_0x43bfcc(0x1b1)];_0x4ee6fc[_0x43bfcc(0x1d5)]=_0x19d927?_0xb48e22[_0x43bfcc(0x16c)]:_0xb48e22[_0x43bfcc(0x194)],_0x3d4821['textContent']=_0x19d927?_0xb48e22[_0x43bfcc(0x2b0)]:_0xb48e22['seVmv'];}function _0xa5ce(){const _0x207963=['<p><span\x20style=\x22font-size:12.0pt;\x22>Virchow\x27s\x20technique</span></p>','SpeUN','closest','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','nCyzv','EaoMv','\x22\x20data-option-index=\x22','1706266ZxawIV','question_audio','currentQuestionIndex','<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20which\x20scenarios\x20is\x20a\x20second\x20autopsy\x20typically\x20performed?<br\x20/>1.\x20The\x20relatives\x20are\x20not\x20satisfied\x20with\x20the\x20first\x20autopsy\x20report<br\x20/>2.\x20The\x20first\x20autopsy\x20was\x20not\x20performed\x20in\x20the\x20light\x20of\x20the\x20circumstances\x20which\x20are\x20now\x20available<br\x20/>3.\x20The\x20investigating\x20authority\x20demands\x20a\x20second\x20autopsy<br\x20/>4.\x20The\x20first\x20autopsy\x20was\x20done\x20in\x20the\x20absence\x20of\x20the\x20investigating\x20officer<br\x20/>5.\x20The\x20first\x20autopsy\x20was\x20done\x20in\x20the\x20absence\x20of\x20relatives</span></p>','UABMd','iQCCs','green','ddSuq','text','UDWAB','KqpGS','KhOfz','totalTimeResult','zPoXR','ylebT','<div\x20class=\x22p-3\x20rounded-lg\x20border\x20','yMupq','PNdKB','jICZs','mKpZC','TeWnZ','OPuvo','SVqBL','Mdtvj','nav-btn-incorrect','pCWkF','xCRyA','dLvUQ','UEsxf','OQoax','<p><span\x20style=\x22font-size:12.0pt;\x22>1\x20and\x205\x20only</span></p>','KNHwY','<p><span\x20style=\x22font-size:12.0pt;\x22>X-shaped\x20incision</span></p>','WKSMP','setItem','correctCount','Previous\x20progress\x20cleared.','sCsyE','TswkW','progressBar','PeDxe','QKIEE','mxsfX','QcRCX','JsrmU','FhyMk','PsbzE','ZvFww','kQhJU','Kbyov','YjfuE','solution','wMmok','button','totalQuestions','DT1220358','<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20which\x20of\x20the\x20following\x20scenarios\x20is\x20an\x20autopsy\x20not\x20typically\x20performed\x20at\x20the\x20site\x20of\x20body\x20recovery?</span></p>','QzRrz','textContent','gnPlI','hidden','wBoZd','<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20India,\x20medico-legal\x20autopsies\x20are\x20typically\x20performed\x20by\x20trained\x20forensic\x20doctors</span></p>','style','RxaiX','NIBeX','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','pathname','oiFyD','rytpR','choices','correctAnswers','Forensic\x20Medicine','includes','ABcKR','navBtn_','jDsDq','ArrowRight','qhtIA','incorrectCount','TecMt','bVgRH','xOpcM','</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-','gUyss','onclick','ZgHFg','.option-button','HVsiB','RkxjB','ytjjq','No\x20solution\x20provided','frpHi','oyJBn','notAttempted','buadn','XIElK','<p><strong>Explanation\x20of\x20answer:</strong></p>\x0a<p>The\x20<strong>hippocampus</strong>,\x20particularly\x20the\x20<strong>CA1\x20region</strong>,\x20is\x20among\x20the\x20most\x20sensitive\x20areas\x20of\x20the\x20brain\x20to\x20hypoxic-ischemic\x20damage.</p>\x0a<p><strong>Parts\x20of\x20the\x20Brain\x20Most\x20Suitable\x20for\x20Detecting\x20Hypoxic\x20Damage:</strong></p>\x0a<ul>\x0a<li><strong>Hippocampus:\x20</strong>Especially\x20the\x20<strong>CA1\x20sector\x20</strong>(Sommer\x27s\x20area)\x20and\x20subiculum.</li>\x0a<li><strong>Cerebellar\x20Folia</strong></li>\x0a<li><strong>Globus\x20Pallidus,\x20</strong>part\x20of\x20the\x20basal\x20ganglia.</li>\x0a<li><strong>Boundary\x20Zones\x20(Watershed\x20Areas)\x20of\x20the\x20Cerebral\x20Cortex:</strong>\x0a<ul>\x0a<li>Particularly,\x20the\x20<strong>parasagittal\x20region\x20of\x20the\x20middle\x20frontal\x20gyrus</strong>,\x20where\x20the\x20watershed\x20between\x20the\x20middle\x20and\x20anterior\x20cerebral\x20arteries\x20lies.</li>\x0a<li>These\x20areas\x20are\x20vulnerable\x20due\x20to\x20being\x20at\x20the\x20<strong>terminal\x20reaches\x20of\x20the\x20arterial\x20supply</strong>.</li>\x0a</ul>\x0a</li>\x0a<li><strong>Cortical\x20Layers\x20Most\x20Suitable\x20for\x20Histological\x20Detection:\x20</strong>The\x20<strong>third\x20and\x20fourth\x20cortical\x20layers</strong>\x20show\x20the\x20clearest\x20histological\x20changes\x20of\x20hypoxia.</li>\x0a</ul>\x0a<p><strong>Reference:&nbsp;</strong></p>\x0a<p><a\x20href=\x22https://www.ncbi.nlm.nih.gov/books/NBK537310/\x22>https://www.ncbi.nlm.nih.gov/books/NBK537310/</a></p>','QmGWe','add','typzB','Factual','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20metal\x20can\x20be\x20detected\x20in\x20the\x20charred\x20bones\x20and\x20ashes\x20of\x20conflagrated\x20human\x20remains?</span></p>','JVaBM','map','<p><span\x20style=\x22font-size:12.0pt;\x22>Hippocampus</span></p>','DT1220359','CXpWH','nav-btn-current','stringify','search','krXMJ','gxUnP','xjzJF','TZfsK','Not\x20Attempted','UkFeK','qOqiI','iQDyp','gOLrH','gray','lEpXx','userHistory','jfWyl','OajOc','bottom','QdLfQ','wztTY','hGuKr','UZUsD','correct','performanceModal','cRcZB','<p><span\x20style=\x22font-size:12.0pt;\x22>3\x20and\x204\x20only</span></p>','JLuun','495918GfZdtR','lFpUX','dGBiL','toLowerCase','<p><span\x20style=\x22font-size:12.0pt;\x22>1-iv,\x202-1,\x203-iii,\x204-ii</span></p>','KTXpp','solutionText','<p><strong>Explanation\x20of\x20the\x20answer:</strong></p>\x0a<p><strong>Y-shaped\x20incision\x20</strong>is\x20preferred\x20in<strong>\x20asphyxial\x20deaths\x20</strong>(e.g.,\x20hanging,\x20strangulation)\x20due\x20to\x20better\x20access\x20to\x20neck\x20structures.</p>\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/20250718ca294be3-ed4a-4531-a11c-c2a828a23378.png\x22>\x0a<p><strong>Skin\x20Incisions\x20in\x20Forensic\x20Autopsy:</strong></p>\x0a<ol>\x0a<li>\x22I\x22-Shaped\x20Incision:\x20(Option\x20A)\x0a<ul>\x0a<li>Extends\x20from\x20the\x20<strong>chin\x20to\x20the\x20symphysis\x20pubis</strong>,\x20passing\x20either\x20to\x20the\x20left\x20or\x20right\x20of\x20the\x20umbilicus.</li>\x0a<li>The\x20<strong>umbilicus\x20is\x20avoided</strong>\x20due\x20to\x20the\x20presence\x20of\x20dense\x20fibrous\x20tissue,\x20which\x20is\x20difficult\x20to\x20suture\x20after\x20autopsy.</li>\x0a<li>The<strong>\x20most\x20common</strong>\x20skin\x20incision\x20used\x20to\x20open\x20the\x20thoracic\x20and\x20abdominal\x20cavities.</li>\x0a</ul>\x0a</li>\x0a<li>\x22Y\x22-Shaped\x20Incision:\x20(Option\x20B)\x0a<ul>\x0a<li>Begins\x20near\x20the\x20<strong>acromial\x20process</strong>\x20(shoulder\x20region).</li>\x0a<li>Extends\x20down\x20below\x20the\x20breast\x20and\x20across\x20to\x20the\x20<strong>xiphoid\x20process</strong>.</li>\x0a<li>A\x20similar\x20incision\x20is\x20made\x20on\x20the\x20opposite\x20side.</li>\x0a<li>From\x20the\x20xiphoid\x20process,\x20the\x20incision\x20continues\x20down\x20to\x20the\x20<strong>symphysis\x20pubis</strong>.</li>\x0a<li>Indicated\x20in<strong>\x20suspected\x20strangulation,\x20hanging,\x20or\x20cases\x20with\x20potential\x20laryngeal\x20damage</strong>,\x20as\x20it\x20allows\x20wide\x20access\x20to\x20neck\x20structures.</li>\x0a</ul>\x0a</li>\x0a<li>Modified\x20\x22Y\x22-Shaped\x20Incision:\x20(Option\x20C)\x0a<ul>\x0a<li>A\x20midline\x20incision\x20from\x20the\x20<strong>suprasternal\x20notch\x20to\x20the\x20symphysis\x20pubis</strong>.</li>\x0a<li>From\x20the\x20suprasternal\x20notch,\x20the\x20incision\x20extends\x20over\x20the\x20<strong>clavicle\x20to\x20its\x20centre</strong>\x20on\x20both\x20sides.</li>\x0a<li>It\x20then\x20passes\x20<strong>upwards\x20over\x20the\x20neck\x20behind\x20the\x20ear</strong>.</li>\x0a<li>Provides\x20wide\x20exposure\x20of\x20the\x20neck\x20and\x20thoracic\x20structures.</li>\x0a</ul>\x0a</li>\x0a<li>X-Shaped\x20Incision:\x20(Option\x20D)\x0a<ul>\x0a<li>Skin\x20is\x20reflected\x20by\x20an\x20X-shaped\x20incision\x20over\x20the\x20back\x20and\x20limbs.</li>\x0a<li>Useful\x20to\x20detect\x20and\x20evaluate\x20hidden\x20subcutaneous\x20haemorrhages,\x20particularly\x20in\x20cases\x20of\x20custodial\x20deaths.</li>\x0a</ul>\x0a</li>\x0a</ol>\x0a<p><strong>References:&nbsp;</strong></p>\x0a<p><a\x20href=\x22https://www.ncbi.nlm.nih.gov/books/NBK539901/\x22>https://www.ncbi.nlm.nih.gov/books/NBK539901/#</a></p>','href','\x22\x20data-src=\x22','XOtnT','none','SsBWG','SnucP','ktWNw','ELygu','Lyvrk','VCyoM','FRWyB','515158qtbYuT','SBjWz','MbxZK','\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','TzcDE','YsdnI','beILu','phelz','padStart','wUDeI','reviewQuestionsContainer','<p><strong>Explanation\x20of\x20the\x20answer:</strong></p>\x0a<p>Autopsies\x20for<strong>\x20road\x20traffic\x20accident\x20(RTA)\x20deaths</strong>\x20are\x20typically\x20conducted\x20in\x20an\x20<strong>equipped\x20mortuary</strong>\x20to\x20ensure\x20proper\x20facilities\x20for\x20detailed\x20examination,\x20imaging,\x20and\x20sample\x20collection.</p>\x0a<p><strong>Ideal\x20Location\x20for\x20Forensic\x20Autopsy:</strong></p>\x0a<ul>\x0a<li>The\x20best\x20location\x20is\x20a\x20<strong>well-equipped,\x20well-ventilated,\x20well-illuminated\x20autopsy\x20room</strong>\x20adjacent\x20to\x20the\x20mortuary.</li>\x0a<li>Forensic\x20autopsies\x20may\x20also\x20be\x20conducted\x20at:\x0a<ul>\x0a<li>The\x20<strong>scene\x20of\x20the\x20discovery</strong>\x20of\x20a\x20decomposed\x20body.</li>\x0a<li>The\x20<strong>site\x20of\x20exhumation</strong>\x20of\x20a\x20dead\x20body.</li>\x0a<li><strong>Temporary\x20arrangements</strong>\x20are\x20set\x20up\x20at\x20the\x20site\x20of\x20mass\x20disasters,\x20depending\x20on\x20the\x20circumstances.</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a<p><strong>Reference:&nbsp;</strong></p>\x0a<p><a\x20href=\x22https://www.ncbi.nlm.nih.gov/books/NBK539901/#:~:text=The%20best%20location%20for%20a,disasters%2C%20depending%20on%20the%20circumstances\x22>https://www.ncbi.nlm.nih.gov/books/NBK539901/#</a></p>','location','IJWps','prototype','<p><span\x20style=\x22font-size:12.0pt;\x22>Thallium</span></p>','accuracy','question_video','studyModeLegend','qoOpv','jRsOK','NwIJc','MDjBo','KJXBh','eGJcL','AIVZU','RuXnr','notAttemptedResult','selected','hDtIx','gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','join','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22','test','hierarchy','dmToL','QCIVF','Bookmarked','ZAfuF','questionMedia','quizSidebar','<p><span\x20style=\x22font-size:12.0pt;\x22>1-ii,\x202-iii,\x203-iv,\x204-i</span></p>','push','jtgwP','dIqXx','open','table','<p><strong>Explanation\x20of\x20correct\x20answer:</strong></p>\x0a<p>The\x20correct\x20statements\x20are\x20<strong>1,\x202,\x20and\x203.<br\x20/>\x20</strong></p>\x0a<p><strong>Second\x20Autopsy:\x20</strong></p>\x0a<ul>\x0a<li>A\x20second\x20autopsy\x20is\x20performed\x20after\x20the\x20first\x20autopsy\x20on\x20the\x20same\x20body.</li>\x0a<li><strong>Indications\x20for\x20Second\x20Autopsy:</strong>\x0a<ul>\x0a<li>Requested\x20by\x20<strong>relatives</strong>\x20dissatisfied\x20with\x20the\x20first\x20autopsy\x20findings.\x20<strong>(Statement\x201)</strong></li>\x0a<li>Requested\x20by\x20<strong>investigating\x20agencies</strong>\x20when:\x20<strong>(Statement\x203)</strong>\x0a<ul>\x0a<li>Some\x20questions\x20remain\x20unanswered.</li>\x0a<li>Issues\x20are\x20left\x20unattended\x20in\x20the\x20first\x20autopsy.</li>\x0a</ul>\x0a</li>\x0a<li>Suspected\x20involvement\x20of:\x0a<ul>\x0a<li>The\x20first\x20autopsy\x20doctor\x20was\x20<strong>concealing\x20facts</strong>.</li>\x0a<li>The\x20first\x20autopsy\x20was\x20performed\x20without\x20considering\x20certain\x20facts\x20or\x20circumstances\x20that\x20have\x20come\x20to\x20light\x20later.\x20<strong>(Statement\x202)</strong></li>\x0a<li><strong>Police\x20authorities</strong>\x20hide\x20evidence;\x20the\x20body\x20is\x20then\x20shifted\x20out\x20of\x20their\x20jurisdiction\x20before\x20a\x20second\x20autopsy.</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a</li>\x0a<li><strong>Minimum\x20Requirements\x20for\x20Conduct\x20of\x20Second\x20Autopsy:</strong>\x0a<ul>\x0a<li>A\x20proper\x20<strong>requisition\x20letter</strong>\x20should\x20be\x20provided.</li>\x0a<li><strong>First\x20autopsy\x20report</strong>\x20and\x20all\x20relevant\x20case\x20records\x20should\x20be\x20made\x20available.</li>\x0a<li>Second\x20autopsy\x20should\x20<strong>not\x20be\x20conducted\x20at\x20the\x20same\x20centre</strong>\x20as\x20the\x20first\x20autopsy.</li>\x0a<li>Preferably\x20conducted\x20at\x20another\x20centre\x20by\x20a\x20<strong>Professor\x20of\x20Forensic\x20Medicine</strong>\x20from\x20a\x20Government\x20Medical\x20College.</li>\x0a<li>Ideally,\x20a\x20<strong>panel\x20of\x20doctors</strong>\x20should\x20be\x20formed,\x20which\x20may\x20include:\x0a<ul>\x0a<li>A\x20<strong>Surgeon</strong></li>\x0a<li>A\x20<strong>Gynaecologist</strong></li>\x0a<li>A\x20<strong>Pathologist</strong>,\x20etc.,\x20depending\x20on\x20the\x20case\x20specifics.</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a</li>\x0a</ul>\x0a<p><strong>Reference:&nbsp;</strong></p>\x0a<p><a\x20href=\x22https://www.researchgate.net/publication/279203058_Second_Autopsy_The_Indian_Scenario\x22>https://www.researchgate.net/publication/279203058_Second_Autopsy_The_Indian_Scenario</a></p>\x0a<p><a\x20href=\x22https://www.ncbi.nlm.nih.gov/books/NBK539901/#:~:text=The%20best%20location%20for%20a,disasters%2C%20depending%20on%20the%20circumstances\x22>https://www.ncbi.nlm.nih.gov/books/NBK539901/#</a></p>','questions','WnYlK','zhVqE','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20','UUQjH','Ilbjv','YiFOn','application/vnd.apple.mpegurl','nUxbw','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22','rsbsE','quizHierarchy','(((.+)+)+)+$','forEach','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>','correctResult','HqYEJ','twzAg','question_images','strokeDashoffset','lcpte','OOogE','<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-','Oubfs','review-question\x20','MvToe','SHYWe','GZuIv','QKpFB','correct_choice_id','ByZaT','FVSgr','cpjcc','length','RzcPM','oeNHq','sMeDQ','GeCKn','WCfMU','incorrect','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20','JXuCn','NFpCp','yluOZ','Prchh','EwUFP','eeMLQ','Progress\x20loaded.','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','ZGWDo','lxqCT','DQmBQ','CEaWx','noywA','dzyYY','solutionImages','UYptJ','Xqsds','pxPwW','DzvbR','No\x20solution\x20available.','FrAya','<p><span\x20style=\x22font-size:12.0pt;\x22>1-iii,\x202-iv,\x203-ii,\x204-i</span></p>','lTGKB','<p><span\x20style=\x22font-size:12.0pt;\x22>1-iv,\x202-iii,\x203-i,\x204-ii</span></p>','accuracyScore','sjOvb','strokeDasharray','width','nQXoB','warn','JgFFe','custom_quiz.html','RxFCk','loadSource','querySelectorAll','crWCN','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20statements\x20is\x20false\x20regarding\x20medico-legal\x20autopsy?</span></p>','nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','xdCRK','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','BQyPJ','<p><span\x20style=\x22font-size:12.0pt;\x22>Y-shaped\x20incision</span></p>','975JJtvMx','<p><span\x20style=\x22font-size:12.0pt;\x22>Cadmium</span></p>','KmPrn','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','<p><span\x20style=\x22font-size:12.0pt;\x22>Modified\x20Y-shaped\x20incision</span></p>','yQWyE','<p><strong>Explanation:</strong></p>\x0a<p><strong>Arsenic\x20</strong>can\x20be\x20detected\x20even\x20in\x20the\x20<strong>conflagration\x20of\x20human\x20bones.</strong></p>\x0a<p><strong>Detection\x20of\x20Arsenic\x20in\x20Burnt\x20Bones\x20and\x20Ashes:\x20</strong></p>\x0a<ul>\x0a<li><strong>Arsenic\x20detection\x20</strong>after\x20cremation\x20is\x20<strong>scientifically\x20expected</strong>\x20in\x20genuine\x20arsenic\x20poisoning\x20due\x20to\x20the\x20following\x20reasons:</li>\x0a</ul>\x0a<ol>\x0a<li><strong>Conversion\x20to\x20Arsenates:</strong>\x0a<ul>\x0a<li>Much\x20of\x20the\x20arsenic\x20in\x20bones\x20converts\x20to\x20<strong>arsenates</strong>,\x20which\x20partially\x20replace\x20phosphates\x20in\x20bones.</li>\x0a<li>Arsenates\x20are\x20<strong>non-volatile</strong>,\x20so\x20arsenic\x20remains\x20detectable\x20even\x20after\x20prolonged\x20strong\x20heating.</li>\x0a</ul>\x0a</li>\x0a<li><strong>Incomplete\x20Combustion\x20during\x20Cremation:</strong>\x0a<ul>\x0a<li>In\x20India,\x20cremation\x20conditions\x20often\x20do\x20not\x20favour\x20complete\x20combustion.</li>\x0a<li>Even\x20if\x20arsenic\x20is\x20present\x20as\x20arsenic\x20trioxide\x20or\x20another\x20volatile\x20form,\x20not\x20all\x20arsenic\x20is\x20lost.</li>\x0a<li>Some\x20volatilized\x20arsenic\x20may\x20<strong>condense\x20on\x20cooler\x20parts\x20of\x20the\x20funeral\x20pyre</strong>,\x20preventing\x20its\x20complete\x20loss.</li>\x0a</ul>\x0a</li>\x0a<li><strong>Site\x20of\x20Detection:</strong>\x0a<ul>\x0a<li>Arsenic\x20is\x20especially\x20detectable\x20in\x20the\x20<strong>spongy\x20bones</strong>,\x20such\x20as:\x0a<ul>\x0a<li>Skull</li>\x0a<li>Vertebrae</li>\x0a</ul>\x0a</li>\x0a<li>Arsenic\x20can\x20persist\x20here\x20<strong>long\x20after\x20its\x20disappearance\x20from\x20soft\x20organs</strong>\x20like\x20the\x20liver,\x20spleen,\x20kidneys,\x20or\x20brain.</li>\x0a</ul>\x0a</li>\x0a</ol>\x0a<p><strong>Explanation\x20of\x20other\x20options:</strong></p>\x0a<p><strong>Thallium\x20(Option\x20A):</strong>\x20Highly\x20volatile;\x20unlikely\x20to\x20be\x20detected\x20after\x20intense\x20burning.</p>\x0a<p><strong>Mercury\x20(Option\x20B):</strong>\x20Extremely\x20volatile;\x20vaporises\x20at\x20low\x20temperatures,\x20is\x20lost\x20during\x20cremation.</p>\x0a<p><strong>Cadmium\x20(Option\x20D):</strong>\x20Also\x20volatile;\x20vaporises\x20during\x20high-temperature\x20exposure\x20like\x20cremation.</p>\x0a<p><strong>Reference:</strong></p>\x0a<p>https://pmc.ncbi.nlm.nih.gov/articles/PMC5184956/pdf/indmedgaz72575-0019.pdf</p>','932640BDVprS','disabled','teSVH','<p><span\x20style=\x22font-size:12.0pt;\x22>Arsenic</span></p>','xNDYd','PIbZI','UvAvC','jjMkK','gspTS','nucHQ','zfIxf','Ozjtj','ZXqXY','Ievum','<p><span\x20style=\x22font-size:12.0pt;\x22>Ghon\x27s\x20technique</span></p>','-600\x20text-white\x22>','Vgows','wtceH','ijaHi','__proto__','filter','qprgw','study','IMzjV','ucVFS','<p><span\x20style=\x22font-size:12.0pt;\x22>2,\x204,\x20and\x205</span></p>','nav-btn-bookmarked','DocTutorial','DT1220353','block','bULWx','bookmarkBtn','uYBPz','UelsL','ZFDdp','nav-btn-marked-review','mmpcT','WHXkS','CBhpC','testModeLegend','yXTdg','MOnic','modeModal','MnSKD','pdFQH','kckGW','WEPfM','WEqqT','<p><span\x20style=\x22font-size:12.0pt;\x22>Consent\x20from\x20relatives\x20is\x20required</span></p>','No\x20question\x20text\x20available','CvFRo','AICLB','lMqNB','TvNiK','<p><span\x20style=\x22font-size:12.0pt;\x22>Pituitary\x20gland</span></p>','remove','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','name','markReviewBtn','markReviewText','RuBCm','<p><span\x20style=\x22font-size:12.0pt;\x22>Motor\x20area</span></p>','Evqss','WOUaa','CwLFV','addEventListener','KpdlG','resume','nav-btn-correct','DZabJ','AYNLm','customQuizData','zghuP','bookmarkedQuestions','optionsContainer','meomE','WKLnx','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','WIlaE','timeDisplay','questionIndex','xWvba','status','GHqjB','CSQTf','wqIhz','10125416IAtbtT','apiGZ','epTfg','uZfPx','mFtDg','bind','Bookmark','You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','AMwav','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','HxIgl','reload','BWxan','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','testModeReviewLegend','MwqKX','toggle','getAttribute','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>','isSupported','jvXmN','explanationVideoPlayer','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22','get','statsBar','prFkR','IXhzE','not_attempted','fromCharCode','Autopsy','ghxMe','<p><span\x20style=\x22font-size:12.0pt;\x22>Putrefied\x20body</span></p>','target','kStxY','KJaAY','wdfpl','\x20>\x20','KRjJl','TQeMr','explanation_audio_eng','{}.constructor(\x22return\x20this\x22)(\x20)','GzrpQ','DT1220343','UaphQ','ugOmd','CCjRG','ZssRi','gGWGU','.m3u8','mOIuu','canPlayType','vwIZw','BKtqh','GoKaG','3|4|0|5|1|2','aeKtf','Option\x20','xxAIf','dOpYD','intermediate','DT1220452','XkSSY','KxnYk','dRBgK','dkdbI','dVBiz','click','RDNyk','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','dRXnV','blIkl','ecXRL','XWHMr','<p><span\x20style=\x22font-size:12.0pt;\x22>Exhumation</span></p>','aXFay','wJYDJ','MhfDT','<p><span\x20style=\x22font-size:12.0pt;\x22>Match\x20the\x20following.<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3fkkq5frqjyl8.cloudfront.net/V4/NEETPGUPDATEDMCQ/202507187711f4cc-ac40-43b9-b3c7-d0226ee7237c.png\x22></span></p>','avgTimeResult','trace','rhxfi','TEvul','createElement','QuZWW','not-attempted','XjRFk','yOcaL','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','UuSNh','<p><span\x20style=\x22font-size:12.0pt;\x22>While\x20doing\x20an\x20autopsy\x20on\x20a\x20victim\x20of\x20strangulation,\x20you\x20are\x20examining\x20his\x20brain.\x20Which\x20of\x20the\x20following\x20areas\x20of\x20the\x20brain\x20is\x20the\x20most\x20likely\x20to\x20show\x20evidence\x20of\x20hypoxic\x20damage\x20in\x20this\x20victim?</span></p>','bajzg','UFJmd','PTOJe','tFvBZ','INEtj','qkEFY','TdEzJ','nav-btn-answered','xAGXx','quizFile','tIcgQ','PSsLQ','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','VnohF','endsWith','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20autopsy\x20technique\x20involves\x20the\x20\x27en\x20masse\x27\x20removal\x20of\x20all\x20organs\x20as\x20a\x20single\x20block?</span></p>','markedForReview','log','mKNVC','oJjNu','tzYZA','agUKB','IVzQb','mLGhd','ctkUj','split','4912SuloDT','VNhtg','HYIyK','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','apply','zNqPF','iPWOy','innerHTML','parse','KQstG','qUCcS','answered','toISOString','RyKbI','startAt','NhkLC','floor','sbiil','HIEBK','ejuvy','dicPI','src','border-red-500','pxHIn','ZLLWK','ICkNU','return\x20(function()\x20','HzEzW','replace','WtBMD','XRFPP','round','getElementById','timed_study','\x20-\x20Brain\x20And\x20Scalpel','currentQuestion','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','WCymI','kPZyT','drvCo','JYBAM','NKArV','quizPerformanceData','uvzhF','questionReviewSection','red','incorrectAnswers','kSHxv','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','submitSection','timerContainer','explanation_audio_hin','JMZhY','Marked','AYrWc','ImqMg','atzvk','totalTime','dRExY','bghqu','Bvlxf','LIgXN','5608010BTioXS','EvNBb','aaiJN','lXIjV','\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>','Dkrzm','questionNav','QWDAQ','vhXpl','epVyf','constructor','exception','KenWL','solutionContainer','appendChild','scoreCircle','Obcfd','4|2|0|5|1|3','ReyfK','div','YHFIh','<p><span\x20style=\x22font-size:12.0pt;\x22>Deaths\x20due\x20to\x20RTA</span></p>','bookmarked','ArrowLeft','fkxdI','removeItem','Incorrect','yualq','key','display','OEUfp','classList','YcPQn','ophbf','getItem','GYDvj','toString','</span></div>','mFEPN','pop','<p><span\x20style=\x22font-size:12.0pt;\x22>Rokitansky\x27s\x20technique</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Letulle\x27s\x20technique</span></p>','selectedAnswer','FRtIE','dSUGz','console','nqNFC','Fsfeo','TuZkx','explanation_images','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22','hqGNZ','BsfSx','iePGZ','qfVkv','QqzVb','dVIRv','ijQHs','className','timed_exam','data-option-index','yFjoo','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>','UsToE','autopsy-4d6e2f72.html','totalAttempted','rEOcj','zmhET','vTYvm','744cBnPEw','timeSpent','pxmTX','info','border-green-500','explanation_video','EdcbF','Vbddc','preventDefault','sPblI','<p><span\x20style=\x22font-size:12.0pt;\x22>Legal\x20authorisation\x20is\x20necessary</span></p>','now','GxEHU','FylcW','DT1220342','HsrcU','WMFTD','title','flex','isArray','JJkWa','lFvFy','<div\x20class=\x22mt-4\x22><img\x20src=\x22','currentMode','lXIuG','XALow','CZFgg','tSpKu'];_0xa5ce=function(){return _0x207963;};return _0xa5ce();}function toggleMarkForReview(){const _0x567ace=_0x471a9b,_0x4eb5fa={'wJYDJ':function(_0x180075){return _0x180075();}};questionStates[currentQuestionIndex]['markedForReview']=!questionStates[currentQuestionIndex][_0x567ace(0x153)],_0x4eb5fa[_0x567ace(0x134)](updateMarkReviewButton),updateQuestionNav();}function updateMarkReviewButton(){const _0x1d9972=_0x471a9b,_0xcb0921={'sXFab':_0x1d9972(0x361),'XjRFk':_0x1d9972(0x362),'mmpcT':_0x1d9972(0x2bb),'VnohF':'Mark\x20for\x20Review'},_0x1728ac=document[_0x1d9972(0x17d)](_0xcb0921['sXFab']),_0xd5558f=document['getElementById'](_0xcb0921[_0x1d9972(0x13e)]),_0x477d0d=questionStates[currentQuestionIndex][_0x1d9972(0x153)];_0x1728ac[_0x1d9972(0x1d5)]=_0x477d0d?_0xcb0921[_0x1d9972(0x34b)]:'glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center',_0xd5558f[_0x1d9972(0x23d)]=_0x477d0d?_0x1d9972(0x192):_0xcb0921[_0x1d9972(0x150)];}function previousQuestion(){const _0x33a7ac=_0x471a9b,_0x2d34df={'WCymI':_0x33a7ac(0x1a1),'rjlon':function(_0x2e664d,_0x335efd){return _0x2e664d<_0x335efd;},'ugOmd':_0x33a7ac(0x238),'ByZaT':function(_0xee1f93,_0x449e6d){return _0xee1f93+_0x449e6d;},'iQCCs':function(_0x3d025d){return _0x3d025d();},'lFvFy':function(_0x2dbe3d,_0x39bb85){return _0x2dbe3d>_0x39bb85;},'QqzVb':function(_0x48ac84,_0x5aed6e){return _0x48ac84!==_0x5aed6e;},'Ievum':_0x33a7ac(0x1c1),'TeWnZ':_0x33a7ac(0x188),'gnPlI':'nfZlE','jtgwP':function(_0x17e713,_0x2a5760){return _0x17e713-_0x2a5760;},'kPZyT':function(_0x1c4715){return _0x1c4715();}};if(_0x2d34df[_0x33a7ac(0x1f5)](currentQuestionIndex,0x0)){if(_0x2d34df[_0x33a7ac(0x1d2)](_0x2d34df[_0x33a7ac(0x334)],_0x2d34df[_0x33a7ac(0x217)]))questionStartTime&&(_0x2d34df[_0x33a7ac(0x23e)]!==_0x33a7ac(0x248)?questionStates[currentQuestionIndex][_0x33a7ac(0x1e1)]+=_0x2d34df[_0x33a7ac(0x2c8)](Date[_0x33a7ac(0x1eb)](),questionStartTime):_0x431278[_0x33a7ac(0x1cc)][_0x33a7ac(0x2da)](_0x49bb90=>{const _0xb62b7=_0x33a7ac;if(_0x49bb90)_0x256e40[_0xb62b7(0x164)]+=_0xb62b7(0x1f6)+_0x49bb90+_0xb62b7(0x2fd);})),currentQuestionIndex--,_0x2d34df[_0x33a7ac(0x183)](displayQuestion),_0x2d34df['kPZyT'](saveProgress);else{const _0x2a4128=_0x4a7157[_0x33a7ac(0x17d)](_0x2d34df[_0x33a7ac(0x182)]);_0x2a4128[_0x33a7ac(0x164)]='';for(let _0x3ae196=0x0;_0x2d34df['rjlon'](_0x3ae196,_0x1362e5[_0x33a7ac(0x2ee)]);_0x3ae196++){const _0x2db88c=_0x23bca5[_0x33a7ac(0x13b)](_0x2d34df[_0x33a7ac(0x115)]);_0x2db88c[_0x33a7ac(0x23d)]=_0x2d34df[_0x33a7ac(0x2eb)](_0x3ae196,0x1),_0x2db88c[_0x33a7ac(0x1d5)]=_0x33a7ac(0x38a),_0x2db88c[_0x33a7ac(0x258)]=()=>_0x37492f(_0x3ae196),_0x2db88c['id']=_0x33a7ac(0x24e)+_0x3ae196,_0x2a4128[_0x33a7ac(0x1a9)](_0x2db88c);}_0x2d34df[_0x33a7ac(0x208)](_0x90c498);}}}function nextQuestion(){const _0x53f373=_0x471a9b,_0x610ec0={'AICLB':function(_0x598b8f){return _0x598b8f();},'PeDxe':function(_0x1f20a6,_0x3b930a){return _0x1f20a6<_0x3b930a;},'dRXnV':function(_0xa3f2d0,_0x2793c4){return _0xa3f2d0-_0x2793c4;},'tXTAz':function(_0x44491c,_0x39508d){return _0x44491c===_0x39508d;},'CEaWx':_0x53f373(0x2be),'YXBDe':function(_0x4bfff5,_0x586352){return _0x4bfff5===_0x586352;},'DaXnc':function(_0x1890b9,_0x380cfe){return _0x1890b9(_0x380cfe);},'dzyYY':'You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','BQyPJ':function(_0x103225,_0x53400a){return _0x103225!==_0x53400a;},'CZFgg':_0x53f373(0x21d),'nUxbw':_0x53f373(0x139),'UABMd':function(_0x86f033,_0x12ecec){return _0x86f033(_0x12ecec);},'YsdnI':_0x53f373(0x384),'MDjBo':function(_0x2ebc23){return _0x2ebc23();}};questionStartTime&&(questionStates[currentQuestionIndex][_0x53f373(0x1e1)]+=Date[_0x53f373(0x1eb)]()-questionStartTime),_0x610ec0[_0x53f373(0x22b)](currentQuestionIndex,_0x610ec0[_0x53f373(0x12e)](questionsData['length'],0x1))?(currentQuestionIndex++,_0x610ec0[_0x53f373(0x35a)](displayQuestion),saveProgress()):_0x610ec0['tXTAz'](currentMode,_0x610ec0[_0x53f373(0x301)])||_0x610ec0['YXBDe'](currentMode,_0x53f373(0x1d6))?_0x610ec0['DaXnc'](confirm,_0x610ec0[_0x53f373(0x303)])&&(_0x610ec0[_0x53f373(0x31e)](_0x610ec0[_0x53f373(0x1fa)],_0x610ec0[_0x53f373(0x2d5)])?_0x610ec0[_0x53f373(0x35a)](submitQuiz):_0x610ec0[_0x53f373(0x35a)](_0x4bff2e)):_0x610ec0[_0x53f373(0x207)](confirm,_0x610ec0[_0x53f373(0x2a2)])&&(currentQuestionIndex=0x0,_0x610ec0[_0x53f373(0x2b3)](displayQuestion),saveProgress());}function startTimer(){const _0x3bd02a=_0x471a9b,_0x24bf94={'kStxY':function(_0x38f4bc,_0x2105ff){return _0x38f4bc<=_0x2105ff;},'xOpcM':function(_0x36e686,_0x5bbed7){return _0x36e686(_0x5bbed7);},'ghxMe':_0x3bd02a(0x1d6),'gspTS':function(_0x52f91e){return _0x52f91e();},'OPuvo':function(_0x8f20d7,_0x4f64b0,_0x45f0a9){return _0x8f20d7(_0x4f64b0,_0x45f0a9);}};if(timer)clearInterval(timer);timeRemaining=0x78,_0x24bf94[_0x3bd02a(0x32f)](updateTimerDisplay),timer=_0x24bf94[_0x3bd02a(0x218)](setInterval,()=>{const _0x1226cf=_0x3bd02a;timeRemaining--,updateTimerDisplay(),_0x24bf94[_0x1226cf(0x10a)](timeRemaining,0x0)&&(_0x24bf94[_0x1226cf(0x255)](clearInterval,timer),currentMode===_0x24bf94[_0x1226cf(0x39b)]?_0x24bf94[_0x1226cf(0x32f)](submitQuiz):nextQuestion());},0x3e8);}function updateTimerDisplay(){const _0x5b424f=_0x471a9b,_0x2ef8b5={'CXpWH':function(_0x392a44,_0x34c554){return _0x392a44/_0x34c554;},'mOIuu':function(_0x1f8e59,_0x5cc70e){return _0x1f8e59+_0x5cc70e;}},_0x5008af=Math[_0x5b424f(0x16d)](_0x2ef8b5[_0x5b424f(0x26e)](timeRemaining,0x3c)),_0x3a66ff=timeRemaining%0x3c;document[_0x5b424f(0x17d)](_0x5b424f(0x376))[_0x5b424f(0x23d)]=_0x2ef8b5[_0x5b424f(0x11a)](_0x2ef8b5['mOIuu'](_0x5008af,':'),_0x3a66ff[_0x5b424f(0x1bf)]()[_0x5b424f(0x2a5)](0x2,'0'));}function toggleSidebar(){const _0x8159ae=_0x471a9b,_0x2cf689={'NFpCp':'quizSidebar'};document['getElementById'](_0x2cf689[_0x8159ae(0x2f7)])[_0x8159ae(0x1ba)]['toggle'](_0x8159ae(0x2ca));}document[_0x471a9b(0x368)]('DOMContentLoaded',()=>{const _0x32ad20=_0x471a9b,_0x177c0c={'IMcmg':function(_0x4bac04,_0x22500b){return _0x4bac04<_0x22500b;},'sHpxX':function(_0x250418,_0x38d099){return _0x250418-_0x38d099;},'HgIUR':_0x32ad20(0x295),'RxFCk':function(_0x122c05){return _0x122c05();},'CvFRo':function(_0x2f4e65,_0x4d6391){return _0x2f4e65===_0x4d6391;},'drvCo':'yOcaL','bghqu':_0x32ad20(0x351),'PcvYH':function(_0x1a62c3){return _0x1a62c3();},'UsToE':function(_0x49d226){return _0x49d226();},'HYIyK':_0x32ad20(0x1f2),'nucHQ':'custom_quiz.html','jsXdO':function(_0x23f1af,_0x140806){return _0x23f1af===_0x140806;},'vwIZw':_0x32ad20(0x387),'qprgw':'obwvt','VNhtg':function(_0x5a7399){return _0x5a7399();}};if(resume)_0x177c0c[_0x32ad20(0x359)](_0x32ad20(0x13f),_0x177c0c[_0x32ad20(0x184)])?_0x177c0c['RxFCk'](loadProgress)?(document['getElementById'](_0x177c0c[_0x32ad20(0x198)])[_0x32ad20(0x242)][_0x32ad20(0x1b8)]=_0x32ad20(0x295),_0x177c0c['PcvYH'](initializeQuiz)):(_0x177c0c[_0x32ad20(0x1da)](clearProgress),document[_0x32ad20(0x17d)](_0x32ad20(0x351))[_0x32ad20(0x242)][_0x32ad20(0x1b8)]=_0x177c0c[_0x32ad20(0x15f)]):_0x177c0c['IMcmg'](_0x3bc314[_0x32ad20(0x377)],_0x3745f9['length'])&&(_0x27f2fa[_0xf37324[_0x32ad20(0x377)]]['bookmarked']=!![]);else!window[_0x32ad20(0x2a9)]['pathname']['endsWith'](_0x177c0c[_0x32ad20(0x330)])?_0x177c0c['jsXdO'](_0x177c0c[_0x32ad20(0x11c)],_0x32ad20(0x129))?(_0x5e78e8[_0x22dcbc][_0x32ad20(0x1e1)]+=_0x177c0c['sHpxX'](_0x1060a6[_0x32ad20(0x1eb)](),_0x345adc),_0x45841c=_0x404b31['now']()):(_0x177c0c[_0x32ad20(0x1da)](clearProgress),document[_0x32ad20(0x17d)]('modeModal')['style'][_0x32ad20(0x1b8)]=_0x177c0c[_0x32ad20(0x15f)]):_0x177c0c['jsXdO'](_0x177c0c[_0x32ad20(0x33c)],_0x32ad20(0x26a))?(_0x29cb92[_0x32ad20(0x17d)](_0x32ad20(0x351))[_0x32ad20(0x242)][_0x32ad20(0x1b8)]=_0x177c0c['HgIUR'],_0x177c0c[_0x32ad20(0x316)](_0x2ac191)):_0x177c0c[_0x32ad20(0x15e)](initializeQuiz);}),document[_0x471a9b(0x368)]('keydown',function(_0x8ff24){const _0x1bf227=_0x471a9b,_0x242bc4={'rsbsE':function(_0x11aeef,_0x12a34a){return _0x11aeef-_0x12a34a;},'TzcDE':function(_0x19c3a2,_0x15eff2){return _0x19c3a2!==_0x15eff2;},'NwIJc':'none','zhVqE':'performanceModal','twzAg':_0x1bf227(0x23f),'QzRrz':function(_0x185d72,_0x23c71a){return _0x185d72>=_0x23c71a;},'UZUsD':function(_0x19347e,_0x50134d){return _0x19347e<=_0x50134d;},'qhtIA':_0x1bf227(0x1cf),'IJWps':_0x1bf227(0x325),'BLiQB':function(_0xe1a785,_0x50d129){return _0xe1a785(_0x50d129);},'qUCcS':_0x1bf227(0x25a),'EdcbF':function(_0x24d610,_0x31fa1c){return _0x24d610<_0x31fa1c;},'cRcZB':function(_0x190103,_0x287196){return _0x190103===_0x287196;},'Evqss':_0x1bf227(0x1b2),'zmhET':function(_0x10cd2b){return _0x10cd2b();},'HqYEJ':function(_0x37eaf6,_0x23767e){return _0x37eaf6===_0x23767e;},'eeMLQ':_0x1bf227(0x250),'MhfDT':function(_0x4c6270){return _0x4c6270();},'HzEzW':function(_0x3d19d8,_0xf35a52){return _0x3d19d8===_0xf35a52;},'nQXoB':_0x1bf227(0x17e),'KqpGS':function(_0x2b6604,_0x3d200f){return _0x2b6604===_0x3d200f;},'RDNyk':function(_0x16b7cc,_0x31b717){return _0x16b7cc===_0x31b717;},'GYDvj':_0x1bf227(0x2be),'sPblI':function(_0x2694f2,_0x10d7b7){return _0x2694f2===_0x10d7b7;},'DZabJ':_0x1bf227(0x149),'XWHMr':_0x1bf227(0x263)};if(_0x242bc4[_0x1bf227(0x2a1)](document[_0x1bf227(0x17d)](_0x1bf227(0x351))[_0x1bf227(0x242)][_0x1bf227(0x1b8)],_0x242bc4[_0x1bf227(0x2b2)]))return;if(document[_0x1bf227(0x17d)](_0x242bc4[_0x1bf227(0x2cf)])[_0x1bf227(0x1ba)]['contains'](_0x242bc4[_0x1bf227(0x2de)])===![])return;if(_0x242bc4[_0x1bf227(0x23c)](_0x8ff24[_0x1bf227(0x1b7)],'1')&&_0x242bc4[_0x1bf227(0x284)](_0x8ff24['key'],'4')){if(_0x242bc4[_0x1bf227(0x2a1)](_0x242bc4[_0x1bf227(0x251)],_0x242bc4[_0x1bf227(0x2aa)])){const _0x9f7e2e=_0x242bc4[_0x1bf227(0x2d7)](_0x242bc4['BLiQB'](parseInt,_0x8ff24[_0x1bf227(0x1b7)]),0x1),_0x4d9984=document['querySelectorAll'](_0x242bc4[_0x1bf227(0x167)]);if(_0x242bc4[_0x1bf227(0x1e6)](_0x9f7e2e,_0x4d9984['length']))_0x242bc4['BLiQB'](selectOption,_0x9f7e2e);}else _0x1b6f7b[_0x1fe9f0][_0x1bf227(0x1e1)]+=_0x242bc4[_0x1bf227(0x2d7)](_0x20a7e8['now'](),_0x21b947);}else{if(_0x242bc4[_0x1bf227(0x287)](_0x8ff24['key'],_0x242bc4[_0x1bf227(0x365)]))_0x242bc4['zmhET'](previousQuestion);else{if(_0x242bc4[_0x1bf227(0x2dd)](_0x8ff24[_0x1bf227(0x1b7)],_0x242bc4[_0x1bf227(0x2fb)])||_0x8ff24[_0x1bf227(0x1b7)]==='\x20'){if(_0x242bc4['TzcDE'](_0x1bf227(0x24f),_0x1bf227(0x24f))){const _0x448386=_0x2e0811?function(){const _0x3c9223=_0x1bf227;if(_0x38e6af){const _0x49f34b=_0xa029cf[_0x3c9223(0x161)](_0x1392cf,arguments);return _0x2bb9c0=null,_0x49f34b;}}:function(){};return _0x341a39=![],_0x448386;}else _0x8ff24[_0x1bf227(0x1e8)](),_0x242bc4[_0x1bf227(0x135)](nextQuestion);}else{if(_0x8ff24[_0x1bf227(0x1b7)][_0x1bf227(0x28d)]()==='b'&&(_0x242bc4['cRcZB'](currentMode,_0x1bf227(0x33d))||_0x242bc4[_0x1bf227(0x178)](currentMode,_0x242bc4[_0x1bf227(0x312)])))_0x242bc4[_0x1bf227(0x1de)](toggleBookmark);else{if(_0x242bc4[_0x1bf227(0x20d)](_0x8ff24[_0x1bf227(0x1b7)][_0x1bf227(0x28d)](),'m')&&(_0x242bc4[_0x1bf227(0x12c)](currentMode,_0x242bc4[_0x1bf227(0x1be)])||_0x242bc4[_0x1bf227(0x20d)](currentMode,'timed_exam')))toggleMarkForReview();else _0x242bc4[_0x1bf227(0x2dd)](_0x8ff24[_0x1bf227(0x1b7)][_0x1bf227(0x28d)](),'s')&&(_0x242bc4[_0x1bf227(0x178)](currentMode,_0x242bc4[_0x1bf227(0x1be)])||_0x242bc4[_0x1bf227(0x1e9)](currentMode,'timed_exam'))&&(_0x242bc4[_0x1bf227(0x36c)]!==_0x242bc4[_0x1bf227(0x131)]?_0x242bc4[_0x1bf227(0x1de)](submitQuiz):_0x1bde28[_0x1bf227(0x14c)][_0x1bf227(0x24c)](_0x1b50cd[_0x1bf227(0x28d)]()[_0x1bf227(0x179)](/ /g,'-'))&&(_0x3e3796[_0x1bf227(0x377)]<_0x2e0e59[_0x1bf227(0x2ee)]&&(_0x35dfea[_0x36c0e5[_0x1bf227(0x377)]]['bookmarked']=!![])));}}}}});</script>
+
+</body></html>

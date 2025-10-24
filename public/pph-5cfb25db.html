@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pph - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / QRP / OBG
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">21</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>const _0x46c8ab=_0x2cb4;(function(_0x4b0011,_0xa819da){const _0x119e99=_0x2cb4,_0x1cb724=_0x4b0011();while(!![]){try{const _0x23f572=-parseInt(_0x119e99(0x2cd))/0x1*(parseInt(_0x119e99(0x446))/0x2)+-parseInt(_0x119e99(0x404))/0x3*(-parseInt(_0x119e99(0x46c))/0x4)+parseInt(_0x119e99(0x3ad))/0x5+parseInt(_0x119e99(0x367))/0x6+-parseInt(_0x119e99(0x45c))/0x7+parseInt(_0x119e99(0x471))/0x8+-parseInt(_0x119e99(0x2f5))/0x9*(-parseInt(_0x119e99(0x441))/0xa);if(_0x23f572===_0xa819da)break;else _0x1cb724['push'](_0x1cb724['shift']());}catch(_0x5f3232){_0x1cb724['push'](_0x1cb724['shift']());}}}(_0x523b,0x51322));const _0xdd427b=(function(){let _0x5d0002=!![];return function(_0x5ce0ce,_0x29809f){const _0x4654b4=_0x5d0002?function(){const _0x19f762=_0x2cb4;if(_0x29809f){const _0x1dff0e=_0x29809f[_0x19f762(0x2f3)](_0x5ce0ce,arguments);return _0x29809f=null,_0x1dff0e;}}:function(){};return _0x5d0002=![],_0x4654b4;};}()),_0x3c870c=_0xdd427b(this,function(){const _0x4e52c2=_0x2cb4,_0x5101c2={'BBkXI':_0x4e52c2(0x37d)};return _0x3c870c[_0x4e52c2(0x370)]()['search'](_0x5101c2[_0x4e52c2(0x22a)])['toString']()[_0x4e52c2(0x3b3)](_0x3c870c)[_0x4e52c2(0x358)]('(((.+)+)+)+$');});_0x3c870c();const _0x4877ca=(function(){const _0x21e3c1=_0x2cb4,_0x50f6d9={'NCdEP':'correct','vBLdx':_0x21e3c1(0x236),'dUsTl':function(_0x5d140b,_0x219f35){return _0x5d140b!==_0x219f35;},'nuTjC':_0x21e3c1(0x2c7),'yKvTI':function(_0x450e7c,_0x5f425e){return _0x450e7c!==_0x5f425e;},'NktGD':_0x21e3c1(0x2ee),'RMsoh':_0x21e3c1(0x335)};let _0x3749d3=!![];return function(_0x69b973,_0x359614){const _0x4f3f7f=_0x21e3c1,_0x1642ce={'kHKNU':_0x50f6d9[_0x4f3f7f(0x275)],'XDTFa':_0x50f6d9[_0x4f3f7f(0x276)],'uChAG':function(_0x3695db,_0x6c9410){const _0x53124a=_0x4f3f7f;return _0x50f6d9[_0x53124a(0x351)](_0x3695db,_0x6c9410);},'fCWvh':_0x4f3f7f(0x406),'zYuLg':_0x50f6d9['nuTjC'],'mfqwR':function(_0x2f32b7,_0xef57fc){const _0x3dd06a=_0x4f3f7f;return _0x50f6d9[_0x3dd06a(0x30e)](_0x2f32b7,_0xef57fc);},'DpeXZ':_0x50f6d9[_0x4f3f7f(0x2dd)]};if('XnJpB'!==_0x50f6d9[_0x4f3f7f(0x423)]){const _0xca2c34=_0x3749d3?function(){const _0x3b7596=_0x4f3f7f,_0x54abb7={'JYsSK':_0x1642ce[_0x3b7596(0x397)],'HMydp':_0x1642ce['XDTFa']};if(_0x1642ce[_0x3b7596(0x41f)](_0x1642ce['fCWvh'],_0x1642ce[_0x3b7596(0x218)])){if(_0x359614){if(_0x1642ce[_0x3b7596(0x45d)](_0x1642ce[_0x3b7596(0x286)],_0x1642ce[_0x3b7596(0x286)]))_0x2398c8[_0x3b7596(0x3f6)]+=_0x3b7596(0x33a)+_0x4aeaef[_0x3b7596(0x241)]+_0x3b7596(0x390);else{const _0x2dd71e=_0x359614[_0x3b7596(0x2f3)](_0x69b973,arguments);return _0x359614=null,_0x2dd71e;}}}else _0x2dc639=_0x54abb7[_0x3b7596(0x2c5)],_0x5c6d92=_0x54abb7['HMydp'];}:function(){};return _0x3749d3=![],_0xca2c34;}else{const _0x1fef33=_0xb69008['apply'](_0x21ea5d,arguments);return _0x203413=null,_0x1fef33;}};}()),_0x4b47a1=_0x4877ca(this,function(){const _0x144d5b=_0x2cb4,_0xcb8d17={'gqUyr':function(_0x367547,_0x4377e7){return _0x367547+_0x4377e7;},'GvUdL':_0x144d5b(0x222),'yTtzJ':_0x144d5b(0x35e),'eysoO':function(_0x44bdec){return _0x44bdec();},'aGsnZ':'log','eNqvY':_0x144d5b(0x310),'UEzTw':'info','pLSnF':'error','IlcmN':_0x144d5b(0x385),'ddKHY':'table','BmacO':'trace'};let _0x40e227;try{const _0x141915=Function(_0xcb8d17[_0x144d5b(0x24e)](_0xcb8d17[_0x144d5b(0x442)]+_0xcb8d17[_0x144d5b(0x32d)],');'));_0x40e227=_0xcb8d17[_0x144d5b(0x42c)](_0x141915);}catch(_0x459999){_0x40e227=window;}const _0x11107d=_0x40e227['console']=_0x40e227[_0x144d5b(0x225)]||{},_0x1986e0=[_0xcb8d17[_0x144d5b(0x40f)],_0xcb8d17[_0x144d5b(0x3c7)],_0xcb8d17[_0x144d5b(0x408)],_0xcb8d17['pLSnF'],_0xcb8d17['IlcmN'],_0xcb8d17['ddKHY'],_0xcb8d17[_0x144d5b(0x331)]];for(let _0x351f85=0x0;_0x351f85<_0x1986e0[_0x144d5b(0x2e8)];_0x351f85++){const _0x308887=_0x4877ca['constructor'][_0x144d5b(0x43d)][_0x144d5b(0x451)](_0x4877ca),_0x175038=_0x1986e0[_0x351f85],_0x5b5b2c=_0x11107d[_0x175038]||_0x308887;_0x308887[_0x144d5b(0x3e8)]=_0x4877ca[_0x144d5b(0x451)](_0x4877ca),_0x308887[_0x144d5b(0x370)]=_0x5b5b2c[_0x144d5b(0x370)][_0x144d5b(0x451)](_0x5b5b2c),_0x11107d[_0x175038]=_0x308887;}});_0x4b47a1();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':_0x46c8ab(0x2fa)},{'id':0x2,'text':_0x46c8ab(0x327)},{'id':0x3,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>HR/DBP</span></p>'},{'id':0x4,'text':_0x46c8ab(0x45f)}],'text':_0x46c8ab(0x447),'unique_key':_0x46c8ab(0x369),'question_audio':null,'question_video':null,'map_id':0x13abc8,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x266),'correct_choice_id':0x1,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':_0x46c8ab(0x29a)},{'id':0xc,'text':_0x46c8ab(0x3cc)},{'id':0xd,'text':_0x46c8ab(0x35b)},{'id':0xe,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Coagulation\x20disorders</span></p>'}],'text':_0x46c8ab(0x200),'unique_key':_0x46c8ab(0x307),'question_audio':null,'question_video':null,'map_id':0x13ac75,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':'<p><strong>2nd\x20M/C\x20cause\x20of\x20PPH\x20is\x20Genital\x20tract\x20trauma,\x20the\x20<em>first\x20being\x20Atonic\x20PPH.</em></strong></p>\x0d\x0a<p><strong>OPTION\x20A)\x20Atonic\x20PPH</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Explanation:</strong>\x20<em>Atonic\x20PPH\x20is\x20the\x20most\x20common\x20cause\x20of\x20postpartum\x20hemorrhage.</em>\x20It\x20occurs\x20when\x20the\x20uterus\x20fails\x20to\x20contract\x20effectively\x20after\x20childbirth,\x20leading\x20to\x20excessive\x20bleeding.\x20It\x20is\x20<em>often\x20managed\x20with\x20uterotonics\x20</em>and\x20other\x20interventions\x20to\x20stimulate\x20uterine\x20contraction.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>OPTION\x20B)\x20Traumatic\x20PPH</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Explanation:</strong>\x20Traumatic\x20PPH\x20refers\x20to\x20bleeding\x20caused\x20by\x20trauma\x20to\x20the\x20birth\x20canal,\x20such\x20as\x20lacerations\x20or\x20tears\x20in\x20the\x20cervix,\x20vagina,\x20or\x20perineum.\x20This\x20is\x20considered\x20the\x20second\x20most\x20common\x20cause\x20of\x20PPH,\x20especially\x20if\x20the\x20trauma\x20is\x20not\x20promptly\x20identified\x20and\x20repaired.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>OPTION\x20C)\x20Retained\x20Placenta</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Explanation:</strong>\x20Retained\x20placenta\x20occurs\x20when\x20the\x20placenta\x20or\x20parts\x20of\x20it\x20are\x20left\x20inside\x20the\x20uterus\x20after\x20delivery,\x20<em>preventing\x20the\x20uterus\x20from\x20contracting\x20properly.</em>\x20This\x20condition\x20can\x20lead\x20to\x20significant\x20bleeding\x20and\x20<em>usually\x20requires\x20manual\x20removal\x20or\x20surgical\x20intervention.</em></li>\x0d\x0a</ul>\x0d\x0a<p><strong>OPTION\x20D)\x20Coagulation\x20Disorders</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Explanation:</strong>\x20Coagulation\x20disorders,\x20such\x20as\x20disseminated\x20intravascular\x20coagulation\x20(DIC)\x20or\x20inherited\x20bleeding\x20disorders,\x20can\x20lead\x20to\x20abnormal\x20bleeding\x20and\x20contribute\x20to\x20postpartum\x20hemorrhage.\x20<em>These\x20conditions\x20are\x20less\x20common\x20but\x20can\x20be\x20severe</em>\x20and\x20require\x20specific\x20treatment\x20to\x20manage\x20bleeding.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p>Four\x20basic\x20pathologies\x20are\x20expressed\x20as\x20the\x204\x20T\x27s\x20(RCOG):</p>\x0d\x0a<ol>\x0d\x0a<li><strong>Tone\x20(atonicity)</strong></li>\x0d\x0a<li><strong>Tissue\x20(retained\x20bits,\x20blood\x20clots)</strong></li>\x0d\x0a<li><strong>Trauma\x20(genital\x20tract\x20injury)</strong></li>\x0d\x0a<li><strong>Thrombin\x20(coagulopathy)</strong></li>\x0d\x0a</ol>','correct_choice_id':0xc,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':_0x46c8ab(0x26b)},{'id':0x16,'text':_0x46c8ab(0x29d)},{'id':0x17,'text':_0x46c8ab(0x2d1)},{'id':0x18,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Inferior\x20gluteal\x20artery</span></p>'}],'text':_0x46c8ab(0x2fc),'unique_key':'DT1289334','question_audio':null,'question_video':null,'map_id':0x13ac76,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':'<p><strong>Depending\x20upon\x20the\x20location\x20of\x20the\x20hematoma,\x20whether\x20below\x20or\x20above\x20the\x20levator\x20ani,\x20it\x20is\x20termed\x20as:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Infralevator\x20hematoma-common</li>\x0d\x0a<li>Supralevator\x20hematoma-rare</li>\x0d\x0a</ul>\x0d\x0a<p>INFRALEVATOR\x20HEMATOMA:\x20The\x20commonest\x20one\x20is\x20the\x20vulval\x20hematoma.</p>\x0d\x0a<p><strong>Etiology:</strong></p>\x0d\x0a<ol>\x0d\x0a<li>Improper\x20hemostasis\x20during\x20repair\x20of\x20vaginal\x20or\x20perineal\x20tears\x20or\x20episiotomy\x20wound-\x20(a)\x20Failure\x20to\x20take\x20precaution\x20while\x20suturing\x20the\x20apex\x20of\x20the\x20tear\x20(b)\x20Failure\x20to\x20obliterate\x20the\x20dead\x20space\x20while\x20suturing\x20the\x20vaginal\x20walls.</li>\x0d\x0a<li>Rupture\x20of\x20paravaginal\x20venous\x20plexus\x20either\x20spontaneously\x20or\x20following\x20instrumental\x20delivery.</li>\x0d\x0a</ol>\x0d\x0a<p>Treat\x20by\x20draining\x20the\x20hematoma\x20and\x20resuturing\x20the\x20episiotomy.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p>(1)\x20Persistent,\x20severe\x20pain\x20on\x20the\x20perineal\x20region.</p>\x0d\x0a<p>(2)\x20There\x20may\x20be\x20rectal\x20tenesmus\x20or\x20bearing\x20down\x20efforts\x20when\x20extension\x20occurs\x20to\x20the\x20ischiorectal\x20fossa.\x20There\x20may\x20be\x20even\x20retention\x20of\x20urine.</p>\x0d\x0a<p>(2)\x20Local\x20examination\x20reveals\x20a\x20tense\x20swelling\x20at\x20the\x20vulva\x20which\x20becomes\x20dusky\x20and\x20purple\x20in\x20color\x20and\x20tender\x20to\x20touch.</p>\x0d\x0a<p><strong>M/C\x20artery\x20to\x20form\x20vulvar\x20hematoma-Pudendal\x20Artery</strong></p>','correct_choice_id':0x15,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':_0x46c8ab(0x254)},{'id':0x20,'text':_0x46c8ab(0x3cf)},{'id':0x21,'text':_0x46c8ab(0x306)},{'id':0x22,'text':_0x46c8ab(0x226)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Recommendations\x20for\x20maintaining\x20hematological\x20parameters\x20in\x20massive\x20haemorrhage\x20are\x20all\x20except:</span></p>','unique_key':'DT1289335','question_audio':null,'question_video':null,'map_id':0x13ac77,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x46c8ab(0x324),'correct_choice_id':0x1f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':_0x46c8ab(0x45b)},{'id':0x2a,'text':_0x46c8ab(0x374)},{'id':0x2b,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>PPH</span></p>'},{'id':0x2c,'text':_0x46c8ab(0x38c)}],'text':_0x46c8ab(0x473),'unique_key':_0x46c8ab(0x208),'question_audio':null,'question_video':null,'map_id':0x13ac79,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x29b),'correct_choice_id':0x2b,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':_0x46c8ab(0x47d)},{'id':0x34,'text':_0x46c8ab(0x21d)},{'id':0x35,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Carboprost</span></p>'},{'id':0x36,'text':_0x46c8ab(0x3bf)}],'text':_0x46c8ab(0x376),'unique_key':_0x46c8ab(0x242),'question_audio':null,'question_video':null,'map_id':0x13ac7a,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x203),'correct_choice_id':0x34,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':_0x46c8ab(0x47d)},{'id':0x3e,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Ergometrine</span></p>'},{'id':0x3f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Carboprost</span></p>'},{'id':0x40,'text':_0x46c8ab(0x3bf)}],'text':_0x46c8ab(0x468),'unique_key':_0x46c8ab(0x21f),'question_audio':null,'question_video':null,'map_id':0x13ac7b,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x37c),'correct_choice_id':0x3f,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':_0x46c8ab(0x284)},{'id':0x48,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Hyperthermia,\x20Acidosis\x20&\x20Coagulopathy</span></p>'},{'id':0x49,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Hyperpyrexia,\x20Alkalosis\x20&\x20Coagulopathy</span></p>'},{'id':0x4a,'text':_0x46c8ab(0x465)}],'text':_0x46c8ab(0x279),'unique_key':'DT1289340','question_audio':null,'question_video':null,'map_id':0x13ac7c,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<p>The\x20morbidity\x20and\x20mortality\x20associated\x20with\x20massive\x20PPH\x20is\x20often\x20accompanied\x20by\x20a\x20triad\x20of\x20hypothermia,\x20acidosis\x20and\x20coagulopathy.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412059b19761f-c39c-4d51-86a2-3c44856578c0.jpg\x22>','correct_choice_id':0x47,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x9,'choices':[{'id':0x51,'text':_0x46c8ab(0x3f0)},{'id':0x52,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-fibrinolytic</span></p>'},{'id':0x53,'text':_0x46c8ab(0x389)},{'id':0x54,'text':_0x46c8ab(0x2db)}],'text':_0x46c8ab(0x344),'unique_key':'DT1289341','question_audio':null,'question_video':null,'map_id':0x13ac7d,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x426),'correct_choice_id':0x52,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xa,'choices':[{'id':0x5b,'text':_0x46c8ab(0x2d9)},{'id':0x5c,'text':_0x46c8ab(0x3e0)},{'id':0x5d,'text':_0x46c8ab(0x48c)},{'id':0x5e,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Complications\x20include\x20thromboembolic\x20events</span></p>'}],'text':_0x46c8ab(0x1f2),'unique_key':_0x46c8ab(0x3d9),'question_audio':null,'question_video':null,'map_id':0x13ac7e,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x296),'correct_choice_id':0x5c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xb,'choices':[{'id':0x65,'text':_0x46c8ab(0x244)},{'id':0x66,'text':_0x46c8ab(0x2d8)},{'id':0x67,'text':_0x46c8ab(0x3a7)},{'id':0x68,'text':_0x46c8ab(0x3b6)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Identify\x20the\x20type\x20of\x20uterine\x20compression\x20suture:<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205bc6d6f2d-8b39-4953-9727-0ea71261ff14.png\x22></span></p>','unique_key':_0x46c8ab(0x3af),'question_audio':null,'question_video':null,'map_id':0x13ac7f,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x3c2),'correct_choice_id':0x65,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xc,'choices':[{'id':0x6f,'text':_0x46c8ab(0x36f)},{'id':0x70,'text':_0x46c8ab(0x205)},{'id':0x71,'text':_0x46c8ab(0x325)},{'id':0x72,'text':_0x46c8ab(0x26c)}],'text':_0x46c8ab(0x416),'unique_key':_0x46c8ab(0x453),'question_audio':null,'question_video':null,'map_id':0x13ac80,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x352),'correct_choice_id':0x70,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xd,'choices':[{'id':0x79,'text':_0x46c8ab(0x278)},{'id':0x7a,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>>500\x20ml</span></p>'},{'id':0x7b,'text':_0x46c8ab(0x387)},{'id':0x7c,'text':_0x46c8ab(0x267)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2032\x20year\x20old\x20multigravida\x20comes\x20to\x20LR\x20in\x20the\x20second\x20stage\x20of\x20labour,\x20She\x20delivers\x20a\x20depressed\x20neonate\x20&\x20immediately\x20after\x20removal\x20of\x20placenta\x20there\x20is\x20ongoing\x20blood\x20loss.\x20Her\x20systolic\x20blood\x20pressure\x20is\x20below\x2080\x20mmHg,\x20associated\x20with\x20worsening\x20tachycardia,\x20tachypnoea\x20and\x20altered\x20mental\x20state.\x20What\x20could\x20be\x20the\x20average\x20estimated\x20blood\x20loss?</span></p>','unique_key':_0x46c8ab(0x2ea),'question_audio':null,'question_video':null,'map_id':0x13ac81,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x339),'correct_choice_id':0x7c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xe,'choices':[{'id':0x83,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Bakri\x20balloon</span></p>'},{'id':0x84,'text':_0x46c8ab(0x28e)},{'id':0x85,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Rusch\x20balloon</span></p>'},{'id':0x86,'text':_0x46c8ab(0x30f)}],'text':_0x46c8ab(0x477),'unique_key':_0x46c8ab(0x3e1),'question_audio':null,'question_video':null,'map_id':0x13ac82,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li>Bakri\x20balloon,\x20discovered\x20in\x201992\x20by\x20Bakri,\x20which\x20is\x20made\x20up\x20of\x20100%\x20silicone\x20(without\x20latex)\x20as\x20shown\x20in\x20the\x20figure\x20with\x20a\x20ductile\x20shape\x20that\x20allows\x20it\x20to\x20conform\x20to\x20the\x20uterine\x20anatomy.\x20It\x20is\x20<em>used\x20for\x20Uterine\x20Balloon\x20Tamponade.</em></li>\x0d\x0a<li>It\x20has\x20a\x20probe\x20with\x20two\x20pathways:\x20One\x20for\x20balloon\x20inflation\x20and\x20the\x20other\x20to\x20drain\x20the\x20uterine\x20cavity\x20(occult\x20bleeding),\x20where\x20it\x20allows\x20the\x20application\x20of\x20<em>up\x20to\x20500\x20g\x20of\x20traction\x20tension.</em></li>\x0d\x0a<li>Once\x20deflated\x20it\x20is\x20very\x20easy\x20to\x20remove,\x20so\x20it\x20is\x20considered\x20as\x20a\x20<em>non-surgical\x20procedure.</em></li>\x0d\x0a<li>In\x20addition\x20to\x20the\x20catheter,\x20a\x2050\x20mL\x20syringe,\x20drainage\x20bag,\x20saline\x20solution\x20(500\x20mL),\x20Foley\x20catheter,\x20and\x20antiseptic\x20gauze\x20for\x20vaginal\x20plug\x20are\x20required.</li>\x0d\x0a<li>It\x20can\x20be\x20inserted\x20transvaginally\x20or\x20abdominally,\x20depending\x20on\x20the\x20type\x20of\x20delivery</li>\x0d\x0a<li>It\x20is\x20used\x20to\x20provide\x20<strong><em>temporary\x20control\x20or\x20reduction\x20of\x20postpartum\x20haemorrhage</em></strong>\x20when\x20conservative\x20management\x20is\x20warranted</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p><strong>Bakri\x20balloon\x20catheter\x20is\x20method\x20of\x20uterine\x20tamponade.</strong></p>\x0d\x0a<p><strong>Non\x20surgical\x20management\x20of\x20PPH.</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412054730d41e-e468-48aa-be69-b5d5b99c39e1.jpg\x22>','correct_choice_id':0x83,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xf,'choices':[{'id':0x8d,'text':_0x46c8ab(0x3f3)},{'id':0x8e,'text':_0x46c8ab(0x210)},{'id':0x8f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Fibroid\x20polyp</span></p>'},{'id':0x90,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Placenta\x20accrete\x20spectrum</span></p>'}],'text':_0x46c8ab(0x201),'unique_key':_0x46c8ab(0x3df),'question_audio':null,'question_video':null,'map_id':0x13ac83,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':'<p><strong>This\x20is\x20a\x20case\x20of\x20complete\x20uterine\x20inversion.</strong></p>\x0d\x0a<ul>\x0d\x0a<li>It\x20is\x20an\x20<em>extremely\x20rare\x20but\x20a\x20life-threatening\x20complication\x20in\x20third\x20stage</em>\x20in\x20which\x20the\x20uterus\x20is\x20turned\x20inside\x20out\x20partially\x20or\x20completely.</li>\x0d\x0a<li>The\x20obstetric\x20inversion\x20is\x20almost\x20always\x20an\x20acute\x20one\x20and\x20usually\x20complete.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>DIAGNOSIS:</strong></p>\x0d\x0a<p>Symptoms:\x20Acute\x20lower\x20abdominal\x20pain\x20with\x20bearing\x20down\x20sensation.</p>\x0d\x0a<p><strong>Signs:</strong></p>\x0d\x0a<ol>\x0d\x0a<li>(1)\x20<em>Varying\x20degree\x20of\x20shock\x20is\x20a\x20constant\x20feature</em></li>\x0d\x0a<li>(2)\x20Abdominal\x20examination-\x0d\x0a<ol\x20style=\x22list-style-type:\x20lower-alpha;\x22>\x0d\x0a<li><em>Cupping\x20or\x20dimpling\x20of\x20the\x20fundal\x20surface,</em></li>\x0d\x0a<li><em>Bimanual\x20examination\x20not\x20only\x20helps\x20to\x20confirm\x20the\x20diagnosis\x20but\x20also\x20the\x20degree</em>.\x20In\x20complete\x20variety,\x20a\x20pear-shaped\x20mass\x20protrudes\x20outside\x20the\x20vulva\x20with\x20the\x20broad\x20end\x20pointing\x20downward\x20and\x20looking\x20reddish\x20purple\x20in\x20colour.</li>\x0d\x0a<li><em>Sonography\x20can\x20confirm\x20the\x20diagnosis\x20when\x20clinical\x20examination\x20is\x20not\x20clear.</em></li>\x0d\x0a</ol>\x0d\x0a</li>\x0d\x0a</ol>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202501189b65686c-fdaf-4fde-b22c-5ace4c32493f.jpg\x22>\x0d\x0a<p><strong>Option\x20a.\x20Prolapse</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Incorrect</strong>:\x20Uterine\x20or\x20pelvic\x20organ\x20prolapse\x20typically\x20<em>presents\x20with\x20a\x20sensation\x20of\x20heaviness\x20or\x20bulging\x20in\x20the\x20vaginal\x20area</em>,\x20but\x20it\x20is\x20less\x20likely\x20to\x20cause\x20acute\x20hypotension\x20and\x20tachycardia\x20immediately\x20after\x20delivery.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Option\x20c.\x20Fibroid\x20polyp</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Incorrect</strong>:\x20While\x20fibroid\x20polyps\x20can\x20protrude\x20into\x20the\x20vagina\x20and\x20cause\x20bleeding,\x20they\x20are\x20<em>not\x20typically\x20associated\x20with\x20the\x20severe\x20hemodynamic\x20instability\x20described\x20here.</em></li>\x0d\x0a</ul>\x0d\x0a<p><strong>Option\x20d.\x20Placenta\x20accreta\x20spectrum</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Incorrect</strong>:\x20Placenta\x20accreta\x20spectrum\x20refers\x20to\x20abnormal\x20placental\x20attachment\x20to\x20the\x20uterine\x20wall,\x20which\x20can\x20lead\x20to\x20severe\x20postpartum\x20hemorrhage.\x20However,\x20uterine\x20inversion\x20is\x20more\x20likely\x20in\x20this\x20scenario\x20due\x20to\x20the\x20acute\x20hemodynamic\x20collapse\x20described.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>This\x20is\x20due\x20to\x20the\x20<em>mismanagement\x20of\x20third\x20stage\x20of\x20labor</em>.\x20-\x20Pulling\x20the\x20cord\x20when\x20the\x20uterus\x20is\x20atonic\x20especially\x20when\x20combined\x20with\x20fundal\x20pressure\x20-\x20Fundal\x20pressure\x20while\x20the\x20uterus\x20is\x20relaxed-Faulty\x20technique\x20in\x20manual\x20removal.</li>\x0d\x0a<li>Spontaneous\x20(40%):<em>Fundal\x20attachment\x20of\x20the\x20placenta\x20(75%),</em>\x20short\x20cord\x20and\x20placenta\x20accreta,\x20weakness\x20of\x20uterine\x20wall\x20at\x20the\x20placental\x20site\x20are\x20often\x20associated.</li>\x0d\x0a<li><em>Leads\x20to\x20significant\x20blood\x20loss\x20and\x20circulatory\x20shock,</em>\x20as\x20indicated\x20by\x20the\x20low\x20BP\x20(90/60\x20mmHg),\x20tachycardia\x20(Pulse\x20132\x20bpm),\x20and\x20tachypnea\x20(RR\x2024/min).</li>\x0d\x0a</ul>','correct_choice_id':0x8e,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x10,'choices':[{'id':0x97,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Misoprostol</span></p>'},{'id':0x98,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Oxytocin</span></p>'},{'id':0x99,'text':_0x46c8ab(0x301)},{'id':0x9a,'text':_0x46c8ab(0x2ec)}],'text':_0x46c8ab(0x420),'unique_key':'DT1289359','question_audio':null,'question_video':null,'map_id':0x13ac8f,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li>AMTSL\x20should\x20only\x20be\x20done\x20by\x20SBA/trained\x20staff.</li>\x0d\x0a<li><strong>Oxytocin\x20remains\x20the\x20uterotonic\x20of\x20choice\x20for\x20AMTSL.</strong></li>\x0d\x0a<li>In\x20settings\x20where\x20oxytocin\x20is\x20unavailable,\x20oral\x20misoprostol\x20(600\x20&mu;g)\x20is\x20recommended.</li>\x0d\x0a</ul>\x0d\x0a<p>In\x20the\x20context\x20of\x20<strong>Active\x20Management\x20of\x20the\x20Third\x20Stage\x20of\x20Labor\x20(AMTSL)</strong>,\x20the\x20uterotonic\x20of\x20choice\x20is\x20<strong>oxytocin.\x20OPTION</strong></p>\x0d\x0a<p><strong>a.\x20Misoprostol</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Incorrect</strong>:\x20Misoprostol,\x20a\x20prostaglandin\x20analogue,\x20is\x20used\x20as\x20an\x20<em>alternative\x20in\x20settings\x20where\x20oxytocin\x20is\x20not\x20available</em>\x20or\x20when\x20refrigeration\x20(for\x20oxytocin)\x20is\x20an\x20issue.\x20However,\x20oxytocin\x20remains\x20the\x20first-line\x20uterotonic\x20in\x20AMTSL.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>c.\x20Carboprost</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Incorrect</strong>:\x20Carboprost,\x20a\x20prostaglandin,\x20is\x20used\x20<em>in\x20cases\x20of\x20refractory\x20PPH,\x20but\x20it\x20is\x20not\x20the\x20first\x20choice\x20in\x20AMTSL</em>\x20due\x20to\x20its\x20side\x20effect\x20profile\x20(e.g.,\x20nausea,\x20vomiting,\x20bronchospasm).</li>\x0d\x0a</ul>\x0d\x0a<p><strong>OPTION\x20d.\x20Carbetocin</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Incorrect</strong>:\x20Carbetocin,\x20a\x20long-acting\x20oxytocin\x20analogue,\x20may\x20be\x20<em>used\x20in\x20specific\x20cases\x20such\x20as\x20after\x20cesarean\x20deliveries</em>.\x20However,\x20oxytocin\x20is\x20still\x20the\x20preferred\x20uterotonic\x20in\x20routine\x20AMTSL\x20for\x20vaginal\x20deliveries.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Oxytocin\x20is\x20the\x20<strong>first-line\x20uterotonic\x20agent</strong>\x20recommended\x20in\x20AMTSL\x20due\x20to\x20its\x20effectiveness,\x20safety,\x20and\x20quick\x20onset\x20in\x20promoting\x20uterine\x20contractions\x20to\x20prevent\x20postpartum\x20hemorrhage\x20(PPH).</li>\x0d\x0a<li>Active\x20management\x20of\x20third-stage\x20labor:</li>\x0d\x0a</ul>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412050dd3a647-d15e-4531-aefb-be2add41f88d.jpg\x22>\x0d\x0a<p><strong>Reference:</strong>\x20Guidance\x20Note\x20on\x20Prevention\x20&amp;\x20Management\x20of\x20Postpartum\x20Haemorrhage\x20by\x20MoHFW</p>','correct_choice_id':0x98,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x11,'choices':[{'id':0xa1,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Bimanual\x20uterine\x20compression</span></p>'},{'id':0xa2,'text':_0x46c8ab(0x36a)},{'id':0xa3,'text':_0x46c8ab(0x460)},{'id':0xa4,'text':_0x46c8ab(0x412)}],'text':_0x46c8ab(0x493),'unique_key':_0x46c8ab(0x303),'question_audio':null,'question_video':null,'map_id':0x13ac90,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li>Use\x20of\x20bimanual\x20uterine\x20compression\x20&amp;\x20external\x20aortic\x20compression\x20for\x20the\x20treatment\x20of\x20PPH\x20due\x20to\x20uterine\x20atony\x20after\x20vaginal\x20birth.</li>\x0d\x0a<li><strong>The\x20use\x20of\x20uterine\x20packing\x20is\x20not\x20recommended\x20for\x20the\x20treatment\x20of\x20PPH\x20due\x20to\x20uterine\x20atony\x20after\x20vaginal\x20birth.</strong></li>\x0d\x0a<li>The\x20use\x20of\x20uterine\x20artery\x20embolization\x20is\x20recommended\x20as\x20a\x20treatment\x20for\x20PPH\x20due\x20to\x20uterine\x20atony,\x20if\x20other\x20measures\x20have\x20failed.</li>\x0d\x0a<li>If\x20bleeding\x20does\x20not\x20stop\x20in\x20spite\x20of\x20treatment\x20(using\x20uterotonics\x20and\x20other\x20available\x20interventions),\x20the\x20use\x20of\x20surgical\x20interventions\x20(Modified\x20B-Lynch)\x20is\x20recommended.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/2024120533d50998-10a4-42e6-a9e1-3f747d7fb5fa.jpg\x22>\x0d\x0a<p><strong>Reference:</strong>\x20Guidance\x20Note\x20on\x20Prevention\x20&amp;\x20Management\x20of\x20Postpartum\x20Haemorrhage\x20by\x20MoHFW</p>','correct_choice_id':0xa3,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x12,'choices':[{'id':0xab,'text':_0x46c8ab(0x263)},{'id':0xac,'text':_0x46c8ab(0x234)},{'id':0xad,'text':_0x46c8ab(0x31c)},{'id':0xae,'text':_0x46c8ab(0x345)}],'text':_0x46c8ab(0x492),'unique_key':'DT1289361','question_audio':null,'question_video':null,'map_id':0x13ac91,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x440),'correct_choice_id':0xae,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x13,'choices':[{'id':0xb5,'text':_0x46c8ab(0x2e9)},{'id':0xb6,'text':_0x46c8ab(0x348)},{'id':0xb7,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>DNS</span></p>'},{'id':0xb8,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Isolyte\x20M</span></p>'}],'text':_0x46c8ab(0x366),'unique_key':_0x46c8ab(0x2bc),'question_audio':null,'question_video':null,'map_id':0x13ac92,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li>Almost\x20all\x20circulatory\x20<a\x20href=\x22https://www.msdmanuals.com/en-in/professional/critical-care-medicine/shock-and-fluid-resuscitation/shock\x22>shock</a>\x20states\x20require\x20large-volume\x20IV\x20fluid\x20replacement,\x20as\x20does\x20severe\x20intravascular\x20volume\x20depletion\x20due\x20to\x20PPH.</li>\x0d\x0a<li>Intravascular\x20volume\x20deficiency\x20is\x20acutely\x20compensated\x20for\x20by\x20vasoconstriction,\x20followed\x20over\x20hours\x20by\x20migration\x20of\x20fluid\x20from\x20the\x20extravascular\x20compartment\x20to\x20the\x20intravascular\x20compartment,\x20maintaining\x20circulating\x20volume\x20at\x20the\x20expense\x20of\x20total\x20body\x20water.</li>\x0d\x0a<li><em>Crystalloid\x20solutions\x20for\x20intravascular\x20volume\x20replenishment\x20are\x20typically\x20isotonic</em>\x20(eg,\x200.9%\x20saline\x20or\x20Ringer\x27s\x20lactate).\x20Water\x20freely\x20travels\x20outside\x20the\x20vasculature,\x20so\x20as\x20little\x20as\x2010%\x20of\x20isotonic\x20fluid\x20remains\x20in\x20the\x20intravascular\x20space.</li>\x0d\x0a<li>With\x20hypotonic\x20fluid\x20(eg,\x200.45%\x20saline),\x20even\x20less\x20remains\x20in\x20the\x20vasculature,\x20and,\x20thus,\x20this\x20fluid\x20is\x20not\x20used\x20for\x20resuscitation.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p><strong>Both\x200.9%\x20saline\x20and\x20Ringer\x27s\x20lactate\x20are\x20equally\x20effective;\x20<em>Ringer\x27s\x20lactate\x20may\x20be\x20preferred\x20in\x20hemorrhagic\x20shock\x20because\x20it\x20somewhat\x20minimizes\x20acidosis\x20and\x20will\x20not\x20cause\x20hyperchloremia.</em></strong></p>','correct_choice_id':0xb5,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x14,'choices':[{'id':0xbf,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Uterine\x20artery</span></p>'},{'id':0xc0,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Ovarian\x20artery</span></p>'},{'id':0xc1,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>External\x20iliac\x20artery</span></p>'},{'id':0xc2,'text':_0x46c8ab(0x396)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20arteries\x20is\x20not\x20ligated\x20in\x20stepwise\x20devascularisation\x20of\x20pelvis\x20for\x20management\x20of\x20atonic\x20PPH?</span></p>','unique_key':'DT1289363','question_audio':null,'question_video':null,'map_id':0x13ac93,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x49a),'correct_choice_id':0xc1,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':[_0x46c8ab(0x2f0)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x15,'choices':[{'id':0xc9,'text':_0x46c8ab(0x28f)},{'id':0xca,'text':_0x46c8ab(0x1f1)},{'id':0xcb,'text':_0x46c8ab(0x3fe)},{'id':0xcc,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Internal\x20iliac\x20vein\x20&\x20ureter\x20are\x20at\x20risk\x20of\x20injury</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20woman\x20lands\x20in\x20PPH\x20after\x20delivery.\x20Medical\x20management\x20fails.\x20She\x20is\x20rushed\x20to\x20OT\x20&\x20uterine\x20compression\x20sutures\x20are\x20applied.\x20Bleeding\x20still\x20continues.\x20Decision\x20to\x20go\x20for\x20internal\x20iliac\x20artery\x20ligation\x20is\x20taken.\x20Which\x20of\x20the\x20following\x20statements\x20is\x20false\x20regarding\x20this\x20procedure?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205022bb51f-1d38-4717-a5d9-8bb81290d25f.jpg\x22></span></p>','unique_key':_0x46c8ab(0x255),'question_audio':null,'question_video':null,'map_id':0x13ac96,'difficulty_level':_0x46c8ab(0x285),'subjects_id':[0x1],'solution':_0x46c8ab(0x26a),'correct_choice_id':0xc9,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x46c8ab(0x1ee),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName=_0x46c8ab(0x443);const quizFilename=_0x46c8ab(0x382);let hierarchy=[_0x46c8ab(0x2af),'QRP',_0x46c8ab(0x20b)];if(window[_0x46c8ab(0x35d)][_0x46c8ab(0x2ce)]['endsWith'](_0x46c8ab(0x485))){const customData=JSON[_0x46c8ab(0x410)](localStorage[_0x46c8ab(0x3c0)](_0x46c8ab(0x3de)));customData&&(questionsData=customData[_0x46c8ab(0x315)],quizName=customData['name'],hierarchy=customData[_0x46c8ab(0x388)],document[_0x46c8ab(0x356)]=quizName+_0x46c8ab(0x3ee),document[_0x46c8ab(0x299)](_0x46c8ab(0x44f))[_0x46c8ab(0x459)]=questionsData[_0x46c8ab(0x2e8)],document[_0x46c8ab(0x299)](_0x46c8ab(0x2f7))[_0x46c8ab(0x459)]=hierarchy['join'](_0x46c8ab(0x342)));}let currentQuestionIndex=0x0,selectedOption=null,currentMode=_0x46c8ab(0x46a),timer=null,timeRemaining=0x0,questionStartTime=Date[_0x46c8ab(0x399)](),quizStartTime=Date[_0x46c8ab(0x399)](),isQuizCompleted=![],questionStates=new Array(questionsData[_0x46c8ab(0x2e8)])[_0x46c8ab(0x44b)](null)[_0x46c8ab(0x488)](()=>({'status':_0x46c8ab(0x298),'bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData[_0x46c8ab(0x2e8)]};function saveProgress(){const _0x32ecde=_0x46c8ab,_0x54a4ed={'OOUvE':_0x32ecde(0x233),'PAOax':_0x32ecde(0x282)};if(isQuizCompleted)return;const _0x471c34=JSON[_0x32ecde(0x410)](localStorage['getItem'](_0x54a4ed[_0x32ecde(0x2f1)]))||{};_0x471c34[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0x54a4ed[_0x32ecde(0x32a)],'lastSeen':new Date()['toISOString']()},localStorage['setItem'](_0x32ecde(0x233),JSON[_0x32ecde(0x2a7)](_0x471c34));}function loadProgress(){const _0x5cb30b=_0x46c8ab,_0x2cf269={'puXhy':_0x5cb30b(0x233),'otoJB':_0x5cb30b(0x214)},_0x49f2a1=JSON[_0x5cb30b(0x410)](localStorage[_0x5cb30b(0x3c0)](_0x2cf269['puXhy']))||{},_0x143d48=_0x49f2a1[quizFilename];if(_0x143d48)return questionStates=_0x143d48['questionStates'],stats=_0x143d48[_0x5cb30b(0x1ed)],currentQuestionIndex=_0x143d48[_0x5cb30b(0x2b2)],currentMode=_0x143d48[_0x5cb30b(0x428)],console[_0x5cb30b(0x29f)](_0x2cf269[_0x5cb30b(0x293)]),!![];return![];}function clearProgress(){const _0x2304fb=_0x46c8ab,_0x43d340={'KNTKf':'userHistory','PVbqp':_0x2304fb(0x330)},_0x5c0842=JSON['parse'](localStorage[_0x2304fb(0x3c0)](_0x43d340[_0x2304fb(0x28c)]))||{};_0x5c0842[quizFilename]&&(delete _0x5c0842[quizFilename],localStorage[_0x2304fb(0x478)](_0x43d340[_0x2304fb(0x28c)],JSON[_0x2304fb(0x2a7)](_0x5c0842)),console[_0x2304fb(0x29f)](_0x43d340[_0x2304fb(0x2f9)]));}function markQuizAsCompleted(){const _0x20ebe7=_0x46c8ab,_0x2734e7={'CMMph':_0x20ebe7(0x233)},_0x3585bf=JSON[_0x20ebe7(0x410)](localStorage[_0x20ebe7(0x3c0)](_0x2734e7['CMMph']))||{},_0x4a2a6e=questionsData[_0x20ebe7(0x2e8)],_0x3a4dd3=stats[_0x20ebe7(0x490)]||0x0;_0x3585bf[quizFilename]={'score':_0x3a4dd3,'total':_0x4a2a6e,'status':_0x20ebe7(0x448),'completedOn':new Date()['toISOString']()},localStorage[_0x20ebe7(0x478)](_0x2734e7[_0x20ebe7(0x2b1)],JSON[_0x20ebe7(0x2a7)](_0x3585bf));}const urlParams=new URLSearchParams(window[_0x46c8ab(0x35d)][_0x46c8ab(0x358)]),startAt=parseInt(urlParams[_0x46c8ab(0x439)]('startAt')),resume=urlParams['get'](_0x46c8ab(0x457))===_0x46c8ab(0x2da);function goBack(){const _0x37cb55=_0x46c8ab,_0x286364={'uDUch':function(_0x5eb729){return _0x5eb729();},'Pfjbq':_0x37cb55(0x489)};if(!isQuizCompleted)_0x286364[_0x37cb55(0x47e)](saveProgress);window[_0x37cb55(0x35d)]['href']=document[_0x37cb55(0x1fe)]||_0x286364[_0x37cb55(0x33f)];}function selectMode(_0x52f49c){const _0x2bfaca=_0x46c8ab,_0x271628={'ymdug':'modeModal','QJJVa':_0x2bfaca(0x391),'BdHkK':function(_0x550c77){return _0x550c77();}};currentMode=_0x52f49c,document['getElementById'](_0x271628[_0x2bfaca(0x1f3)])[_0x2bfaca(0x25b)][_0x2bfaca(0x3f2)]=_0x271628[_0x2bfaca(0x274)],_0x271628[_0x2bfaca(0x452)](initializeQuiz);}function initializeQuiz(){const _0x205232=_0x46c8ab,_0x186de4={'rCxCb':function(_0x52912d){return _0x52912d();},'ScDZh':_0x205232(0x43e),'IwUzk':_0x205232(0x2f4),'YymBS':'testModeReviewLegend','MMSNR':_0x205232(0x2ab),'xnnZo':_0x205232(0x3a8),'nUskN':_0x205232(0x23f),'TKMgg':'studyModeLegend','hyWwl':'none','WgHZW':_0x205232(0x3f5),'cfBfC':_0x205232(0x28b),'KwwOn':_0x205232(0x346),'jPCqG':_0x205232(0x27d),'riVEO':function(_0x501423,_0x3e839f){return _0x501423===_0x3e839f;},'ynunN':_0x205232(0x3ae),'DLbOl':function(_0x428413,_0x40c3cd){return _0x428413(_0x40c3cd);},'AdXdp':function(_0x26e175,_0x4a6869){return _0x26e175>=_0x4a6869;},'nffqJ':function(_0x30ede8,_0x2bb5ae){return _0x30ede8<_0x2bb5ae;},'Fatgj':function(_0xf14729,_0x50309a){return _0xf14729!==_0x50309a;},'jtyni':_0x205232(0x30c),'NWZOm':function(_0x537278){return _0x537278();},'bvHXc':function(_0xb1c673){return _0xb1c673();}};quizStartTime=Date[_0x205232(0x399)]();const _0x4cb9d5=document['getElementById'](_0x186de4[_0x205232(0x36e)]),_0x888881=document['getElementById'](_0x205232(0x277)),_0x4a5a47=document['getElementById'](_0x186de4['YymBS']),_0x1aa25e=currentMode===_0x186de4[_0x205232(0x479)]||currentMode===_0x186de4[_0x205232(0x323)];document[_0x205232(0x299)](_0x205232(0x400))[_0x205232(0x25b)][_0x205232(0x3f2)]=_0x1aa25e?'none':_0x186de4[_0x205232(0x20e)],document[_0x205232(0x299)](_0x186de4[_0x205232(0x40d)])[_0x205232(0x25b)][_0x205232(0x3f2)]=_0x1aa25e?_0x186de4[_0x205232(0x271)]:_0x186de4[_0x205232(0x20e)],document[_0x205232(0x299)](_0x186de4[_0x205232(0x20a)])[_0x205232(0x25b)][_0x205232(0x3f2)]=_0x1aa25e?_0x186de4[_0x205232(0x20e)]:_0x186de4[_0x205232(0x271)],document[_0x205232(0x299)](_0x186de4[_0x205232(0x42d)])['style'][_0x205232(0x3f2)]=_0x1aa25e?_0x186de4['nUskN']:_0x186de4['hyWwl'],_0x4cb9d5[_0x205232(0x25b)]['display']=_0x1aa25e?_0x186de4[_0x205232(0x271)]:_0x186de4[_0x205232(0x280)],_0x888881[_0x205232(0x25b)][_0x205232(0x3f2)]=_0x1aa25e?_0x186de4[_0x205232(0x280)]:_0x186de4[_0x205232(0x271)],_0x4a5a47[_0x205232(0x25b)][_0x205232(0x3f2)]=_0x1aa25e?_0x186de4['KwwOn']:_0x186de4['hyWwl'],(currentMode===_0x186de4[_0x205232(0x365)]||_0x186de4[_0x205232(0x337)](currentMode,_0x205232(0x3a8)))&&document[_0x205232(0x299)]('timerContainer')['classList'][_0x205232(0x39d)](_0x186de4[_0x205232(0x42e)]),!_0x186de4['DLbOl'](isNaN,startAt)&&_0x186de4[_0x205232(0x43f)](startAt,0x0)&&_0x186de4['nffqJ'](startAt,questionsData[_0x205232(0x2e8)])&&(_0x186de4[_0x205232(0x3e6)]('WPMuP',_0x186de4[_0x205232(0x40a)])?(_0x186de4['rCxCb'](_0x49e89a),_0x218bf0[_0x205232(0x299)](_0x186de4['ScDZh'])[_0x205232(0x25b)][_0x205232(0x3f2)]=_0x205232(0x346)):currentQuestionIndex=startAt),_0x186de4[_0x205232(0x491)](loadBookmarkedQuestions),_0x186de4['bvHXc'](generateQuestionNav),updateStats(),_0x186de4['NWZOm'](displayQuestion);}function generateQuestionNav(){const _0x2c23e0=_0x46c8ab,_0x31442e={'ZGVcq':function(_0x292725,_0x1a3179){return _0x292725+_0x1a3179;},'fpTmo':_0x2c23e0(0x222),'EtsxL':_0x2c23e0(0x2c2),'xZkXL':function(_0xeef8d4,_0x525ead){return _0xeef8d4<_0x525ead;},'YkUyf':_0x2c23e0(0x223),'NzyBa':_0x2c23e0(0x33b),'PHzOs':function(_0x258c34,_0x4c042c){return _0x258c34+_0x4c042c;},'Ueshz':'w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','JUapG':function(_0xf5769f){return _0xf5769f();}},_0x28d9bf=document[_0x2c23e0(0x299)](_0x31442e[_0x2c23e0(0x261)]);_0x28d9bf[_0x2c23e0(0x3f6)]='';for(let _0x8be6b9=0x0;_0x31442e[_0x2c23e0(0x3bd)](_0x8be6b9,questionsData[_0x2c23e0(0x2e8)]);_0x8be6b9++){if(_0x31442e[_0x2c23e0(0x237)]!==_0x31442e[_0x2c23e0(0x237)]){const _0x4efa77=_0x3f66f2(Fzyorh[_0x2c23e0(0x2dc)](Fzyorh[_0x2c23e0(0x2dc)](Fzyorh[_0x2c23e0(0x44a)],'{}.constructor(\x22return\x20this\x22)(\x20)'),');'));_0x3a3295=_0x4efa77();}else{const _0x59eeb8=document['createElement'](_0x31442e[_0x2c23e0(0x3a4)]);_0x59eeb8[_0x2c23e0(0x459)]=_0x31442e[_0x2c23e0(0x333)](_0x8be6b9,0x1),_0x59eeb8['className']=_0x31442e[_0x2c23e0(0x39a)],_0x59eeb8[_0x2c23e0(0x3e9)]=()=>jumpToQuestion(_0x8be6b9),_0x59eeb8['id']=_0x2c23e0(0x430)+_0x8be6b9,_0x28d9bf[_0x2c23e0(0x334)](_0x59eeb8);}}_0x31442e[_0x2c23e0(0x23d)](updateQuestionNav);}function updateQuestionNav(){const _0x103c6a=_0x46c8ab,_0xfae258={'VTYin':'customQuizData','CfTgM':function(_0x1f9332,_0x7ee8fe){return _0x1f9332<_0x7ee8fe;},'ruErG':_0x103c6a(0x209),'Cgajr':_0x103c6a(0x3db),'ifJbj':_0x103c6a(0x340),'UwMfq':_0x103c6a(0x2ae),'wUdEm':function(_0x4b236d,_0x770010){return _0x4b236d===_0x770010;},'Qvjhp':'study','SLnwu':function(_0x289ed4,_0x20c274){return _0x289ed4===_0x20c274;},'ENYpm':_0x103c6a(0x27d),'rLyTC':function(_0x3488a8,_0x77a385){return _0x3488a8!==_0x77a385;},'NurQN':_0x103c6a(0x2ba),'GlXfs':function(_0x1f704b,_0x42e848){return _0x1f704b===_0x42e848;},'RDAwh':_0x103c6a(0x213),'SWOUl':_0x103c6a(0x437),'UhcOa':_0x103c6a(0x316),'XnsKq':_0x103c6a(0x38d),'lkIhr':function(_0x5babc2,_0x444b81){return _0x5babc2!==_0x444b81;},'ZNkLb':'nav-btn-answered'};for(let _0x13852f=0x0;_0xfae258[_0x103c6a(0x25a)](_0x13852f,questionsData['length']);_0x13852f++){if(_0x103c6a(0x209)!==_0xfae258[_0x103c6a(0x3fc)])_0x3d57b6[_0x103c6a(0x3ce)](_0xfae258[_0x103c6a(0x40e)]);else{const _0x552b2a=document['getElementById']('navBtn_'+_0x13852f),_0xb4b707=questionStates[_0x13852f];let _0x3a51df='';if(_0x13852f===currentQuestionIndex)_0x3a51df=_0xfae258[_0x103c6a(0x497)];else{if(_0xb4b707[_0x103c6a(0x3ef)])_0x3a51df=_0xfae258[_0x103c6a(0x466)];else{if(_0xb4b707[_0x103c6a(0x23c)])_0x3a51df=_0xfae258[_0x103c6a(0x484)];else{if(_0xfae258[_0x103c6a(0x1fa)](currentMode,_0xfae258[_0x103c6a(0x403)])||_0xfae258[_0x103c6a(0x37b)](currentMode,_0xfae258[_0x103c6a(0x2e3)])){if(_0xfae258['rLyTC'](_0xfae258['NurQN'],_0xfae258[_0x103c6a(0x27e)])){const _0x56e6cf=new _0x24af08();_0x56e6cf[_0x103c6a(0x2d7)](_0x3cabcd),_0x56e6cf[_0x103c6a(0x297)](_0x1b89c9);}else{if(_0xfae258['GlXfs'](_0xb4b707[_0x103c6a(0x48e)],_0xfae258[_0x103c6a(0x43a)]))_0x3a51df='nav-btn-correct';else{if(_0xfae258[_0x103c6a(0x1fa)](_0xb4b707[_0x103c6a(0x48e)],_0xfae258[_0x103c6a(0x2ad)]))_0x3a51df=_0xfae258[_0x103c6a(0x467)];else _0x3a51df=_0xfae258[_0x103c6a(0x3a2)];}}}else{if(_0xfae258[_0x103c6a(0x3aa)](_0xb4b707[_0x103c6a(0x329)],null))_0x3a51df=_0xfae258[_0x103c6a(0x3d0)];else _0x3a51df=_0x103c6a(0x38d);}}}}_0x552b2a[_0x103c6a(0x257)]=_0x103c6a(0x1fb)+_0x3a51df;}}}function jumpToQuestion(_0x270636){const _0x5225e4=_0x46c8ab,_0x233b5e={'acDSX':function(_0x1c7075,_0x30673e){return _0x1c7075>=_0x30673e;},'bgsGt':function(_0x196529,_0x452d8b){return _0x196529<_0x452d8b;},'aPiyb':function(_0x37a7ee,_0x38eb59){return _0x37a7ee-_0x38eb59;},'ryBnG':function(_0x2cb92e){return _0x2cb92e();}};_0x233b5e['acDSX'](_0x270636,0x0)&&_0x233b5e[_0x5225e4(0x48f)](_0x270636,questionsData[_0x5225e4(0x2e8)])&&(questionStartTime&&(questionStates[currentQuestionIndex][_0x5225e4(0x26f)]+=_0x233b5e[_0x5225e4(0x3b2)](Date[_0x5225e4(0x399)](),questionStartTime)),currentQuestionIndex=_0x270636,_0x233b5e[_0x5225e4(0x2ca)](displayQuestion),saveProgress());}function updateStats(){const _0x256e26=_0x46c8ab,_0x424028={'IOUTP':function(_0x3e8554,_0x107e53){return _0x3e8554===_0x107e53;},'IJrEO':'timed_study','vEpJD':_0x256e26(0x421),'cYWmM':'incorrectCount','zYTAZ':function(_0x150914,_0x308a78){return _0x150914>_0x308a78;},'CJhxQ':function(_0x520f0c,_0x1784f0){return _0x520f0c*_0x1784f0;},'Mjvuw':function(_0x646b78,_0x41edb6){return _0x646b78/_0x41edb6;},'bmgIB':_0x256e26(0x41c),'Otnxw':function(_0x5cb5f0,_0x427f3c){return _0x5cb5f0+_0x427f3c;},'nCSND':function(_0xd15b41,_0x120057){return _0xd15b41/_0x120057;},'mvfxd':function(_0x309f98,_0xb22375){return _0x309f98%_0xb22375;},'vImNJ':'timeSpent','OyJop':function(_0x1bbcc0,_0x56dac6){return _0x1bbcc0+_0x56dac6;}};if(_0x424028['IOUTP'](currentMode,_0x256e26(0x46a))||_0x424028[_0x256e26(0x495)](currentMode,_0x424028['IJrEO'])){document[_0x256e26(0x299)](_0x424028[_0x256e26(0x283)])['textContent']=stats[_0x256e26(0x490)],document[_0x256e26(0x299)](_0x424028[_0x256e26(0x407)])[_0x256e26(0x459)]=stats['incorrectAnswers'],document[_0x256e26(0x299)](_0x256e26(0x379))[_0x256e26(0x459)]=stats['totalAttempted'];const _0x27cc9c=_0x424028[_0x256e26(0x3f9)](stats[_0x256e26(0x379)],0x0)?Math[_0x256e26(0x414)](_0x424028[_0x256e26(0x2a1)](_0x424028[_0x256e26(0x2b5)](stats[_0x256e26(0x490)],stats['totalAttempted']),0x64)):0x0;document[_0x256e26(0x299)](_0x424028[_0x256e26(0x47f)])[_0x256e26(0x459)]=_0x424028['Otnxw'](_0x27cc9c,'%'),stats['totalTime']=questionStates[_0x256e26(0x2e0)]((_0x2039ca,_0x191aa7)=>_0x2039ca+_0x191aa7['timeSpent'],0x0);const _0x2b82be=Math[_0x256e26(0x363)](_0x424028['Mjvuw'](stats['totalTime'],0x3e8)),_0xb8a93f=Math[_0x256e26(0x363)](_0x424028['nCSND'](_0x2b82be,0x3c)),_0x1e994f=_0x424028[_0x256e26(0x3b5)](_0x2b82be,0x3c);document[_0x256e26(0x299)](_0x424028[_0x256e26(0x34b)])[_0x256e26(0x459)]=_0x424028[_0x256e26(0x3c9)](_0xb8a93f,':')+_0x1e994f['toString']()['padStart'](0x2,'0');}}function setupVideo(_0x59026b,_0xb097e1){const _0x234401=_0x46c8ab,_0x35463f={'hNpSR':_0x234401(0x377)};if(Hls[_0x234401(0x42a)]()){const _0x41de6f=new Hls();_0x41de6f[_0x234401(0x2d7)](_0xb097e1),_0x41de6f['attachMedia'](_0x59026b);}else _0x59026b[_0x234401(0x212)](_0x35463f[_0x234401(0x409)])&&(_0x59026b[_0x234401(0x229)]=_0xb097e1);}function displayQuestion(){const _0x33ebec=_0x46c8ab,_0x598d04={'IqSau':_0x33ebec(0x233),'wsuQz':function(_0x34e0d0,_0x429502){return _0x34e0d0+_0x429502;},'EBMPr':function(_0x9c3826,_0x3454a0){return _0x9c3826===_0x3454a0;},'ZNVMA':_0x33ebec(0x22b),'JvSDM':_0x33ebec(0x44d),'jNFsu':_0x33ebec(0x32f),'huwgx':_0x33ebec(0x2e4),'fjpOD':function(_0x3bb1e4,_0x14e54d){return _0x3bb1e4+_0x14e54d;},'XWACB':function(_0x3ea7bb,_0x893a27){return _0x3ea7bb===_0x893a27;},'GagFG':'Option\x20','tIgrg':function(_0x3b812f,_0x52dafc){return _0x3b812f(_0x52dafc);},'TCian':_0x33ebec(0x2a0),'IhuRx':function(_0x30a75b,_0x15014c){return _0x30a75b-_0x15014c;},'siTDr':function(_0xf38c7b,_0x342014){return _0xf38c7b*_0x342014;},'JiNOR':_0x33ebec(0x1f5),'Hjfxz':_0x33ebec(0x273),'DmCQZ':'prevBtn','SvgUn':_0x33ebec(0x2d0),'enyjc':_0x33ebec(0x3ae),'pUWcX':'No\x20question\x20text\x20available','CjLPv':_0x33ebec(0x38b),'rPpkC':function(_0x58fa92,_0x8a59a3){return _0x58fa92!==_0x8a59a3;},'KJrGu':'eGHsu','NqeCJ':function(_0x153107){return _0x153107();},'cfAkT':function(_0x1914a0){return _0x1914a0();},'oRlqq':_0x33ebec(0x27d),'EkQKG':_0x33ebec(0x3a8),'xldkn':_0x33ebec(0x2d2)};if(!questionsData||_0x598d04['XWACB'](questionsData[_0x33ebec(0x2e8)],0x0)){document[_0x33ebec(0x299)]('questionText')[_0x33ebec(0x3f6)]=_0x33ebec(0x3be);return;};const _0x45a32a=questionsData[currentQuestionIndex];questionStartTime=Date['now'](),selectedOption=questionStates[currentQuestionIndex][_0x33ebec(0x329)];const _0x32d095=_0x598d04['siTDr']((currentQuestionIndex+0x1)/questionsData['length'],0x64);document[_0x33ebec(0x299)](_0x598d04[_0x33ebec(0x3a1)])[_0x33ebec(0x25b)][_0x33ebec(0x294)]=_0x32d095+'%',document[_0x33ebec(0x299)](_0x598d04[_0x33ebec(0x2b7)])[_0x33ebec(0x459)]=currentQuestionIndex+0x1,updateQuestionNav(),document['getElementById'](_0x598d04[_0x33ebec(0x216)])[_0x33ebec(0x33c)]=_0x598d04[_0x33ebec(0x22d)](currentQuestionIndex,0x0),document[_0x33ebec(0x299)](_0x598d04[_0x33ebec(0x3d3)])[_0x33ebec(0x308)][_0x33ebec(0x44c)](_0x598d04[_0x33ebec(0x341)]),document['getElementById'](_0x33ebec(0x34a))[_0x33ebec(0x3f6)]=_0x45a32a[_0x33ebec(0x401)]||_0x598d04[_0x33ebec(0x349)];let _0x3b96e5='';if(_0x45a32a[_0x33ebec(0x1ff)])_0x3b96e5+=_0x33ebec(0x2c8)+_0x45a32a[_0x33ebec(0x1ff)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>';if(_0x45a32a[_0x33ebec(0x384)])_0x3b96e5+='<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22'+_0x45a32a['question_video']+'\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>';_0x45a32a[_0x33ebec(0x2c0)]&&_0x45a32a[_0x33ebec(0x2c0)][_0x33ebec(0x238)](_0x53f6de=>{const _0x45caf9=_0x33ebec;if(_0x53f6de)_0x3b96e5+=_0x45caf9(0x2b6)+_0x53f6de+'\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>';});document[_0x33ebec(0x299)]('questionMedia')[_0x33ebec(0x3f6)]=_0x3b96e5;const _0x1bc16c=document[_0x33ebec(0x299)](_0x598d04[_0x33ebec(0x496)]);_0x1bc16c[_0x33ebec(0x3f6)]='',_0x1bc16c[_0x33ebec(0x308)][_0x33ebec(0x39d)]('answered');if(_0x45a32a[_0x33ebec(0x46f)]&&Array['isArray'](_0x45a32a['choices'])){if(_0x598d04[_0x33ebec(0x30b)](_0x598d04[_0x33ebec(0x3cd)],'eGHsu')){const _0xf64d58=_0x56be62[_0x33ebec(0x410)](_0x18165e[_0x33ebec(0x3c0)](_0x598d04[_0x33ebec(0x2d5)]))||{};_0xf64d58[_0x174daa]&&(delete _0xf64d58[_0x10c29e],_0x4684a7[_0x33ebec(0x478)](_0x598d04[_0x33ebec(0x2d5)],_0x253ab8[_0x33ebec(0x2a7)](_0xf64d58)),_0x5f1c50[_0x33ebec(0x29f)](_0x33ebec(0x330)));}else _0x45a32a[_0x33ebec(0x46f)]['forEach']((_0xbae56a,_0x91e75c)=>{const _0x51ff72=_0x33ebec,_0x4acf43={'CBFvs':_0x598d04[_0x51ff72(0x318)],'QrolV':function(_0x5235ed,_0x5711f0){return _0x5235ed(_0x5711f0);}};if(_0x598d04[_0x51ff72(0x362)]===_0x598d04[_0x51ff72(0x362)]){const _0x3107bc=String['fromCharCode'](_0x598d04[_0x51ff72(0x31d)](0x41,_0x91e75c)),_0x68f692=_0x598d04[_0x51ff72(0x30d)](selectedOption,_0x91e75c),_0x909bf9=document[_0x51ff72(0x3b4)](_0x51ff72(0x3bb));_0x909bf9[_0x51ff72(0x3f6)]=_0x51ff72(0x287)+(_0x68f692?_0x598d04['ZNVMA']:'')+_0x51ff72(0x444)+_0x91e75c+_0x51ff72(0x2d3)+_0x3107bc+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>'+(_0xbae56a[_0x51ff72(0x401)]||_0x598d04[_0x51ff72(0x251)](_0x598d04[_0x51ff72(0x373)],_0x598d04[_0x51ff72(0x31d)](_0x91e75c,0x1)))+_0x51ff72(0x3c3),_0x1bc16c[_0x51ff72(0x334)](_0x909bf9);}else{const _0x1d0799={'cDLYa':function(_0x5f5508,_0x3c3bbb){const _0x1bc631=_0x51ff72;return _0x598d04[_0x1bc631(0x251)](_0x5f5508,_0x3c3bbb);},'cXpVK':function(_0x22b923,_0x31b342){const _0x4ac11a=_0x51ff72;return _0x598d04[_0x4ac11a(0x22d)](_0x22b923,_0x31b342);},'OScON':_0x51ff72(0x3bb),'pBmWH':_0x598d04[_0x51ff72(0x1ef)]};_0x1fbbde[_0x51ff72(0x46f)][_0x51ff72(0x238)]((_0xd89b9e,_0x43af69)=>{const _0x586899=_0x51ff72,_0x554346=_0x30d645['fromCharCode'](_0x1d0799[_0x586899(0x461)](0x41,_0x43af69)),_0x1f3d98=_0x1d0799['cXpVK'](_0x3b9bde,_0x43af69),_0x222553=_0x193f04[_0x586899(0x3b4)](_0x1d0799[_0x586899(0x36d)]);_0x222553['innerHTML']=_0x586899(0x287)+(_0x1f3d98?_0x1d0799[_0x586899(0x436)]:'')+_0x586899(0x444)+_0x43af69+_0x586899(0x2d3)+_0x554346+_0x586899(0x3e7)+(_0xd89b9e[_0x586899(0x401)]||_0x586899(0x326)+(_0x43af69+0x1))+_0x586899(0x3c3),_0x3fb903[_0x586899(0x334)](_0x222553);}),_0x1a7371[_0x51ff72(0x232)](_0x598d04['JvSDM'],function(_0x3d80ca){const _0x18ec43=_0x51ff72,_0x3a6b6c=_0x3d80ca['target'][_0x18ec43(0x252)](_0x4acf43[_0x18ec43(0x2ed)]);if(_0x3a6b6c){const _0x12faf8=_0x3f7942(_0x3a6b6c[_0x18ec43(0x2ac)](_0x18ec43(0x2a0)));_0x4acf43[_0x18ec43(0x464)](_0x35ecba,_0x12faf8);}});}}),_0x1bc16c[_0x33ebec(0x232)](_0x598d04[_0x33ebec(0x2a6)],function(_0x5e900d){const _0x8eae26=_0x33ebec,_0x3e67a1=_0x5e900d['target'][_0x8eae26(0x252)](_0x598d04['jNFsu']);if(_0x3e67a1){const _0x135640=_0x598d04[_0x8eae26(0x445)](parseInt,_0x3e67a1[_0x8eae26(0x2ac)](_0x598d04[_0x8eae26(0x392)]));_0x598d04[_0x8eae26(0x445)](selectOption,_0x135640);}});}_0x598d04[_0x33ebec(0x3ba)](updateBookmarkButton),_0x598d04[_0x33ebec(0x270)](updateMarkReviewButton),(_0x598d04[_0x33ebec(0x22d)](currentMode,_0x598d04[_0x33ebec(0x475)])||_0x598d04['XWACB'](currentMode,_0x598d04[_0x33ebec(0x264)]))&&!isQuizCompleted&&('IoIlO'===_0x598d04[_0x33ebec(0x3d1)]?(_0x229a2d[_0x34c314][_0x33ebec(0x26f)]+=_0x598d04[_0x33ebec(0x2df)](_0x4c739f['now'](),_0x47533b),_0x336f7c=_0x4451a6['now']()):_0x598d04[_0x33ebec(0x3ba)](startTimer));}function selectOption(_0x57380c){const _0x2b9628=_0x46c8ab,_0x200a22={'hBMAU':_0x2b9628(0x34d),'mVnDM':_0x2b9628(0x3de),'bFpfU':function(_0x59f26e,_0x6dc98){return _0x59f26e!==_0x6dc98;},'sCCQe':_0x2b9628(0x422),'Cerdt':function(_0x40749e,_0x175b60){return _0x40749e===_0x175b60;},'wPFAY':function(_0xaacbb2,_0x494df4){return _0xaacbb2-_0x494df4;},'Akwcd':_0x2b9628(0x32f),'FvnSO':_0x2b9628(0x46a),'eVLJE':'timed_study','qsOjG':function(_0x5b547a){return _0x5b547a();},'xZdBG':_0x2b9628(0x298),'LORYL':_0x2b9628(0x20d),'kYSiU':function(_0x25c08c){return _0x25c08c();},'efZji':function(_0x2b40ee){return _0x2b40ee();}},_0x89b438=document[_0x2b9628(0x299)](_0x2b9628(0x38b));if(_0x89b438['classList']['contains']('answered'))return;questionStartTime&&(questionStates[currentQuestionIndex][_0x2b9628(0x26f)]+=_0x200a22['wPFAY'](Date[_0x2b9628(0x399)](),questionStartTime),questionStartTime=Date[_0x2b9628(0x399)]()),selectedOption=_0x57380c,questionStates[currentQuestionIndex]['selectedAnswer']=_0x57380c,document[_0x2b9628(0x472)](_0x200a22[_0x2b9628(0x499)])['forEach']((_0x53372c,_0x443420)=>{const _0x1af26e=_0x2b9628;_0x200a22[_0x1af26e(0x239)](_0x200a22[_0x1af26e(0x378)],_0x200a22[_0x1af26e(0x378)])?_0x254b46(_0x200a22[_0x1af26e(0x47b)])&&(_0x25e543['location']['pathname']['endsWith'](_0x1af26e(0x485))&&_0x43c604[_0x1af26e(0x3ce)](_0x200a22[_0x1af26e(0x482)]),_0x20c004(),_0x44832e[_0x1af26e(0x394)]()):_0x53372c['classList'][_0x1af26e(0x431)](_0x1af26e(0x22b),_0x200a22['Cerdt'](_0x443420,_0x57380c));}),_0x200a22[_0x2b9628(0x368)](currentMode,_0x200a22[_0x2b9628(0x332)])||currentMode===_0x200a22['eVLJE']?_0x200a22[_0x2b9628(0x1fd)](processAnswer):(_0x200a22['Cerdt'](questionStates[currentQuestionIndex][_0x2b9628(0x48e)],_0x200a22['xZdBG'])&&(questionStates[currentQuestionIndex][_0x2b9628(0x48e)]=_0x200a22[_0x2b9628(0x357)],stats[_0x2b9628(0x379)]++,stats['notAttempted']--),_0x200a22[_0x2b9628(0x39c)](updateQuestionNav)),_0x200a22[_0x2b9628(0x28a)](saveProgress);}function processAnswer(){const _0x4c1084=_0x46c8ab,_0x1bd928={'JQdpN':function(_0x5b8e08,_0x40a52f){return _0x5b8e08===_0x40a52f;},'oIrNK':_0x4c1084(0x213),'pQZVN':function(_0x6268d0){return _0x6268d0();},'SJQeG':function(_0x38483e){return _0x38483e();}},_0x596ad5=questionsData[currentQuestionIndex],_0x46ce50=_0x596ad5[_0x4c1084(0x3d6)];if(_0x1bd928[_0x4c1084(0x2fe)](selectedOption,null))return;const _0x415dac=_0x596ad5[_0x4c1084(0x46f)][selectedOption],_0x2b9867=_0x415dac['id']===_0x46ce50;if(_0x1bd928[_0x4c1084(0x2fe)](questionStates[currentQuestionIndex][_0x4c1084(0x48e)],_0x4c1084(0x298))){stats[_0x4c1084(0x379)]++,stats[_0x4c1084(0x3dd)]--;if(_0x2b9867)stats['correctAnswers']++;else stats[_0x4c1084(0x42b)]++;}questionStates[currentQuestionIndex][_0x4c1084(0x48e)]=_0x2b9867?_0x1bd928[_0x4c1084(0x322)]:_0x4c1084(0x437),_0x1bd928['pQZVN'](updateStats),showInlineFeedback(_0x2b9867),_0x1bd928[_0x4c1084(0x23a)](updateQuestionNav);}function showInlineFeedback(_0x4a4c42){const _0x558683=_0x46c8ab,_0x5e1308={'nrJGr':_0x558683(0x437),'YiKIr':'ERHbx','GSzvQ':_0x558683(0x22b),'mTBaE':function(_0x120ac8,_0x4c86a4){return _0x120ac8===_0x4c86a4;},'uOguT':function(_0x3307f4,_0x162385){return _0x3307f4!==_0x162385;},'UGijN':_0x558683(0x27d),'lgbli':_0x558683(0x38b),'ZMgEr':_0x558683(0x32f),'mfunu':_0x558683(0x20d),'mzBLB':function(_0x36c5c8){return _0x36c5c8();}};if(_0x5e1308[_0x558683(0x3fd)](currentMode,_0x558683(0x46a))&&currentMode!==_0x5e1308[_0x558683(0x463)])return;const _0x13eec3=document[_0x558683(0x299)](_0x5e1308[_0x558683(0x3c4)]),_0x1e1627=_0x13eec3[_0x558683(0x472)](_0x5e1308[_0x558683(0x3c5)]),_0x2956c9=questionsData[currentQuestionIndex],_0x38812a=_0x2956c9[_0x558683(0x3d6)];let _0x40b116=_0x2956c9[_0x558683(0x46f)][_0x558683(0x3b1)](_0x24afc2=>_0x24afc2['id']===_0x38812a);_0x13eec3[_0x558683(0x308)][_0x558683(0x44c)](_0x5e1308[_0x558683(0x381)]),_0x1e1627[_0x558683(0x238)]((_0x5def0d,_0x1b9ffa)=>{const _0x7155d6=_0x558683;if(_0x7155d6(0x2c6)===_0x5e1308[_0x7155d6(0x435)]){_0x5def0d['classList']['remove'](_0x5e1308[_0x7155d6(0x240)]);if(_0x1b9ffa===_0x40b116)_0x5def0d['classList'][_0x7155d6(0x44c)](_0x7155d6(0x213));else{if(_0x5e1308[_0x7155d6(0x40c)](_0x1b9ffa,selectedOption)&&!_0x4a4c42)_0x5def0d['classList'][_0x7155d6(0x44c)]('incorrect');}}else _0x3d1f50++,_0x361d3d['status']=_0x5e1308[_0x7155d6(0x39e)];}),_0x5e1308[_0x558683(0x3e3)](showSolution);}function showSolution(){const _0x5a73ae=_0x46c8ab,_0x5df56c={'Pfqna':function(_0x117c4d,_0x2a9228){return _0x117c4d(_0x2a9228);},'DrUpq':'You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','yxPOT':function(_0x5318ab){return _0x5318ab();},'GZpjt':function(_0x45852b,_0x4e7878){return _0x45852b<_0x4e7878;},'WiJPc':'bookmarkedQuestions','fqprN':function(_0x40095d,_0x160d81){return _0x40095d===_0x160d81;},'dMDtq':'study','bLnpv':function(_0x4f9b35,_0x2b41eb){return _0x4f9b35!==_0x2b41eb;},'oOTSY':_0x5a73ae(0x27d),'xYNfi':_0x5a73ae(0x46d),'zCWXN':_0x5a73ae(0x23b),'uBlIx':_0x5a73ae(0x3ae),'vImSy':_0x5a73ae(0x372),'eKSXv':_0x5a73ae(0x31a),'KhXeo':function(_0x2d9582,_0x149205){return _0x2d9582!==_0x149205;},'LRJlx':_0x5a73ae(0x3e5),'KDzsD':'solutionImages'};if(currentMode!==_0x5df56c['dMDtq']&&_0x5df56c[_0x5a73ae(0x458)](currentMode,_0x5df56c[_0x5a73ae(0x2f8)]))return;const _0x554945=questionsData[currentQuestionIndex];document[_0x5a73ae(0x299)](_0x5df56c['xYNfi'])[_0x5a73ae(0x3f6)]=_0x554945['solution']||_0x5a73ae(0x230);const _0xe6d46a=document[_0x5a73ae(0x299)](_0x5df56c[_0x5a73ae(0x2e6)]),_0x3cc0ad=document['getElementById'](_0x5a73ae(0x3c6)),_0x1b17e5=_0x554945[_0x5a73ae(0x25f)];if(_0x1b17e5){_0xe6d46a[_0x5a73ae(0x308)][_0x5a73ae(0x39d)](_0x5df56c['uBlIx']);if(_0x1b17e5['includes'](_0x5df56c[_0x5a73ae(0x207)]))setupVideo(_0x3cc0ad,_0x1b17e5);else _0x3cc0ad[_0x5a73ae(0x229)]=_0x1b17e5;}else _0xe6d46a[_0x5a73ae(0x308)][_0x5a73ae(0x44c)](_0x5df56c['uBlIx']);const _0x3ec41b=document['getElementById'](_0x5df56c['eKSXv']);_0x3ec41b[_0x5a73ae(0x3f6)]='';_0x554945['explanation_audio_eng']&&(_0x5df56c['KhXeo'](_0x5a73ae(0x3e5),_0x5df56c[_0x5a73ae(0x2bd)])?_0x5df56c['Pfqna'](_0x327c6e,_0x5df56c['DrUpq'])&&(_0x6ea4c6=0x0,_0x5df56c[_0x5a73ae(0x292)](_0x2a5552),_0x59f237()):_0x3ec41b[_0x5a73ae(0x3f6)]+=_0x5a73ae(0x33a)+_0x554945[_0x5a73ae(0x241)]+_0x5a73ae(0x390));_0x554945[_0x5a73ae(0x30a)]&&(_0x3ec41b[_0x5a73ae(0x3f6)]+=_0x5a73ae(0x3f7)+_0x554945[_0x5a73ae(0x30a)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>');const _0x34ecf7=document[_0x5a73ae(0x299)](_0x5df56c[_0x5a73ae(0x3f4)]);_0x34ecf7['innerHTML']='',_0x554945[_0x5a73ae(0x29e)]&&_0x554945['explanation_images'][_0x5a73ae(0x238)](_0x3d9ecc=>{const _0x500a7b=_0x5a73ae;if(_0x5df56c[_0x500a7b(0x3b8)](_0x500a7b(0x42f),_0x500a7b(0x22f))){const _0x50fe1e={'aHXCp':function(_0x30222f,_0x36a4e1){return _0x5df56c['GZpjt'](_0x30222f,_0x36a4e1);}},_0x3c18e1=_0x3743c6[_0x500a7b(0x410)](_0x5d6f36['getItem'](_0x5df56c[_0x500a7b(0x2e2)]))||[];_0x3c18e1[_0x500a7b(0x238)](_0x3d85bf=>{const _0x35c0d3=_0x500a7b;_0x3d85bf['quizFile'][_0x35c0d3(0x34e)](_0x3a942e[_0x35c0d3(0x434)]()[_0x35c0d3(0x2e5)](/ /g,'-'))&&(_0x50fe1e[_0x35c0d3(0x3ea)](_0x3d85bf[_0x35c0d3(0x393)],_0x2a9f5b[_0x35c0d3(0x2e8)])&&(_0x1908e5[_0x3d85bf[_0x35c0d3(0x393)]][_0x35c0d3(0x3ef)]=!![]));});}else{if(_0x3d9ecc)_0x34ecf7['innerHTML']+=_0x500a7b(0x375)+_0x3d9ecc+_0x500a7b(0x2fb);}}),document['getElementById'](_0x5a73ae(0x2d0))[_0x5a73ae(0x308)][_0x5a73ae(0x39d)](_0x5df56c[_0x5a73ae(0x2a8)]);}function submitQuiz(){const _0x1e2150=_0x46c8ab,_0x3cd762={'CKcLR':_0x1e2150(0x437),'hyUGE':_0x1e2150(0x26e),'dsKfQ':function(_0x4eeed0,_0x4dc24a){return _0x4eeed0!==_0x4dc24a;},'Iurnx':_0x1e2150(0x1f0),'zfcTD':'fKojB','uYCCB':function(_0x308399,_0x33bcf8){return _0x308399===_0x33bcf8;},'QdaEi':_0x1e2150(0x213),'KqwMO':_0x1e2150(0x336),'IDXOU':function(_0x2b6e14,_0x40482b){return _0x2b6e14(_0x40482b);},'SyVap':_0x1e2150(0x2bf),'tJTxs':function(_0x21387e,_0x56caa3){return _0x21387e-_0x56caa3;},'NKZym':_0x1e2150(0x2cb),'aUYSS':function(_0x523ffc,_0x1e5b43){return _0x523ffc-_0x1e5b43;},'WZqEp':function(_0x1ad27f){return _0x1ad27f();},'uImjL':function(_0x5517fe,_0x39a32c,_0x5b20ce,_0x90cf3,_0x1878cf){return _0x5517fe(_0x39a32c,_0x5b20ce,_0x90cf3,_0x1878cf);},'yfJsM':function(_0x52e61a,_0x43c499){return _0x52e61a+_0x43c499;}};if(timer)_0x3cd762[_0x1e2150(0x2ef)](clearInterval,timer);if(!_0x3cd762[_0x1e2150(0x2ef)](confirm,_0x3cd762['SyVap']))return;isQuizCompleted=!![];let _0x544e79=0x0,_0x4527ef=0x0;const _0x5f57fa=_0x3cd762['tJTxs'](Date[_0x1e2150(0x399)](),quizStartTime);questionsData[_0x1e2150(0x238)]((_0xd57a26,_0x220c0e)=>{const _0x1d435e=_0x1e2150;if(_0x3cd762['dsKfQ'](_0x3cd762[_0x1d435e(0x23e)],_0x3cd762[_0x1d435e(0x3c1)])){const _0x598762=questionStates[_0x220c0e];_0x598762[_0x1d435e(0x329)]!==null&&(_0x3cd762[_0x1d435e(0x450)](_0xd57a26[_0x1d435e(0x46f)][_0x598762[_0x1d435e(0x329)]]['id'],_0xd57a26[_0x1d435e(0x3d6)])?(_0x544e79++,_0x598762[_0x1d435e(0x48e)]=_0x3cd762[_0x1d435e(0x360)]):_0x3cd762[_0x1d435e(0x48d)]!==_0x1d435e(0x336)?(_0x20d642=_0x3cd762[_0x1d435e(0x433)],_0x282ffd=_0x3cd762[_0x1d435e(0x33d)]):(_0x4527ef++,_0x598762[_0x1d435e(0x48e)]=_0x3cd762[_0x1d435e(0x433)]));}else _0x18944c=_0x1d435e(0x3db);});const _0x11576e=JSON[_0x1e2150(0x410)](localStorage['getItem'](_0x3cd762[_0x1e2150(0x2a2)]))||[];_0x11576e[_0x1e2150(0x24f)]({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date['now'](),'totalTime':_0x5f57fa,'stats':{'correct':_0x544e79,'incorrect':_0x4527ef,'notAttempted':_0x3cd762[_0x1e2150(0x3f1)](questionsData[_0x1e2150(0x2e8)],_0x544e79+_0x4527ef)}}),localStorage[_0x1e2150(0x478)](_0x3cd762[_0x1e2150(0x2a2)],JSON[_0x1e2150(0x2a7)](_0x11576e)),stats[_0x1e2150(0x490)]=_0x544e79,stats[_0x1e2150(0x42b)]=_0x4527ef,_0x3cd762[_0x1e2150(0x31b)](markQuizAsCompleted),_0x3cd762[_0x1e2150(0x246)](showPerformanceAnalysis,_0x544e79,_0x4527ef,questionsData['length']-_0x3cd762[_0x1e2150(0x247)](_0x544e79,_0x4527ef),_0x5f57fa);}function showPerformanceAnalysis(_0x15aacc,_0x576586,_0x11cdf0,_0x2f6a94){const _0x32f72d=_0x46c8ab,_0x341324={'JdnYr':function(_0x45a262,_0xf0157){return _0x45a262>_0xf0157;},'pcHbc':function(_0x29d3fe,_0x4b2048){return _0x29d3fe+_0x4b2048;},'DwWJv':function(_0x43e854,_0x521042){return _0x43e854+_0x521042;},'MgjpQ':function(_0x37cb7a,_0x655777){return _0x37cb7a*_0x655777;},'MGDIb':_0x32f72d(0x474),'CKopO':function(_0x54ee91,_0x6cdb39){return _0x54ee91-_0x6cdb39;},'TcTGc':function(_0x4e341d,_0x3ee23a){return _0x4e341d*_0x3ee23a;},'ZGtnP':function(_0xf86948,_0x596e9d){return _0xf86948/_0x596e9d;},'oWcKN':_0x32f72d(0x383),'ZFxbh':_0x32f72d(0x3bc),'kOsJe':_0x32f72d(0x32e),'RSCJG':function(_0x234e63,_0x8ee5c9){return _0x234e63/_0x8ee5c9;},'fevqq':function(_0x2d52ff,_0x2211f8){return _0x2d52ff%_0x2211f8;},'lcYWz':function(_0x13e889,_0x1a9e93){return _0x13e889/_0x1a9e93;},'LbdMN':function(_0xb4530c,_0x5a92b2){return _0xb4530c%_0x5a92b2;},'ZgOGK':_0x32f72d(0x31e),'jIHFx':'hidden'},_0xa27ef5=document[_0x32f72d(0x299)](_0x32f72d(0x2aa)),_0x2d4255=_0x341324[_0x32f72d(0x24b)](_0x341324['pcHbc'](_0x15aacc,_0x576586),0x0)?Math[_0x32f72d(0x414)](_0x15aacc/_0x341324[_0x32f72d(0x3fb)](_0x15aacc,_0x576586)*0x64):0x0,_0x20a98b=_0x341324[_0x32f72d(0x486)](0x2,Math['PI'])*0x41,_0xd8d94e=document['getElementById'](_0x341324[_0x32f72d(0x462)]);_0xd8d94e[_0x32f72d(0x25b)][_0x32f72d(0x418)]=_0x20a98b+'\x20'+_0x20a98b,_0xd8d94e[_0x32f72d(0x25b)][_0x32f72d(0x2cc)]=_0x341324[_0x32f72d(0x3d5)](_0x20a98b,_0x341324[_0x32f72d(0x2c1)](_0x341324[_0x32f72d(0x449)](_0x2d4255,0x64),_0x20a98b)),document['getElementById'](_0x341324[_0x32f72d(0x359)])[_0x32f72d(0x459)]=_0x2d4255+'%',document[_0x32f72d(0x299)](_0x32f72d(0x20c))[_0x32f72d(0x459)]=questionsData[_0x32f72d(0x2e8)],document[_0x32f72d(0x299)](_0x341324[_0x32f72d(0x3b0)])['textContent']=_0x15aacc,document[_0x32f72d(0x299)](_0x341324[_0x32f72d(0x2b9)])[_0x32f72d(0x459)]=_0x576586,document[_0x32f72d(0x299)]('notAttemptedResult')[_0x32f72d(0x459)]=_0x11cdf0;const _0xd74ac3=Math[_0x32f72d(0x363)](_0x341324[_0x32f72d(0x432)](_0x2f6a94,0xea60)),_0x4da7e7=Math['floor'](_0x341324['fevqq'](_0x2f6a94,0xea60)/0x3e8);document[_0x32f72d(0x299)](_0x32f72d(0x289))[_0x32f72d(0x459)]=_0xd74ac3+':'+_0x4da7e7[_0x32f72d(0x370)]()[_0x32f72d(0x3a3)](0x2,'0');const _0x5910dd=_0x341324[_0x32f72d(0x432)](_0x2f6a94,questionsData['length']),_0x137e3b=Math[_0x32f72d(0x363)](_0x341324[_0x32f72d(0x39f)](_0x5910dd,0xea60)),_0x2b95ef=Math[_0x32f72d(0x363)](_0x341324[_0x32f72d(0x312)](_0x5910dd,0xea60)/0x3e8);document[_0x32f72d(0x299)](_0x341324[_0x32f72d(0x41d)])[_0x32f72d(0x459)]=_0x137e3b+':'+_0x2b95ef['toString']()[_0x32f72d(0x3a3)](0x2,'0'),_0xa27ef5[_0x32f72d(0x308)]['remove'](_0x341324[_0x32f72d(0x305)]);}function closePerformanceModal(){const _0x5446a4=_0x46c8ab,_0x1c34d2={'pcmoI':_0x5446a4(0x2aa)};document[_0x5446a4(0x299)](_0x1c34d2[_0x5446a4(0x217)])[_0x5446a4(0x308)][_0x5446a4(0x44c)](_0x5446a4(0x3ae));}function reviewQuestions(){const _0x1bf4e8=_0x46c8ab,_0x44ea26={'sYZkR':_0x1bf4e8(0x2ae),'oCrwD':function(_0x3f5ce8,_0x18dee3){return _0x3f5ce8<_0x18dee3;},'VNlPM':_0x1bf4e8(0x41b),'hzQBt':'border-red-500','CnlTp':function(_0x24318e,_0x41a5ff){return _0x24318e+_0x41a5ff;},'GRHtN':function(_0x392b49,_0x26e39a){return _0x392b49!==_0x26e39a;},'kEfTE':_0x1bf4e8(0x398),'ejAOQ':_0x1bf4e8(0x1f7),'YHQRI':_0x1bf4e8(0x364),'cMRUW':_0x1bf4e8(0x454),'apXpz':function(_0x24e5d7,_0x5b2348){return _0x24e5d7===_0x5b2348;},'RIzBD':_0x1bf4e8(0x213),'cHSwI':'Correct','ryGFU':_0x1bf4e8(0x2e1),'BoPXz':_0x1bf4e8(0x2be),'xywqq':'Incorrect','TtslK':_0x1bf4e8(0x3bb),'KSwWw':function(_0x48f611,_0x2b9421){return _0x48f611+_0x2b9421;},'QtnTs':_0x1bf4e8(0x43c),'ncIBV':'incorrect','lSVLc':_0x1bf4e8(0x3a0),'WtkAk':_0x1bf4e8(0x3a6),'jKZWh':'No\x20solution\x20available.','oQizh':_0x1bf4e8(0x2ff),'gvGYC':'reviewQuestionsContainer','eSOGf':function(_0x23ee8e){return _0x23ee8e();}};document['getElementById'](_0x44ea26['oQizh'])[_0x1bf4e8(0x308)][_0x1bf4e8(0x39d)](_0x1bf4e8(0x3ae));const _0x4e20c4=document[_0x1bf4e8(0x299)](_0x44ea26[_0x1bf4e8(0x415)]);_0x4e20c4['innerHTML']='',questionsData['forEach']((_0x38f81f,_0xcba4e6)=>{const _0x4ea1f8=_0x1bf4e8,_0x2de84b={'qfeOK':function(_0x49ee90,_0x423f23){return _0x49ee90===_0x423f23;},'CEtPi':_0x44ea26['VNlPM'],'NTSjH':_0x4ea1f8(0x36c),'oKvtn':_0x44ea26[_0x4ea1f8(0x21e)],'BsVfM':function(_0x5e5362,_0x594c30){const _0x261ec2=_0x4ea1f8;return _0x44ea26[_0x261ec2(0x3b9)](_0x5e5362,_0x594c30);}};if(_0x44ea26[_0x4ea1f8(0x25e)](_0x44ea26[_0x4ea1f8(0x3f8)],_0x4ea1f8(0x398)))_0x2e190e=_0x44ea26[_0x4ea1f8(0x44e)];else{const _0x59f032=questionStates[_0xcba4e6],_0x3a7cb0=_0x38f81f[_0x4ea1f8(0x3d6)];let _0x162488=_0x44ea26['ejAOQ'],_0x112fd0=_0x4ea1f8(0x221);if(_0x59f032[_0x4ea1f8(0x329)]!==null){if(_0x44ea26[_0x4ea1f8(0x25e)](_0x44ea26[_0x4ea1f8(0x2de)],_0x44ea26[_0x4ea1f8(0x1f6)])){const _0x57d630=_0x38f81f[_0x4ea1f8(0x46f)][_0x59f032[_0x4ea1f8(0x329)]];_0x44ea26[_0x4ea1f8(0x3eb)](_0x57d630['id'],_0x3a7cb0)?(_0x162488=_0x44ea26[_0x4ea1f8(0x321)],_0x112fd0=_0x44ea26['cHSwI']):_0x44ea26[_0x4ea1f8(0x498)]!==_0x44ea26[_0x4ea1f8(0x41a)]?(_0x162488=_0x4ea1f8(0x437),_0x112fd0=_0x44ea26[_0x4ea1f8(0x256)]):_0x44ea26[_0x4ea1f8(0x320)](_0x1401c5[_0x4ea1f8(0x393)],_0x1da514[_0x4ea1f8(0x2e8)])&&(_0x3f42ad[_0x37c040[_0x4ea1f8(0x393)]][_0x4ea1f8(0x3ef)]=!![]);}else _0x54ad08();}const _0x1ac185=document[_0x4ea1f8(0x3b4)](_0x44ea26['TtslK']);_0x1ac185['className']=_0x4ea1f8(0x219)+_0x162488;let _0x24a2e3=(_0x38f81f[_0x4ea1f8(0x46f)]||[])[_0x4ea1f8(0x488)]((_0x5df279,_0x5de9da)=>{const _0x36145b=_0x4ea1f8,_0x5c8b0f=_0x2de84b['qfeOK'](_0x59f032[_0x36145b(0x329)],_0x5de9da),_0x389966=_0x2de84b[_0x36145b(0x1f4)](_0x5df279['id'],_0x3a7cb0);let _0x1189c0=_0x2de84b['CEtPi'];if(_0x389966)_0x1189c0=_0x2de84b[_0x36145b(0x22c)];else{if(_0x5c8b0f)_0x1189c0=_0x2de84b['oKvtn'];}return _0x36145b(0x3a9)+_0x1189c0+_0x36145b(0x235)+String[_0x36145b(0x350)](_0x2de84b[_0x36145b(0x455)](0x41,_0x5de9da))+_0x36145b(0x248)+_0x5df279['text']+_0x36145b(0x2c4);})[_0x4ea1f8(0x338)]('');const _0x31eacc=_0x38f81f['explanation_video']?_0x4ea1f8(0x48b)+_0xcba4e6+'\x22\x20data-src=\x22'+_0x38f81f[_0x4ea1f8(0x25f)]+_0x4ea1f8(0x3e4):'';let _0x3da319='';if(_0x38f81f[_0x4ea1f8(0x241)])_0x3da319+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22'+_0x38f81f[_0x4ea1f8(0x241)]+_0x4ea1f8(0x390);if(_0x38f81f['explanation_audio_hin'])_0x3da319+=_0x4ea1f8(0x483)+_0x38f81f[_0x4ea1f8(0x30a)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>';let _0x4d080e=(_0x38f81f[_0x4ea1f8(0x29e)]||[])['map'](_0x517200=>_0x517200?_0x4ea1f8(0x375)+_0x517200+_0x4ea1f8(0x2fb):'')[_0x4ea1f8(0x338)]('');_0x1ac185['innerHTML']=_0x4ea1f8(0x1f8)+_0x44ea26[_0x4ea1f8(0x2c9)](_0xcba4e6,0x1)+'</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-'+(_0x162488===_0x44ea26[_0x4ea1f8(0x321)]?_0x44ea26[_0x4ea1f8(0x417)]:_0x162488===_0x44ea26[_0x4ea1f8(0x319)]?_0x44ea26[_0x4ea1f8(0x481)]:_0x44ea26[_0x4ea1f8(0x380)])+_0x4ea1f8(0x3e2)+_0x112fd0+_0x4ea1f8(0x2a3)+_0x38f81f[_0x4ea1f8(0x401)]+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>'+_0x24a2e3+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>'+(_0x38f81f['solution']||_0x44ea26[_0x4ea1f8(0x424)])+_0x4ea1f8(0x202)+_0x31eacc+_0x4ea1f8(0x304)+_0x3da319+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x4d080e+_0x4ea1f8(0x34c),_0x4e20c4[_0x4ea1f8(0x334)](_0x1ac185);}}),_0x44ea26[_0x1bf4e8(0x371)](initializeReviewVideos);}function initializeReviewVideos(){const _0x6307f4=_0x46c8ab,_0x24614b={'CdVPG':_0x6307f4(0x372),'dBTsc':'baMFV','qxBsu':function(_0x4af3ed,_0x336565,_0x27f72e){return _0x4af3ed(_0x336565,_0x27f72e);},'mZfxt':_0x6307f4(0x21c)};document[_0x6307f4(0x472)](_0x24614b[_0x6307f4(0x2b8)])['forEach'](_0x3be228=>{const _0x5eb8eb=_0x6307f4,_0x117986=_0x3be228['dataset'][_0x5eb8eb(0x229)];if(_0x117986&&_0x117986[_0x5eb8eb(0x34e)](_0x24614b[_0x5eb8eb(0x211)]))'MRSpb'!==_0x24614b[_0x5eb8eb(0x2f2)]?_0x24614b[_0x5eb8eb(0x3d4)](setupVideo,_0x3be228,_0x117986):_0x4445c8[_0x5eb8eb(0x229)]=_0xfcf127;else _0x117986&&(_0x3be228[_0x5eb8eb(0x229)]=_0x117986);});}function _0x2cb4(_0x33d1e0,_0x5a403){const _0x475223=_0x523b();return _0x2cb4=function(_0x4b47a1,_0x4877ca){_0x4b47a1=_0x4b47a1-0x1ed;let _0x1f6398=_0x475223[_0x4b47a1];return _0x1f6398;},_0x2cb4(_0x33d1e0,_0x5a403);}function retakeQuiz(){const _0x4716f5=_0x46c8ab,_0x770262={'QoXsd':function(_0x2ed3f1,_0x46212e){return _0x2ed3f1(_0x46212e);},'YXfMc':_0x4716f5(0x34d),'mghdx':function(_0x318553,_0x11a408){return _0x318553!==_0x11a408;},'pXrIa':_0x4716f5(0x2b3),'wctuu':_0x4716f5(0x485),'ordEW':_0x4716f5(0x3de),'mPIhP':function(_0x1cf2d7){return _0x1cf2d7();}};_0x770262['QoXsd'](confirm,_0x770262['YXfMc'])&&(_0x770262['mghdx'](_0x770262[_0x4716f5(0x2c3)],_0x770262['pXrIa'])?_0x224eaf():(window[_0x4716f5(0x35d)][_0x4716f5(0x2ce)][_0x4716f5(0x3ec)](_0x770262[_0x4716f5(0x35a)])&&localStorage[_0x4716f5(0x3ce)](_0x770262['ordEW']),_0x770262[_0x4716f5(0x35c)](clearProgress),location[_0x4716f5(0x394)]()));}function loadBookmarkedQuestions(){const _0x1b9424=_0x46c8ab,_0x334f25={'ROobc':function(_0x33128d,_0x376f21){return _0x33128d<_0x376f21;},'RLgDk':_0x1b9424(0x21b)},_0x2e60e1=JSON[_0x1b9424(0x410)](localStorage[_0x1b9424(0x3c0)](_0x334f25[_0x1b9424(0x353)]))||[];_0x2e60e1['forEach'](_0x1d4f7e=>{const _0x3a6ab6=_0x1b9424;_0x1d4f7e['quizFile'][_0x3a6ab6(0x34e)](quizName[_0x3a6ab6(0x434)]()[_0x3a6ab6(0x2e5)](/ /g,'-'))&&(_0x334f25[_0x3a6ab6(0x227)](_0x1d4f7e['questionIndex'],questionsData[_0x3a6ab6(0x2e8)])&&(questionStates[_0x1d4f7e['questionIndex']]['bookmarked']=!![]));});}function toggleBookmark(){const _0x5cd2e3=_0x46c8ab,_0x59b849={'POSrC':function(_0x3b9ed3,_0x5b89d7){return _0x3b9ed3<_0x5b89d7;},'ZDLDC':_0x5cd2e3(0x21b),'VEELe':_0x5cd2e3(0x32b),'rhybY':function(_0x25bd2d){return _0x25bd2d();}},_0x2bab00=!questionStates[currentQuestionIndex][_0x5cd2e3(0x3ef)];questionStates[currentQuestionIndex][_0x5cd2e3(0x3ef)]=_0x2bab00;let _0x53cb40=JSON[_0x5cd2e3(0x410)](localStorage[_0x5cd2e3(0x3c0)](_0x59b849[_0x5cd2e3(0x355)]))||[];if(_0x2bab00){const _0x16774a={'quizName':quizName,'quizFile':window[_0x5cd2e3(0x35d)][_0x5cd2e3(0x2ce)][_0x5cd2e3(0x2a4)]('/')['pop'](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date[_0x5cd2e3(0x399)]()};_0x53cb40[_0x5cd2e3(0x24f)](_0x16774a);}else _0x5cd2e3(0x265)===_0x59b849[_0x5cd2e3(0x249)]?_0x59a15d['quizFile']['includes'](_0xce3147[_0x5cd2e3(0x434)]()[_0x5cd2e3(0x2e5)](/ /g,'-'))&&(_0x59b849[_0x5cd2e3(0x429)](_0x1af638[_0x5cd2e3(0x393)],_0x45bb0a[_0x5cd2e3(0x2e8)])&&(_0x373a4e[_0x3a8475[_0x5cd2e3(0x393)]][_0x5cd2e3(0x3ef)]=!![])):_0x53cb40=_0x53cb40[_0x5cd2e3(0x419)](_0x23db5a=>!(_0x23db5a['quizFile'][_0x5cd2e3(0x34e)](quizName['toLowerCase']()[_0x5cd2e3(0x2e5)](/ /g,'-'))&&_0x23db5a[_0x5cd2e3(0x393)]===currentQuestionIndex));localStorage[_0x5cd2e3(0x478)](_0x59b849['ZDLDC'],JSON[_0x5cd2e3(0x2a7)](_0x53cb40)),_0x59b849['rhybY'](updateBookmarkButton),_0x59b849[_0x5cd2e3(0x3ab)](updateQuestionNav);}function updateBookmarkButton(){const _0x1a4f64=_0x46c8ab,_0x2fe4fe={'bpPlg':_0x1a4f64(0x2e7),'SgCRo':_0x1a4f64(0x24c),'EvZQP':_0x1a4f64(0x3d8),'Hbzut':_0x1a4f64(0x3b7)},_0x56b0ce=document[_0x1a4f64(0x299)](_0x1a4f64(0x2f4)),_0xd79eca=document[_0x1a4f64(0x299)](_0x2fe4fe[_0x1a4f64(0x2d4)]),_0x2b9a2f=questionStates[currentQuestionIndex][_0x1a4f64(0x3ef)];_0x56b0ce[_0x1a4f64(0x257)]=_0x2b9a2f?_0x2fe4fe[_0x1a4f64(0x494)]:_0x1a4f64(0x2b0),_0xd79eca[_0x1a4f64(0x459)]=_0x2b9a2f?_0x2fe4fe[_0x1a4f64(0x37e)]:_0x2fe4fe['Hbzut'];}function toggleMarkForReview(){const _0x4dd736=_0x46c8ab,_0x1f6afb={'EPgQw':function(_0x56faec){return _0x56faec();},'lbuoW':function(_0x4c4d83){return _0x4c4d83();}};questionStates[currentQuestionIndex][_0x4dd736(0x23c)]=!questionStates[currentQuestionIndex]['markedForReview'],_0x1f6afb[_0x4dd736(0x24d)](updateMarkReviewButton),_0x1f6afb[_0x4dd736(0x33e)](updateQuestionNav);}function updateMarkReviewButton(){const _0xed7951=_0x46c8ab,_0x12407f={'qYmcu':_0xed7951(0x277),'JirJP':_0xed7951(0x295),'bXpgS':_0xed7951(0x25d),'OQXhK':_0xed7951(0x3d7),'auaAH':_0xed7951(0x46e)},_0x21afe1=document[_0xed7951(0x299)](_0x12407f[_0xed7951(0x3d2)]),_0x5a88a8=document[_0xed7951(0x299)](_0x12407f[_0xed7951(0x386)]),_0xd9f5ac=questionStates[currentQuestionIndex][_0xed7951(0x23c)];_0x21afe1[_0xed7951(0x257)]=_0xd9f5ac?'gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center':_0x12407f[_0xed7951(0x29c)],_0x5a88a8[_0xed7951(0x459)]=_0xd9f5ac?_0x12407f[_0xed7951(0x3da)]:_0x12407f['auaAH'];}function previousQuestion(){const _0x315c36=_0x46c8ab,_0x1386ff={'XTVcu':function(_0x4e87c7,_0x21cafc){return _0x4e87c7-_0x21cafc;},'wEHHW':function(_0x1f5c0e){return _0x1f5c0e();}};currentQuestionIndex>0x0&&(questionStartTime&&(questionStates[currentQuestionIndex][_0x315c36(0x26f)]+=_0x1386ff[_0x315c36(0x28d)](Date['now'](),questionStartTime)),currentQuestionIndex--,_0x1386ff[_0x315c36(0x2f6)](displayQuestion),_0x1386ff[_0x315c36(0x2f6)](saveProgress));}function nextQuestion(){const _0x476101=_0x46c8ab,_0x2048f8={'kzGrJ':'hidden','bqbVh':function(_0x5046d2,_0xdcac7f){return _0x5046d2+_0xdcac7f;},'vgZNn':_0x476101(0x3ee),'HBnev':_0x476101(0x2f7),'bGXnK':_0x476101(0x342),'UEsxl':_0x476101(0x44f),'wnchc':function(_0x4d79a6,_0x38a5c9){return _0x4d79a6>=_0x38a5c9;},'FgNOp':function(_0x1637e5,_0x15078e){return _0x1637e5<_0x15078e;},'ezpJI':function(_0x28b2e5){return _0x28b2e5();},'nQmRU':'questionText','crUOY':function(_0xeb8656,_0x42f5da){return _0xeb8656-_0x42f5da;},'obzda':function(_0x3e706b,_0x4cb70f){return _0x3e706b!==_0x4cb70f;},'FyLiM':_0x476101(0x228),'KeRUY':'test','spOeh':function(_0x50dad6,_0x1b7ef8){return _0x50dad6===_0x1b7ef8;},'ynYDz':function(_0x630627,_0x59cc0e){return _0x630627(_0x59cc0e);},'RSVxg':_0x476101(0x470),'UOSJX':function(_0x3aa203,_0x2c5efa){return _0x3aa203===_0x2c5efa;},'cmGXQ':_0x476101(0x262),'rQYXT':function(_0x33ff30,_0x4427a7){return _0x33ff30!==_0x4427a7;},'vpXsi':_0x476101(0x260),'LBihy':function(_0x45661f,_0x1fdf01){return _0x45661f(_0x1fdf01);},'GnKQv':function(_0x208014,_0x48814a){return _0x208014===_0x48814a;}};questionStartTime&&(questionStates[currentQuestionIndex][_0x476101(0x26f)]+=_0x2048f8[_0x476101(0x2d6)](Date[_0x476101(0x399)](),questionStartTime));if(currentQuestionIndex<_0x2048f8[_0x476101(0x2d6)](questionsData['length'],0x1))_0x2048f8[_0x476101(0x245)](_0x2048f8[_0x476101(0x347)],_0x476101(0x228))?_0x11d149[_0x476101(0x299)]('performanceModal')[_0x476101(0x308)][_0x476101(0x44c)](_0x2048f8[_0x476101(0x243)]):(currentQuestionIndex++,_0x2048f8['ezpJI'](displayQuestion),saveProgress());else{if(currentMode===_0x2048f8[_0x476101(0x253)]||_0x2048f8['spOeh'](currentMode,_0x476101(0x3a8))){if(_0x2048f8['ynYDz'](confirm,_0x2048f8['RSVxg'])){if(_0x2048f8[_0x476101(0x2cf)](_0x476101(0x37f),_0x2048f8['cmGXQ'])){const _0x1a49f3=_0x476101(0x47c)[_0x476101(0x2a4)]('|');let _0x376334=0x0;while(!![]){switch(_0x1a49f3[_0x376334++]){case'0':_0x4f9837[_0x476101(0x356)]=_0x2048f8[_0x476101(0x204)](_0x2c962d,_0x2048f8[_0x476101(0x37a)]);continue;case'1':_0x47f7ff[_0x476101(0x299)](_0x2048f8[_0x476101(0x2fd)])[_0x476101(0x459)]=_0x554dd2[_0x476101(0x338)](_0x2048f8['bGXnK']);continue;case'2':_0x367937[_0x476101(0x299)](_0x2048f8[_0x476101(0x476)])[_0x476101(0x459)]=_0xb39656['length'];continue;case'3':_0x35b0b2=_0x50ca86[_0x476101(0x388)];continue;case'4':_0x23a32c=_0x20d26b[_0x476101(0x315)];continue;case'5':_0x310210=_0x4da2d5['name'];continue;}break;}}else _0x2048f8[_0x476101(0x224)](submitQuiz);}}else{if(_0x2048f8['rQYXT'](_0x2048f8[_0x476101(0x268)],_0x2048f8[_0x476101(0x268)]))_0x2048f8[_0x476101(0x25c)](_0x47640b,0x0)&&_0x2048f8[_0x476101(0x3dc)](_0x5199eb,_0x353546['length'])&&(_0x16e1cb&&(_0x14701c[_0x54b1bb][_0x476101(0x26f)]+=_0x4c0b2b['now']()-_0x32b02f),_0x25a3b7=_0x5133e5,_0x4713d0(),_0x2048f8[_0x476101(0x224)](_0x3926e7));else{if(_0x2048f8[_0x476101(0x45e)](confirm,'You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?')){if(_0x2048f8[_0x476101(0x215)](_0x476101(0x34f),_0x476101(0x328))){_0x20b449[_0x476101(0x299)](_0x2048f8[_0x476101(0x2eb)])[_0x476101(0x3f6)]=_0x476101(0x3be);return;}else currentQuestionIndex=0x0,_0x2048f8[_0x476101(0x224)](displayQuestion),_0x2048f8[_0x476101(0x224)](saveProgress);}}}}}function startTimer(){const _0x1ef1ff=_0x46c8ab,_0x1edf39={'JyUwi':_0x1ef1ff(0x340),'nqHpK':_0x1ef1ff(0x22b),'DToSb':function(_0x65909e,_0x2a347f){return _0x65909e===_0x2a347f;},'lWEOF':function(_0x6875de,_0x20da5a){return _0x6875de<=_0x20da5a;},'DctZi':function(_0x366590,_0x207f59){return _0x366590(_0x207f59);},'BIcdr':function(_0x26ec9d,_0x40a85f){return _0x26ec9d===_0x40a85f;},'rZIcW':_0x1ef1ff(0x3a8),'OjKlu':_0x1ef1ff(0x395),'oLCTe':function(_0x4e6057,_0x51d314){return _0x4e6057!==_0x51d314;},'HotEl':_0x1ef1ff(0x39b),'MoFUC':_0x1ef1ff(0x38f),'sfsxL':function(_0x459759){return _0x459759();},'lsYon':function(_0x30da43,_0x3bf59c){return _0x30da43(_0x3bf59c);},'pJtzv':function(_0x49cef1,_0x373477,_0x3d5b92){return _0x49cef1(_0x373477,_0x3d5b92);}};if(timer)_0x1edf39[_0x1ef1ff(0x487)](clearInterval,timer);timeRemaining=0x78,_0x1edf39[_0x1ef1ff(0x480)](updateTimerDisplay),timer=_0x1edf39[_0x1ef1ff(0x3ac)](setInterval,()=>{const _0x410f63=_0x1ef1ff,_0x92800e={'aduHI':_0x1edf39[_0x410f63(0x311)],'ZRgyO':_0x1edf39[_0x410f63(0x45a)],'QWnvK':function(_0x1b3018,_0x536732){const _0x1054c2=_0x410f63;return _0x1edf39[_0x1054c2(0x41e)](_0x1b3018,_0x536732);},'PUwyA':function(_0x59d430,_0x299fa4){return _0x59d430===_0x299fa4;},'GnWis':function(_0x3aa31c){return _0x3aa31c();}};if(_0x410f63(0x300)!=='JZuVX'){timeRemaining--,updateTimerDisplay();if(_0x1edf39[_0x410f63(0x2bb)](timeRemaining,0x0)){_0x1edf39[_0x410f63(0x22e)](clearInterval,timer);if(_0x1edf39[_0x410f63(0x38a)](currentMode,_0x1edf39['rZIcW']))_0x1edf39[_0x410f63(0x27a)]!==_0x1edf39[_0x410f63(0x27a)]?_0x1ec4e3=_0x92800e[_0x410f63(0x405)]:submitQuiz();else{if(_0x1edf39['oLCTe'](_0x1edf39[_0x410f63(0x3cb)],_0x1edf39[_0x410f63(0x231)]))_0x1edf39[_0x410f63(0x480)](nextQuestion);else{_0x3f2088[_0x410f63(0x308)][_0x410f63(0x39d)](_0x92800e[_0x410f63(0x46b)]);if(_0x92800e[_0x410f63(0x411)](_0x5bcc75,_0x45863f))_0x1dda46[_0x410f63(0x308)][_0x410f63(0x44c)]('correct');else{if(_0x92800e['PUwyA'](_0x587db0,_0x410876)&&!_0x46415a)_0x24efc7['classList'][_0x410f63(0x44c)](_0x410f63(0x437));}}}}}else _0x92800e[_0x410f63(0x259)](_0x5d8dd2);},0x3e8);}function _0x523b(){const _0x92eb6a=['UOSJX','solutionContainer','<p><span\x20style=\x22font-size:12.0pt;\x22>Descending\x20cervical\x20artery</span></p>','vPlWK','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>','bpPlg','IqSau','crUOY','loadSource','<p><span\x20style=\x22font-size:12.0pt;\x22>Hayman</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>It\x20is\x20available\x20by\x20the\x20brand\x20name\x20of\x20Novo7</span></p>','true','<p><span\x20style=\x22font-size:12.0pt;\x22>Vasoconstrictive\x20agent</span></p>','ZGVcq','NktGD','YHQRI','IhuRx','reduce','RcQiQ','WiJPc','ENYpm','iedTT','replace','zCWXN','bookmarkText','length','<p><span\x20style=\x22font-size:12.0pt;\x22>Ringer\x20Lactate</span></p>','DT1289345','nQmRU','<p><span\x20style=\x22font-size:12.0pt;\x22>Carbetocin</span></p>','CBFvs','qtIlt','IDXOU','Factual','OOUvE','dBTsc','apply','bookmarkBtn','75591FGEwGd','wEHHW','quizHierarchy','oOTSY','PVbqp','<p><span\x20style=\x22font-size:12.0pt;\x22>HR/SBP</span></p>','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2021\x20year\x20old\x20primigravida\x20has\x20a\x20prolonged\x202nd\x20stage\x20of\x20labour.\x20She\x20delivers\x20a\x20macrosomic\x20baby,\x20has\x20a\x20wide\x20episiotomy,\x20which\x20was\x20stitched\x20by\x20the\x20resident.\x20Few\x20hours\x20later,\x20she\x20complains\x20of\x20severe\x20perineal\x20pain,\x20and\x20is\x20unable\x20to\x20void\x20urine.\x20She\x20is\x202+\x20pale,\x20with\x20tachycardia.\x20The\x20consultant\x20diagnoses\x20a\x20vulvar\x20hematoma\x20on\x20examination.\x20Which\x20of\x20the\x20following\x20is\x20the\x20most\x20common\x20artery\x20involved?</span></p>','HBnev','JQdpN','questionReviewSection','OCjFj','<p><span\x20style=\x22font-size:12.0pt;\x22>Carboprost</span></p>','rgIrC','DT1289360','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','jIHFx','<p><span\x20style=\x22font-size:12.0pt;\x22>PT\x20<1.5\x20x\x20mean\x20control</span></p>','DT1289333','classList','kxZLU','explanation_audio_hin','rPpkC','WPMuP','XWACB','yKvTI','<p><span\x20style=\x22font-size:12.0pt;\x22>Condom\x20catheter\x20balloon</span></p>','warn','JyUwi','LbdMN','jDmxR','teODa','questions','nav-btn-incorrect','IBnfI','jNFsu','ncIBV','solutionAudio','WZqEp','<p><span\x20style=\x22font-size:12.0pt;\x22>Provide\x20bimanual\x20uterine\x20compression</span></p>','fjpOD','avgTimeResult','BcPCC','oCrwD','RIzBD','oIrNK','xnnZo','<p>All\x20other\x20are\x20recommended\x20by\x20British\x20Committee\x20of\x20Standards\x20in\x20hematology.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p><em>British\x20committee\x20of\x20standards\x20in\x20hematology\x20recommendations\x20</em>for\x20maintaining\x20coagulation\x20parameters\x20in\x20massive\x20haemorrhage</p>\x0d\x0a<ul>\x0d\x0a<li><strong>Haemoglobin\x20&gt;\x208\x20g/dl</strong></li>\x0d\x0a<li><strong>\x20Platelet\x20count\x20&gt;\x2075\x20&times;\x20109</strong></li>\x0d\x0a<li><strong>\x20Fibrinogen\x20&gt;\x201.0\x20g/dl</strong></li>\x0d\x0a<li><strong>\x20Prothrombin\x20&lt;\x201.5\x20x\x20mean\x20control\x20&amp;\x20APTT\x20&lt;\x201.5\x20x\x20mean\x20control</strong></li>\x0d\x0a</ul>\x0d\x0a<p><strong>Reference:</strong>\x20RCOG\x20Green\x20Top\x20Guideline\x20no.\x2052\x20Prevention\x20and\x20Management\x20of\x20Postpartum\x20Haemorrhage</p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Carbetocin\x20in\x20the\x20dose\x20of\x20100\x20micrograms\x20given\x20as\x20an\x20intravenous\x20bolus\x20over\x201\x20minute\x20should\x20be\x20used\x20for\x20the\x20prevention\x20of\x20PPH\x20in\x20elective\x20caesarean\x20deliveries</span></p>','Option\x20','<p><span\x20style=\x22font-size:12.0pt;\x22>HR/MAP</span></p>','iayoT','selectedAnswer','PAOax','IdqyK','xphIG','yTtzJ','incorrectResult','.option-button','Previous\x20progress\x20cleared.','BmacO','FvnSO','PHzOs','appendChild','xScDf','NBkpg','riVEO','join','<ul>\x0d\x0a<li>Clinical\x20signs\x20and\x20symptoms\x20of\x20hypovolaemia\x20should\x20be\x20included\x20in\x20the\x20assessment\x20of\x20PPH.</li>\x0d\x0a<li>However,\x20clinicians\x20should\x20be\x20aware\x20that\x20the\x20physiological\x20increase\x20in\x20circulating\x20blood\x20volume\x20during\x20pregnancy\x20means\x20that\x20the\x20signs\x20of\x20hypovolaemic\x20shock\x20become\x20less\x20sensitive\x20in\x20pregnancy.</li>\x0d\x0a<li>In\x20pregnancy,\x20pulse\x20and\x20blood\x20pressure\x20are\x20usually\x20maintained\x20in\x20the\x20normal\x20range\x20until\x20blood\x20loss\x20exceeds\x201000\x20ml;\x20tachycardia,\x20tachypnoea\x20and\x20a\x20slight\x20recordable\x20fall\x20in\x20systolic\x20blood\x20pressure\x20occur\x20with\x20blood\x20loss\x20of\x201000-1500\x20ml.</li>\x0d\x0a<li>A\x20systolic\x20blood\x20pressure\x20below\x2080\x20mmHg,\x20associated\x20with\x20worsening\x20tachycardia,\x20tachypnoea\x20and\x20altered\x20mental\x20state,\x20usually\x20indicates\x20a\x20PPH\x20in\x20excess\x20of\x201500\x20ml</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205deba0a25-923c-4517-9dbe-7b1d60e6eb43.jpg\x22>\x0d\x0a<p><strong>Reference:</strong>\x20RCOG\x20Green\x20Top\x20Guideline\x20no.\x2052\x20Prevention\x20and\x20Management\x20of\x20Postpartum\x20Haemorrhage</p>','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22','button','disabled','hyUGE','lbuoW','Pfjbq','nav-btn-bookmarked','enyjc','\x20>\x20','ArrowRight','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2032-year-old\x20woman\x20experiences\x20postpartum\x20hemorrhage\x20(PPH)\x20following\x20a\x20complicated\x20delivery.\x20The\x20healthcare\x20provider\x20decides\x20to\x20administer\x20Tranexamic\x20acid\x20to\x20manage\x20the\x20bleeding.\x20What\x20is\x20the\x20mechanism\x20of\x20action\x20of\x20Tranexamic\x20acid?</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Elevate\x20head\x20end\x20to\x20improve\x20blood\x20supply\x20to\x20vital\x20organs</span></p>','flex','FyLiM','<p><span\x20style=\x22font-size:12.0pt;\x22>5%\x20Dextrose</span></p>','pUWcX','questionText','vImNJ','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','includes','NKqqM','fromCharCode','dUsTl','<ul>\x0d\x0a<li><strong>Use\x20of\x20carbetocin\x20resulted\x20in\x20a\x20statistically\x20significant\x20reduction\x20in\x20the\x20need\x20for\x20further\x20uterotonics\x20compared\x20with\x20oxytocin\x20<em>for\x20those\x20undergoing\x20a\x20caesarean,\x20but\x20not\x20for\x20vaginal\x20delivery.</em></strong></li>\x0d\x0a<li>Carbetocin\x20in\x20the\x20dose\x20of\x20<em>100\x20micrograms</em>\x20given\x20as\x20an\x20<em>intravenous\x20bolus\x20over\x201\x20minute</em>\x20should\x20be\x20used\x20for\x20the\x20prevention\x20of\x20PPH\x20in\x20elective\x20caesarean\x20deliveries</li>\x0d\x0a<li>It\x20is\x20a\x20<em>heat\x20stable,\x20longer\x20acting\x20derivative\x20of\x20Oxytocin</em>\x20&amp;\x20does\x20not\x20need\x20cold\x20chain\x20maintenance\x20but\x20it\x20is\x20advised\x20to\x20store\x20it\x20at\x20&lt;\x2030\x20degree\x20Celsius.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>Carbetocin(Duratocin),\x20a\x20long-acting\x20oxytocin\x20analogue,\x20is\x20available\x20and\x20effective\x20for\x20hemorrhage\x20prevention.\x20Prescribing\x20information\x20for\x20carbetocin\x20cites\x20its\x20use\x20for\x20cesarean\x20delivery.</li>\x0d\x0a<li>100ug\x20I/v\x20over\x201\x20minute</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Reference:</strong>\x20RCOG\x20Green\x20Top\x20Guideline\x20no.\x2052\x20Prevention\x20and\x20Management\x20of\x20Postpartum\x20Haemorrhage</p>','RLgDk','info','ZDLDC','title','LORYL','search','oWcKN','wctuu','<p><span\x20style=\x22font-size:12.0pt;\x22>Retained\x20placenta</span></p>','mPIhP','location','{}.constructor(\x22return\x20this\x22)(\x20)','ArrowLeft','QdaEi','XMYvJ','huwgx','floor','vCfJF','jPCqG','<p><span\x20style=\x22font-size:12.0pt;\x22>Fluid\x20of\x20choice\x20for\x20resuscitation\x20in\x20hypovolemic\x20shock\x20due\x20to\x20PPH:</span></p>','1076850wpIrpC','Cerdt','DT1289160','<p><span\x20style=\x22font-size:12.0pt;\x22>External\x20aortic\x20compression</span></p>','YcARa','border-green-500','OScON','IwUzk','<p><span\x20style=\x22font-size:12.0pt;\x22>It\x20is\x20a\x20longer-acting\x20oxytocin\x20derivative</span></p>','toString','eSOGf','.m3u8','GagFG','<p><span\x20style=\x22font-size:12.0pt;\x22>Preterm\x20labour</span></p>','<div\x20class=\x22mt-4\x22><img\x20src=\x22','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x2024\x20year\x20primigravida\x20is\x20admitted\x20to\x20LR\x20at\x2037\x20weeks\x20of\x20gestation\x20with\x20history\x20of\x20preeclampsia\x20for\x20induction\x20of\x20labour.\x20She\x20has\x20prolonged\x20labour,\x20delivers\x20a\x20female\x20fetus\x20of\x202.8\x20kg\x20&\x20goes\x20into\x20PPH.\x20Which\x20of\x20the\x20following\x20drugs\x20is\x20contraindicated\x20in\x20the\x20management\x20of\x20PPH\x20in\x20this\x20scenario?</span></p>','application/vnd.apple.mpegurl','sCCQe','totalAttempted','vgZNn','SLnwu','<ul>\x0d\x0a<li>Prostaglandins\x20enhance\x20uterine\x20contractility\x20and\x20cause\x20vasoconstriction.</li>\x0d\x0a<li>The\x20prostaglandin\x20most\x20commonly\x20used\x20is\x20<strong>15-Methyl\x20Prostaglandin\x20F\x202a\x20or\x20carboprost\x20/Dinoprost(Hemabate).</strong></li>\x0d\x0a</ul>\x0d\x0a<p><strong>Oxytocin\x20(Option\x20a):</strong>\x20This\x20is\x20the\x20<em>standard\x20first-line\x20treatment\x20for\x20PPH\x20and\x20is\x20safe\x20in\x20patients\x20with\x20bronchial\x20asthma.</em></p>\x0d\x0a<p><strong>Ergometrine\x20(Option\x20b):</strong>\x20Generally\x20used\x20for\x20PPH\x20but\x20can\x20cause\x20hypertension\x20and\x20is\x20not\x20ideal\x20if\x20the\x20patient\x20has\x20a\x20history\x20of\x20high\x20blood\x20pressure\x20or\x20cardiovascular\x20issues.\x20However,\x20<em>it\x20is\x20not\x20specifically\x20contraindicated\x20in\x20asthma.</em></p>\x0d\x0a<p><strong>Misoprostol\x20(Option\x20d):</strong>\x20This\x20is\x20another\x20prostaglandin\x20analogue\x20used\x20for\x20PPH.\x20It\x20is\x20generally\x20safe\x20and\x20does\x20not\x20have\x20the\x20same\x20risk\x20of\x20bronchoconstriction\x20as\x20Carboprost.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p>Carboprost\x20tromethamine\x20(Hemabate)\x20is\x20the\x2015-methyl\x20derivative\x20of\x20prostaglandin\x20F2&alpha;.\x20It\x20is\x20approved\x20for\x20uterine\x20atony\x20treatment\x20in\x20a\x20<em>dose\x20of\x20250\x20ug\x20(0.25\x20mg)\x20given\x20IM.</em>\x20This\x20dose\x20can\x20be\x20repeated\x20if\x20necessary,\x20at\x20<em>15-\x20to\x2090-minute\x20intervals\x20up\x20to\x20a\x20maximum\x20of\x20eight\x20doses.</em></p>\x0d\x0a<p>Pharmacological\x20effect\x20is\x20<em>pulmonary\x20airway\x20and\x20vascular\x20constriction.</em>\x20Thus,\x20carboprost\x20should\x20not\x20be\x20used\x20for\x20asthmatic\x20women\x20or\x20those\x20with\x20pulmonary\x20hypertension,\x20including\x20women\x20those\x20with\x20suspected\x20amnionic\x20fluid\x20embolism.</p>','(((.+)+)+)+$','EvZQP','qIqtK','WtkAk','mfunu','pph-5cfb25db.html','accuracyScore','question_video','exception','JirJP','<p><span\x20style=\x22font-size:12.0pt;\x22>>1000\x20ml</span></p>','hierarchy','<p><span\x20style=\x22font-size:12.0pt;\x22>Uterotonic</span></p>','BIcdr','optionsContainer','<p><span\x20style=\x22font-size:12.0pt;\x22>Diabetes\x20in\x20pregnancy</span></p>','nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','BferB','mRdsl','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','none','TCian','questionIndex','reload','JUNfZ','<p><span\x20style=\x22font-size:12.0pt;\x22>Internal\x20iliac\x20artery</span></p>','kHKNU','VOyFW','now','Ueshz','CIFcn','kYSiU','remove','nrJGr','lcYWz','red','JiNOR','XnsKq','padStart','NzyBa','open','gray','<p><span\x20style=\x22font-size:12.0pt;\x22>Cho</span></p>','timed_exam','<div\x20class=\x22p-3\x20rounded-lg\x20border\x20','lkIhr','rhybY','pJtzv','138150PISFJa','hidden','DT1289343','ZFxbh','findIndex','aPiyb','constructor','createElement','mvfxd','<p><span\x20style=\x22font-size:12.0pt;\x22>Gunshella</span></p>','Bookmark','fqprN','CnlTp','NqeCJ','div','correctResult','xZkXL','No\x20questions\x20available\x20for\x20this\x20quiz.','<p><span\x20style=\x22font-size:12.0pt;\x22>Misoprostol</span></p>','getItem','zfcTD','<p><strong>B-Lynch\x20Compression\x20Sutures:</strong>\x20This\x20surgical\x20technique\x20uses\x20a\x20<em>no.\x202\x20chromic\x20suture</em>\x20to\x20compress\x20the\x20<em>anterior\x20and\x20posterior\x20uterine\x20walls\x20together</em>\x20(Christopher\x20B-Lynch,\x201997).</p>\x0d\x0a<p>Because\x20they\x20give\x20the\x20appearance\x20of\x20suspenders,\x20they\x20are\x20also\x20called\x20braces.\x20They\x20are\x20a\x20modality\x20<strong>to\x20<em>control\x20atonic\x20PPH</em></strong>,\x20<em>with\x20preservation\x20of\x20future\x20fertility\x20too.\x20</em></p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p>Various\x20uterine\x20compression\x20sutures\x20have\x20been\x20described,\x20with\x20the\x20inventor\x27s\x20name\x20being\x20used,\x20such\x20as\x20Hayman,\x20Cho,\x20Pereira,\x20Gunshella\x20etc.</p>\x0d\x0a<p>The\x20image\x20below\x20shows\x20B-Lynch,\x20Cho\x20&amp;\x20Hayman\x20uterine\x20compression\x20sutures\x20respectively.</p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/2024120593d205a2-dcbd-44de-a6d8-a5168227176e.jpg\x22>','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','lgbli','ZMgEr','explanationVideoPlayer','eNqvY','SZHDn','OyJop','jKFVr','HotEl','<p><span\x20style=\x22font-size:12.0pt;\x22>Traumatic\x20PPH</span></p>','KJrGu','removeItem','<p><span\x20style=\x22font-size:12.0pt;\x22>Platelet\x20count\x20>75000/ul</span></p>','ZNkLb','xldkn','qYmcu','SvgUn','qxBsu','CKopO','correct_choice_id','Marked','Bookmarked','DT1289342','OQXhK','nav-btn-current','FgNOp','notAttempted','customQuizData','DT1289347','<p><span\x20style=\x22font-size:12.0pt;\x22>It\x20acts\x20by\x20binding\x20with\x20tissue\x20factor\x20to\x20augment\x20the\x20extrinsic\x20clotting\x20pathway\x20by\x20activating\x20factor\x20IX\x20and\x20X</span></p>','DT1289346','-600\x20text-white\x22>','mzBLB','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','PyoaR','Fatgj','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','__proto__','onclick','aHXCp','apXpz','endsWith','questionStates','\x20-\x20Brain\x20And\x20Scalpel','bookmarked','<p><span\x20style=\x22font-size:12.0pt;\x22>Fibrinolytic</span></p>','aUYSS','display','<p><span\x20style=\x22font-size:12.0pt;\x22>Prolapse</span></p>','KDzsD','testModeLegend','innerHTML','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22','kEfTE','zYTAZ','pfvDz','DwWJv','ruErG','uOguT','<p><span\x20style=\x22font-size:12.0pt;\x22>Collateral\x20circulation\x20develops\x20soon\x20after\x20ligation</span></p>','ZNNtQ','statsBar','text','MNBiB','Qvjhp','7857VlTPAJ','aduHI','DJklw','cYWmM','UEzTw','hNpSR','jtyni','error','mTBaE','TKMgg','VTYin','aGsnZ','parse','QWnvK','<p><span\x20style=\x22font-size:12.0pt;\x22>Uterine\x20artery\x20embolization</span></p>','vYnjQ','round','gvGYC','<p><span\x20style=\x22font-size:12.0pt;\x22>Identify\x20the\x20incorrect\x20statement\x20regarding\x20this\x20novel\x20drug\x20used\x20to\x20control\x20PPH:<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412050613154a-2063-4f52-958b-a6b57c86daa9.jpg\x22></span></p>','QtnTs','strokeDasharray','filter','BoPXz','border-gray-600','accuracy','ZgOGK','DToSb','uChAG','<p><span\x20style=\x22font-size:12.0pt;\x22>Uterotonic\x20of\x20choice\x20in\x20AMTSL:</span></p>','correctCount','HRwnC','RMsoh','jKZWh','quizSidebar','<p>Tranexamic\x20acid\x20is\x20an\x20anti-fibrinolytic\x20agent.\x20It\x20works\x20by\x20inhibiting\x20the\x20breakdown\x20of\x20fibrin,\x20thus\x20helping\x20to\x20stabilize\x20clots\x20and\x20reduce\x20bleeding.</p>\x0d\x0a<p><strong>Fibrinolytic\x20(Option\x20a):</strong>\x20Fibrinolytics,\x20such\x20as\x20tissue\x20plasminogen\x20activator\x20(tPA),\x20dissolve\x20clots\x20and\x20are\x20used\x20to\x20treat\x20conditions\x20like\x20stroke\x20or\x20myocardial\x20infarction\x20but\x20are\x20<em>not\x20used\x20in\x20PPH\x20management.</em></p>\x0d\x0a<p><strong>Uterotonic\x20(Option\x20c):</strong>\x20Uterotonics,\x20such\x20as\x20oxytocin\x20or\x20ergometrine,\x20are\x20used\x20to\x20stimulate\x20uterine\x20contractions\x20to\x20reduce\x20bleeding\x20but\x20<em>do\x20not\x20affect\x20fibrinolysis.</em></p>\x0d\x0a<p><strong>Vasoconstrictive\x20agent\x20(Option\x20d):</strong>\x20Vasoconstrictors\x20can\x20help\x20reduce\x20bleeding\x20by\x20constricting\x20blood\x20vessels,\x20but\x20this\x20is\x20<em>not\x20the\x20primary\x20mechanism\x20of\x20Tranexamic\x20acid.</em></p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p>Primary\x20mechanism\x20of\x20Trenexamic\x20acid\x20is\x20as\x20anti\x20fibrinolytic.</p>','FvBfA','currentMode','POSrC','isSupported','incorrectAnswers','eysoO','cfBfC','ynunN','fyiwV','navBtn_','toggle','RSCJG','CKcLR','toLowerCase','YiKIr','pBmWH','incorrect','AVqtw','get','RDAwh','wQMRz','green','prototype','modeModal','AdXdp','<p><strong>Elevate\x20head\x20end\x20to\x20improve\x20blood\x20supply\x20to\x20vital\x20organs</strong></p><p><strong>Incorrect</strong>:\x20Elevating\x20the\x20<strong>head\x20end</strong>\x20is\x20not\x20advised\x20in\x20cases\x20of\x20PPH.\x20Instead,\x20the\x20<strong>head\x20should\x20be\x20lowered</strong>,\x20and\x20the\x20<strong>legs\x20elevated\x20(Trendelenburg\x20position)</strong>\x20to\x20maintain\x20adequate\x20perfusion\x20to\x20vital\x20organs\x20during\x20hypovolemic\x20shock.</p><p><strong>KEY\x20TAKE\x20AWAY:</strong></p><p><strong><em><u>Recommendations\x20to\x20be\x20followed\x20while\x20transporting\x20a\x20woman\x20who\x20is\x20bleeding</u></em></strong></p><ul><li><em>Elevate\x20legs\x20to\x20improve\x20blood\x20supply\x20to\x20vital\x20organs</em></li><li>Keep\x20the\x20woman\x20warm</li><li>Send\x20a\x20skilled\x20provider\x20with\x20the\x20woman\x20to\x20ensure\x20an\x20open\x20airway,\x20to\x20deliver\x20first\x20aid\x20if\x20the\x20woman\x20goes\x20into\x20shock</li><li>Continue\x20uterine\x20massage\x20during\x20transport\x20Provide\x20bimanual\x20uterine\x20compression\x20(external\x20if\x20possible\x20and\x20internal\x20if\x20necessary)</li></ul><p><strong>Reference:</strong>\x20Guidance\x20Note\x20on\x20Prevention\x20&amp;\x20Management\x20of\x20Postpartum\x20Haemorrhage\x20by\x20MoHFW</p>','440zQnGPk','GvUdL','Pph','\x22\x20data-option-index=\x22','tIgrg','2OLKGhE','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20formula\x20for\x20Obstetric\x20shock\x20index:</span></p>','completed','ZGtnP','fpTmo','fill','add','click','sYZkR','totalQuestions','uYCCB','bind','BdHkK','DT1289344','bORaj','BsVfM','VPaQM','resume','bLnpv','textContent','nqHpK','<p><span\x20style=\x22font-size:12.0pt;\x22>Preeclampsia</span></p>','2147523ZdkVFK','mfqwR','LBihy','<p><span\x20style=\x22font-size:12.0pt;\x22>SBP/HR</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Uterine\x20packing</span></p>','cDLYa','MGDIb','UGijN','QrolV','<p><span\x20style=\x22font-size:12.0pt;\x22>Hypothermia,\x20Alkalosis\x20&\x20Coagulopathy</span></p>','ifJbj','UhcOa','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20G3P2L2\x20woman\x20reports\x20to\x20LR\x20at\x2039\x20weeks\x20of\x20gestation\x20in\x20active\x20labour.\x20She\x20delivers\x20a\x20male\x20fetus\x20of\x203.2\x20kg\x20&\x20has\x20torrential\x20bleeding\x20thereafter.\x20She\x20has\x20a\x20history\x20of\x20bronchial\x20asthma.\x20Which\x20of\x20the\x20following\x20drugs\x20is\x20contraindicated\x20in\x20the\x20management\x20of\x20PPH\x20in\x20this\x20scenario?</span></p>','timeDisplay','study','ZRgyO','356Oysfwn','solutionText','Mark\x20for\x20Review','choices','You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','1490256vouYaa','querySelectorAll','<p><span\x20style=\x22font-size:12.0pt;\x22>Rule\x20of\x2030\x20is\x20used\x20in\x20management\x20of:</span></p>','scoreCircle','oRlqq','UEsxl','<p><span\x20style=\x22font-size:12.0pt;\x22>Identify\x20the\x20following\x20used\x20in\x20the\x20management\x20of\x20PPH:<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205f172e3c0-f2a2-4c52-b285-b31829caa90e.jpg\x22></span></p>','setItem','MMSNR','key','hBMAU','4|5|3|0|2|1','<p><span\x20style=\x22font-size:12.0pt;\x22>Oxytocin</span></p>','uDUch','bmgIB','sfsxL','lSVLc','mVnDM','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22','UwMfq','custom_quiz.html','MgjpQ','lsYon','map','index.html','NqIce','<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-','<p><span\x20style=\x22font-size:12.0pt;\x22>Recommendation\x20associated\x20with\x20its\x20use\x20warrants\x20the\x20correction\x20of\x20hypovolemia,\x20acidosis\x20and\x20thrombocytopenia\x20prior\x20to\x20its\x20use.</span></p>','KqwMO','status','bgsGt','correctAnswers','NWZOm','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20of\x20the\x20following\x20are\x20to\x20be\x20done\x20while\x20transporting\x20a\x20woman\x20who\x20has\x20PPH\x20to\x20a\x20higher\x20center,\x20except:</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Use\x20of\x20which\x20of\x20the\x20following\x20modalities\x20is\x20not\x20recommended\x20by\x20MoHFW\x20for\x20the\x20management\x20of\x20atonic\x20PPH?</span></p>','SgCRo','IOUTP','CjLPv','Cgajr','ryGFU','Akwcd','<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205cdebf12a-4146-45b7-82b4-412705f47dda.jpg\x22>\x0d\x0a<ul>\x0d\x0a<li>Ligation\x20of\x20the\x20external\x20iliac\x20artery\x20produces\x20an\x20acutely\x20ischemic\x20leg\x20which\x20classically\x20presents\x20with\x20the\x20absence\x20of\x20distal\x20pulses\x20and\x20whiteness\x20or\x20pallor\x20of\x20the\x20foot.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>External\x20iliac\x20artery\x20is\x20not\x20lighted\x20as\x20it\x20supplies\x20Lower\x20limb.</li>\x0d\x0a<li>Internal\x20iliac\x20artery\x20is\x20ligated\x20.</li>\x0d\x0a</ul>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205d815f6f2-af1e-4925-a900-c23dcdd2a89b.jpg\x22>','stats','bottom','ZNVMA','JMtub','<p><span\x20style=\x22font-size:12.0pt;\x22>Pulse\x20pressure\x20reduces\x20by\x20~85%\x20distal\x20to\x20the\x20ligation</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>All\x20of\x20the\x20following\x20statements\x20are\x20correct\x20regarding\x20the\x20use\x20of\x20recombinant\x20factor\x20VIIa\x20in\x20management\x20of\x20PPH,\x20except:</span></p>','ymdug','qfeOK','progressBar','cMRUW','not-attempted','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','ISNRK','wUdEm','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20','3|4|2|1|0|5','qsOjG','referrer','question_audio','<p><span\x20style=\x22font-size:12.0pt;\x22>2nd\x20most\x20common\x20cause\x20of\x20PPH:</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20multigravida\x20presents\x20to\x20LR\x20with\x20the\x20following\x20picture\x20after\x20a\x20home\x20delivery\x20by\x20an\x20untrained\x20birth\x20attendant.\x20Her\x20BP\x2090/60\x20mmHg,\x20Pulse\x20132bpm,\x20RR\x2024/min.\x20Foley\x27s\x20catheterization\x20is\x20done\x20&\x20supportive\x20management\x20started.\x20What\x20is\x20the\x20most\x20likely\x20diagnosis?<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/2024120564ef445b-45c9-42e1-a265-ba5762d7a839.png\x22></span></p>','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','<p>This\x20drug\x20is\x20contraindicated\x20in\x20patients\x20with\x20preeclampsia\x20or\x20hypertension.\x20It\x20can\x20cause\x20vasoconstriction\x20and\x20potentially\x20increase\x20blood\x20pressure,\x20which\x20is\x20risky\x20for\x20someone\x20with\x20a\x20history\x20of\x20preeclampsia.</p>\x0d\x0a<p><strong>Oxytocin\x20(Option\x20a):</strong>\x20This\x20is\x20the\x20<em>first-line\x20treatment\x20for\x20PPH</em>.\x20It\x20helps\x20stimulate\x20uterine\x20contractions\x20to\x20reduce\x20bleeding\x20and\x20is\x20safe\x20for\x20use\x20in\x20patients\x20with\x20preeclampsia.</p>\x0d\x0a<p><strong>Carboprost\x20(Option\x20c):</strong>\x20This\x20is\x20a\x20<em>prostaglandin\x20analogue</em>\x20used\x20for\x20PPH\x20that\x20is\x20effective\x20and\x20can\x20be\x20used\x20in\x20cases\x20of\x20preeclampsia,\x20though\x20it\x20<em>should\x20be\x20used\x20cautiously\x20if\x20there\x20are\x20additional\x20contraindications\x20like\x20bronchial\x20asthma,\x20pulmonary\x20HTN,\x20amniotic\x20fluid\x20embolism.</em></p>\x0d\x0a<p><strong>Misoprostol\x20(Option\x20d):</strong>\x20This\x20<em>prostaglandin\x20analogue</em>\x20is\x20used\x20to\x20manage\x20PPH\x20and\x20is\x20<em>generally\x20considered\x20safe,\x20even\x20in\x20patients\x20with\x20preeclampsia.</em></p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p><em>Methylergometrine\x20is\x20contraindicated\x20in\x20hypertensive\x20women.</em></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202501184beac542-5671-4d02-a24d-e5fdf9ebfa5e.jpg\x22>','bqbVh','<p><span\x20style=\x22font-size:12.0pt;\x22>Use\x20of\x20carbetocin\x20resulted\x20in\x20a\x20statistically\x20significant\x20reduction\x20in\x20the\x20need\x20for\x20further\x20uterotonics\x20compared\x20with\x20oxytocin\x20for\x20those\x20undergoing\x20a\x20vaginal\x20delivery</span></p>','HTCSe','vImSy','DT1289337','IepGJ','WgHZW','OBG','totalQuestionsResult','answered','nUskN','XDAla','<p><span\x20style=\x22font-size:12.0pt;\x22>Uterine\x20inversion</span></p>','CdVPG','canPlayType','correct','Progress\x20loaded.','GnKQv','DmCQZ','pcmoI','zYuLg','review-question\x20','AYrWu','bookmarkedQuestions','video[data-src]','<p><span\x20style=\x22font-size:12.0pt;\x22>Ergometrine</span></p>','hzQBt','DT1289339','trace','Not\x20Attempted','return\x20(function()\x20','OPMOr','ezpJI','console','<p><span\x20style=\x22font-size:12.0pt;\x22>Fibrinogen\x20>1g/dl</span></p>','ROobc','jnCqP','src','BBkXI','selected','NTSjH','EBMPr','DctZi','rMVMb','No\x20solution\x20provided','MoFUC','addEventListener','userHistory','<p><span\x20style=\x22font-size:12.0pt;\x22>Continue\x20uterine\x20massage\x20during\x20transport</span></p>','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','Correct','YkUyf','forEach','bFpfU','SJQeG','solutionVideo','markedForReview','JUapG','Iurnx','block','GSzvQ','explanation_audio_eng','DT1289338','kzGrJ','<p><span\x20style=\x22font-size:12.0pt;\x22>B-Lynch</span></p>','obzda','uImjL','yfJsM','</span><span>','VEELe','NbaCV','JdnYr','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','EPgQw','gqUyr','push','QpkmP','wsuQz','closest','KeRUY','<p><span\x20style=\x22font-size:12.0pt;\x22>Hb\x20>7\x20gm/dl</span></p>','DT1289366','xywqq','className','JhmjE','GnWis','CfTgM','style','wnchc','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','GRHtN','explanation_video','ytzUv','EtsxL','eemdt','<p><span\x20style=\x22font-size:12.0pt;\x22>Keep\x20the\x20woman\x20warm</span></p>','EkQKG','ythGG','<p>The\x20<strong>Obstetric\x20Shock\x20Index</strong>\x20is\x20calculated\x20using\x20the\x20formula:</p>\x0d\x0a<ol>\x0d\x0a<li><strong>\x20HR/SBP</strong>\x20(Heart\x20Rate\x20divided\x20by\x20Systolic\x20Blood\x20Pressure)</li>\x0d\x0a</ol>\x0d\x0a<p>Here\x27s\x20why:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>HR</strong>\x20stands\x20for\x20Heart\x20Rate.</li>\x0d\x0a<li><strong>SBP</strong>\x20stands\x20for\x20Systolic\x20Blood\x20Pressure.</li>\x0d\x0a</ul>\x0d\x0a<p>The\x20Shock\x20Index\x20is\x20used\x20to\x20assess\x20the\x20severity\x20of\x20shock\x20by\x20comparing\x20the\x20heart\x20rate\x20to\x20the\x20systolic\x20blood\x20pressure.\x20<em>An\x20elevated\x20Shock\x20Index\x20(typically\x20greater\x20than\x200.9)\x20can\x20indicate\x20significant\x20hemodynamic\x20compromise</em>\x20and\x20may\x20be\x20used\x20to\x20guide\x20further\x20evaluation\x20and\x20management\x20in\x20obstetric\x20emergencies.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/2024120569b4d0c1-95e7-403e-914e-559c4d27fa86.jpg\x22>\x0d\x0a<p><strong>Reference:</strong>\x20RCOG\x20Green\x20Top\x20Guideline\x20no.\x2052\x20Prevention\x20and\x20Management\x20of\x20Postpartum\x20Haemorrhage</p>','<p><span\x20style=\x22font-size:12.0pt;\x22>>1500\x20ml</span></p>','vpXsi','PTama','<p>The\x20<strong>anterior\x20division</strong>\x20of\x20the\x20internal\x20iliac\x20artery\x20is\x20the\x20one\x20that\x20is\x20ligated\x20in\x20this\x20procedure,\x20not\x20the\x20posterior\x20division.\x20The\x20anterior\x20division\x20supplies\x20most\x20of\x20the\x20pelvic\x20organs,\x20and\x20ligating\x20it\x20reduces\x20blood\x20flow\x20to\x20the\x20uterus.</p>\x0d\x0a<p><strong>OPTION\x20b.\x20Pulse\x20pressure\x20reduces\x20by\x20~85%\x20distal\x20to\x20the\x20ligation</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Correct</strong>:\x20Ligation\x20of\x20the\x20internal\x20iliac\x20artery\x20reduces\x20pulse\x20pressure\x20in\x20the\x20uterine\x20circulation\x20by\x20approximately\x2085%,\x20which\x20<em>helps\x20in\x20controlling\x20bleeding.</em></li>\x0d\x0a</ul>\x0d\x0a<p><strong>OPTION\x20c.\x20Collateral\x20circulation\x20develops\x20soon\x20after\x20ligation</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Correct</strong>:\x20Collateral\x20circulation\x20through\x20other\x20pelvic\x20vessels\x20develops\x20quickly\x20after\x20ligation,\x20<em>ensuring\x20that\x20vital\x20pelvic\x20organs\x20still\x20receive\x20blood\x20supply\x20despite\x20the\x20ligation.</em></li>\x0d\x0a</ul>\x0d\x0a<p><strong>OPTION\x20d.\x20Internal\x20iliac\x20vein\x20&amp;\x20ureter\x20are\x20at\x20risk\x20of\x20injury</strong></p>\x0d\x0a<ul>\x0d\x0a<li><strong>Correct</strong>:\x20The\x20<strong>internal\x20iliac\x20vein</strong>\x20and\x20<strong>ureter</strong>\x20are\x20indeed\x20at\x20risk\x20during\x20this\x20procedure\x20<em>because\x20of\x20their\x20close\x20proximity\x20to\x20the\x20internal\x20iliac\x20artery.</em></li>\x0d\x0a</ul>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<p>Anterior\x20division\x20of\x20internal\x20iliac\x20artery\x20supplies\x20uterus.</p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412056e37ce57-6a6c-4e4c-b8f5-2d6c8376724d.jpg\x22>','<p><span\x20style=\x22font-size:12.0pt;\x22>Pudendal\x20artery</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>It\x20is\x20heat\x20stable,\x20so\x20cold\x20chain\x20maintenance\x20is\x20not\x20required</span></p>','vKVBI','Incorrect','timeSpent','cfAkT','hyWwl','table','currentQuestion','QJJVa','NCdEP','vBLdx','markReviewBtn','<p><span\x20style=\x22font-size:12.0pt;\x22>>300\x20ml</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Lethal\x20triad\x20is\x20a\x20combination\x20of:</span></p>','OjKlu','contains','kdgwt','timed_study','NurQN','yPaZn','KwwOn','JkXZd','incomplete','vEpJD','<p><span\x20style=\x22font-size:12.0pt;\x22>Hypothermia,\x20Acidosis\x20&\x20Coagulopathy</span></p>','intermediate','DpeXZ','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20','oYIUx','totalTimeResult','efZji','submitSection','KNTKf','XTVcu','<p><span\x20style=\x22font-size:12.0pt;\x22>Sengstaken\x20Blakemore\x20balloon</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Posterior\x20division\x20of\x20internal\x20iliac\x20artery\x20is\x20ligated</span></p>','keydown','SNIuT','yxPOT','otoJB','width','markReviewText','<p>Recombinant\x20factor\x20VIIa\x20binds\x20with\x20tissue\x20factor\x20to\x20augment\x20the\x20<strong>extrinsic</strong>\x20clotting\x20pathway,\x20<em>primarily\x20by\x20activating\x20factor\x20X\x20directly,\x20not\x20factor\x20IX.</em>\x20It\x20does\x20not\x20significantly\x20affect\x20the\x20intrinsic\x20pathway.</p>\x0d\x0a<p><strong>Option\x20a.</strong>\x20Recombinant\x20factor\x20VIIa\x20is\x20marketed\x20under\x20the\x20brand\x20name\x20<em>NovoSeven\x20(Novo7)</em>\x20and\x20is\x20used\x20to\x20manage\x20bleeding\x20in\x20various\x20conditions,\x20including\x20PPH.</p>\x0d\x0a<p><strong>Option\x20c.</strong>\x20It\x20is\x20crucial\x20to\x20correct\x20underlying\x20issues\x20such\x20as\x20hypovolemia,\x20acidosis,\x20and\x20thrombocytopenia\x20before\x20administering\x20recombinant\x20factor\x20VIIa\x20to\x20optimize\x20its\x20efficacy\x20and\x20reduce\x20complications.</p>\x0d\x0a<p><strong>Option\x20d.</strong>\x20Recombinant\x20factor\x20VIIa\x20can\x20lead\x20to\x20thromboembolic\x20complications,\x20including\x20deep\x20vein\x20thrombosis\x20and\x20pulmonary\x20embolism,\x20due\x20to\x20its\x20potent\x20clotting\x20effects.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<ul>\x0d\x0a<li>augment\x20the\x20<strong>extrinsic</strong>\x20clotting\x20pathway\x20<em>primarily\x20by\x20activating\x20factor\x20X\x20directly,</em></li>\x0d\x0a<li>marketed\x20under\x20the\x20brand\x20name\x20<em>NovoSeven\x20(Novo7)</em></li>\x0d\x0a<li>can\x20lead\x20to\x20thromboembolic\x20complications,\x20including\x20deep\x20vein\x20thrombosis\x20and\x20pulmonary\x20embolism,\x20due\x20to\x20its\x20potent\x20clotting\x20effects.</li>\x0d\x0a</ul>','attachMedia','not_attempted','getElementById','<p><span\x20style=\x22font-size:12.0pt;\x22>Atonic\x20PPH</span></p>','<p><em>The\x20Rule\x20of\x2030\x20is\x20used\x20to\x20guide\x20the\x20management\x20of\x20PPH.\x20It\x20involves\x20giving\x2030\x20units\x20of\x20oxytocin\x20(or\x20its\x20equivalent)\x20to\x20manage\x20uterine\x20atony,\x20a\x20common\x20cause\x20of\x20PPH.</em></p>\x0d\x0a<p><strong>Option\x20a)\x20Preeclampsia:</strong>\x20The\x20management\x20involves\x20blood\x20pressure\x20control,\x20magnesium\x20sulfate\x20for\x20seizure\x20prophylaxis,\x20and\x20timely\x20delivery.\x20The\x20Rule\x20of\x2030\x20is\x20not\x20specifically\x20applied\x20here.</p>\x0d\x0a<p><strong>Option\x20b)\x20Preterm\x20labor:</strong>\x20Management\x20focuses\x20on\x20tocolytics,\x20corticosteroids\x20for\x20fetal\x20lung\x20maturity,\x20and\x20possible\x20transfer\x20to\x20a\x20facility\x20with\x20neonatal\x20intensive\x20care.\x20The\x20Rule\x20of\x2030\x20does\x20not\x20pertain\x20to\x20this\x20condition.</p>\x0d\x0a<p><strong>Postpartum\x20hemorrhage\x20(PPH):\x20Option\x20d)\x20Diabetes\x20in\x20pregnancy:</strong>\x20Management\x20involves\x20blood\x20glucose\x20control,\x20monitoring,\x20and\x20possibly\x20insulin\x20therapy.\x20The\x20Rule\x20of\x2030\x20is\x20not\x20relevant\x20here.</p>\x0d\x0a<p><strong>KEY\x20TAKE\x20AWAY:</strong></p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241205695e2cc5-6a04-4650-a7cf-3074aae02579.jpg\x22>','bXpgS','<p><span\x20style=\x22font-size:12.0pt;\x22>Vaginal\x20artery</span></p>','explanation_images','log','data-option-index','CJhxQ','NKZym','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>','split','eXAWg','JvSDM','stringify','uBlIx','bXPra','performanceModal','test','getAttribute','SWOUl','nav-btn-marked-review','DocTutorial','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','CMMph','currentQuestionIndex','ZAqEo','YLmZj','Mjvuw','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','Hjfxz','mZfxt','kOsJe','nWraj','lWEOF','DT1289362','LRJlx','uPWKD','Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?','question_images','TcTGc','questionNav','pXrIa','</span></div>','JYsSK','ERHbx','AscyU','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','KSwWw','ryBnG','quizPerformanceData','strokeDashoffset','356667rDKBKp','pathname'];_0x523b=function(){return _0x92eb6a;};return _0x523b();}function updateTimerDisplay(){const _0x150b6a=_0x46c8ab,_0x44beb4={'SNIuT':function(_0x339302,_0x6bf388){return _0x339302/_0x6bf388;},'CClHJ':function(_0x1d9fe4,_0x425784){return _0x1d9fe4%_0x425784;},'MNBiB':function(_0xe08e97,_0x350fc2){return _0xe08e97+_0x350fc2;},'rgIrC':function(_0x57eacd,_0xbcdf14){return _0x57eacd+_0xbcdf14;}},_0x20c46e=Math[_0x150b6a(0x363)](_0x44beb4[_0x150b6a(0x291)](timeRemaining,0x3c)),_0x32c46a=_0x44beb4['CClHJ'](timeRemaining,0x3c);document[_0x150b6a(0x299)](_0x150b6a(0x469))[_0x150b6a(0x459)]=_0x44beb4[_0x150b6a(0x402)](_0x44beb4[_0x150b6a(0x302)](_0x20c46e,':'),_0x32c46a[_0x150b6a(0x370)]()[_0x150b6a(0x3a3)](0x2,'0'));}function toggleSidebar(){const _0xe33f93=_0x46c8ab,_0x5a1add={'yPaZn':_0xe33f93(0x425),'UlNRW':_0xe33f93(0x3a5)};document['getElementById'](_0x5a1add[_0xe33f93(0x27f)])['classList'][_0xe33f93(0x431)](_0x5a1add['UlNRW']);}document[_0x46c8ab(0x232)]('DOMContentLoaded',()=>{const _0x5e7c28=_0x46c8ab,_0x3a536f={'KRqyG':'Progress\x20loaded.','vKVBI':'application/vnd.apple.mpegurl','kdgwt':_0x5e7c28(0x250),'kxZLU':_0x5e7c28(0x391),'mXghK':function(_0x4067b1){return _0x4067b1();},'UiSKA':function(_0x5c996b){return _0x5c996b();},'NbaCV':'modeModal','pfvDz':_0x5e7c28(0x346),'nOtLk':_0x5e7c28(0x485),'jKFVr':function(_0x540d54,_0x5a7571){return _0x540d54===_0x5a7571;},'teODa':_0x5e7c28(0x2a5),'SZHDn':function(_0x48fdda){return _0x48fdda();}};if(resume){if(loadProgress()){if(_0x5e7c28(0x250)===_0x3a536f[_0x5e7c28(0x27c)])document['getElementById']('modeModal')['style'][_0x5e7c28(0x3f2)]=_0x3a536f[_0x5e7c28(0x309)],_0x3a536f['mXghK'](initializeQuiz);else{const _0x2d9b12=_0x5e7c28(0x1fc)['split']('|');let _0x1bdeaa=0x0;while(!![]){switch(_0x2d9b12[_0x1bdeaa++]){case'0':_0x2cf2bb[_0x5e7c28(0x29f)](_0x3a536f['KRqyG']);continue;case'1':_0x520484=_0x19964c[_0x5e7c28(0x428)];continue;case'2':_0x3ac41a=_0x233eb5[_0x5e7c28(0x2b2)];continue;case'3':_0x27a679=_0x2d324c[_0x5e7c28(0x3ed)];continue;case'4':_0x8816ba=_0x1e4b76[_0x5e7c28(0x1ed)];continue;case'5':return!![];}break;}}}else _0x3a536f['UiSKA'](clearProgress),document['getElementById'](_0x3a536f[_0x5e7c28(0x24a)])['style'][_0x5e7c28(0x3f2)]=_0x3a536f['pfvDz'];}else{if(!window['location']['pathname'][_0x5e7c28(0x3ec)](_0x3a536f['nOtLk'])){if(_0x3a536f[_0x5e7c28(0x3ca)](_0x3a536f[_0x5e7c28(0x314)],_0x3a536f['teODa']))_0x3a536f[_0x5e7c28(0x3c8)](clearProgress),document[_0x5e7c28(0x299)](_0x3a536f[_0x5e7c28(0x24a)])[_0x5e7c28(0x25b)][_0x5e7c28(0x3f2)]=_0x3a536f[_0x5e7c28(0x3fa)];else{if(_0x5017bf[_0x5e7c28(0x42a)]()){const _0x435cd7=new _0x53f86b();_0x435cd7[_0x5e7c28(0x2d7)](_0x63534a),_0x435cd7[_0x5e7c28(0x297)](_0x5f5a84);}else _0x2df72f['canPlayType'](_0x3a536f[_0x5e7c28(0x26d)])&&(_0x47fca8['src']=_0x48a6a9);}}else initializeQuiz();}}),document[_0x46c8ab(0x232)](_0x46c8ab(0x290),function(_0x557b16){const _0x5cb556=_0x46c8ab,_0x521453={'XDAla':function(_0x5af824,_0x5a7f14){return _0x5af824-_0x5a7f14;},'oYIUx':function(_0x7bd04a){return _0x7bd04a();},'BferB':function(_0x387357,_0x44d09a){return _0x387357(_0x44d09a);},'fOAad':function(_0xe2399b,_0x3b379e){return _0xe2399b+_0x3b379e;},'HTCSe':'log','JhmjE':_0x5cb556(0x310),'YcARa':_0x5cb556(0x354),'mZWJG':_0x5cb556(0x385),'ISNRK':function(_0x3ac9b1,_0x5c6653){return _0x3ac9b1!==_0x5c6653;},'IBnfI':_0x5cb556(0x391),'AYrWu':function(_0x3111a5,_0x510085){return _0x3111a5===_0x510085;},'unTYS':_0x5cb556(0x2aa),'YLmZj':_0x5cb556(0x3ae),'VNdwz':function(_0x569efd,_0x1f99bc){return _0x569efd>=_0x1f99bc;},'JWGDa':function(_0x44af45,_0x25b5a0){return _0x44af45<=_0x25b5a0;},'bXPra':_0x5cb556(0x427),'vYnjQ':_0x5cb556(0x48a),'XMYvJ':'.option-button','PTama':function(_0x58883b,_0x11dca8){return _0x58883b<_0x11dca8;},'qspaT':_0x5cb556(0x343),'AVqtw':function(_0x52125b){return _0x52125b();},'VPaQM':_0x5cb556(0x46a),'ZNNtQ':function(_0x5361e2,_0x393d44){return _0x5361e2===_0x393d44;},'wQMRz':_0x5cb556(0x2ab),'BcPCC':'timed_exam','Qqela':function(_0x3250f4,_0xade114){return _0x3250f4===_0xade114;},'xphIG':_0x5cb556(0x281),'jDmxR':function(_0x48b7aa){return _0x48b7aa();}};if(_0x521453[_0x5cb556(0x1f9)](document[_0x5cb556(0x299)](_0x5cb556(0x43e))['style'][_0x5cb556(0x3f2)],_0x521453[_0x5cb556(0x317)]))return;if(_0x521453[_0x5cb556(0x21a)](document['getElementById'](_0x521453['unTYS'])[_0x5cb556(0x308)][_0x5cb556(0x27b)](_0x521453[_0x5cb556(0x2b4)]),![]))return;if(_0x521453['VNdwz'](_0x557b16['key'],'1')&&_0x521453['JWGDa'](_0x557b16['key'],'4')){if(_0x521453[_0x5cb556(0x1f9)](_0x521453[_0x5cb556(0x2a9)],_0x521453[_0x5cb556(0x413)])){const _0x35eddb=_0x521453[_0x5cb556(0x20f)](_0x521453[_0x5cb556(0x38e)](parseInt,_0x557b16[_0x5cb556(0x47a)]),0x1),_0x28ba21=document[_0x5cb556(0x472)](_0x521453[_0x5cb556(0x361)]);if(_0x521453[_0x5cb556(0x269)](_0x35eddb,_0x28ba21[_0x5cb556(0x2e8)]))_0x521453[_0x5cb556(0x38e)](selectOption,_0x35eddb);}else _0x3cb8c6&&(_0x4f4861[_0x22d4aa][_0x5cb556(0x26f)]+=_0x521453[_0x5cb556(0x20f)](_0x3ef2f7[_0x5cb556(0x399)](),_0x4ccd64)),_0x156a57=_0x25555b,_0x5c0546(),_0x521453[_0x5cb556(0x288)](_0x18138f);}else{if(_0x521453[_0x5cb556(0x21a)](_0x557b16[_0x5cb556(0x47a)],_0x5cb556(0x35f)))_0x521453[_0x5cb556(0x288)](previousQuestion);else{if(_0x521453[_0x5cb556(0x21a)](_0x557b16[_0x5cb556(0x47a)],_0x521453['qspaT'])||_0x521453[_0x5cb556(0x21a)](_0x557b16[_0x5cb556(0x47a)],'\x20'))_0x557b16['preventDefault'](),_0x521453['AVqtw'](nextQuestion);else{if(_0x521453[_0x5cb556(0x21a)](_0x557b16[_0x5cb556(0x47a)][_0x5cb556(0x434)](),'b')&&(_0x521453['AYrWu'](currentMode,_0x521453[_0x5cb556(0x456)])||_0x521453[_0x5cb556(0x3ff)](currentMode,'timed_study')))_0x521453[_0x5cb556(0x438)](toggleBookmark);else{if(_0x557b16['key'][_0x5cb556(0x434)]()==='m'&&(currentMode===_0x521453[_0x5cb556(0x43b)]||currentMode===_0x521453[_0x5cb556(0x31f)])){if(_0x521453['Qqela'](_0x521453[_0x5cb556(0x32c)],'JkXZd'))_0x521453['oYIUx'](toggleMarkForReview);else{let _0x4d37f8;try{const _0x44e42c=iYuXfN[_0x5cb556(0x38e)](_0x3ba8ee,iYuXfN['fOAad'](_0x5cb556(0x222)+_0x5cb556(0x35e),');'));_0x4d37f8=_0x44e42c();}catch(_0x564645){_0x4d37f8=_0xc0fa4d;}const _0x2c9e3a=_0x4d37f8[_0x5cb556(0x225)]=_0x4d37f8['console']||{},_0x4544b4=[iYuXfN[_0x5cb556(0x206)],iYuXfN[_0x5cb556(0x258)],iYuXfN[_0x5cb556(0x36b)],_0x5cb556(0x40b),iYuXfN['mZWJG'],_0x5cb556(0x272),_0x5cb556(0x220)];for(let _0x31bbaa=0x0;_0x31bbaa<_0x4544b4[_0x5cb556(0x2e8)];_0x31bbaa++){const _0x50869e=_0x5873e8[_0x5cb556(0x3b3)]['prototype']['bind'](_0x3ff0a3),_0x3bd99a=_0x4544b4[_0x31bbaa],_0x26747d=_0x2c9e3a[_0x3bd99a]||_0x50869e;_0x50869e[_0x5cb556(0x3e8)]=_0x4e5a77[_0x5cb556(0x451)](_0x385dce),_0x50869e[_0x5cb556(0x370)]=_0x26747d[_0x5cb556(0x370)][_0x5cb556(0x451)](_0x26747d),_0x2c9e3a[_0x3bd99a]=_0x50869e;}}}else _0x521453[_0x5cb556(0x3ff)](_0x557b16[_0x5cb556(0x47a)][_0x5cb556(0x434)](),'s')&&(_0x521453['ZNNtQ'](currentMode,_0x521453[_0x5cb556(0x43b)])||currentMode===_0x5cb556(0x3a8))&&_0x521453[_0x5cb556(0x313)](submitQuiz);}}}}});</script>
+
+</body></html>

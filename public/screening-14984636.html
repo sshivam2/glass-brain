@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screening - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / QRP / PSM
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">14</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>const _0x3f9b2d=_0xdbb4;(function(_0x550ff8,_0x4e05ba){const _0x2eeff1=_0xdbb4,_0x2fc6c9=_0x550ff8();while(!![]){try{const _0x24b59e=-parseInt(_0x2eeff1(0x24f))/0x1+parseInt(_0x2eeff1(0x23a))/0x2*(-parseInt(_0x2eeff1(0x371))/0x3)+-parseInt(_0x2eeff1(0x400))/0x4*(-parseInt(_0x2eeff1(0x272))/0x5)+-parseInt(_0x2eeff1(0x365))/0x6*(parseInt(_0x2eeff1(0x314))/0x7)+parseInt(_0x2eeff1(0x336))/0x8*(parseInt(_0x2eeff1(0x341))/0x9)+parseInt(_0x2eeff1(0x3c5))/0xa+parseInt(_0x2eeff1(0x23f))/0xb;if(_0x24b59e===_0x4e05ba)break;else _0x2fc6c9['push'](_0x2fc6c9['shift']());}catch(_0x4865bc){_0x2fc6c9['push'](_0x2fc6c9['shift']());}}}(_0x4c1f,0xf30a3));const _0x2136b2=(function(){const _0x4f0f07=_0xdbb4,_0x21ada9={'lWFef':_0x4f0f07(0x40f)};let _0x21974b=!![];return function(_0x58e440,_0x393124){const _0x2ceff3=_0x4f0f07,_0x824420={'RCXQD':_0x21ada9[_0x2ceff3(0x1cf)]},_0x3a1bba=_0x21974b?function(){const _0x32c3aa=_0x2ceff3;if(_0x393124){if(_0x824420[_0x32c3aa(0x1c6)]===_0x824420[_0x32c3aa(0x1c6)]){const _0x977a3=_0x393124['apply'](_0x58e440,arguments);return _0x393124=null,_0x977a3;}else{const _0x5334ec=_0x823f61[_0x32c3aa(0x2cc)](_0x2c109d,arguments);return _0x2915ba=null,_0x5334ec;}}}:function(){};return _0x21974b=![],_0x3a1bba;};}()),_0x2e88ec=_0x2136b2(this,function(){const _0x5c741f=_0xdbb4,_0x555243={'rgndu':_0x5c741f(0x401)};return _0x2e88ec[_0x5c741f(0x2b1)]()[_0x5c741f(0x33c)](_0x555243['rgndu'])[_0x5c741f(0x2b1)]()['constructor'](_0x2e88ec)[_0x5c741f(0x33c)](_0x5c741f(0x401));});_0x2e88ec();const _0x56eb35=(function(){const _0x5f3460=_0xdbb4,_0x47dd0d={'qwItQ':_0x5f3460(0x3f4),'Suwrr':'incorrect','YfzZw':function(_0x2dc254,_0x24d097){return _0x2dc254!==_0x24d097;}};let _0x359cf8=!![];return function(_0x1c8b35,_0x17d264){const _0x8a5a32=_0x5f3460,_0x27617b={'ehahL':function(_0x5bbbff,_0x1ef7b9){return _0x5bbbff===_0x1ef7b9;},'njXTH':_0x47dd0d[_0x8a5a32(0x2ba)],'ApaaS':_0x47dd0d[_0x8a5a32(0x256)],'UqpnA':function(_0x8d7d1a,_0x286f0c){const _0x2d4c0c=_0x8a5a32;return _0x47dd0d[_0x2d4c0c(0x30a)](_0x8d7d1a,_0x286f0c);}},_0x2378b2=_0x359cf8?function(){const _0x541322=_0x8a5a32;if(_0x27617b[_0x541322(0x1e7)](_0x541322(0x434),_0x541322(0x434)))_0x27617b[_0x541322(0x368)](_0x2f2c5b[_0x541322(0x1ef)][_0x5d1f84[_0x541322(0x390)]]['id'],_0x535bde[_0x541322(0x304)])?(_0x54d6d6++,_0x39da04[_0x541322(0x28a)]=_0x27617b[_0x541322(0x2ec)]):(_0x55e98d++,_0x369bc7['status']=_0x27617b['ApaaS']);else{if(_0x17d264){const _0x1848ec=_0x17d264[_0x541322(0x2cc)](_0x1c8b35,arguments);return _0x17d264=null,_0x1848ec;}}}:function(){};return _0x359cf8=![],_0x2378b2;};}()),_0x28d91b=_0x56eb35(this,function(){const _0x4a38d9=_0xdbb4,_0x3db694={'AWElG':function(_0x3dc87a,_0x529386){return _0x3dc87a(_0x529386);},'iQIxE':function(_0x15622b,_0x127aeb){return _0x15622b+_0x127aeb;},'lEAUC':_0x4a38d9(0x20c),'UxCbR':function(_0x57717c){return _0x57717c();},'ZHIFG':_0x4a38d9(0x370),'NmVeb':_0x4a38d9(0x262),'rSWMo':_0x4a38d9(0x3ac),'aGunP':_0x4a38d9(0x346),'TOEEO':_0x4a38d9(0x402)};let _0x1c098d;try{const _0x50486b=_0x3db694[_0x4a38d9(0x1e9)](Function,_0x3db694[_0x4a38d9(0x2ed)](_0x3db694[_0x4a38d9(0x2ed)](_0x4a38d9(0x219),_0x3db694['lEAUC']),');'));_0x1c098d=_0x3db694[_0x4a38d9(0x2a7)](_0x50486b);}catch(_0x39fd2f){_0x1c098d=window;}const _0x6e333a=_0x1c098d[_0x4a38d9(0x386)]=_0x1c098d['console']||{},_0x18aa76=[_0x3db694[_0x4a38d9(0x354)],_0x3db694[_0x4a38d9(0x28d)],_0x3db694[_0x4a38d9(0x35c)],_0x3db694[_0x4a38d9(0x358)],_0x3db694['TOEEO'],_0x4a38d9(0x42c),_0x4a38d9(0x41d)];for(let _0x15a0ea=0x0;_0x15a0ea<_0x18aa76['length'];_0x15a0ea++){const _0x5093e2=_0x56eb35[_0x4a38d9(0x3f2)]['prototype'][_0x4a38d9(0x21d)](_0x56eb35),_0xe1103a=_0x18aa76[_0x15a0ea],_0x4700af=_0x6e333a[_0xe1103a]||_0x5093e2;_0x5093e2[_0x4a38d9(0x427)]=_0x56eb35[_0x4a38d9(0x21d)](_0x56eb35),_0x5093e2[_0x4a38d9(0x2b1)]=_0x4700af[_0x4a38d9(0x2b1)][_0x4a38d9(0x21d)](_0x4700af),_0x6e333a[_0xe1103a]=_0x5093e2;}});_0x28d91b();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Serial\x20interval</span></p>'},{'id':0x2,'text':_0x3f9b2d(0x2d4)},{'id':0x3,'text':_0x3f9b2d(0x265)},{'id':0x4,'text':_0x3f9b2d(0x1da)}],'text':_0x3f9b2d(0x25c),'unique_key':_0x3f9b2d(0x26c),'question_audio':null,'question_video':null,'map_id':0x13baa3,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x385),'correct_choice_id':0x2,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':_0x3f9b2d(0x22c)},{'id':0xc,'text':_0x3f9b2d(0x228)},{'id':0xd,'text':_0x3f9b2d(0x3f3)},{'id':0xe,'text':_0x3f9b2d(0x317)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Diagnostic\x20power\x20of\x20a\x20screening\x20test\x20is\x20deduced\x20from:</span></p>','unique_key':_0x3f9b2d(0x3e3),'question_audio':null,'question_video':null,'map_id':0x13baa4,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x3cb),'correct_choice_id':0xe,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':_0x3f9b2d(0x25a)},{'id':0x16,'text':_0x3f9b2d(0x1d8)},{'id':0x17,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Sensitivity\x20decreases\x20but\x20specificity\x20increases</span></p>'},{'id':0x18,'text':_0x3f9b2d(0x3e4)}],'text':_0x3f9b2d(0x2b5),'unique_key':_0x3f9b2d(0x3ea),'question_audio':null,'question_video':null,'map_id':0x13baac,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li><strong>Effect\x20of\x20Raising\x20Cutoff\x20Point</strong>:\x0d\x0a<ul>\x0d\x0a<li>When\x20the\x20cutoff\x20point\x20for\x20a\x20screening\x20test\x20is\x20raised,\x20it\x20alters\x20the\x20balance\x20between\x20sensitivity\x20and\x20specificity:</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Sensitivity</strong>\x20(True\x20Positive\x20Rate):\x0d\x0a<ul>\x0d\x0a<li><strong>Decreases</strong>:\x20Raising\x20the\x20cutoff\x20means\x20that\x20fewer\x20individuals\x20will\x20test\x20positive,\x20resulting\x20in\x20<strong>more\x20false\x20negatives</strong>.\x20This\x20is\x20because\x20some\x20individuals\x20with\x20the\x20disease\x20will\x20no\x20longer\x20meet\x20the\x20higher\x20threshold\x20for\x20a\x20positive\x20result.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Specificity</strong>\x20(True\x20Negative\x20Rate):\x0d\x0a<ul>\x0d\x0a<li><strong>Increases</strong>:\x20A\x20higher\x20cutoff\x20means\x20that\x20more\x20individuals\x20who\x20do\x20not\x20have\x20the\x20disease\x20will\x20be\x20accurately\x20identified\x20as\x20negative,\x20leading\x20to\x20<strong>fewer\x20false\x20positives</strong>.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Positive\x20Predictive\x20Value\x20(PPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li>Generally\x20<strong>increases</strong>:\x20With\x20increased\x20specificity,\x20the\x20proportion\x20of\x20true\x20positives\x20among\x20those\x20testing\x20positive\x20rises,\x20making\x20a\x20positive\x20test\x20result\x20more\x20reliable.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Negative\x20Predictive\x20Value\x20(NPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li>Generally\x20<strong>decreases</strong>:\x20The\x20increase\x20in\x20false\x20negatives\x20lowers\x20the\x20proportion\x20of\x20true\x20negatives\x20among\x20those\x20testing\x20negative,\x20reducing\x20confidence\x20in\x20negative\x20results.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Why\x20Not\x20Other\x20Options</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>(a)\x20Sensitivity\x20and\x20specificity\x20will\x20increase</strong>:\x20Incorrect;\x20raising\x20the\x20cutoff\x20does\x20not\x20increase\x20both\x20simultaneously.</li>\x0d\x0a<li><strong>(b)\x20Sensitivity\x20and\x20specificity\x20will\x20decrease</strong>:\x20Incorrect;\x20while\x20sensitivity\x20decreases,\x20specificity\x20increases.</li>\x0d\x0a<li><strong>(d)\x20Specificity\x20decreases\x20but\x20sensitivity\x20increases</strong>:\x20Incorrect;\x20this\x20is\x20the\x20opposite\x20of\x20what\x20occurs\x20when\x20raising\x20the\x20cutoff.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>Raising\x20the\x20cutoff\x20point\x20in\x20a\x20screening\x20test\x20reduces\x20sensitivity\x20while\x20increasing\x20specificity.\x20This\x20change\x20can\x20improve\x20the\x20reliability\x20of\x20positive\x20results\x20but\x20may\x20compromise\x20the\x20detection\x20of\x20some\x20cases.\x20Balancing\x20these\x20effects\x20is\x20crucial\x20to\x20optimize\x20screening\x20effectiveness\x20based\x20on\x20the\x20disease\x20context\x20and\x20population.</p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/20241220dbf9b3bf-38c7-4f79-b0f0-18ae7c084f7f.jpg\x22>\x0d\x0a<p>Sensitivity&prop;l/FN</p>\x0d\x0a<p>Specificity&prop;l/FP</p>\x0d\x0a','correct_choice_id':0x17,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Yield</span></p>'},{'id':0x20,'text':_0x3f9b2d(0x1c7)},{'id':0x21,'text':_0x3f9b2d(0x38d)},{'id':0x22,'text':_0x3f9b2d(0x1fc)}],'text':_0x3f9b2d(0x407),'unique_key':_0x3f9b2d(0x359),'question_audio':null,'question_video':null,'map_id':0x13bab0,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x2e0),'correct_choice_id':0x21,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Low\x20PPV</span></p>'},{'id':0x2a,'text':_0x3f9b2d(0x2d5)},{'id':0x2b,'text':_0x3f9b2d(0x3d3)},{'id':0x2c,'text':_0x3f9b2d(0x2a1)}],'text':_0x3f9b2d(0x1f4),'unique_key':_0x3f9b2d(0x396),'question_audio':null,'question_video':null,'map_id':0x13bab3,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x2e4),'correct_choice_id':0x29,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20prevalence\x20</span></p>'},{'id':0x34,'text':_0x3f9b2d(0x36a)},{'id':0x35,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Short\x20duration\x20</span></p>'},{'id':0x36,'text':_0x3f9b2d(0x418)}],'text':_0x3f9b2d(0x249),'unique_key':_0x3f9b2d(0x201),'question_audio':null,'question_video':null,'map_id':0x13bab6,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x1e2),'correct_choice_id':0x33,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':_0x3f9b2d(0x1e6)},{'id':0x3e,'text':_0x3f9b2d(0x409)},{'id':0x3f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Odds</span></p>'},{'id':0x40,'text':_0x3f9b2d(0x1e8)}],'text':_0x3f9b2d(0x313),'unique_key':_0x3f9b2d(0x3c8),'question_audio':null,'question_video':null,'map_id':0x13bab8,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li><strong>L-J\x20Chart</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20The\x20L-J\x20(Lindley-Johnson)\x20chart\x20is\x20a\x20graphical\x20tool\x20specifically\x20designed\x20for\x20visualizing\x20likelihood\x20ratios\x20(LRs)\x20in\x20diagnostic\x20testing.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Likelihood\x20Ratio\x20(LR)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>LR\x20Definition</strong>:\x20Likelihood\x20ratios\x20quantify\x20how\x20much\x20a\x20test\x20result\x20increases\x20(LR+)\x20or\x20decreases\x20(LR-)\x20the\x20probability\x20of\x20a\x20disease.\x0d\x0a<ul>\x0d\x0a<li><strong>LR+\x20(Positive\x20Likelihood\x20Ratio)</strong>:\x20Indicates\x20how\x20much\x20the\x20odds\x20of\x20having\x20the\x20disease\x20increase\x20when\x20the\x20test\x20result\x20is\x20positive.</li>\x0d\x0a<li><strong>LR-\x20(Negative\x20Likelihood\x20Ratio)</strong>:\x20Indicates\x20how\x20much\x20the\x20odds\x20of\x20having\x20the\x20disease\x20decrease\x20when\x20the\x20test\x20result\x20is\x20negative.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Functionality\x20of\x20L-J\x20Chart</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Visualization</strong>:\x20It\x20plots\x20LR+\x20on\x20the\x20x-axis\x20and\x20LR-\x20on\x20the\x20y-axis,\x20allowing\x20clinicians\x20to\x20assess\x20the\x20diagnostic\x20accuracy\x20of\x20tests\x20visually.</li>\x0d\x0a<li><strong>Interpretation\x20of\x20Results</strong>:\x20Clinicians\x20can\x20easily\x20interpret\x20how\x20likely\x20a\x20positive\x20or\x20negative\x20test\x20result\x20corresponds\x20to\x20actual\x20disease\x20presence\x20or\x20absence.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Use\x20in\x20Clinical\x20Practice</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Decision\x20Making</strong>:\x20The\x20L-J\x20chart\x20helps\x20inform\x20decisions\x20regarding\x20further\x20testing,\x20treatment\x20options,\x20and\x20disease\x20exclusion\x20based\x20on\x20test\x20performance.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(a)\x20Accuracy</strong>:\x20Incorrect;\x20accuracy\x20is\x20a\x20separate\x20measure\x20reflecting\x20the\x20proportion\x20of\x20true\x20results\x20among\x20all\x20test\x20results.</li>\x0d\x0a<li><strong>(b)\x20Precision</strong>:\x20Incorrect;\x20precision\x20refers\x20to\x20the\x20consistency\x20of\x20test\x20results\x20rather\x20than\x20likelihood\x20ratios.</li>\x0d\x0a<li><strong>(c)\x20Odds</strong>:\x20Incorrect;\x20odds\x20describe\x20the\x20ratio\x20of\x20the\x20probability\x20of\x20an\x20event\x20occurring\x20to\x20it\x20not\x20occurring,\x20which\x20is\x20different\x20from\x20likelihood\x20ratios.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>The\x20L-J\x20chart\x20is\x20specifically\x20used\x20for\x20evaluating\x20likelihood\x20ratios,\x20providing\x20critical\x20insights\x20into\x20the\x20diagnostic\x20power\x20of\x20tests\x20and\x20assisting\x20clinicians\x20in\x20interpreting\x20results\x20effectively.\x20This\x20chart\x20enhances\x20decision-making\x20processes\x20in\x20clinical\x20settings,\x20emphasizing\x20the\x20importance\x20of\x20understanding\x20LRs\x20in\x20the\x20context\x20of\x20diagnostic\x20testing.</p>\x0d\x0a','correct_choice_id':0x40,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':_0x3f9b2d(0x351)},{'id':0x48,'text':_0x3f9b2d(0x307)},{'id':0x49,'text':_0x3f9b2d(0x2c7)},{'id':0x4a,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Non-randomized\x20group</span></p>'}],'text':_0x3f9b2d(0x29a),'unique_key':_0x3f9b2d(0x282),'question_audio':null,'question_video':null,'map_id':0x13babb,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li><strong>Selective\x20Screening</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20This\x20approach\x20targets\x20specific\x20individuals\x20based\x20on\x20their\x20increased\x20risk\x20for\x20certain\x20diseases,\x20allowing\x20for\x20more\x20effective\x20use\x20of\x20healthcare\x20resources.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>High-Risk\x20Group</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Rationale</strong>:\x20Selective\x20screening\x20is\x20designed\x20for\x20those\x20with\x20known\x20risk\x20factors,\x20which\x20increases\x20the\x20likelihood\x20of\x20identifying\x20disease\x20early\x20and\x20improving\x20management\x20outcomes.</li>\x0d\x0a<li><strong>Examples</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Diabetes</strong>:\x20Screening\x20in\x20individuals\x20with\x20obesity\x20or\x20family\x20history.</li>\x0d\x0a<li><strong>Breast\x20Cancer</strong>:\x20Mammography\x20in\x20women\x20with\x20familial\x20or\x20genetic\x20risk\x20factors.</li>\x0d\x0a<li><strong>Lung\x20Cancer</strong>:\x20Screening\x20for\x20long-term\x20smokers.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(A)\x20Volunteer\x20Group</strong>:\x20Incorrect;\x20volunteer\x20groups\x20may\x20include\x20individuals\x20with\x20varying\x20risk\x20levels\x20and\x20are\x20not\x20exclusively\x20high-risk.</li>\x0d\x0a<li><strong>(B)\x20Randomly\x20Selected\x20Group</strong>:\x20Incorrect;\x20random\x20selection\x20does\x20not\x20specifically\x20target\x20high-risk\x20individuals.</li>\x0d\x0a<li><strong>(D)\x20Non-randomized\x20Group</strong>:\x20Incorrect;\x20this\x20indicates\x20selection\x20bias\x20but\x20does\x20not\x20imply\x20a\x20focus\x20on\x20high-risk\x20populations.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>Selective\x20screening\x20is\x20effective\x20for\x20identifying\x20and\x20managing\x20diseases\x20in\x20high-risk\x20groups,\x20optimizing\x20healthcare\x20interventions,\x20and\x20improving\x20patient\x20outcomes\x20through\x20early\x20detection.\x20This\x20targeted\x20approach\x20allows\x20healthcare\x20providers\x20to\x20allocate\x20resources\x20efficiently\x20and\x20address\x20health\x20disparities\x20effectively.</p>\x0d\x0a','correct_choice_id':0x49,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x9,'choices':[{'id':0x51,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Low\x20sensitivity\x20</span></p>'},{'id':0x52,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Low\x20specificity\x20</span></p>'},{'id':0x53,'text':_0x3f9b2d(0x2a8)},{'id':0x54,'text':_0x3f9b2d(0x31a)}],'text':_0x3f9b2d(0x30e),'unique_key':'DT1292989','question_audio':null,'question_video':null,'map_id':0x13babd,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li><strong>Low\x20Positive\x20Predictive\x20Value\x20(PPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20PPV\x20is\x20the\x20probability\x20that\x20individuals\x20who\x20test\x20positive\x20for\x20a\x20disease\x20actually\x20have\x20it.</li>\x0d\x0a<li><strong>Influence\x20of\x20Prevalence</strong>:\x20In\x20populations\x20with\x20very\x20low\x20prevalence,\x20the\x20number\x20of\x20true\x20positive\x20cases\x20is\x20significantly\x20smaller\x20compared\x20to\x20the\x20number\x20of\x20false\x20positives,\x20leading\x20to\x20a\x20low\x20PPV.\x20This\x20means\x20that\x20even\x20if\x20a\x20test\x20is\x20positive,\x20the\x20likelihood\x20that\x20the\x20individual\x20actually\x20has\x20the\x20disease\x20is\x20low.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Points</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>Importance\x20of\x20Prevalence</strong>:\x0d\x0a<ul>\x0d\x0a<li>Prevalence\x20directly\x20impacts\x20PPV;\x20as\x20prevalence\x20decreases,\x20PPV\x20diminishes\x20due\x20to\x20the\x20increased\x20ratio\x20of\x20false\x20positives\x20to\x20true\x20positives.</li>\x0d\x0a<li>Screening\x20tests\x20with\x20high\x20specificity\x20can\x20still\x20yield\x20low\x20PPV\x20in\x20low-prevalence\x20populations\x20because\x20the\x20absolute\x20number\x20of\x20individuals\x20who\x20are\x20truly\x20positive\x20is\x20low.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Impact\x20of\x20Testing\x20Strategy</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Targeted\x20Screening</strong>:\x20Implementing\x20screening\x20programs\x20targeting\x20high-risk\x20populations\x20can\x20improve\x20PPV.\x20By\x20focusing\x20on\x20individuals\x20with\x20higher\x20disease\x20prevalence,\x20the\x20likelihood\x20of\x20correctly\x20identifying\x20true\x20positives\x20increases.</li>\x0d\x0a<li><strong>Follow-Up\x20Testing</strong>:\x20Using\x20confirmatory\x20testing\x20for\x20positive\x20results\x20can\x20help\x20improve\x20the\x20accuracy\x20of\x20diagnoses,\x20thus\x20mitigating\x20the\x20low\x20PPV\x20issue\x20associated\x20with\x20low\x20prevalence.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Clinical\x20Implications</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Diagnostic\x20Dilemmas</strong>:\x20Low\x20PPV\x20can\x20lead\x20to\x20unnecessary\x20anxiety\x20and\x20further\x20testing\x20for\x20individuals\x20who\x20test\x20positive\x20but\x20do\x20not\x20have\x20the\x20disease.</li>\x0d\x0a<li><strong>Resource\x20Allocation</strong>:\x20Low\x20PPV\x20in\x20low-prevalence\x20settings\x20can\x20strain\x20healthcare\x20resources\x20due\x20to\x20increased\x20false-positive\x20results\x20leading\x20to\x20additional\x20diagnostic\x20procedures.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(A)\x20Low\x20Sensitivity</strong>:\x20While\x20sensitivity\x20measures\x20how\x20well\x20a\x20test\x20identifies\x20true\x20positives,\x20it\x20does\x20not\x20change\x20with\x20prevalence\x20and\x20is\x20not\x20the\x20primary\x20challenge\x20when\x20prevalence\x20is\x20low.</li>\x0d\x0a<li><strong>(B)\x20Low\x20Specificity</strong>:\x20Low\x20specificity\x20increases\x20false\x20positives\x20but\x20does\x20not\x20inherently\x20indicate\x20a\x20problem\x20with\x20the\x20test\x27s\x20accuracy\x20regarding\x20true\x20disease\x20presence\x20in\x20a\x20low-prevalence\x20population.</li>\x0d\x0a<li><strong>(D)\x20High\x20Negative\x20Predictive\x20Value\x20(NPV)</strong>:\x20In\x20low-prevalence\x20scenarios,\x20NPV\x20is\x20usually\x20high\x20because\x20the\x20majority\x20of\x20individuals\x20do\x20not\x20have\x20the\x20disease,\x20which\x20makes\x20negative\x20results\x20reliable\x20and\x20is\x20not\x20a\x20challenge.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:\x20In\x20screening\x20for\x20diseases\x20with\x20very\x20low\x20prevalence,\x20the\x20primary\x20challenge\x20is\x20achieving\x20a\x20high\x20PPV\x20due\x20to\x20the\x20greater\x20likelihood\x20of\x20false\x20positives\x20compared\x20to\x20true\x20positives.</p>\x0d\x0a','correct_choice_id':0x53,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xa,'choices':[{'id':0x5b,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Specificity\x20of\x20the\x20test\x20</span></p>'},{'id':0x5c,'text':_0x3f9b2d(0x241)},{'id':0x5d,'text':_0x3f9b2d(0x38c)},{'id':0x5e,'text':_0x3f9b2d(0x3ae)}],'text':_0x3f9b2d(0x3ef),'unique_key':_0x3f9b2d(0x352),'question_audio':null,'question_video':null,'map_id':0x13babf,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li><strong>Positive\x20Predictive\x20Value\x20(PPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li>PPV\x20is\x20the\x20proportion\x20of\x20positive\x20test\x20results\x20that\x20are\x20true\x20positives;\x20it\x20indicates\x20the\x20probability\x20that\x20individuals\x20with\x20a\x20positive\x20test\x20actually\x20have\x20the\x20disease.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Key\x20Influences\x20on\x20PPV</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Prevalence\x20of\x20the\x20Disease</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>High\x20Influence</strong>:\x20The\x20prevalence\x20of\x20the\x20disease\x20significantly\x20impacts\x20PPV.\x20Higher\x20prevalence\x20increases\x20the\x20likelihood\x20of\x20true\x20positives\x20relative\x20to\x20false\x20positives,\x20thus\x20boosting\x20PPV.</li>\x0d\x0a<li><strong>Low\x20Prevalence\x20Impact</strong>:\x20In\x20populations\x20with\x20low\x20prevalence,\x20the\x20number\x20of\x20true\x20positive\x20cases\x20is\x20small\x20compared\x20to\x20false\x20positives,\x20leading\x20to\x20a\x20low\x20PPV\x20even\x20if\x20the\x20test\x20is\x20highly\x20sensitive\x20and\x20specific.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Specificity\x20of\x20the\x20Test</strong>:\x0d\x0a<ul>\x0d\x0a<li>Specificity\x20reduces\x20the\x20number\x20of\x20false\x20positives;\x20while\x20higher\x20specificity\x20can\x20improve\x20PPV,\x20its\x20effect\x20is\x20secondary\x20to\x20that\x20of\x20prevalence.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Sensitivity\x20of\x20the\x20Test</strong>:\x0d\x0a<ul>\x0d\x0a<li>Sensitivity\x20measures\x20the\x20proportion\x20of\x20true\x20positives\x20identified\x20by\x20the\x20test.\x20While\x20higher\x20sensitivity\x20can\x20increase\x20the\x20number\x20of\x20true\x20positives,\x20its\x20direct\x20impact\x20on\x20PPV\x20is\x20less\x20pronounced\x20compared\x20to\x20prevalence.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Cost\x20of\x20the\x20Test</strong>:\x0d\x0a<ul>\x0d\x0a<li>The\x20cost\x20does\x20not\x20directly\x20affect\x20PPV.\x20It\x20is\x20more\x20relevant\x20to\x20the\x20practical\x20implementation\x20of\x20screening\x20rather\x20than\x20influencing\x20the\x20statistical\x20properties\x20of</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:<br\x20/>\x20The\x20Positive\x20Predictive\x20Value\x20(PPV)\x20of\x20a\x20screening\x20test\x20is\x20most\x20influenced\x20by\x20the\x20prevalence\x20of\x20the\x20disease\x20in\x20the\x20population.\x20Higher\x20prevalence\x20increases\x20the\x20proportion\x20of\x20true\x20positives\x20among\x20positive\x20test\x20results,\x20thereby\x20enhancing\x20PPV.</p>\x0d\x0a','correct_choice_id':0x5d,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xb,'choices':[{'id':0x65,'text':_0x3f9b2d(0x298)},{'id':0x66,'text':_0x3f9b2d(0x333)},{'id':0x67,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20cost\x20</span></p>'},{'id':0x68,'text':_0x3f9b2d(0x290)}],'text':_0x3f9b2d(0x22b),'unique_key':'DT1292994','question_audio':null,'question_video':null,'map_id':0x13bac2,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':'<ul>\x0d\x0a<li><strong>Characteristics\x20of\x20a\x20Good\x20Screening\x20Test</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>High\x20Sensitivity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Essential</strong>:\x20A\x20good\x20screening\x20test\x20must\x20have\x20high\x20sensitivity\x20to\x20identify\x20most\x20individuals\x20with\x20the\x20disease,\x20minimizing\x20false\x20negatives.\x20Early\x20detection\x20is\x20critical\x20for\x20effective\x20intervention.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>High\x20Specificity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Essential</strong>:\x20High\x20specificity\x20ensures\x20that\x20individuals\x20without\x20the\x20disease\x20are\x20accurately\x20identified,\x20minimizing\x20false\x20positives.\x20This\x20helps\x20avoid\x20unnecessary\x20anxiety\x20and\x20invasive\x20follow-up\x20tests\x20for\x20healthy\x20individuals.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>High\x20Cost</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Not\x20Essential</strong>:\x20High\x20cost\x20is\x20undesirable\x20in\x20a\x20screening\x20test.\x20A\x20good\x20screening\x20test\x20should\x20be\x20cost-effective\x20to\x20promote\x20widespread\x20use,\x20especially\x20in\x20public\x20health\x20settings.\x20Lower\x20cost\x20facilitates\x20accessibility\x20and\x20greater\x20participation\x20in\x20screening\x20programs.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Acceptability\x20to\x20the\x20Population</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Essential</strong>:\x20The\x20screening\x20test\x20must\x20be\x20acceptable\x20to\x20the\x20target\x20population.\x20It\x20should\x20be\x20non-invasive\x20(or\x20minimally\x20invasive),\x20cause\x20minimal\x20discomfort,\x20and\x20be\x20culturally\x20appropriate.\x20High\x20acceptability\x20leads\x20to\x20increased\x20participation\x20and\x20engagement\x20in\x20the\x20screening\x20process.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(A)\x20High\x20Sensitivity</strong>:\x20Essential\x20for\x20detecting\x20as\x20many\x20cases\x20as\x20possible;\x20critical\x20for\x20successful\x20screening.</li>\x0d\x0a<li><strong>(B)\x20High\x20Specificity</strong>:\x20Important\x20for\x20accurately\x20identifying\x20healthy\x20individuals\x20and\x20reducing\x20unnecessary\x20follow-ups.</li>\x0d\x0a<li><strong>(D)\x20Acceptability\x20to\x20the\x20Population</strong>:\x20Crucial\x20for\x20ensuring\x20that\x20people\x20are\x20willing\x20to\x20participate\x20in\x20the\x20screening\x20program.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:<br\x20/>\x20A\x20good\x20screening\x20test\x20should\x20prioritize\x20high\x20sensitivity,\x20high\x20specificity,\x20and\x20acceptability\x20to\x20the\x20population\x20while\x20being\x20cost-effective.\x20High\x20cost\x20is\x20not\x20a\x20desirable\x20characteristic,\x20as\x20it\x20can\x20limit\x20accessibility\x20and\x20reduce\x20the\x20effectiveness\x20of\x20screening\x20initiatives\x20in\x20public\x20health.</p>\x0d\x0a','correct_choice_id':0x67,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xc,'choices':[{'id':0x6f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Sensitivity\x20</span></p>'},{'id':0x70,'text':_0x3f9b2d(0x22c)},{'id':0x71,'text':_0x3f9b2d(0x356)},{'id':0x72,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Negative\x20Predictive\x20Value\x20(NPV)</span></p>'}],'text':_0x3f9b2d(0x3ad),'unique_key':_0x3f9b2d(0x1dd),'question_audio':null,'question_video':null,'map_id':0x13bac3,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x1ed),'correct_choice_id':0x71,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xd,'choices':[{'id':0x79,'text':_0x3f9b2d(0x2e9)},{'id':0x7a,'text':_0x3f9b2d(0x41a)},{'id':0x7b,'text':_0x3f9b2d(0x1e6)},{'id':0x7c,'text':_0x3f9b2d(0x409)}],'text':_0x3f9b2d(0x1d6),'unique_key':'DT1292997','question_audio':null,'question_video':null,'map_id':0x13bac5,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x3a2),'correct_choice_id':0x7a,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3f9b2d(0x2f9)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xe,'choices':[{'id':0x83,'text':_0x3f9b2d(0x1d5)},{'id':0x84,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Lead-time\x20bias</span></p>'},{'id':0x85,'text':_0x3f9b2d(0x293)},{'id':0x86,'text':_0x3f9b2d(0x1c2)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20is\x20a\x20common\x20bias\x20in\x20screening\x20studies\x20where\x20survival\x20appears\x20longer\x20due\x20to\x20early\x20detection\x20but\x20not\x20necessarily\x20due\x20to\x20actual\x20prolongation\x20of\x20life?</span></p>','unique_key':_0x3f9b2d(0x20d),'question_audio':null,'question_video':null,'map_id':0x13bac8,'difficulty_level':_0x3f9b2d(0x305),'subjects_id':[0x1],'solution':_0x3f9b2d(0x204),'correct_choice_id':0x84,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3f9b2d(0x1be),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName=_0x3f9b2d(0x2fe);const quizFilename='screening-14984636.html';let hierarchy=[_0x3f9b2d(0x275),_0x3f9b2d(0x276),_0x3f9b2d(0x258)];if(window[_0x3f9b2d(0x3b4)][_0x3f9b2d(0x43e)][_0x3f9b2d(0x23d)]('custom_quiz.html')){const customData=JSON['parse'](localStorage['getItem'](_0x3f9b2d(0x1d0)));if(customData){const BRwLYM=_0x3f9b2d(0x3b6)[_0x3f9b2d(0x292)]('|');let NtBPhj=0x0;while(!![]){switch(BRwLYM[NtBPhj++]){case'0':document[_0x3f9b2d(0x1e0)]=quizName+_0x3f9b2d(0x39f);continue;case'1':document[_0x3f9b2d(0x245)](_0x3f9b2d(0x3b2))[_0x3f9b2d(0x2e7)]=hierarchy[_0x3f9b2d(0x222)](_0x3f9b2d(0x300));continue;case'2':quizName=customData['name'];continue;case'3':hierarchy=customData[_0x3f9b2d(0x1bc)];continue;case'4':document[_0x3f9b2d(0x245)](_0x3f9b2d(0x306))[_0x3f9b2d(0x2e7)]=questionsData[_0x3f9b2d(0x261)];continue;case'5':questionsData=customData[_0x3f9b2d(0x3df)];continue;}break;}}}let currentQuestionIndex=0x0,selectedOption=null,currentMode=_0x3f9b2d(0x3ca),timer=null,timeRemaining=0x0,questionStartTime=Date[_0x3f9b2d(0x26a)](),quizStartTime=Date[_0x3f9b2d(0x26a)](),isQuizCompleted=![],questionStates=new Array(questionsData[_0x3f9b2d(0x261)])['fill'](null)['map'](()=>({'status':_0x3f9b2d(0x281),'bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData[_0x3f9b2d(0x261)]};function saveProgress(){const _0x2a6f0e=_0x3f9b2d,_0x5bfb32={'YNyCs':_0x2a6f0e(0x1a3),'qrwiC':'incomplete'};if(isQuizCompleted)return;const _0x8bf92a=JSON[_0x2a6f0e(0x271)](localStorage[_0x2a6f0e(0x2fc)](_0x5bfb32['YNyCs']))||{};_0x8bf92a[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0x5bfb32['qrwiC'],'lastSeen':new Date()[_0x2a6f0e(0x2c1)]()},localStorage[_0x2a6f0e(0x35a)](_0x5bfb32[_0x2a6f0e(0x42e)],JSON[_0x2a6f0e(0x374)](_0x8bf92a));}function _0x4c1f(){const _0x173b59=['kRbpX','yvJHO','completed','nLSLS','LdGgD','XuBBW','JASou','NGqFJ','iByjD','data-option-index','border-green-500','YwSCH','markedForReview','nRlSy','vJiyi','startAt','gTCyt','bookmarkText','includes','ROyEf','cEhDb','iFoZZ','dqMMj','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20specificity\x20</span></p>','yJURN','jLnsI','88mPemrj','DOMContentLoaded','CZnxU','RqKVp','ahUiX','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','search','JhyRc','custom_quiz.html','EZmMZ','PXUeu','157617eeRBlC','kdwWb','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','YaONu','zALXt','error','solutionContainer','gCIAY','nav-btn-marked-review','currentQuestion','lQDkr','fESdz','nrJJu','TDaHa','\x22\x20data-src=\x22','studyModeLegend','<p><span\x20style=\x22font-size:12.0pt;\x22>Volunteer\x20group\x20</span></p>','DT1292991','classList','ZHIFG','totalAttempted','<p><span\x20style=\x22font-size:12.0pt;\x22>Positive\x20Predictive\x20Value\x20(PPV)\x20</span></p>','vTGJP','aGunP','DT1292976','setItem','JRXbV','rSWMo','QruIT','GsJBP','DYLnl','MRTxo','vvxYL','OJgcE','solutionImages','spPLW','1302SZMjSh','</span></div>','ybGnb','ehahL','gFIrB','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20incidence\x20</span></p>','forEach','KxwtE','HBmmc','border-red-500','MNjln','log','12216kSpqgV','PIeuf','questionIndex','stringify','XMgeX','reviewQuestionsContainer','FMIrx','accuracyScore','GwkDD','OfjkH','XVEdd','RnTBi','Marked','button','question_audio','explanationVideoPlayer','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','xTdBn','question_images','No\x20solution\x20provided','<ul><li><strong>Lead\x20Time</strong>:<ul><li>Defined\x20as\x20the\x20interval\x20between\x20the\x20detection\x20of\x20a\x20disease\x20through\x20screening\x20and\x20when\x20it\x20would\x20have\x20been\x20diagnosed\x20based\x20on\x20clinical\x20symptoms.</li><li>It\x20provides\x20an\x20advantage\x20by\x20allowing\x20earlier\x20intervention,\x20which\x20can\x20improve\x20treatment\x20outcomes.</li><li>Important\x20for\x20conditions\x20where\x20there\x20is\x20a\x20significant\x20time\x20lag\x20between\x20disease\x20onset\x20and\x20the\x20critical\x20treatment\x20point.</li><li>However,\x20it\x20may\x20result\x20in\x20overdiagnosis\x20if\x20the\x20detected\x20condition\x20is\x20asymptomatic\x20or\x20not\x20harmful\x20during\x20the\x20patient\x27s\x20lifetime.</li></ul></li><li><strong>Serial\x20Interval</strong>:<ul><li>Refers\x20to\x20the\x20time\x20between\x20the\x20onset\x20of\x20symptoms\x20in\x20the\x20primary\x20case\x20(infector)\x20and\x20the\x20onset\x20of\x20symptoms\x20in\x20the\x20secondary\x20case\x20(infected\x20person).</li><li>Key\x20for\x20understanding\x20transmission\x20dynamics\x20in\x20infectious\x20diseases.</li></ul></li><li><strong>Latent\x20Period</strong>:<ul><li>The\x20interval\x20between\x20exposure\x20to\x20an\x20infectious\x20agent\x20and\x20the\x20onset\x20of\x20infectiousness.</li><li>Indicates\x20when\x20an\x20infected\x20person\x20harbors\x20the\x20pathogen\x20but\x20cannot\x20transmit\x20it.</li><li>Important\x20for\x20epidemiological\x20studies\x20to\x20differentiate\x20from\x20the\x20incubation\x20period\x20(time\x20from\x20exposure\x20to\x20symptom\x20onset).</li></ul></li><li><strong>Time\x20Lag</strong>:<ul><li>A\x20more\x20general\x20term\x20that\x20can\x20refer\x20to\x20various\x20delays\x20in\x20processes\x20but\x20is\x20not\x20specifically\x20defined\x20in\x20this\x20context.</li></ul></li></ul><p><strong>Why\x20Not\x20Other\x20Options</strong>:</p><ul><li><strong>(a)\x20Serial\x20Interval</strong>:\x20Relates\x20to\x20infectious\x20disease\x20transmission,\x20not\x20to\x20early\x20detection\x20in\x20screening.</li><li><strong>(c)\x20Time\x20Lag</strong>:\x20Lacks\x20specificity\x20in\x20medical\x20terminology,\x20making\x20it\x20less\x20precise\x20than\x20lead\x20time.</li><li><strong>(d)\x20Latent\x20Period</strong>:\x20Involves\x20the\x20time\x20before\x20infectiousness,\x20not\x20the\x20time\x20before\x20diagnosis.</li></ul><p><strong>Key\x20Takeaways</strong>:</p><p>Lead\x20time\x20is\x20crucial\x20in\x20evaluating\x20the\x20benefits\x20of\x20screening\x20programs,\x20allowing\x20earlier\x20treatment\x20and\x20better\x20outcomes.\x20However,\x20it\x20must\x20be\x20balanced\x20with\x20the\x20risk\x20of\x20overdiagnosis.\x20Understanding\x20concepts\x20like\x20the\x20serial\x20interval\x20and\x20latent\x20period\x20is\x20essential\x20for\x20effective\x20disease\x20control\x20and\x20epidemiological\x20studies.</p><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/2024122049be3dc9-9d92-43e5-9be2-912416bd8ccc.jpg\x22>','console','stats','attachMedia','PrCtv','gHgmc','eNZFe','<p><span\x20style=\x22font-size:12.0pt;\x22>Prevalence\x20of\x20the\x20disease\x20in\x20the\x20population\x20</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Validity</span></p>','eFgcn','jNWAM','selectedAnswer','OMOrs','RnVGT','accuracy','</span><span>','<div\x20class=\x22p-3\x20rounded-lg\x20border\x20','DT1292979','CqDNE','No\x20questions\x20available\x20for\x20this\x20quiz.','vQZYk','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22','nav-btn-incorrect','Not\x20Attempted','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','ZhjgZ','\x20-\x20Brain\x20And\x20Scalpel','Aduek','wZvJA','<ul>\x0d\x0a<li><strong>Reliability</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Reliability\x20refers\x20to\x20the\x20ability\x20of\x20a\x20screening\x20test\x20to\x20yield\x20consistent\x20and\x20stable\x20results\x20across\x20repeated\x20trials.\x20A\x20reliable\x20test\x20produces\x20the\x20same\x20outcomes\x20when\x20administered\x20to\x20the\x20same\x20individual\x20under\x20the\x20same\x20conditions\x20on\x20different\x20occasions.</li>\x0d\x0a<li><strong>Also\x20Known\x20As</strong>:\x20It\x20is\x20sometimes\x20termed\x20repeatability\x20or\x20reproducibility.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Other\x20Terms</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Validity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Validity\x20assesses\x20whether\x20a\x20test\x20accurately\x20measures\x20what\x20it\x20is\x20intended\x20to\x20measure,\x20effectively\x20distinguishing\x20between\x20individuals\x20who\x20have\x20the\x20disease\x20and\x20those\x20who\x20do\x20not.</li>\x0d\x0a<li><strong>Assessment</strong>:\x20Validity\x20is\x20evaluated\x20in\x20terms\x20of\x20sensitivity\x20and\x20specificity.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Accuracy</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Accuracy\x20indicates\x20the\x20extent\x20to\x20which\x20the\x20test\x20results\x20reflect\x20the\x20true\x20disease\x20status.\x20An\x20accurate\x20test\x20has\x20high\x20sensitivity\x20and\x20specificity,\x20correctly\x20identifying\x20both\x20true\x20positives\x20and\x20true\x20negatives.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Precision</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Precision,\x20akin\x20to\x20reliability,\x20focuses\x20on\x20the\x20consistency\x20of\x20test\x20results.\x20It\x20measures\x20how\x20close\x20repeated\x20measurements\x20are\x20to\x20one\x20another,\x20regardless\x20of\x20whether\x20those\x20measurements\x20are\x20accurate.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(A)\x20Validity</strong>:\x20Focuses\x20on\x20whether\x20the\x20test\x20measures\x20the\x20intended\x20construct\x20accurately\x20rather\x20than\x20consistency\x20over\x20trials.</li>\x0d\x0a<li><strong>(C)\x20Accuracy</strong>:\x20Relates\x20to\x20how\x20close\x20test\x20results\x20are\x20to\x20the\x20true\x20status\x20of\x20the\x20disease\x20but\x20does\x20not\x20address\x20repeated\x20testing\x20consistency.</li>\x0d\x0a<li><strong>(D)\x20Precision</strong>:\x20Similar\x20to\x20reliability,\x20but\x20more\x20focused\x20on\x20the\x20closeness\x20of\x20repeated\x20measurements\x20rather\x20than\x20their\x20consistency\x20over\x20time.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:<br\x20/>\x20Reliability\x20is\x20a\x20crucial\x20aspect\x20of\x20screening\x20tests,\x20ensuring\x20consistent\x20results\x20across\x20trials.\x20A\x20reliable\x20test\x20contributes\x20to\x20effective\x20clinical\x20decision-making\x20by\x20providing\x20stable\x20and\x20trustworthy\x20data.\x20Understanding\x20reliability\x20helps\x20differentiate\x20it\x20from\x20related\x20concepts\x20like\x20validity,\x20accuracy,\x20and\x20precision,\x20which\x20each\x20play\x20important\x20roles\x20in\x20assessing\x20the\x20overall\x20effectiveness\x20of\x20screening\x20tools.</p>\x0d\x0a','TSJgC','display','LBUAz','FSiii','testModeLegend','gApJL','ttqcu','kuXYI','mijur','info','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20screening\x20test\x20measure\x20indicates\x20the\x20likelihood\x20that\x20a\x20positive\x20test\x20result\x20correctly\x20identifies\x20someone\x20with\x20the\x20disease?</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20cost\x20of\x20the\x20test</span></p>','svzwy','DPDFn','iBIXe','quizHierarchy','EqXqn','location','cuaPe','5|2|3|0|4|1','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>','jfSut','Cqjmx','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','IFvRS','gqJxb','NaCiD','-600\x20text-white\x22>','BEyyY','review-question\x20','createElement','UGvGe','VZosN','rsgJX','11192310QQtHZH','PArrF','DZcOt','DT1292984','padStart','study','<ul>\x0d\x0a<li><strong>Predictive\x20Value</strong>:\x0d\x0a<ul>\x0d\x0a<li>Refers\x20to\x20the\x20probability\x20that\x20individuals\x20with\x20a\x20positive\x20test\x20result\x20actually\x20have\x20the\x20disease\x20(Positive\x20Predictive\x20Value,\x20PPV)\x20or\x20that\x20individuals\x20with\x20a\x20negative\x20test\x20result\x20truly\x20do\x20not\x20have\x20the\x20disease\x20(Negative\x20Predictive\x20Value,\x20NPV).</li>\x0d\x0a<li>It\x20is\x20influenced\x20by\x20sensitivity\x20(the\x20test\x27s\x20ability\x20to\x20identify\x20true\x20positives),\x20specificity\x20(the\x20ability\x20to\x20identify\x20true\x20negatives),\x20and\x20the\x20prevalence\x20of\x20the\x20disease\x20in\x20the\x20population.</li>\x0d\x0a<li><strong>Higher\x20disease\x20prevalence</strong>\x20generally\x20leads\x20to\x20<strong>higher\x20PPV</strong>,\x20while\x20a\x20<strong>lower\x20prevalence</strong>\x20reduces\x20PPV,\x20even\x20if\x20the\x20test\x20is\x20highly\x20sensitive\x20and\x20specific.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Sensitivity</strong>:\x0d\x0a<ul>\x0d\x0a<li>The\x20proportion\x20of\x20true\x20positives\x20identified\x20by\x20the\x20test.</li>\x0d\x0a<li>Important\x20for\x20detecting\x20the\x20disease\x20but\x20does\x20not\x20directly\x20assess\x20the\x20test\x27s\x20predictive\x20power\x20regarding\x20actual\x20patient\x20outcomes.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Specificity</strong>:\x0d\x0a<ul>\x0d\x0a<li>The\x20proportion\x20of\x20true\x20negatives\x20identified\x20by\x20the\x20test.</li>\x0d\x0a<li>Like\x20sensitivity,\x20it\x20contributes\x20to\x20the\x20test\x27s\x20effectiveness\x20but\x20not\x20directly\x20to\x20predictive\x20value.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Population\x20Attributable\x20Risk</strong>:\x0d\x0a<ul>\x0d\x0a<li>This\x20term\x20quantifies\x20the\x20proportion\x20of\x20a\x20disease\x20in\x20the\x20population\x20that\x20can\x20be\x20attributed\x20to\x20a\x20specific\x20risk\x20factor,\x20but\x20it\x20does\x20not\x20assess\x20the\x20diagnostic\x20power\x20of\x20a\x20screening\x20test.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(a)\x20Specificity</strong>:\x20While\x20important\x20for\x20test\x20accuracy,\x20it\x20does\x20not\x20alone\x20determine\x20the\x20predictive\x20value.</li>\x0d\x0a<li><strong>(b)\x20Population\x20Attributable\x20Risk</strong>:\x20Irrelevant\x20to\x20screening\x20test\x20evaluation.\x20<br><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412208d7c5c11-327a-432d-9f40-998d47e472a8.jpg\x22></li>\x0d\x0a<li><strong>(c)\x20Sensitivity</strong>:\x20Similar\x20to\x20specificity,\x20it\x20is\x20vital\x20for\x20the\x20test\x27s\x20ability\x20to\x20detect\x20disease\x20but\x20not\x20for\x20calculating\x20predictive\x20value.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>The\x20diagnostic\x20power\x20of\x20a\x20screening\x20test\x20is\x20best\x20evaluated\x20through\x20its\x20predictive\x20value,\x20which\x20integrates\x20sensitivity,\x20specificity,\x20and\x20disease\x20prevalence.\x20Understanding\x20how\x20these\x20factors\x20interact\x20helps\x20to\x20determine\x20the\x20test\x27s\x20effectiveness\x20in\x20clinical\x20settings,\x20influencing\x20patient\x20outcomes\x20and\x20public\x20health\x20strategies.\x20</p><img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412267a47e756-3de7-4a86-978e-2425ffe16c42.jpg\x22>\x0d\x0a','wBzpG','FHHtj','loadSource','agMFM','timed_exam','ZnAvH','dcZUg','<p><span\x20style=\x22font-size:12.0pt;\x22>Low\x20accuracy</span></p>','border-gray-600','1|4|5|3|2|0','ybUAL','nZrtu','incorrectResult','toLowerCase','WnCPN','wYeHV','iXOSz','keydown','questionMedia','questions','zarKO','yPeGK','OrdCx','DT1292964','<p><span\x20style=\x22font-size:12.0pt;\x22>Specificity\x20decreases\x20but\x20sensitivity\x20increases</span></p>','cmEiy','RDpwz','kydkW','vFSQc','gray','DT1292972','OKSNW','wFiUE','xEQOi','none','<p><span\x20style=\x22font-size:12.0pt;\x22>Positive\x20Predictive\x20Value\x20(PPV)\x20of\x20a\x20screening\x20test\x20is\x20influenced\x20most\x20by:</span></p>','strokeDasharray','notAttemptedResult','constructor','<p><span\x20style=\x22font-size:12.0pt;\x22>Sensitivity</span></p>','correct','jsdbb','nOVlN','DGjzo','LBypY','src','add','pSXYT','vTIYa','UbcVY','VsgZt','hwUxA','4736qcWNJe','(((.+)+)+)+$','exception','JNfpz','rOzkr','answered','timerContainer','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20extent\x20to\x20which\x20a\x20test\x20measures\x20what\x20it\x20was\x20originally\x20designed\x20to\x20measure\x20is\x20described\x20as:</span></p>','scoreCircle','<p><span\x20style=\x22font-size:12.0pt;\x22>Precision</span></p>','onclick','ykvdl','APdhF','UqmaV','selected','lBCVV','iyCiW','jnhYN','TUoDS','nHuwC','gQTKJ','tTfiC','jtgqn','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20fatality</span></p>','nKEqG','<p><span\x20style=\x22font-size:12.0pt;\x22>Reliability\x20</span></p>','rHxud','Frmbx','trace','explanation_video','findIndex','xNYDX','FZWDS','bjywk','innerHTML','LoFNt','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22','__proto__','iUogr','SpVoo','incorrectCount','push','table','quizPerformanceData','YNyCs','questionText','rJsEs','XbxLV','VPcOJ','cRvPh','VlFBZ','ISMhw','correctCount','XIowc','OqkMk','kpknw','VlGSk','XlKQE','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22','lSQeP','pathname','SMmXO','toBXn','bookmarked','querySelectorAll','remove','statsBar','userHistory','test','dAmsO','avgTimeResult','NCSQJ','JZvrB','HrRkI','wrJqw','solution','map','ArrowLeft','Uumav','Correct','hgUSq','TIIUB','\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>','quizFile','fEnbR','className','zmima','correctResult','bNBIs','CeLDv','fmyFO','totalTimeResult','hierarchy','AgIGL','bottom','JgzKO','tukQu','larcL','<p><span\x20style=\x22font-size:12.0pt;\x22>Recall\x20bias</span></p>','Bjcfa','key','GZHQf','RCXQD','<p><span\x20style=\x22font-size:12.0pt;\x22>Repeatability</span></p>','rGSxb','EMGyA','ejWVJ','qKBJh','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','DnRNK','question_video','lWFef','customQuizData','incorrect','RiWXT','TFzOJ','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>','<p><span\x20style=\x22font-size:12.0pt;\x22>Length-time\x20bias</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20term\x20describes\x20the\x20consistency\x20of\x20a\x20screening\x20test\x20in\x20producing\x20the\x20same\x20results\x20on\x20repeated\x20trials?</span></p>','RNqNu','<p><span\x20style=\x22font-size:12.0pt;\x22>Sensitivity\x20and\x20specificity\x20will\x20decrease</span></p>','uNFYe','<p><span\x20style=\x22font-size:12.0pt;\x22>Latent\x20period</span></p>','addEventListener','nnhQq','DT1292995','IsHUW','aeUhi','title','zAYbh','<ul>\x0d\x0a<li><strong>Positive\x20Predictive\x20Value\x20(PPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20PPV\x20is\x20the\x20likelihood\x20that\x20a\x20positive\x20test\x20result\x20correctly\x20indicates\x20the\x20presence\x20of\x20the\x20disease.</li>\x0d\x0a<li><strong>Influence\x20on\x20PPV</strong>:\x20PPV\x20is\x20influenced\x20by\x20sensitivity,\x20specificity,\x20and\x20the\x20prevalence\x20of\x20the\x20disease.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Impact\x20of\x20Disease\x20Prevalence</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>High\x20Prevalence</strong>:\x20Increases\x20PPV\x20because\x20more\x20individuals\x20tested\x20positive\x20will\x20have\x20the\x20disease,\x20reducing\x20the\x20proportion\x20of\x20false\x20positives.</li>\x0d\x0a<li><strong>Moderately\x20Specific\x20Tests</strong>:\x20Even\x20tests\x20with\x20moderate\x20specificity\x20yield\x20higher\x20PPV\x20when\x20disease\x20prevalence\x20is\x20high.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Other\x20Factors\x20Analyzed</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Disease\x20Incidence</strong>:\x0d\x0a<ul>\x0d\x0a<li>While\x20higher\x20incidence\x20can\x20lead\x20to\x20higher\x20prevalence\x20over\x20time,\x20it\x20does\x20not\x20directly\x20affect\x20PPV\x20at\x20a\x20specific\x20point\x20in\x20time.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Disease\x20Duration</strong>:\x0d\x0a<ul>\x0d\x0a<li>The\x20duration\x20of\x20the\x20disease\x20does\x20not\x20directly\x20impact\x20PPV;\x20it\x27s\x20primarily\x20influenced\x20by\x20the\x20current\x20prevalence,\x20sensitivity,\x20and\x20specificity.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Disease\x20Fatality</strong>:\x0d\x0a<ul>\x0d\x0a<li>Fatality\x20rates\x20do\x20not\x20impact\x20PPV\x20as\x20they\x20do\x20not\x20change\x20the\x20proportion\x20of\x20true\x20positives\x20among\x20positive\x20results.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Conclusion</strong>:\x20For\x20a\x20given\x20sensitivity\x20and\x20specificity,\x20a\x20high\x20prevalence\x20of\x20the\x20disease\x20leads\x20to\x20a\x20higher\x20PPV,\x20indicating\x20that\x20the\x20positive\x20test\x20results\x20are\x20more\x20likely\x20to\x20reflect\x20true\x20disease\x20presence.\x20This\x20relationship\x20highlights\x20the\x20importance\x20of\x20understanding\x20the\x20epidemiology\x20of\x20diseases\x20when\x20interpreting\x20screening\x20test\x20results.</p>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(b)\x20High\x20incidence</strong>:\x20Incorrect;\x20while\x20it\x20can\x20increase\x20prevalence\x20over\x20time,\x20incidence\x20alone\x20does\x20not\x20directly\x20affect\x20PPV.</li>\x0d\x0a<li><strong>(c)\x20Short\x20duration</strong>:\x20Incorrect;\x20duration\x20does\x20not\x20influence\x20PPV\x20directly.</li>\x0d\x0a<li><strong>(d)\x20High\x20fatality</strong>:\x20Incorrect;\x20fatality\x20affects\x20disease\x20outcome\x20but\x20does\x20not\x20change\x20the\x20proportion\x20of\x20true\x20positives\x20among\x20positives.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>High\x20prevalence\x20of\x20the\x20disease\x20in\x20the\x20population\x20being\x20tested\x20significantly\x20increases\x20the\x20positive\x20predictive\x20value\x20of\x20a\x20screening\x20test,\x20assuming\x20sensitivity\x20and\x20specificity\x20are\x20constant.\x20Understanding\x20these\x20epidemiological\x20factors\x20is\x20essential\x20for\x20accurate\x20interpretation\x20of\x20screening\x20results\x20in\x20clinical\x20practice.</p>\x0d\x0a','XRCBt','.m3u8','TSaeg','<p><span\x20style=\x22font-size:12.0pt;\x22>Accuracy</span></p>','UqpnA','<p><span\x20style=\x22font-size:12.0pt;\x22>Likelihood\x20ratio</span></p>','AWElG','QOnsS','pop','tefTl','<ul>\x0d\x0a<li><strong>Positive\x20Predictive\x20Value\x20(PPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20PPV\x20is\x20the\x20proportion\x20of\x20positive\x20test\x20results\x20that\x20are\x20true\x20positives.\x20It\x20reflects\x20the\x20likelihood\x20that\x20an\x20individual\x20who\x20tests\x20positive\x20actually\x20has\x20the\x20disease.</li>\x0d\x0a<li><strong>Importance</strong>:\x20A\x20high\x20PPV\x20indicates\x20that\x20the\x20test\x20result\x20is\x20reliable\x20and\x20that\x20the\x20disease\x20is\x20likely\x20present\x20when\x20a\x20positive\x20result\x20is\x20obtained.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Other\x20Measures</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Sensitivity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Sensitivity\x20measures\x20the\x20proportion\x20of\x20true\x20positives\x20correctly\x20identified\x20by\x20the\x20test.\x20It\x20reflects\x20the\x20test\x27s\x20ability\x20to\x20detect\x20the\x20disease.</li>\x0d\x0a<li><strong>Impact</strong>:\x20High\x20sensitivity\x20reduces\x20the\x20likelihood\x20of\x20false\x20negatives\x20but\x20does\x20not\x20directly\x20indicate\x20the\x20accuracy\x20of\x20positive\x20results.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Specificity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Specificity\x20measures\x20the\x20proportion\x20of\x20true\x20negatives\x20correctly\x20identified\x20by\x20the\x20test.\x20It\x20reflects\x20the\x20test\x27s\x20ability\x20to\x20correctly\x20identify\x20healthy\x20individuals.</li>\x0d\x0a<li><strong>Impact</strong>:\x20While\x20important,\x20specificity\x20does\x20not\x20directly\x20influence\x20the\x20likelihood\x20that\x20a\x20positive\x20result\x20indicates\x20disease\x20presence.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Negative\x20Predictive\x20Value\x20(NPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20NPV\x20is\x20the\x20proportion\x20of\x20negative\x20test\x20results\x20that\x20are\x20true\x20negatives.\x20It\x20indicates\x20the\x20likelihood\x20that\x20a\x20person\x20who\x20tests\x20negative\x20does\x20not\x20have\x20the\x20disease.</li>\x0d\x0a<li><strong>Impact</strong>:\x20NPV\x20is\x20not\x20relevant\x20to\x20positive\x20test\x20results.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:<br\x20/>\x20The\x20Positive\x20Predictive\x20Value\x20(PPV)\x20is\x20the\x20key\x20measure\x20that\x20indicates\x20how\x20likely\x20a\x20positive\x20test\x20result\x20is\x20to\x20correctly\x20identify\x20an\x20individual\x20with\x20the\x20disease.\x20Understanding\x20PPV\x20is\x20crucial\x20for\x20interpreting\x20screening\x20tests\x20and\x20making\x20informed\x20clinical\x20decisions,\x20especially\x20in\x20populations\x20with\x20varying\x20disease\x20prevalence.</p>\x0d\x0a','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','choices','sUVCn','contains','dCYxN','jWKYV','<p><span\x20style=\x22font-size:12.0pt;\x22>A\x20screening\x20test\x20is\x20positive\x20in\x20the\x20majority\x20of\x20cases\x20but\x20false\x20positive\x20rate\x20is\x20much\x20higher\x20than\x20true\x20positives\x20this\x20indicates:</span></p>','lEJGw','Mfwog','eKzMA','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>','tmIbl','bookmarkBtn','canPlayType','<p><span\x20style=\x22font-size:12.0pt;\x22>Reliability</span></p>','removeItem','zfQXQ','pRdGc','round','DT1292982','kWDwq','ZySvP','<ul>\x0d\x0a<li><strong>Lead-time\x20Bias</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Lead-time\x20bias\x20occurs\x20when\x20screening\x20detects\x20a\x20disease\x20earlier\x20than\x20it\x20would\x20have\x20been\x20diagnosed\x20due\x20to\x20the\x20onset\x20of\x20symptoms.\x20This\x20early\x20detection\x20can\x20give\x20the\x20illusion\x20of\x20longer\x20survival\x20time,\x20but\x20it\x20does\x20not\x20imply\x20an\x20actual\x20extension\x20of\x20life.</li>\x0d\x0a<li><strong>Impact</strong>:\x20The\x20additional\x20time\x20measured\x20between\x20early\x20detection\x20and\x20usual\x20diagnosis\x20does\x20not\x20alter\x20the\x20overall\x20outcome\x20or\x20life\x20expectancy,\x20making\x20it\x20misleading\x20when\x20assessing\x20the\x20effectiveness\x20of\x20screening\x20programs.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Other\x20Biases</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Length-time\x20Bias</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20This\x20bias\x20happens\x20when\x20screening\x20disproportionately\x20detects\x20slower-progressing,\x20less\x20aggressive\x20cases\x20of\x20a\x20disease\x20compared\x20to\x20faster-progressing\x20ones.</li>\x0d\x0a<li><strong>Impact</strong>:\x20It\x20can\x20make\x20screening\x20appear\x20more\x20effective\x20because\x20the\x20cases\x20identified\x20are\x20often\x20associated\x20with\x20better\x20prognoses,\x20potentially\x20skewing\x20results.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Selection\x20Bias</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Occurs\x20when\x20the\x20individuals\x20who\x20participate\x20in\x20the\x20screening\x20do\x20not\x20represent\x20the\x20general\x20population.</li>\x0d\x0a<li><strong>Impact</strong>:\x20This\x20can\x20lead\x20to\x20overestimation\x20or\x20underestimation\x20of\x20the\x20screening\x20program&rsquo;s\x20effectiveness\x20due\x20to\x20the\x20characteristics\x20of\x20the\x20selected\x20participants.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Recall\x20Bias</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Arises\x20when\x20participants\x20in\x20a\x20study\x20have\x20discrepancies\x20in\x20the\x20accuracy\x20or\x20completeness\x20of\x20their\x20recollections\x20about\x20past\x20events\x20or\x20experiences.</li>\x0d\x0a<li><strong>Impact</strong>:\x20Common\x20in\x20retrospective\x20studies,\x20this\x20can\x20compromise\x20data\x20validity\x20due\x20to\x20participants\x27\x20faulty\x20memory\x20regarding\x20previous\x20exposures\x20or\x20conditions.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(A)\x20Length-time\x20Bias</strong>:\x20While\x20relevant,\x20it\x20pertains\x20to\x20the\x20detection\x20of\x20different\x20disease\x20progression\x20rates\x20rather\x20than\x20the\x20timing\x20of\x20diagnosis.</li>\x0d\x0a<li><strong>(C)\x20Selection\x20Bias</strong>:\x20Focuses\x20on\x20the\x20representativeness\x20of\x20the\x20study\x20population\x20rather\x20than\x20timing\x20effects\x20in\x20survival\x20estimates.</li>\x0d\x0a<li><strong>(D)\x20Recall\x20Bias</strong>:\x20Concerns\x20the\x20accuracy\x20of\x20past\x20recollections,\x20not\x20the\x20implications\x20of\x20early\x20detection\x20in\x20survival\x20analysis.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:<br\x20/>\x20Lead-time\x20bias\x20is\x20a\x20crucial\x20consideration\x20in\x20evaluating\x20the\x20effectiveness\x20of\x20screening\x20programs,\x20as\x20it\x20can\x20mislead\x20interpretations\x20of\x20survival\x20benefits.\x20Understanding\x20the\x20various\x20biases,\x20including\x20length-time,\x20selection,\x20and\x20recall\x20bias,\x20is\x20essential\x20for\x20accurately\x20assessing\x20screening\x20outcomes\x20and\x20making\x20informed\x20clinical\x20decisions.</p>\x0d\x0a','keajk','resume','XjEze','video[data-src]','green','KNova','div','{}.constructor(\x22return\x20this\x22)(\x20)','DT1293000','jjvpr','iJtIw','Incorrect','pChJV','cZvGa','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','tvgdk','drLgb','questionStates','questionReviewSection','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','return\x20(function()\x20','DkWMJ','AKEQg','whbhZ','bind','AJXLM','aPevr','BhNiO','flex','join','markReviewBtn','Option\x20','reload','incorrectAnswers','YpqgI','<p><span\x20style=\x22font-size:12.0pt;\x22>Population\x20attributable\x20risk</span></p>','wTzKr','tLYAg','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20of\x20the\x20following\x20characteristics\x20is\x20NOT\x20essential\x20for\x20a\x20good\x20screening\x20test?</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Specificity</span></p>','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','questionNav','notAttempted','NnrqZ','vskqG','kliYt','index.html','name','gPscJ','BDPOd','PyWFo','TTZJr','JKCLR','16ULHDHy','navBtn_','HyzTF','endsWith','OFYOC','21767537bHsTAr','.option-button','<p><span\x20style=\x22font-size:12.0pt;\x22>Sensitivity\x20of\x20the\x20test\x20</span></p>','GDBgs','vkCfU','MfIOf','getElementById','wdaPd','bziPO','iMwqJ','<p><span\x20style=\x22font-size:12.0pt;\x22>For\x20a\x20given\x20sensitivity\x20and\x20specificity\x20the\x20positive\x20predictive\x20value\x20will\x20be\x20more\x20if\x20the\x20disease\x20under\x20consideration\x20has</span></p>','jBdHt','Fonnq','rLshs','nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','VHHvK','1066245FlHYVX','NOSKV','mWZgv','VQJVG','vLisc','ESnLh','PIPYE','Suwrr','ArrowRight','PSM','gpGQH','<p><span\x20style=\x22font-size:12.0pt;\x22>Sensitivity\x20and\x20specificity\x20will\x20increase</span></p>','TPzjJ','<p><span\x20style=\x22font-size:12.0pt;\x22>The\x20time\x20interval\x20between\x20diagnosis\x20by\x20early\x20detection\x20and\x20diagnosis\x20by\x20other\x20means\x20is</span></p>','WIgJj','BDlrW','ZZGMB','RggOf','length','warn','Progress\x20loaded.','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','<p><span\x20style=\x22font-size:12.0pt;\x22>Time\x20lag</span></p>','ULFPZ','nMXKN','Ohxpk','iaEnJ','now','disabled','DT1292963','block','SUUoy','timed_study','gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','parse','2855CCkiHT','VbXzI','IhiGQ','DocTutorial','QRP','nav-btn-answered','totalQuestionsResult','PHXOl','PAyxj','solutionVideo','AcKJD','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','explanation_images','uDCYd','dYrkn','not_attempted','DT1292987','reduce','zYkRH','LyfpL','ydrsa','No\x20question\x20text\x20available','bAGhB','qRvpG','status','text','style','NmVeb','byetu','IRmut','<p><span\x20style=\x22font-size:12.0pt;\x22>Acceptability\x20to\x20the\x20population</span></p>','tPPcv','split','<p><span\x20style=\x22font-size:12.0pt;\x22>Selection\x20bias</span></p>','yzpAJ','floor','ubmoJ','hidden','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20sensitivity\x20</span></p>','ygXjR','<p><span\x20style=\x22font-size:12.0pt;\x22>Selective\x20screening\x20refers\x20to\x20screening\x20tests\x20applied\x20to\x20a</span></p>','honED','You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','explanation_audio_hin','btAIZ','koNjO','RAwBO','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20validity</span></p>','appendChild','dvlvz','MRJeR','zOMdu','filter','UxCbR','<p><span\x20style=\x22font-size:12.0pt;\x22>Low\x20Positive\x20Predictive\x20Value\x20(PPV)\x20</span></p>','sCjwp','RcaAW','quizSidebar','nZLiF','czXBb','WxuIg','correctAnswers','vvMeP','toString','KOwCK','nav-btn-bookmarked','npUWW','<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20will\x20be\x20the\x20effect\x20on\x20the\x20Interpretation\x20of\x20a\x20screening\x20test\x20if\x20the\x20cut\x20off\x20point\x20in\x20the\x20interpretation\x20is\x20raised?</span></p>','nWVwK','VAfiA','target','FCRXD','qwItQ','pjFLJ','PkpWF','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','aNupb','sKZuo','otdBQ','toISOString','ZDdGU','GoupO','PTIvI','GVlge','GywHw','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20risk\x20group</span></p>','eFJmr','yuuRd','hSQFp','MIlBh','apply','nuIpO','timeDisplay','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22','XcVSy','lCtov','NlEyM','vcJbu','<p><span\x20style=\x22font-size:12.0pt;\x22>Lead\x20time</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Low\x20NPV</span></p>','solutionText','isSupported','fromCharCode','JRPeR','nSIAu','<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-','TwcFo','\x22\x20data-option-index=\x22','dSZAw','ouzRA','<ul>\x0d\x0a<li><strong>Validity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Refers\x20to\x20the\x20extent\x20to\x20which\x20a\x20test\x20measures\x20what\x20it\x20was\x20designed\x20to\x20measure,\x20specifically\x20its\x20accuracy\x20in\x20identifying\x20individuals\x20with\x20and\x20without\x20a\x20disease.</li>\x0d\x0a<li><strong>Components</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Sensitivity</strong>:\x20The\x20ability\x20of\x20the\x20test\x20to\x20correctly\x20identify\x20those\x20with\x20the\x20disease\x20(true\x20positives).</li>\x0d\x0a<li><strong>Specificity</strong>:\x20The\x20ability\x20of\x20the\x20test\x20to\x20correctly\x20identify\x20those\x20without\x20the\x20disease\x20(true\x20negatives).</li>\x0d\x0a<li><strong>Predictive\x20Values</strong>:\x20Positive\x20Predictive\x20Value\x20(PPV)\x20and\x20Negative\x20Predictive\x20Value\x20(NPV)\x20also\x20contribute\x20to\x20understanding\x20the\x20test\x27s\x20performance\x20within\x20a\x20specific\x20population.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Factors\x20Influencing\x20Validity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Prevalence</strong>:\x20The\x20prevalence\x20of\x20the\x20disease\x20affects\x20PPV\x20and\x20NPV.\x20Higher\x20prevalence\x20increases\x20PPV\x20but\x20decreases\x20NPV,\x20and\x20vice\x20versa\x20for\x20lower\x20prevalence.</li>\x0d\x0a<li><strong>Population\x20Characteristics</strong>:\x20Different\x20baseline\x20risks\x20in\x20populations\x20can\x20influence\x20the\x20test\x27s\x20performance\x20metrics.</li>\x0d\x0a<li><strong>Disease\x20Stage</strong>:\x20The\x20stage\x20at\x20which\x20the\x20disease\x20is\x20detected\x20can\x20affect\x20sensitivity\x20and\x20specificity;\x20some\x20tests\x20may\x20perform\x20better\x20at\x20detecting\x20early-stage\x20disease,\x20while\x20others\x20may\x20excel\x20at\x20advanced\x20stages.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Repeatability</strong>:\x0d\x0a<ul>\x0d\x0a<li>Also\x20known\x20as\x20test-retest\x20reliability,\x20it\x20measures\x20the\x20consistency\x20of\x20test\x20results\x20when\x20administered\x20multiple\x20times\x20under\x20identical\x20conditions.\x20High\x20repeatability\x20is\x20crucial\x20for\x20the\x20reliability\x20of\x20test\x20results.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Reliability</strong>:\x0d\x0a<ul>\x0d\x0a<li>Refers\x20to\x20the\x20ability\x20of\x20the\x20test\x20to\x20produce\x20consistent\x20and\x20stable\x20results\x20over\x20repeated\x20applications.\x20Reliability\x20is\x20essential\x20for\x20ensuring\x20that\x20test\x20results\x20are\x20dependable\x20and\x20reproducible.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Yield</strong>:\x0d\x0a<ul>\x0d\x0a<li>Represents\x20the\x20number\x20of\x20previously\x20undiagnosed\x20cases\x20of\x20a\x20disease\x20that\x20a\x20test\x20correctly\x20identifies\x20within\x20a\x20specific\x20population.\x20It\x20is\x20important\x20for\x20evaluating\x20the\x20effectiveness\x20and\x20efficiency\x20of\x20a\x20screening\x20program.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Why\x20Not\x20Other\x20Options</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>(a)\x20Yield</strong>:\x20Incorrect;\x20yield\x20refers\x20to\x20the\x20number\x20of\x20undiagnosed\x20cases\x20identified,\x20not\x20the\x20measure\x20of\x20what\x20the\x20test\x20is\x20designed\x20to\x20assess.</li>\x0d\x0a<li><strong>(b)\x20Repeatability</strong>:\x20Incorrect;\x20repeatability\x20refers\x20to\x20consistency\x20of\x20results,\x20not\x20accuracy\x20in\x20measuring\x20the\x20intended\x20outcome.</li>\x0d\x0a<li><strong>(d)\x20Reliability</strong>:\x20Incorrect;\x20while\x20related,\x20reliability\x20focuses\x20on\x20consistency\x20of\x20results,\x20whereas\x20validity\x20concerns\x20the\x20accuracy\x20of\x20the\x20test\x20in\x20measuring\x20its\x20intended\x20target.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>Validity\x20is\x20essential\x20in\x20determining\x20how\x20effectively\x20a\x20screening\x20test\x20identifies\x20disease.\x20Factors\x20like\x20disease\x20prevalence\x20and\x20population\x20characteristics\x20impact\x20its\x20predictive\x20values.\x20Understanding\x20validity\x20helps\x20in\x20evaluating\x20the\x20overall\x20effectiveness\x20of\x20a\x20screening\x20program,\x20while\x20reliability\x20ensures\x20consistency\x20in\x20test\x20results.</p>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412209d1e04ee-bc1b-46fe-9d6c-3649dcac1929.jpg\x22>\x0d\x0a<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V3/NEETPGMCQ/202412203da60519-1239-4433-b2e4-79dc81440363.jpg\x22>\x0d\x0a','timeSpent','WaYAe','IXsCL','<ul>\x0d\x0a<li><strong>Positive\x20Predictive\x20Value\x20(PPV)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20PPV\x20is\x20the\x20proportion\x20of\x20positive\x20test\x20results\x20that\x20are\x20true\x20positives,\x20indicating\x20the\x20likelihood\x20that\x20a\x20positive\x20test\x20result\x20reflects\x20the\x20presence\x20of\x20the\x20disease.</li>\x0d\x0a<li><strong>Influence\x20on\x20PPV</strong>:\x0d\x0a<ul>\x0d\x0a<li>When\x20a\x20screening\x20test\x20shows\x20a\x20high\x20false\x20positive\x20rate,\x20it\x20suggests\x20that\x20many\x20individuals\x20who\x20test\x20positive\x20do\x20not\x20actually\x20have\x20the\x20disease,\x20leading\x20to\x20a\x20lower\x20PPV.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Key\x20Factors\x20Affecting\x20PPV</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Disease\x20Prevalence</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Proportion\x20of\x20the\x20population\x20with\x20the\x20disease\x20at\x20a\x20given\x20time.</li>\x0d\x0a<li><strong>Impact</strong>:\x20Higher\x20prevalence\x20increases\x20PPV;\x20low\x20prevalence\x20increases\x20false\x20positives,\x20reducing\x20PPV.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Test\x20Sensitivity\x20and\x20Specificity</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Sensitivity</strong>:\x20Ability\x20to\x20identify\x20true\x20positives.</li>\x0d\x0a<li><strong>Specificity</strong>:\x20Ability\x20to\x20identify\x20true\x20negatives.</li>\x0d\x0a<li><strong>Impact</strong>:\x20Higher\x20sensitivity\x20and\x20specificity\x20enhance\x20PPV;\x20low\x20specificity\x20(high\x20false\x20positive\x20rate)\x20decreases\x20it.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Positive\x20Likelihood\x20Ratio\x20(LR+)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Odds\x20of\x20having\x20the\x20disease\x20given\x20a\x20positive\x20test\x20result.</li>\x0d\x0a<li><strong>Impact</strong>:\x20Higher\x20LR+\x20correlates\x20with\x20higher\x20PPV.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Negative\x20Likelihood\x20Ratio\x20(LR-)</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Definition</strong>:\x20Odds\x20of\x20not\x20having\x20the\x20disease\x20given\x20a\x20negative\x20test\x20result.</li>\x0d\x0a<li><strong>Impact</strong>:\x20Lower\x20LR-\x20contributes\x20to\x20higher\x20PPV.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a<li><strong>Test\x20Accuracy\x20and\x20Reliability</strong>:\x0d\x0a<ul>\x0d\x0a<li><strong>Accuracy/Validity</strong>:\x20Overall\x20correctness\x20of\x20the\x20test\x20results.</li>\x0d\x0a<li><strong>Precision/Reliability</strong>:\x20Consistency\x20of\x20results\x20over\x20repeated\x20tests.</li>\x0d\x0a<li><strong>Impact</strong>:\x20Tests\x20with\x20high\x20accuracy\x20and\x20reliability\x20produce\x20more\x20reliable\x20positive\x20results,\x20increasing\x20PPV.</li>\x0d\x0a</ul>\x0d\x0a</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Why\x20Not\x20Other\x20Options</strong>:</p>\x0d\x0a<ul>\x0d\x0a<li><strong>(b)\x20Low\x20NPV</strong>:\x20Incorrect;\x20NPV\x20relates\x20to\x20the\x20probability\x20that\x20a\x20negative\x20test\x20result\x20indicates\x20absence\x20of\x20disease,\x20not\x20directly\x20affected\x20by\x20false\x20positives.</li>\x0d\x0a<li><strong>(c)\x20Low\x20accuracy</strong>:\x20Incorrect;\x20while\x20accuracy\x20can\x20be\x20a\x20concern,\x20the\x20specific\x20issue\x20of\x20high\x20false\x20positive\x20rate\x20directly\x20leads\x20to\x20low\x20PPV.</li>\x0d\x0a<li><strong>(d)\x20High\x20validity</strong>:\x20Incorrect;\x20high\x20false\x20positive\x20rates\x20suggest\x20the\x20test\x20is\x20not\x20valid\x20in\x20accurately\x20measuring\x20what\x20it\x20is\x20supposed\x20to\x20measure.</li>\x0d\x0a</ul>\x0d\x0a<p><strong>Key\x20Takeaways</strong>:</p>\x0d\x0a<p>A\x20high\x20false\x20positive\x20rate\x20in\x20a\x20screening\x20test\x20indicates\x20low\x20PPV,\x20meaning\x20many\x20positive\x20results\x20may\x20not\x20reflect\x20true\x20disease\x20presence.\x20Factors\x20like\x20disease\x20prevalence,\x20sensitivity,\x20specificity,\x20and\x20test\x20accuracy\x20are\x20crucial\x20for\x20interpreting\x20PPV,\x20guiding\x20clinical\x20decision-making.</p>\x0d\x0a','performanceModal','totalTime','textContent','sdhZu','<p><span\x20style=\x22font-size:12.0pt;\x22>Validity\x20</span></p>','markReviewText','qgFal','njXTH','iQIxE','nav-btn-correct','JkGNa','mWsfp','submitSection','BPSOI','zTbfB','\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','modeModal','replace','quGDJ','wcVBj','Factual','bdQUI','wNbrB','getItem','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','Screening','iPpAT','\x20>\x20','No\x20solution\x20available.','XasUG','RCPLY','correct_choice_id','intermediate','totalQuestions','<p><span\x20style=\x22font-size:12.0pt;\x22>Randomly\x20selected\x20group</span></p>','explanation_audio_eng','not-attempted','YfzZw','WArAY','Zctyc','DWUgK','<p><span\x20style=\x22font-size:12.0pt;\x22>For\x20a\x20disease\x20with\x20very\x20low\x20prevalence,\x20the\x20most\x20likely\x20challenge\x20in\x20screening\x20is:</span></p>','kDABk','get','bookmarkedQuestions','DKEwy','<p><span\x20style=\x22font-size:12.0pt;\x22>L-J\x20chart\x20is\x20used\x20for\x20:</span></p>','60403wpiRnG','IIikU','optionsContainer','<p><span\x20style=\x22font-size:12.0pt;\x22>Predictive\x20value</span></p>','ZhNiw','uDoGF','<p><span\x20style=\x22font-size:12.0pt;\x22>High\x20Negative\x20Predictive\x20Value\x20(NPV)</span></p>','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>'];_0x4c1f=function(){return _0x173b59;};return _0x4c1f();}function loadProgress(){const _0x53d870=_0x3f9b2d,_0x3e495a={'wZnYM':'userHistory','OMOrs':'0|1|4|3|5|2','GZHQf':_0x53d870(0x263)},_0x35470f=JSON[_0x53d870(0x271)](localStorage[_0x53d870(0x2fc)](_0x3e495a['wZnYM']))||{},_0x2df805=_0x35470f[quizFilename];if(_0x2df805){const _0x442c6e=_0x3e495a[_0x53d870(0x391)][_0x53d870(0x292)]('|');let _0xded192=0x0;while(!![]){switch(_0x442c6e[_0xded192++]){case'0':questionStates=_0x2df805[_0x53d870(0x216)];continue;case'1':stats=_0x2df805[_0x53d870(0x387)];continue;case'2':return!![];case'3':currentMode=_0x2df805['currentMode'];continue;case'4':currentQuestionIndex=_0x2df805['currentQuestionIndex'];continue;case'5':console['log'](_0x3e495a[_0x53d870(0x1c5)]);continue;}break;}}return![];}function clearProgress(){const _0x2ac755=_0x3f9b2d,_0x2e0050={'iJtIw':'userHistory'},_0x585549=JSON[_0x2ac755(0x271)](localStorage[_0x2ac755(0x2fc)](_0x2e0050[_0x2ac755(0x20f)]))||{};_0x585549[quizFilename]&&(delete _0x585549[quizFilename],localStorage[_0x2ac755(0x35a)](_0x2e0050[_0x2ac755(0x20f)],JSON[_0x2ac755(0x374)](_0x585549)),console[_0x2ac755(0x370)]('Previous\x20progress\x20cleared.'));}function markQuizAsCompleted(){const _0x24af28=_0x3f9b2d,_0x2aa264={'IFvRS':_0x24af28(0x1a3)},_0x114b65=JSON[_0x24af28(0x271)](localStorage[_0x24af28(0x2fc)](_0x2aa264[_0x24af28(0x3bb)]))||{},_0x402028=questionsData[_0x24af28(0x261)],_0x49277e=stats['correctAnswers']||0x0;_0x114b65[quizFilename]={'score':_0x49277e,'total':_0x402028,'status':_0x24af28(0x31e),'completedOn':new Date()[_0x24af28(0x2c1)]()},localStorage[_0x24af28(0x35a)](_0x2aa264['IFvRS'],JSON[_0x24af28(0x374)](_0x114b65));}const urlParams=new URLSearchParams(window[_0x3f9b2d(0x3b4)][_0x3f9b2d(0x33c)]),startAt=parseInt(urlParams['get'](_0x3f9b2d(0x32b))),resume=urlParams[_0x3f9b2d(0x310)](_0x3f9b2d(0x206))==='true';function goBack(){const _0x281e95=_0x3f9b2d,_0x4a286c={'bdQUI':_0x281e95(0x233)};if(!isQuizCompleted)saveProgress();window[_0x281e95(0x3b4)]['href']=document['referrer']||_0x4a286c[_0x281e95(0x2fa)];}function selectMode(_0x429219){const _0x199c61=_0x3f9b2d,_0x5950d7={'sKogS':function(_0x3c9803){return _0x3c9803();}};currentMode=_0x429219,document[_0x199c61(0x245)](_0x199c61(0x2f5))['style'][_0x199c61(0x3a4)]='none',_0x5950d7['sKogS'](initializeQuiz);}function initializeQuiz(){const _0x45b58a=_0x3f9b2d,_0x1d8d18={'pDzcl':_0x45b58a(0x223),'tTfiC':function(_0x3ac570,_0x39a040){return _0x3ac570===_0x39a040;},'uDCYd':_0x45b58a(0x1a4),'rOzkr':function(_0x1d5219,_0x2cff1f){return _0x1d5219===_0x2cff1f;},'tvgdk':_0x45b58a(0x3d0),'dYrkn':_0x45b58a(0x1a2),'QruIT':'none','KxwtE':'block','RCPLY':_0x45b58a(0x350),'AKEQg':_0x45b58a(0x3a7),'Uumav':_0x45b58a(0x221),'MIlBh':_0x45b58a(0x26f),'RAwBO':function(_0x587734,_0x15b446){return _0x587734===_0x15b446;},'iCPjP':_0x45b58a(0x406),'MRTxo':function(_0x528ad1,_0x10cbed){return _0x528ad1(_0x10cbed);},'pjFLJ':function(_0x2232ef,_0x3ce94b){return _0x2232ef>=_0x3ce94b;},'Tpwgf':function(_0x37a442){return _0x37a442();},'Pnbtg':function(_0x2a7405){return _0x2a7405();},'YaONu':function(_0x113a51){return _0x113a51();}};quizStartTime=Date[_0x45b58a(0x26a)]();const _0x4fbc57=document[_0x45b58a(0x245)]('bookmarkBtn'),_0x356ade=document[_0x45b58a(0x245)](_0x1d8d18['pDzcl']),_0x398755=document[_0x45b58a(0x245)]('testModeReviewLegend'),_0x37a698=_0x1d8d18[_0x45b58a(0x415)](currentMode,_0x1d8d18[_0x45b58a(0x27f)])||_0x1d8d18[_0x45b58a(0x404)](currentMode,_0x1d8d18[_0x45b58a(0x214)]);document[_0x45b58a(0x245)](_0x1d8d18[_0x45b58a(0x280)])[_0x45b58a(0x28c)][_0x45b58a(0x3a4)]=_0x37a698?_0x1d8d18[_0x45b58a(0x35d)]:_0x1d8d18[_0x45b58a(0x36c)],document['getElementById'](_0x1d8d18[_0x45b58a(0x303)])[_0x45b58a(0x28c)][_0x45b58a(0x3a4)]=_0x37a698?_0x1d8d18[_0x45b58a(0x35d)]:_0x1d8d18['KxwtE'],document[_0x45b58a(0x245)](_0x1d8d18[_0x45b58a(0x21b)])[_0x45b58a(0x28c)][_0x45b58a(0x3a4)]=_0x37a698?_0x1d8d18[_0x45b58a(0x36c)]:_0x1d8d18[_0x45b58a(0x35d)],document[_0x45b58a(0x245)](_0x45b58a(0x2f1))[_0x45b58a(0x28c)][_0x45b58a(0x3a4)]=_0x37a698?_0x45b58a(0x26d):_0x1d8d18['QruIT'],_0x4fbc57['style'][_0x45b58a(0x3a4)]=_0x37a698?_0x45b58a(0x3ee):_0x1d8d18[_0x45b58a(0x1ae)],_0x356ade[_0x45b58a(0x28c)][_0x45b58a(0x3a4)]=_0x37a698?_0x1d8d18['Uumav']:_0x1d8d18[_0x45b58a(0x35d)],_0x398755['style']['display']=_0x37a698?_0x1d8d18[_0x45b58a(0x1ae)]:_0x1d8d18[_0x45b58a(0x35d)],(currentMode===_0x1d8d18[_0x45b58a(0x2cb)]||_0x1d8d18[_0x45b58a(0x2a0)](currentMode,_0x1d8d18['tvgdk']))&&document[_0x45b58a(0x245)](_0x1d8d18['iCPjP'])['classList']['remove'](_0x45b58a(0x297)),!_0x1d8d18[_0x45b58a(0x360)](isNaN,startAt)&&_0x1d8d18[_0x45b58a(0x2bb)](startAt,0x0)&&startAt<questionsData[_0x45b58a(0x261)]&&(currentQuestionIndex=startAt),_0x1d8d18['Tpwgf'](loadBookmarkedQuestions),_0x1d8d18['Pnbtg'](generateQuestionNav),_0x1d8d18[_0x45b58a(0x344)](updateStats),displayQuestion();}function generateQuestionNav(){const _0x59ff52=_0x3f9b2d,_0x416249={'ydrsa':function(_0x3e2b33,_0x225c56){return _0x3e2b33<_0x225c56;},'wBzpG':_0x59ff52(0x37e),'wZvJA':function(_0x4b8374,_0x333130){return _0x4b8374+_0x333130;},'gFIrB':_0x59ff52(0x425),'wrJqw':function(_0x564597){return _0x564597();}},_0x29f95a=document[_0x59ff52(0x245)](_0x59ff52(0x22e));_0x29f95a[_0x59ff52(0x423)]='';for(let _0x5d97fc=0x0;_0x416249[_0x59ff52(0x286)](_0x5d97fc,questionsData[_0x59ff52(0x261)]);_0x5d97fc++){const _0x568582=document[_0x59ff52(0x3c1)](_0x416249[_0x59ff52(0x3cc)]);_0x568582[_0x59ff52(0x2e7)]=_0x416249[_0x59ff52(0x3a1)](_0x5d97fc,0x1),_0x568582[_0x59ff52(0x1b5)]=_0x416249[_0x59ff52(0x369)],_0x568582[_0x59ff52(0x40a)]=()=>jumpToQuestion(_0x5d97fc),_0x568582['id']=_0x59ff52(0x23b)+_0x5d97fc,_0x29f95a[_0x59ff52(0x2a2)](_0x568582);}_0x416249[_0x59ff52(0x1aa)](updateQuestionNav);}function updateQuestionNav(){const _0x5eee95=_0x3f9b2d,_0x2a2b83={'aNupb':function(_0x384bad,_0x446793){return _0x384bad-_0x446793;},'gApJL':function(_0x262a32,_0x123be6){return _0x262a32===_0x123be6;},'jWKYV':_0x5eee95(0x3f4),'kpknw':function(_0x340a4e,_0x158a93){return _0x340a4e!==_0x158a93;},'wYeHV':_0x5eee95(0x26f),'UqmaV':_0x5eee95(0x240),'vJiyi':'answered','TwcFo':function(_0x35e4b4){return _0x35e4b4();},'ItqPE':_0x5eee95(0x297),'WqnBR':'.m3u8','dqMMj':function(_0xc5d813,_0x1b4f82,_0x2faed4){return _0xc5d813(_0x1b4f82,_0x2faed4);},'nrJJu':function(_0x335024,_0x28cccb){return _0x335024<_0x28cccb;},'rLshs':function(_0x40e032,_0x570f07){return _0x40e032===_0x570f07;},'AJXLM':_0x5eee95(0x39e),'XRCBt':_0x5eee95(0x227),'hktKg':_0x5eee95(0x2b3),'NOSKV':'GVlge','RnVGT':_0x5eee95(0x349),'GoupO':'study','KOwCK':_0x5eee95(0x2ee),'ZnAvH':_0x5eee95(0x1d1),'vTIYa':_0x5eee95(0x39b),'bjywk':_0x5eee95(0x24d),'GwkDD':'kNTOM','jnhYN':_0x5eee95(0x212),'vvMeP':_0x5eee95(0x277)};for(let _0x2b2159=0x0;_0x2a2b83[_0x5eee95(0x34d)](_0x2b2159,questionsData[_0x5eee95(0x261)]);_0x2b2159++){if(_0x2a2b83[_0x5eee95(0x24c)](_0x2a2b83[_0x5eee95(0x21e)],_0x2a2b83[_0x5eee95(0x1e3)]))_0x47e943[_0x439e51][_0x5eee95(0x2e1)]+=_0x2a2b83[_0x5eee95(0x2be)](_0x16809d[_0x5eee95(0x26a)](),_0x67325);else{const _0x1c625d=document[_0x5eee95(0x245)](_0x5eee95(0x23b)+_0x2b2159),_0x58b98b=questionStates[_0x2b2159];let _0x3bfcbe='';if(_0x2b2159===currentQuestionIndex)_0x3bfcbe='nav-btn-current';else{if(_0x58b98b[_0x5eee95(0x19f)])_0x3bfcbe=_0x2a2b83['hktKg'];else{if(_0x58b98b['markedForReview']){if(_0x2a2b83[_0x5eee95(0x24c)](_0x5eee95(0x2c5),_0x2a2b83[_0x5eee95(0x250)]))_0x3bfcbe=_0x2a2b83[_0x5eee95(0x392)];else{const _0x29a3fd={'nOVlN':function(_0x1dc73e,_0x598d50){const _0x43da52=_0x5eee95;return _0x2a2b83[_0x43da52(0x3a8)](_0x1dc73e,_0x598d50);},'GsJBP':_0x2a2b83[_0x5eee95(0x1f3)]};if(_0x2a2b83['kpknw'](_0x1541c5,_0x5eee95(0x3ca))&&_0x2a2b83[_0x5eee95(0x439)](_0x303132,_0x2a2b83[_0x5eee95(0x3db)]))return;const _0x42cc00=_0x23fe5c[_0x5eee95(0x245)](_0x5eee95(0x316)),_0x2b27c7=_0x42cc00[_0x5eee95(0x1a0)](_0x2a2b83[_0x5eee95(0x40d)]),_0x53fef1=_0xb25504[_0x8b3bac],_0x54f5ec=_0x53fef1[_0x5eee95(0x304)];let _0x4c5e33=_0x53fef1[_0x5eee95(0x1ef)][_0x5eee95(0x41f)](_0x228e5a=>_0x228e5a['id']===_0x54f5ec);_0x42cc00[_0x5eee95(0x353)]['add'](_0x2a2b83[_0x5eee95(0x32a)]),_0x2b27c7[_0x5eee95(0x36b)]((_0x17ce8a,_0x4c56b3)=>{const _0x2404f1=_0x5eee95;_0x17ce8a[_0x2404f1(0x353)][_0x2404f1(0x1a1)](_0x2404f1(0x40e));if(_0x29a3fd[_0x2404f1(0x3f6)](_0x4c56b3,_0x4c5e33))_0x17ce8a['classList'][_0x2404f1(0x3fa)](_0x29a3fd[_0x2404f1(0x35e)]);else{if(_0x29a3fd[_0x2404f1(0x3f6)](_0x4c56b3,_0x57bc17)&&!_0x4d65d1)_0x17ce8a[_0x2404f1(0x353)][_0x2404f1(0x3fa)](_0x2404f1(0x1d1));}}),_0x2a2b83[_0x5eee95(0x2dc)](_0xc9c075);}}else{if(_0x2a2b83['rLshs'](currentMode,_0x2a2b83[_0x5eee95(0x2c3)])||_0x2a2b83[_0x5eee95(0x24c)](currentMode,_0x2a2b83['wYeHV'])){if(_0x2a2b83[_0x5eee95(0x24c)](_0x58b98b[_0x5eee95(0x28a)],_0x5eee95(0x3f4)))_0x3bfcbe=_0x2a2b83[_0x5eee95(0x2b2)];else{if(_0x2a2b83[_0x5eee95(0x24c)](_0x58b98b[_0x5eee95(0x28a)],_0x2a2b83[_0x5eee95(0x3d1)]))_0x3bfcbe=_0x2a2b83[_0x5eee95(0x3fc)];else _0x3bfcbe=_0x2a2b83[_0x5eee95(0x422)];}}else{if(_0x2a2b83[_0x5eee95(0x24c)](_0x2a2b83[_0x5eee95(0x379)],_0x2a2b83[_0x5eee95(0x411)])){_0x753404[_0x5eee95(0x353)][_0x5eee95(0x1a1)](_0x2a2b83['ItqPE']);if(_0x1727e9['includes'](_0x2a2b83['WqnBR']))_0x2a2b83[_0x5eee95(0x332)](_0x47bfde,_0x4800d3,_0x249733);else _0x3ad963[_0x5eee95(0x3f9)]=_0x173940;}else{if(_0x2a2b83[_0x5eee95(0x439)](_0x58b98b[_0x5eee95(0x390)],null))_0x3bfcbe=_0x2a2b83[_0x5eee95(0x2b0)];else _0x3bfcbe=_0x5eee95(0x24d);}}}}}_0x1c625d[_0x5eee95(0x1b5)]='w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20'+_0x3bfcbe;}}}function jumpToQuestion(_0x70a235){const _0x43049c=_0x3f9b2d,_0x367c51={'zAYbh':function(_0x4d69f7,_0x29377b){return _0x4d69f7>=_0x29377b;},'aeUhi':function(_0x2e698a,_0x550371){return _0x2e698a<_0x550371;},'SoOEm':_0x43049c(0x338),'BzEFT':function(_0x3f57df,_0x211858){return _0x3f57df-_0x211858;},'ZySvP':function(_0x554f78){return _0x554f78();},'kydkW':function(_0x5027af){return _0x5027af();}};_0x367c51[_0x43049c(0x1e1)](_0x70a235,0x0)&&_0x367c51[_0x43049c(0x1df)](_0x70a235,questionsData[_0x43049c(0x261)])&&(_0x367c51['SoOEm']===_0x43049c(0x338)?(questionStartTime&&(questionStates[currentQuestionIndex][_0x43049c(0x2e1)]+=_0x367c51['BzEFT'](Date['now'](),questionStartTime)),currentQuestionIndex=_0x70a235,_0x367c51[_0x43049c(0x203)](displayQuestion),_0x367c51[_0x43049c(0x3e7)](saveProgress)):_0x37b5bf[_0x43049c(0x423)]+=_0x43049c(0x43c)+_0x5b9808['explanation_audio_eng']+_0x43049c(0x22d));}function updateStats(){const _0x54e5d4=_0x3f9b2d,_0x59843f={'WEpku':function(_0x946009,_0x38ff99){return _0x946009<_0x38ff99;},'jfSut':function(_0x4dfcc5,_0x42bac6){return _0x4dfcc5===_0x42bac6;},'TSJgC':_0x54e5d4(0x26f),'cEhDb':function(_0x3cd873,_0x381dbd){return _0x3cd873!==_0x381dbd;},'ROyEf':'uRSdy','iXOSz':_0x54e5d4(0x436),'OrdCx':_0x54e5d4(0x42a),'IIikU':'totalAttempted','nnhQq':function(_0x271949,_0x46c756){return _0x271949>_0x46c756;},'JZvrB':function(_0x2f1f27,_0x272dca){return _0x2f1f27*_0x272dca;},'iByjD':function(_0xf97cc6,_0xa14765){return _0xf97cc6/_0xa14765;},'aPevr':'accuracy','gLYLI':function(_0x2ed8fd,_0x1c399f){return _0x2ed8fd%_0x1c399f;},'MMieR':_0x54e5d4(0x2e1),'JASou':function(_0xe954cb,_0x4056af){return _0xe954cb+_0x4056af;}};if(_0x59843f[_0x54e5d4(0x3b8)](currentMode,'study')||currentMode===_0x59843f[_0x54e5d4(0x3a3)]){if(_0x59843f[_0x54e5d4(0x330)](_0x59843f[_0x54e5d4(0x32f)],_0x54e5d4(0x2c9))){document[_0x54e5d4(0x245)](_0x59843f[_0x54e5d4(0x3dc)])[_0x54e5d4(0x2e7)]=stats[_0x54e5d4(0x2af)],document[_0x54e5d4(0x245)](_0x59843f[_0x54e5d4(0x3e2)])['textContent']=stats[_0x54e5d4(0x226)],document[_0x54e5d4(0x245)](_0x59843f[_0x54e5d4(0x315)])[_0x54e5d4(0x2e7)]=stats[_0x54e5d4(0x355)];const _0x505f20=_0x59843f[_0x54e5d4(0x1dc)](stats['totalAttempted'],0x0)?Math[_0x54e5d4(0x200)](_0x59843f[_0x54e5d4(0x1a8)](_0x59843f['iByjD'](stats['correctAnswers'],stats['totalAttempted']),0x64)):0x0;document['getElementById'](_0x59843f[_0x54e5d4(0x21f)])[_0x54e5d4(0x2e7)]=_0x505f20+'%',stats['totalTime']=questionStates[_0x54e5d4(0x283)]((_0x1908d7,_0x50920b)=>_0x1908d7+_0x50920b[_0x54e5d4(0x2e1)],0x0);const _0x517653=Math['floor'](_0x59843f[_0x54e5d4(0x324)](stats['totalTime'],0x3e8)),_0x4c9a05=Math[_0x54e5d4(0x295)](_0x517653/0x3c),_0x2ae201=_0x59843f['gLYLI'](_0x517653,0x3c);document[_0x54e5d4(0x245)](_0x59843f['MMieR'])[_0x54e5d4(0x2e7)]=_0x59843f[_0x54e5d4(0x322)](_0x59843f[_0x54e5d4(0x322)](_0x4c9a05,':'),_0x2ae201['toString']()['padStart'](0x2,'0'));}else _0x59843f['WEpku'](_0x182223['questionIndex'],_0x4d2be1['length'])&&(_0x5d069c[_0x37dddb[_0x54e5d4(0x373)]]['bookmarked']=!![]);}}function setupVideo(_0x2f87de,_0x37c373){const _0x3290cf=_0x3f9b2d,_0x1ed23b={'tefTl':function(_0x1d3360){return _0x1d3360();},'kliYt':function(_0x257e9f,_0x5334fd){return _0x257e9f!==_0x5334fd;},'srIUg':_0x3290cf(0x334),'hwUxA':_0x3290cf(0x1ca)};if(Hls[_0x3290cf(0x2d7)]()){const _0x517ed5=new Hls();_0x517ed5[_0x3290cf(0x3ce)](_0x37c373),_0x517ed5[_0x3290cf(0x388)](_0x2f87de);}else _0x2f87de[_0x3290cf(0x1fb)]('application/vnd.apple.mpegurl')&&(_0x1ed23b[_0x3290cf(0x232)](_0x1ed23b['srIUg'],_0x1ed23b[_0x3290cf(0x3ff)])?_0x2f87de[_0x3290cf(0x3f9)]=_0x37c373:_0x1ed23b[_0x3290cf(0x1ec)](_0x5e5a5b));}function displayQuestion(){const _0xd3d9b=_0x3f9b2d,_0x5f19ce={'zALXt':function(_0x202a5d,_0x474e39){return _0x202a5d!==_0x474e39;},'cmEiy':'rGSxb','NlEyM':function(_0x11facb){return _0x11facb();},'DkWMJ':_0xd3d9b(0x2f5),'vskqG':_0xd3d9b(0x27c),'JkGNa':_0xd3d9b(0x321),'DKEwy':function(_0x5524cc,_0x105c85){return _0x5524cc+_0x105c85;},'npUWW':function(_0x2ff441,_0x503de9){return _0x2ff441===_0x503de9;},'VPcOJ':_0xd3d9b(0x20b),'IsmoZ':_0xd3d9b(0x40e),'bNBIs':_0xd3d9b(0x224),'qRvpG':'.option-button','fEnbR':function(_0xca5ac4,_0x21b15c){return _0xca5ac4(_0x21b15c);},'rJsEs':'questionText','NCSQJ':function(_0x3c2fb8,_0x683d8f){return _0x3c2fb8*_0x683d8f;},'UrIDq':function(_0x427349,_0x3035b9){return _0x427349/_0x3035b9;},'VZosN':_0xd3d9b(0x34a),'OZkvu':function(_0xabc8c4,_0x4f3a21){return _0xabc8c4!==_0x4f3a21;},'WxuIg':_0xd3d9b(0x2da),'JNfpz':_0xd3d9b(0x3de),'GywHw':_0xd3d9b(0x316),'gPscJ':_0xd3d9b(0x405),'nLSLS':function(_0x259d6a){return _0x259d6a();},'pmqLi':function(_0x158825,_0x55078a){return _0x158825===_0x55078a;},'OFYOC':_0xd3d9b(0x26f)};if(!questionsData||questionsData[_0xd3d9b(0x261)]===0x0){document[_0xd3d9b(0x245)](_0x5f19ce[_0xd3d9b(0x430)])['innerHTML']=_0xd3d9b(0x398);return;};const _0x2ca806=questionsData[currentQuestionIndex];questionStartTime=Date[_0xd3d9b(0x26a)](),selectedOption=questionStates[currentQuestionIndex]['selectedAnswer'];const _0x189f4a=_0x5f19ce[_0xd3d9b(0x1a7)](_0x5f19ce['UrIDq'](currentQuestionIndex+0x1,questionsData[_0xd3d9b(0x261)]),0x64);document[_0xd3d9b(0x245)]('progressBar')[_0xd3d9b(0x28c)]['width']=_0x5f19ce[_0xd3d9b(0x312)](_0x189f4a,'%'),document[_0xd3d9b(0x245)](_0x5f19ce[_0xd3d9b(0x3c3)])['textContent']=currentQuestionIndex+0x1,_0x5f19ce[_0xd3d9b(0x2d2)](updateQuestionNav),document[_0xd3d9b(0x245)]('prevBtn')[_0xd3d9b(0x26b)]=_0x5f19ce[_0xd3d9b(0x2b4)](currentQuestionIndex,0x0),document[_0xd3d9b(0x245)](_0xd3d9b(0x347))['classList'][_0xd3d9b(0x3fa)](_0xd3d9b(0x297)),document[_0xd3d9b(0x245)](_0x5f19ce[_0xd3d9b(0x430)])[_0xd3d9b(0x423)]=_0x2ca806[_0xd3d9b(0x28b)]||_0xd3d9b(0x287);let _0x3fa8e='';if(_0x2ca806[_0xd3d9b(0x37f)])_0x3fa8e+=_0xd3d9b(0x1cc)+_0x2ca806[_0xd3d9b(0x37f)]+_0xd3d9b(0x22d);if(_0x2ca806[_0xd3d9b(0x1ce)])_0x3fa8e+=_0xd3d9b(0x2cf)+_0x2ca806['question_video']+_0xd3d9b(0x1b2);_0x2ca806[_0xd3d9b(0x383)]&&(_0x5f19ce['OZkvu'](_0x5f19ce[_0xd3d9b(0x2ae)],_0xd3d9b(0x2da))?_0x32549e[_0xd3d9b(0x3f9)]=_0x5f018d:_0x2ca806[_0xd3d9b(0x383)][_0xd3d9b(0x36b)](_0x34608d=>{const _0x5787a4=_0xd3d9b;if(_0x5f19ce[_0x5787a4(0x345)](_0x5787a4(0x1c8),_0x5f19ce[_0x5787a4(0x3e5)]))_0xd39718[_0x401a23][_0x5787a4(0x328)]=!_0x4d4ad5[_0x38531a][_0x5787a4(0x328)],_0x1970bb(),_0x2f36d4();else{if(_0x34608d)_0x3fa8e+='<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22'+_0x34608d+'\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>';}}));document[_0xd3d9b(0x245)](_0x5f19ce[_0xd3d9b(0x403)])[_0xd3d9b(0x423)]=_0x3fa8e;const _0x2e5611=document[_0xd3d9b(0x245)](_0x5f19ce[_0xd3d9b(0x2c6)]);_0x2e5611['innerHTML']='',_0x2e5611['classList']['remove'](_0x5f19ce[_0xd3d9b(0x235)]),_0x2ca806[_0xd3d9b(0x1ef)]&&Array['isArray'](_0x2ca806[_0xd3d9b(0x1ef)])&&(_0x2ca806['choices'][_0xd3d9b(0x36b)]((_0x232493,_0x73b6a0)=>{const _0x269b1c=_0xd3d9b;if(_0x5f19ce[_0x269b1c(0x231)]===_0x5f19ce[_0x269b1c(0x2ef)])_0x5f19ce['NlEyM'](_0x5df432),_0x5dd79c[_0x269b1c(0x245)](_0x5f19ce[_0x269b1c(0x21a)])[_0x269b1c(0x28c)][_0x269b1c(0x3a4)]=_0x269b1c(0x221);else{const _0x2908f8=String[_0x269b1c(0x2d8)](_0x5f19ce[_0x269b1c(0x312)](0x41,_0x73b6a0)),_0x3adab7=_0x5f19ce[_0x269b1c(0x2b4)](selectedOption,_0x73b6a0),_0x2a6721=document['createElement'](_0x5f19ce[_0x269b1c(0x432)]);_0x2a6721[_0x269b1c(0x423)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20'+(_0x3adab7?_0x5f19ce['IsmoZ']:'')+_0x269b1c(0x2dd)+_0x73b6a0+_0x269b1c(0x31b)+_0x2908f8+_0x269b1c(0x213)+(_0x232493['text']||_0x5f19ce[_0x269b1c(0x312)](_0x5f19ce[_0x269b1c(0x1b8)],_0x5f19ce[_0x269b1c(0x312)](_0x73b6a0,0x1)))+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x2e5611[_0x269b1c(0x2a2)](_0x2a6721);}}),_0x2e5611[_0xd3d9b(0x1db)]('click',function(_0x2f5a67){const _0x1d5c90=_0xd3d9b,_0x4d616a=_0x2f5a67[_0x1d5c90(0x2b8)]['closest'](_0x5f19ce[_0x1d5c90(0x289)]);if(_0x4d616a){const _0x3c768f=_0x5f19ce[_0x1d5c90(0x1b4)](parseInt,_0x4d616a['getAttribute'](_0x1d5c90(0x325)));_0x5f19ce[_0x1d5c90(0x1b4)](selectOption,_0x3c768f);}})),updateBookmarkButton(),_0x5f19ce[_0xd3d9b(0x31f)](updateMarkReviewButton),(_0x5f19ce['pmqLi'](currentMode,_0x5f19ce[_0xd3d9b(0x23e)])||currentMode===_0xd3d9b(0x3d0))&&!isQuizCompleted&&_0x5f19ce['NlEyM'](startTimer);}function selectOption(_0x20b7d6){const _0x202ca4=_0x3f9b2d,_0xcc17c4={'eFJmr':function(_0x370a03,_0x312b6e){return _0x370a03-_0x312b6e;},'nKEqG':function(_0x4b3652){return _0x4b3652();},'kWDwq':_0x202ca4(0x240),'DGjzo':function(_0x4f2240,_0x5815a2){return _0x4f2240===_0x5815a2;},'wsgCR':_0x202ca4(0x3ca),'XlKQE':function(_0x2b1f2e,_0x45d839){return _0x2b1f2e!==_0x45d839;},'iaEnJ':_0x202ca4(0x1d3),'DPDFn':function(_0x465358){return _0x465358();},'pzxEq':_0x202ca4(0x2df),'PXUeu':_0x202ca4(0x281),'Zctyc':_0x202ca4(0x3b9),'qKBJh':function(_0x9f4016){return _0x9f4016();}},_0x5bdb64=document['getElementById'](_0x202ca4(0x316));if(_0x5bdb64[_0x202ca4(0x353)][_0x202ca4(0x1f1)](_0x202ca4(0x405)))return;questionStartTime&&(questionStates[currentQuestionIndex][_0x202ca4(0x2e1)]+=_0xcc17c4[_0x202ca4(0x2c8)](Date[_0x202ca4(0x26a)](),questionStartTime),questionStartTime=Date[_0x202ca4(0x26a)]()),selectedOption=_0x20b7d6,questionStates[currentQuestionIndex]['selectedAnswer']=_0x20b7d6,document['querySelectorAll'](_0xcc17c4[_0x202ca4(0x202)])[_0x202ca4(0x36b)]((_0x253eeb,_0x55d831)=>{const _0x245b60=_0x202ca4;_0x253eeb[_0x245b60(0x353)]['toggle']('selected',_0x55d831===_0x20b7d6);}),_0xcc17c4[_0x202ca4(0x3f7)](currentMode,_0xcc17c4['wsgCR'])||_0xcc17c4[_0x202ca4(0x3f7)](currentMode,_0x202ca4(0x26f))?_0xcc17c4[_0x202ca4(0x43b)](_0xcc17c4['iaEnJ'],_0xcc17c4[_0x202ca4(0x269)])?_0xc2ffb0[_0x202ca4(0x423)]+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22'+_0x5375b5[_0x202ca4(0x29d)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>':_0xcc17c4[_0x202ca4(0x3b0)](processAnswer):_0x202ca4(0x2df)!==_0xcc17c4['pzxEq']?_0x663c01=_0x2f8fba:(_0xcc17c4['DGjzo'](questionStates[currentQuestionIndex][_0x202ca4(0x28a)],_0xcc17c4[_0x202ca4(0x340)])&&(_0xcc17c4['DGjzo'](_0xcc17c4[_0x202ca4(0x30c)],_0xcc17c4[_0x202ca4(0x30c)])?(questionStates[currentQuestionIndex][_0x202ca4(0x28a)]=_0x202ca4(0x405),stats[_0x202ca4(0x355)]++,stats[_0x202ca4(0x22f)]--):(_0x54d5ed&&(_0x151e5c[_0xc2f93c][_0x202ca4(0x2e1)]+=_0xcc17c4[_0x202ca4(0x2c8)](_0x51f700[_0x202ca4(0x26a)](),_0x3a0aa0)),_0x28ac96--,_0xcc17c4[_0x202ca4(0x419)](_0x58c709),_0x330ae9())),_0xcc17c4[_0x202ca4(0x419)](updateQuestionNav)),_0xcc17c4[_0x202ca4(0x1cb)](saveProgress);}function processAnswer(){const _0x35916a=_0x3f9b2d,_0x2aa5db={'gCIAY':function(_0x50bc3b,_0x549a1d){return _0x50bc3b===_0x549a1d;},'MfIOf':function(_0x147e25,_0x59290a){return _0x147e25===_0x59290a;},'wNbrB':_0x35916a(0x281),'qvwpQ':_0x35916a(0x3f4),'xTdBn':'incorrect','HyzTF':function(_0x556377){return _0x556377();},'ygXjR':function(_0x246b2e,_0x14d8f3){return _0x246b2e(_0x14d8f3);},'gqJxb':function(_0x24446f){return _0x24446f();}},_0x3ea53e=questionsData[currentQuestionIndex],_0x5386b5=_0x3ea53e['correct_choice_id'];if(_0x2aa5db[_0x35916a(0x348)](selectedOption,null))return;const _0x341313=_0x3ea53e[_0x35916a(0x1ef)][selectedOption],_0x5bcffe=_0x2aa5db[_0x35916a(0x244)](_0x341313['id'],_0x5386b5);if(_0x2aa5db[_0x35916a(0x348)](questionStates[currentQuestionIndex]['status'],_0x2aa5db[_0x35916a(0x2fb)])){stats[_0x35916a(0x355)]++,stats[_0x35916a(0x22f)]--;if(_0x5bcffe)stats[_0x35916a(0x2af)]++;else stats[_0x35916a(0x226)]++;}questionStates[currentQuestionIndex][_0x35916a(0x28a)]=_0x5bcffe?_0x2aa5db['qvwpQ']:_0x2aa5db[_0x35916a(0x382)],_0x2aa5db[_0x35916a(0x23c)](updateStats),_0x2aa5db[_0x35916a(0x299)](showInlineFeedback,_0x5bcffe),_0x2aa5db[_0x35916a(0x3bc)](updateQuestionNav);}function showInlineFeedback(_0x2bc6e5){const _0x4ca01d=_0x3f9b2d,_0x47c88d={'byetu':function(_0x1001f0,_0x14a8e2){return _0x1001f0===_0x14a8e2;},'IwVgo':_0x4ca01d(0x3f4),'JhyRc':function(_0x542792,_0x421e48){return _0x542792!==_0x421e48;},'jtgqn':'timed_study','SUUoy':_0x4ca01d(0x316),'Bjcfa':function(_0x439b8){return _0x439b8();}};if(_0x47c88d[_0x4ca01d(0x33d)](currentMode,_0x4ca01d(0x3ca))&&currentMode!==_0x47c88d[_0x4ca01d(0x416)])return;const _0xeed8a0=document[_0x4ca01d(0x245)](_0x47c88d[_0x4ca01d(0x26e)]),_0x196d95=_0xeed8a0[_0x4ca01d(0x1a0)](_0x4ca01d(0x240)),_0x1b1593=questionsData[currentQuestionIndex],_0x2a0b9f=_0x1b1593[_0x4ca01d(0x304)];let _0xccd7c8=_0x1b1593[_0x4ca01d(0x1ef)][_0x4ca01d(0x41f)](_0x3737a5=>_0x3737a5['id']===_0x2a0b9f);_0xeed8a0[_0x4ca01d(0x353)][_0x4ca01d(0x3fa)](_0x4ca01d(0x405)),_0x196d95['forEach']((_0xa264b8,_0x17fba2)=>{const _0x1a8eac=_0x4ca01d;_0xa264b8[_0x1a8eac(0x353)][_0x1a8eac(0x1a1)](_0x1a8eac(0x40e));if(_0x47c88d[_0x1a8eac(0x28e)](_0x17fba2,_0xccd7c8))_0xa264b8['classList'][_0x1a8eac(0x3fa)](_0x47c88d['IwVgo']);else{if(_0x47c88d[_0x1a8eac(0x28e)](_0x17fba2,selectedOption)&&!_0x2bc6e5)_0xa264b8[_0x1a8eac(0x353)][_0x1a8eac(0x3fa)](_0x1a8eac(0x1d1));}}),_0x47c88d[_0x4ca01d(0x1c3)](showSolution);}function showSolution(){const _0x31b3a2=_0x3f9b2d,_0x49ad83={'KNova':_0x31b3a2(0x42f),'OJgcE':'No\x20questions\x20available\x20for\x20this\x20quiz.','DWUgK':'\x20-\x20Brain\x20And\x20Scalpel','tPPcv':_0x31b3a2(0x306),'nRlSy':'quizHierarchy','ybGnb':_0x31b3a2(0x300),'czXBb':function(_0x47f5c0,_0xdacd01){return _0x47f5c0!==_0xdacd01;},'dXAGA':_0x31b3a2(0x3ca),'Cpqex':_0x31b3a2(0x26f),'eYnMO':_0x31b3a2(0x380),'MNjln':'hidden','zTbfB':_0x31b3a2(0x1e4),'spPLW':function(_0x54ee81,_0x2817da,_0xc2749b){return _0x54ee81(_0x2817da,_0xc2749b);},'JKCLR':_0x31b3a2(0x25e),'yJowz':'solutionAudio','UZiNc':_0x31b3a2(0x363),'TUoDS':function(_0x5b578f,_0x5867cd){return _0x5b578f!==_0x5867cd;},'bziPO':'OFRUw'};if(_0x49ad83[_0x31b3a2(0x2ad)](currentMode,_0x49ad83['dXAGA'])&&currentMode!==_0x49ad83['Cpqex'])return;const _0x59d1f8=questionsData[currentQuestionIndex];document[_0x31b3a2(0x245)](_0x31b3a2(0x2d6))[_0x31b3a2(0x423)]=_0x59d1f8[_0x31b3a2(0x1ab)]||_0x31b3a2(0x384);const _0x100844=document['getElementById'](_0x31b3a2(0x27b)),_0x421582=document[_0x31b3a2(0x245)](_0x49ad83['eYnMO']),_0x4a948d=_0x59d1f8[_0x31b3a2(0x41e)];if(_0x4a948d){if(_0x49ad83[_0x31b3a2(0x2ad)]('vQWqP',_0x31b3a2(0x1fe))){_0x100844[_0x31b3a2(0x353)][_0x31b3a2(0x1a1)](_0x49ad83[_0x31b3a2(0x36f)]);if(_0x4a948d[_0x31b3a2(0x32e)](_0x49ad83[_0x31b3a2(0x2f3)]))_0x49ad83[_0x31b3a2(0x364)](setupVideo,_0x421582,_0x4a948d);else _0x421582['src']=_0x4a948d;}else{_0x3abda6[_0x31b3a2(0x245)](_0x49ad83[_0x31b3a2(0x20a)])['innerHTML']=_0x49ad83[_0x31b3a2(0x362)];return;}}else _0x49ad83['czXBb'](_0x31b3a2(0x25e),_0x49ad83[_0x31b3a2(0x239)])?(_0x451a2a=_0x218c9b[_0x31b3a2(0x3df)],_0x1fc261=_0x37ee8a[_0x31b3a2(0x234)],_0x168297=_0x32ff9a['hierarchy'],_0x14e47c['title']=_0x2e6a61+_0x49ad83[_0x31b3a2(0x30d)],_0x33acfc['getElementById'](_0x49ad83[_0x31b3a2(0x291)])['textContent']=_0x4fc6c1[_0x31b3a2(0x261)],_0x4e1a6f[_0x31b3a2(0x245)](_0x49ad83[_0x31b3a2(0x329)])['textContent']=_0x3700bd[_0x31b3a2(0x222)](_0x49ad83[_0x31b3a2(0x367)])):_0x100844['classList'][_0x31b3a2(0x3fa)](_0x49ad83['MNjln']);const _0x4bb815=document[_0x31b3a2(0x245)](_0x49ad83['yJowz']);_0x4bb815[_0x31b3a2(0x423)]='';_0x59d1f8[_0x31b3a2(0x308)]&&(_0x4bb815['innerHTML']+=_0x31b3a2(0x43c)+_0x59d1f8['explanation_audio_eng']+_0x31b3a2(0x22d));_0x59d1f8['explanation_audio_hin']&&(_0x4bb815[_0x31b3a2(0x423)]+=_0x31b3a2(0x39a)+_0x59d1f8[_0x31b3a2(0x29d)]+'\x22\x20controls\x20class=\x22w-full\x22></audio></div>');const _0x306a1e=document[_0x31b3a2(0x245)](_0x49ad83['UZiNc']);_0x306a1e['innerHTML']='',_0x59d1f8[_0x31b3a2(0x27e)]&&(_0x49ad83[_0x31b3a2(0x412)](_0x49ad83[_0x31b3a2(0x247)],_0x49ad83['bziPO'])?_0x292522():_0x59d1f8[_0x31b3a2(0x27e)][_0x31b3a2(0x36b)](_0x3f6446=>{const _0x295b0c=_0x31b3a2;if(_0x3f6446)_0x306a1e[_0x295b0c(0x423)]+='<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0x3f6446+_0x295b0c(0x39d);})),document[_0x31b3a2(0x245)](_0x31b3a2(0x347))[_0x31b3a2(0x353)][_0x31b3a2(0x1a1)](_0x49ad83[_0x31b3a2(0x36f)]);}function submitQuiz(){const _0x70d8e4=_0x3f9b2d,_0x12d85d={'vkCfU':function(_0x4c3b81){return _0x4c3b81();},'IhiGQ':_0x70d8e4(0x2f5),'koNjO':'none','NGqFJ':function(_0x55267f){return _0x55267f();},'iMwqJ':_0x70d8e4(0x221),'ZDdGU':_0x70d8e4(0x325),'UxXdD':_0x70d8e4(0x405),'DYLnl':function(_0x484bed,_0x40bc6a){return _0x484bed===_0x40bc6a;},'Fonnq':'VKSMd','eNZFe':function(_0x55a5b8,_0x5757e6){return _0x55a5b8!==_0x5757e6;},'ubmoJ':function(_0xcd404a,_0x576db5){return _0xcd404a!==_0x576db5;},'zYkRH':_0x70d8e4(0x2d9),'YwSCH':function(_0x4c6fe0,_0x48288e){return _0x4c6fe0===_0x48288e;},'yzpAJ':function(_0x2b4c0d,_0x23eacc){return _0x2b4c0d!==_0x23eacc;},'WKFPS':_0x70d8e4(0x2d1),'uPimf':'correct','sUVCn':_0x70d8e4(0x1d1),'RDZie':function(_0x110518,_0xb9e244){return _0x110518(_0xb9e244);},'RcaAW':'Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?','iyCiW':function(_0x33e0c2,_0x5c9796){return _0x33e0c2-_0x5c9796;},'gHgmc':_0x70d8e4(0x42d),'eKzMA':function(_0x4f1738,_0x3d0c16){return _0x4f1738-_0x3d0c16;},'dSZAw':function(_0x473849,_0x4e6f63,_0x20c47c,_0x1bc83e,_0x5130e8){return _0x473849(_0x4e6f63,_0x20c47c,_0x1bc83e,_0x5130e8);},'XbxLV':function(_0x5626fa,_0x1ca8ad){return _0x5626fa+_0x1ca8ad;}};if(timer)_0x12d85d['RDZie'](clearInterval,timer);if(!confirm(_0x12d85d[_0x70d8e4(0x2aa)]))return;isQuizCompleted=!![];let _0x285a7e=0x0,_0x108e65=0x0;const _0x5e9c5c=_0x12d85d[_0x70d8e4(0x410)](Date[_0x70d8e4(0x26a)](),quizStartTime);questionsData[_0x70d8e4(0x36b)]((_0x4fb944,_0x3d4443)=>{const _0x41f4b0=_0x70d8e4,_0x240c54={'lSQeP':function(_0x226d43,_0x5d5c06){return _0x226d43(_0x5d5c06);},'BQBXv':_0x12d85d[_0x41f4b0(0x2c2)],'QIQGZ':function(_0x312aee,_0x2b5a1f){return _0x312aee(_0x2b5a1f);},'toBXn':_0x12d85d['UxXdD']};if(_0x12d85d[_0x41f4b0(0x35f)](_0x12d85d[_0x41f4b0(0x24b)],_0x41f4b0(0x2a9))){const _0x4fee1b=_0x36428f[_0x41f4b0(0x2b8)]['closest'](_0x41f4b0(0x240));if(_0x4fee1b){const _0x325b23=_0x240c54[_0x41f4b0(0x43d)](_0x241318,_0x4fee1b['getAttribute'](_0x240c54['BQBXv']));_0x240c54['QIQGZ'](_0x260c28,_0x325b23);}}else{const _0x39d040=questionStates[_0x3d4443];_0x12d85d[_0x41f4b0(0x38b)](_0x39d040[_0x41f4b0(0x390)],null)&&(_0x12d85d[_0x41f4b0(0x296)](_0x12d85d[_0x41f4b0(0x284)],_0x12d85d['zYkRH'])?(_0xd52b8f[_0x5f2d2e][_0x41f4b0(0x28a)]=_0x240c54[_0x41f4b0(0x19e)],_0x3187d4[_0x41f4b0(0x355)]++,_0x48fcb5['notAttempted']--):_0x12d85d[_0x41f4b0(0x327)](_0x4fb944[_0x41f4b0(0x1ef)][_0x39d040[_0x41f4b0(0x390)]]['id'],_0x4fb944[_0x41f4b0(0x304)])?_0x12d85d[_0x41f4b0(0x294)](_0x12d85d['WKFPS'],_0x41f4b0(0x2d1))?_0x12d85d[_0x41f4b0(0x243)](_0x47eda2)?(_0x50902c[_0x41f4b0(0x245)](_0x12d85d[_0x41f4b0(0x274)])[_0x41f4b0(0x28c)]['display']=_0x12d85d[_0x41f4b0(0x29f)],_0x12d85d[_0x41f4b0(0x323)](_0x5f4a23)):(_0x5e9b71(),_0x5bef5b['getElementById'](_0x41f4b0(0x2f5))[_0x41f4b0(0x28c)][_0x41f4b0(0x3a4)]=_0x12d85d[_0x41f4b0(0x248)]):(_0x285a7e++,_0x39d040['status']=_0x12d85d['uPimf']):(_0x108e65++,_0x39d040['status']=_0x12d85d[_0x41f4b0(0x1f0)]));}});const _0x4f8cf0=JSON[_0x70d8e4(0x271)](localStorage['getItem'](_0x12d85d[_0x70d8e4(0x38a)]))||[];_0x4f8cf0['push']({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date[_0x70d8e4(0x26a)](),'totalTime':_0x5e9c5c,'stats':{'correct':_0x285a7e,'incorrect':_0x108e65,'notAttempted':_0x12d85d[_0x70d8e4(0x1f7)](questionsData['length'],_0x285a7e+_0x108e65)}}),localStorage[_0x70d8e4(0x35a)](_0x12d85d[_0x70d8e4(0x38a)],JSON[_0x70d8e4(0x374)](_0x4f8cf0)),stats[_0x70d8e4(0x2af)]=_0x285a7e,stats[_0x70d8e4(0x226)]=_0x108e65,_0x12d85d[_0x70d8e4(0x243)](markQuizAsCompleted),_0x12d85d[_0x70d8e4(0x2de)](showPerformanceAnalysis,_0x285a7e,_0x108e65,questionsData[_0x70d8e4(0x261)]-_0x12d85d[_0x70d8e4(0x431)](_0x285a7e,_0x108e65),_0x5e9c5c);}function showPerformanceAnalysis(_0x3d8747,_0x40e9e2,_0x1f8eb8,_0x37a126){const _0x2f5142=_0x3f9b2d,_0x280ab2={'svobc':_0x2f5142(0x2e5),'JgzKO':function(_0x130a2f,_0x5caad7){return _0x130a2f>_0x5caad7;},'dvlvz':function(_0x204ef1,_0x329792){return _0x204ef1+_0x329792;},'ZZGMB':function(_0x39a955,_0x417c4b){return _0x39a955+_0x417c4b;},'wTzKr':function(_0x359326,_0x2149ed){return _0x359326*_0x2149ed;},'XMgeX':_0x2f5142(0x408),'sdhZu':function(_0x32d093,_0x257ed3){return _0x32d093-_0x257ed3;},'WArAY':function(_0x18455c,_0xd28c24){return _0x18455c*_0xd28c24;},'honED':function(_0x3484e4,_0x59d3b3){return _0x3484e4/_0x59d3b3;},'fmyFO':_0x2f5142(0x278),'iUogr':'correctResult','vLisc':_0x2f5142(0x3d8),'BPSOI':_0x2f5142(0x3f1),'gQTKJ':function(_0x2c1b93,_0xfbd692){return _0x2c1b93/_0xfbd692;},'FZWDS':function(_0x2df184,_0x399423){return _0x2df184/_0x399423;},'RDpwz':function(_0x5c81f9,_0x3c9517){return _0x5c81f9%_0x3c9517;},'xbNkV':_0x2f5142(0x1bb),'pSXYT':function(_0x2d45d5,_0x797e5f){return _0x2d45d5/_0x797e5f;},'HIkuS':function(_0x18e97d,_0x57c65f){return _0x18e97d/_0x57c65f;},'mWZgv':function(_0x156cb8,_0x1e1ffb){return _0x156cb8%_0x1e1ffb;},'eFgcn':_0x2f5142(0x1a6),'Feogu':_0x2f5142(0x297)},_0x3487ee=document[_0x2f5142(0x245)](_0x280ab2['svobc']),_0x1c2d05=_0x280ab2[_0x2f5142(0x1bf)](_0x280ab2[_0x2f5142(0x2a3)](_0x3d8747,_0x40e9e2),0x0)?Math[_0x2f5142(0x200)](_0x3d8747/_0x280ab2[_0x2f5142(0x25f)](_0x3d8747,_0x40e9e2)*0x64):0x0,_0x5e8665=_0x280ab2[_0x2f5142(0x229)](0x2,Math['PI'])*0x41,_0x247d94=document[_0x2f5142(0x245)](_0x280ab2[_0x2f5142(0x375)]);_0x247d94[_0x2f5142(0x28c)][_0x2f5142(0x3f0)]=_0x5e8665+'\x20'+_0x5e8665,_0x247d94['style']['strokeDashoffset']=_0x280ab2[_0x2f5142(0x2e8)](_0x5e8665,_0x280ab2[_0x2f5142(0x30b)](_0x280ab2[_0x2f5142(0x29b)](_0x1c2d05,0x64),_0x5e8665)),document[_0x2f5142(0x245)](_0x2f5142(0x378))[_0x2f5142(0x2e7)]=_0x1c2d05+'%',document['getElementById'](_0x280ab2[_0x2f5142(0x1ba)])[_0x2f5142(0x2e7)]=questionsData[_0x2f5142(0x261)],document[_0x2f5142(0x245)](_0x280ab2[_0x2f5142(0x428)])[_0x2f5142(0x2e7)]=_0x3d8747,document['getElementById'](_0x280ab2[_0x2f5142(0x253)])[_0x2f5142(0x2e7)]=_0x40e9e2,document[_0x2f5142(0x245)](_0x280ab2[_0x2f5142(0x2f2)])[_0x2f5142(0x2e7)]=_0x1f8eb8;const _0x2f33ef=Math[_0x2f5142(0x295)](_0x280ab2[_0x2f5142(0x414)](_0x37a126,0xea60)),_0x2497aa=Math[_0x2f5142(0x295)](_0x280ab2[_0x2f5142(0x421)](_0x280ab2[_0x2f5142(0x3e6)](_0x37a126,0xea60),0x3e8));document[_0x2f5142(0x245)](_0x280ab2['xbNkV'])[_0x2f5142(0x2e7)]=_0x2f33ef+':'+_0x2497aa[_0x2f5142(0x2b1)]()[_0x2f5142(0x3c9)](0x2,'0');const _0x1ebfc4=_0x280ab2[_0x2f5142(0x3fb)](_0x37a126,questionsData[_0x2f5142(0x261)]),_0x2001f9=Math[_0x2f5142(0x295)](_0x280ab2['HIkuS'](_0x1ebfc4,0xea60)),_0x49f0fe=Math[_0x2f5142(0x295)](_0x280ab2['FZWDS'](_0x280ab2[_0x2f5142(0x251)](_0x1ebfc4,0xea60),0x3e8));document['getElementById'](_0x280ab2[_0x2f5142(0x38e)])[_0x2f5142(0x2e7)]=_0x2001f9+':'+_0x49f0fe[_0x2f5142(0x2b1)]()['padStart'](0x2,'0'),_0x3487ee[_0x2f5142(0x353)][_0x2f5142(0x1a1)](_0x280ab2['Feogu']);}function closePerformanceModal(){const _0x2078ad=_0x3f9b2d,_0x28ae11={'UxYxS':'performanceModal','DZcOt':_0x2078ad(0x297)};document['getElementById'](_0x28ae11['UxYxS'])[_0x2078ad(0x353)][_0x2078ad(0x3fa)](_0x28ae11[_0x2078ad(0x3c7)]);}function reviewQuestions(){const _0x3a91ba=_0x3f9b2d,_0xb54ed7={'IUgRf':_0x3a91ba(0x2ce),'EMGyA':function(_0x22cfd7,_0x64bd53){return _0x22cfd7+_0x64bd53;},'VbXzI':function(_0x1ccedd,_0x37a9e4){return _0x1ccedd===_0x37a9e4;},'pUPTn':_0x3a91ba(0x326),'gTCyt':_0x3a91ba(0x36e),'gYkUW':function(_0x595979,_0x308342){return _0x595979!==_0x308342;},'OqkMk':_0x3a91ba(0x29e),'jNWAM':_0x3a91ba(0x309),'RqKVp':function(_0x3f38f4,_0x4d1f45){return _0x3f38f4===_0x4d1f45;},'XFpFJ':_0x3a91ba(0x3d7),'LoFNt':_0x3a91ba(0x2eb),'YPFgw':_0x3a91ba(0x1af),'sdMhS':_0x3a91ba(0x210),'LzOZW':_0x3a91ba(0x20b),'BurDa':'correct','uDoGF':_0x3a91ba(0x209),'XHYSZ':'red','eYTUV':_0x3a91ba(0x3e9),'APdhF':_0x3a91ba(0x217),'NnrqZ':_0x3a91ba(0x297),'MVkwC':_0x3a91ba(0x376)};document[_0x3a91ba(0x245)](_0xb54ed7[_0x3a91ba(0x40c)])['classList'][_0x3a91ba(0x1a1)](_0xb54ed7[_0x3a91ba(0x230)]);const _0x55fa62=document[_0x3a91ba(0x245)](_0xb54ed7['MVkwC']);_0x55fa62[_0x3a91ba(0x423)]='',questionsData[_0x3a91ba(0x36b)]((_0x1c8df8,_0x177630)=>{const _0x158243=_0x3a91ba,_0xc7e0d4={'WaYAe':function(_0x59767e,_0x2c6f44){return _0x59767e/_0x2c6f44;},'nNGLP':_0xb54ed7['IUgRf'],'VlGSk':function(_0x3f51e3,_0x63bf4e){const _0xb6c489=_0xdbb4;return _0xb54ed7[_0xb6c489(0x1c9)](_0x3f51e3,_0x63bf4e);},'Idgap':function(_0xf93082,_0x170951){const _0x2f01b2=_0xdbb4;return _0xb54ed7[_0x2f01b2(0x273)](_0xf93082,_0x170951);},'KPiLb':_0xb54ed7['pUPTn'],'nuIpO':_0xb54ed7[_0x158243(0x32c)]};if(_0xb54ed7['gYkUW'](_0xb54ed7['OqkMk'],_0xb54ed7[_0x158243(0x438)]))_0xf7fb1e[_0x587385][_0x158243(0x2e1)]+=_0x9ce822[_0x158243(0x26a)]()-_0x31632d;else{const _0x38d67b=questionStates[_0x177630],_0x19d32b=_0x1c8df8[_0x158243(0x304)];let _0x4e6be8=_0xb54ed7[_0x158243(0x38f)],_0x2a9d88=_0x158243(0x39c);if(_0xb54ed7['gYkUW'](_0x38d67b[_0x158243(0x390)],null)){if(_0xb54ed7[_0x158243(0x339)](_0xb54ed7['XFpFJ'],_0xb54ed7[_0x158243(0x424)])){const _0x17e31d=_0x14e65e['floor'](_0xc7e0d4[_0x158243(0x2e2)](_0x33eba1,0x3c)),_0x3c5d01=_0x598004%0x3c;_0x1623c0[_0x158243(0x245)](_0xc7e0d4['nNGLP'])[_0x158243(0x2e7)]=_0xc7e0d4[_0x158243(0x43a)](_0xc7e0d4[_0x158243(0x43a)](_0x17e31d,':'),_0x3c5d01[_0x158243(0x2b1)]()[_0x158243(0x3c9)](0x2,'0'));}else{const _0x4d5cc4=_0x1c8df8[_0x158243(0x1ef)][_0x38d67b['selectedAnswer']];_0xb54ed7[_0x158243(0x273)](_0x4d5cc4['id'],_0x19d32b)?(_0x4e6be8=_0x158243(0x3f4),_0x2a9d88=_0xb54ed7['YPFgw']):(_0x4e6be8=_0x158243(0x1d1),_0x2a9d88=_0xb54ed7['sdMhS']);}}const _0x4c5086=document[_0x158243(0x3c1)](_0xb54ed7['LzOZW']);_0x4c5086['className']=_0x158243(0x3c0)+_0x4e6be8;let _0x539483=(_0x1c8df8[_0x158243(0x1ef)]||[])[_0x158243(0x1ac)]((_0x5230e6,_0x3ebb6c)=>{const _0x2633a4=_0x158243,_0x5e0a64=_0xc7e0d4['Idgap'](_0x38d67b[_0x2633a4(0x390)],_0x3ebb6c),_0x50c4ec=_0x5230e6['id']===_0x19d32b;let _0x2d7746='border-gray-600';if(_0x50c4ec)_0x2d7746=_0xc7e0d4['KPiLb'];else{if(_0x5e0a64)_0x2d7746=_0xc7e0d4[_0x2633a4(0x2cd)];}return'<div\x20class=\x22p-3\x20rounded-lg\x20border\x20'+_0x2d7746+_0x2633a4(0x33b)+String['fromCharCode'](_0xc7e0d4[_0x2633a4(0x43a)](0x41,_0x3ebb6c))+_0x2633a4(0x394)+_0x5230e6['text']+'</span></div>';})[_0x158243(0x222)]('');const _0x42296c=_0x1c8df8[_0x158243(0x41e)]?_0x158243(0x2db)+_0x177630+_0x158243(0x34f)+_0x1c8df8[_0x158243(0x41e)]+_0x158243(0x3ba):'';let _0x542080='';if(_0x1c8df8['explanation_audio_eng'])_0x542080+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22'+_0x1c8df8[_0x158243(0x308)]+_0x158243(0x22d);if(_0x1c8df8['explanation_audio_hin'])_0x542080+=_0x158243(0x426)+_0x1c8df8[_0x158243(0x29d)]+_0x158243(0x22d);let _0x1e2ead=(_0x1c8df8[_0x158243(0x27e)]||[])[_0x158243(0x1ac)](_0xd5b9e4=>_0xd5b9e4?'<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0xd5b9e4+_0x158243(0x39d):'')[_0x158243(0x222)]('');_0x4c5086[_0x158243(0x423)]=_0x158243(0x343)+(_0x177630+0x1)+'</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-'+(_0xb54ed7[_0x158243(0x339)](_0x4e6be8,_0xb54ed7['BurDa'])?_0xb54ed7[_0x158243(0x319)]:_0x4e6be8===_0x158243(0x1d1)?_0xb54ed7['XHYSZ']:_0xb54ed7['eYTUV'])+_0x158243(0x3be)+_0x2a9d88+_0x158243(0x1d4)+_0x1c8df8[_0x158243(0x28b)]+_0x158243(0x1f8)+_0x539483+_0x158243(0x3b7)+(_0x1c8df8[_0x158243(0x1ab)]||_0x158243(0x301))+_0x158243(0x218)+_0x42296c+_0x158243(0x2bd)+_0x542080+_0x158243(0x2bd)+_0x1e2ead+_0x158243(0x264),_0x55fa62[_0x158243(0x2a2)](_0x4c5086);}}),initializeReviewVideos();}function initializeReviewVideos(){const _0x288abb=_0x3f9b2d,_0x3c231d={'CeLDv':function(_0x163a93,_0xdc24cb){return _0x163a93+_0xdc24cb;},'Ohxpk':function(_0x1dc11b,_0x405992){return _0x1dc11b*_0x405992;},'Qoygy':function(_0x575e65,_0x24d828){return _0x575e65/_0x24d828;},'eKaGW':_0x288abb(0x378),'yvJHO':_0x288abb(0x1b7),'jBdHt':'notAttemptedResult','vQZYk':function(_0x1eb1f1,_0x5c95bc){return _0x1eb1f1/_0x5c95bc;},'LBypY':_0x288abb(0x1bb),'RiWXT':function(_0x204836,_0x32dec2){return _0x204836%_0x32dec2;},'lRUjs':_0x288abb(0x297),'tLYAg':_0x288abb(0x1e4),'hgUSq':_0x288abb(0x25d),'rprKp':function(_0x105f59,_0x405d4d,_0x53af35){return _0x105f59(_0x405d4d,_0x53af35);},'kRbpX':function(_0x3b6016,_0x5915eb){return _0x3b6016!==_0x5915eb;},'dCYxN':_0x288abb(0x41b),'XjEze':_0x288abb(0x208)};document[_0x288abb(0x1a0)](_0x3c231d[_0x288abb(0x207)])[_0x288abb(0x36b)](_0x26cc70=>{const _0x4bdb10=_0x288abb,_0x3043ba={'PkpWF':function(_0x44e2e8,_0x2e0928){const _0x23009f=_0xdbb4;return _0x3c231d[_0x23009f(0x1b9)](_0x44e2e8,_0x2e0928);},'XcVSy':function(_0x1da3f5,_0x3f5379){const _0x2f3954=_0xdbb4;return _0x3c231d[_0x2f3954(0x268)](_0x1da3f5,_0x3f5379);},'PTIvI':function(_0x507d4d,_0x2d8e82){const _0x578940=_0xdbb4;return _0x3c231d[_0x578940(0x1b9)](_0x507d4d,_0x2d8e82);},'mWsfp':_0x4bdb10(0x408),'PIPYE':function(_0x4cbf96,_0x13027b){return _0x3c231d['Qoygy'](_0x4cbf96,_0x13027b);},'GDBgs':_0x3c231d['eKaGW'],'XVEdd':_0x4bdb10(0x278),'tSiaW':_0x3c231d[_0x4bdb10(0x31d)],'BhNiO':_0x4bdb10(0x3d8),'kdwWb':_0x3c231d[_0x4bdb10(0x24a)],'dAmsO':function(_0x182240,_0x543166){const _0x242cb9=_0x4bdb10;return _0x3c231d[_0x242cb9(0x399)](_0x182240,_0x543166);},'vFSQc':function(_0x1780e2,_0x585e8d){return _0x1780e2%_0x585e8d;},'JqZFF':_0x3c231d[_0x4bdb10(0x3f8)],'keajk':function(_0x5a4674,_0x41ac5d){const _0x5e9c6d=_0x4bdb10;return _0x3c231d[_0x5e9c6d(0x1d2)](_0x5a4674,_0x41ac5d);},'CyYQA':_0x3c231d['lRUjs']},_0x172f06=_0x26cc70['dataset'][_0x4bdb10(0x3f9)];if(_0x172f06&&_0x172f06[_0x4bdb10(0x32e)](_0x3c231d[_0x4bdb10(0x22a)])){if(_0x3c231d[_0x4bdb10(0x1b0)]===_0x3c231d[_0x4bdb10(0x1b0)])_0x3c231d['rprKp'](setupVideo,_0x26cc70,_0x172f06);else{if(_0x4597b2)_0x412c02+=_0x4bdb10(0x417)+_0x47dd42+_0x4bdb10(0x2f4);}}else{if(_0x172f06){if(_0x3c231d[_0x4bdb10(0x31c)](_0x4bdb10(0x41b),_0x3c231d[_0x4bdb10(0x1f2)])){const _0x2040ae=_0xbd37ac['getElementById']('performanceModal'),_0x22cc5d=_0x3043ba[_0x4bdb10(0x2bc)](_0x1ede39,_0x34e253)>0x0?_0xcf8b24['round'](_0x3043ba[_0x4bdb10(0x2d0)](_0x25260f/_0x3043ba[_0x4bdb10(0x2c4)](_0x9b1953,_0x34d2f5),0x64)):0x0,_0x2cf7d3=_0x3043ba[_0x4bdb10(0x2d0)](_0x3043ba['XcVSy'](0x2,_0x27d655['PI']),0x41),_0xf81cdf=_0x3a0936[_0x4bdb10(0x245)](_0x3043ba[_0x4bdb10(0x2f0)]);_0xf81cdf[_0x4bdb10(0x28c)]['strokeDasharray']=_0x2cf7d3+'\x20'+_0x2cf7d3,_0xf81cdf[_0x4bdb10(0x28c)]['strokeDashoffset']=_0x2cf7d3-_0x3043ba[_0x4bdb10(0x2d0)](_0x3043ba[_0x4bdb10(0x255)](_0x22cc5d,0x64),_0x2cf7d3),_0x1161e5[_0x4bdb10(0x245)](_0x3043ba[_0x4bdb10(0x242)])[_0x4bdb10(0x2e7)]=_0x22cc5d+'%',_0x40775b[_0x4bdb10(0x245)](_0x3043ba[_0x4bdb10(0x37b)])[_0x4bdb10(0x2e7)]=_0x53115e[_0x4bdb10(0x261)],_0x1e33da[_0x4bdb10(0x245)](_0x3043ba['tSiaW'])['textContent']=_0x5ec9c2,_0x49f673[_0x4bdb10(0x245)](_0x3043ba[_0x4bdb10(0x220)])[_0x4bdb10(0x2e7)]=_0x12cf15,_0x5813cf[_0x4bdb10(0x245)](_0x3043ba[_0x4bdb10(0x342)])['textContent']=_0x5e3a2c;const _0x1ad416=_0xed10ed['floor'](_0x3043ba[_0x4bdb10(0x255)](_0x5187ae,0xea60)),_0x5d6927=_0x512984[_0x4bdb10(0x295)](_0x3043ba[_0x4bdb10(0x1a5)](_0x3043ba[_0x4bdb10(0x3e8)](_0x2bde5e,0xea60),0x3e8));_0x396063[_0x4bdb10(0x245)](_0x3043ba['JqZFF'])[_0x4bdb10(0x2e7)]=_0x1ad416+':'+_0x5d6927[_0x4bdb10(0x2b1)]()['padStart'](0x2,'0');const _0x283963=_0x3043ba['dAmsO'](_0x2d0d75,_0xb291ab['length']),_0x25579b=_0x4585da[_0x4bdb10(0x295)](_0x3043ba['dAmsO'](_0x283963,0xea60)),_0x5f48db=_0x2775ca[_0x4bdb10(0x295)](_0x3043ba[_0x4bdb10(0x255)](_0x3043ba[_0x4bdb10(0x205)](_0x283963,0xea60),0x3e8));_0x2762f3[_0x4bdb10(0x245)](_0x4bdb10(0x1a6))[_0x4bdb10(0x2e7)]=_0x25579b+':'+_0x5f48db[_0x4bdb10(0x2b1)]()[_0x4bdb10(0x3c9)](0x2,'0'),_0x2040ae[_0x4bdb10(0x353)][_0x4bdb10(0x1a1)](_0x3043ba['CyYQA']);}else _0x26cc70[_0x4bdb10(0x3f9)]=_0x172f06;}}});}function retakeQuiz(){const _0xbd9ed6=_0x3f9b2d,_0x28448c={'RNqNu':_0xbd9ed6(0x1d0),'nWVwK':_0xbd9ed6(0x3d5),'QhLCp':_0xbd9ed6(0x3b2),'xNYDX':'\x20>\x20','BayvM':_0xbd9ed6(0x306),'DhDxU':function(_0xa24381,_0x2464c2){return _0xa24381+_0x2464c2;},'ttqcu':_0xbd9ed6(0x39f),'pRdGc':function(_0x1c6308,_0x2cf1eb){return _0x1c6308(_0x2cf1eb);},'QQZQz':_0xbd9ed6(0x381),'TIIUB':'custom_quiz.html','OfjkH':function(_0x23a126,_0x74cfb){return _0x23a126!==_0x74cfb;},'iFoZZ':_0xbd9ed6(0x320),'TPzjJ':function(_0xee1be){return _0xee1be();}};if(_0x28448c[_0xbd9ed6(0x1ff)](confirm,_0x28448c['QQZQz'])){if(window[_0xbd9ed6(0x3b4)][_0xbd9ed6(0x43e)][_0xbd9ed6(0x23d)](_0x28448c[_0xbd9ed6(0x1b1)])){if(_0x28448c[_0xbd9ed6(0x37a)](_0x28448c[_0xbd9ed6(0x331)],_0xbd9ed6(0x320))){const _0x50c86=_0x308049[_0xbd9ed6(0x271)](_0x331010['getItem'](_0x28448c['RNqNu']));if(_0x50c86){const _0x2abc31=_0x28448c[_0xbd9ed6(0x2b6)]['split']('|');let _0xb40db6=0x0;while(!![]){switch(_0x2abc31[_0xb40db6++]){case'0':_0x1fffcc[_0xbd9ed6(0x245)](_0x28448c['QhLCp'])['textContent']=_0x41c2df[_0xbd9ed6(0x222)](_0x28448c[_0xbd9ed6(0x420)]);continue;case'1':_0x56feff=_0x50c86[_0xbd9ed6(0x3df)];continue;case'2':_0x4cbb71[_0xbd9ed6(0x245)](_0x28448c['BayvM'])[_0xbd9ed6(0x2e7)]=_0x1cd57a['length'];continue;case'3':_0x371107[_0xbd9ed6(0x1e0)]=_0x28448c['DhDxU'](_0x11615d,_0x28448c[_0xbd9ed6(0x3a9)]);continue;case'4':_0x104685=_0x50c86[_0xbd9ed6(0x234)];continue;case'5':_0x409f5e=_0x50c86[_0xbd9ed6(0x1bc)];continue;}break;}}}else localStorage[_0xbd9ed6(0x1fd)](_0x28448c[_0xbd9ed6(0x1d7)]);}_0x28448c[_0xbd9ed6(0x25b)](clearProgress),location[_0xbd9ed6(0x225)]();}}function loadBookmarkedQuestions(){const _0x59d18b=_0x3f9b2d,_0x4a79f8={'qNrSP':function(_0x24e691){return _0x24e691();},'nHuwC':function(_0x241d0f,_0x439c01){return _0x241d0f===_0x439c01;},'DnRNK':_0x59d18b(0x3d6),'TTZJr':_0x59d18b(0x2f8),'bCnyD':_0x59d18b(0x311)},_0x12b247=JSON[_0x59d18b(0x271)](localStorage[_0x59d18b(0x2fc)](_0x4a79f8['bCnyD']))||[];_0x12b247[_0x59d18b(0x36b)](_0x2c5b68=>{const _0x4a83bf=_0x59d18b;_0x2c5b68[_0x4a83bf(0x1b3)][_0x4a83bf(0x32e)](quizName['toLowerCase']()['replace'](/ /g,'-'))&&(_0x4a79f8[_0x4a83bf(0x413)](_0x4a79f8[_0x4a83bf(0x1cd)],_0x4a79f8[_0x4a83bf(0x238)])?_0x4a79f8['qNrSP'](_0xa94b45):_0x2c5b68[_0x4a83bf(0x373)]<questionsData['length']&&(questionStates[_0x2c5b68[_0x4a83bf(0x373)]][_0x4a83bf(0x19f)]=!![]));});}function _0xdbb4(_0x1afc40,_0x1c0486){const _0x29a28a=_0x4c1f();return _0xdbb4=function(_0x28d91b,_0x56eb35){_0x28d91b=_0x28d91b-0x19e;let _0x15c9bb=_0x29a28a[_0x28d91b];return _0x15c9bb;},_0xdbb4(_0x1afc40,_0x1c0486);}function toggleBookmark(){const _0x5dcb03=_0x3f9b2d,_0x5b28c3={'vTGJP':_0x5dcb03(0x311),'LrCTW':function(_0x1fc4c4){return _0x1fc4c4();}},_0x52d575=!questionStates[currentQuestionIndex]['bookmarked'];questionStates[currentQuestionIndex][_0x5dcb03(0x19f)]=_0x52d575;let _0x504990=JSON[_0x5dcb03(0x271)](localStorage[_0x5dcb03(0x2fc)](_0x5b28c3[_0x5dcb03(0x357)]))||[];if(_0x52d575){const _0x199c24={'quizName':quizName,'quizFile':window['location'][_0x5dcb03(0x43e)][_0x5dcb03(0x292)]('/')[_0x5dcb03(0x1eb)](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date[_0x5dcb03(0x26a)]()};_0x504990[_0x5dcb03(0x42b)](_0x199c24);}else _0x504990=_0x504990[_0x5dcb03(0x2a6)](_0x467b09=>!(_0x467b09[_0x5dcb03(0x1b3)][_0x5dcb03(0x32e)](quizName['toLowerCase']()[_0x5dcb03(0x2f6)](/ /g,'-'))&&_0x467b09[_0x5dcb03(0x373)]===currentQuestionIndex));localStorage['setItem'](_0x5dcb03(0x311),JSON[_0x5dcb03(0x374)](_0x504990)),updateBookmarkButton(),_0x5b28c3['LrCTW'](updateQuestionNav);}function updateBookmarkButton(){const _0x9cfc9a=_0x3f9b2d,_0x56dfad={'zOMdu':_0x9cfc9a(0x1fa),'OCJEN':_0x9cfc9a(0x32d),'CwmhB':_0x9cfc9a(0x1ee),'bAGhB':_0x9cfc9a(0x2fd),'lEJGw':'Bookmark'},_0x9847eb=document[_0x9cfc9a(0x245)](_0x56dfad[_0x9cfc9a(0x2a5)]),_0x38711e=document['getElementById'](_0x56dfad['OCJEN']),_0xba7c56=questionStates[currentQuestionIndex][_0x9cfc9a(0x19f)];_0x9847eb[_0x9cfc9a(0x1b5)]=_0xba7c56?_0x56dfad['CwmhB']:_0x56dfad[_0x9cfc9a(0x288)],_0x38711e[_0x9cfc9a(0x2e7)]=_0xba7c56?'Bookmarked':_0x56dfad[_0x9cfc9a(0x1f5)];}function toggleMarkForReview(){const _0x35d738=_0x3f9b2d,_0x1c327e={'quGDJ':function(_0x47428c){return _0x47428c();}};questionStates[currentQuestionIndex][_0x35d738(0x328)]=!questionStates[currentQuestionIndex]['markedForReview'],_0x1c327e[_0x35d738(0x2f7)](updateMarkReviewButton),_0x1c327e['quGDJ'](updateQuestionNav);}function updateMarkReviewButton(){const _0x2a93b5=_0x3f9b2d,_0x4af65d={'HBmmc':_0x2a93b5(0x223),'vcJbu':_0x2a93b5(0x270),'FSiii':_0x2a93b5(0x27d),'AgIGL':_0x2a93b5(0x37d),'hSQFp':'Mark\x20for\x20Review'},_0x3c28e1=document[_0x2a93b5(0x245)](_0x4af65d[_0x2a93b5(0x36d)]),_0x49b27c=document[_0x2a93b5(0x245)](_0x2a93b5(0x2ea)),_0x1812ba=questionStates[currentQuestionIndex][_0x2a93b5(0x328)];_0x3c28e1[_0x2a93b5(0x1b5)]=_0x1812ba?_0x4af65d[_0x2a93b5(0x2d3)]:_0x4af65d[_0x2a93b5(0x3a6)],_0x49b27c[_0x2a93b5(0x2e7)]=_0x1812ba?_0x4af65d[_0x2a93b5(0x1bd)]:_0x4af65d[_0x2a93b5(0x2ca)];}function previousQuestion(){const _0x5e93f0=_0x3f9b2d,_0x20eaec={'PIeuf':function(_0x5148b8,_0x370c37){return _0x5148b8>_0x370c37;},'LBUAz':_0x5e93f0(0x3af),'IXsCL':function(_0x301cf5,_0x1618ba){return _0x301cf5-_0x1618ba;},'iBIXe':function(_0xc0aee7){return _0xc0aee7();},'fzfum':function(_0x25d8f6){return _0x25d8f6();}};_0x20eaec[_0x5e93f0(0x372)](currentQuestionIndex,0x0)&&(questionStartTime&&(_0x20eaec[_0x5e93f0(0x3a5)]!==_0x5e93f0(0x3af)?_0x365b06=_0x44ae2c:questionStates[currentQuestionIndex]['timeSpent']+=_0x20eaec[_0x5e93f0(0x2e3)](Date[_0x5e93f0(0x26a)](),questionStartTime)),currentQuestionIndex--,_0x20eaec[_0x5e93f0(0x3b1)](displayQuestion),_0x20eaec['fzfum'](saveProgress));}function nextQuestion(){const _0xcdfdb2=_0x3f9b2d,_0x59d3c0={'PyWFo':function(_0x13547c,_0x805e3){return _0x13547c>_0x805e3;},'wdaPd':function(_0x38bca9,_0x1c3bf7){return _0x38bca9-_0x1c3bf7;},'MRJeR':function(_0x2052b5){return _0x2052b5();},'VHHvK':function(_0x2c1547,_0x1113e1){return _0x2c1547-_0x1113e1;},'cMdDD':function(_0x282736,_0x364c36){return _0x282736-_0x364c36;},'VQJVG':function(_0xc3d440){return _0xc3d440();},'YyASn':function(_0x255526){return _0x255526();},'uNFYe':function(_0x1ab270,_0x3d5f44){return _0x1ab270===_0x3d5f44;},'VAfiA':function(_0x315e7e,_0x593095){return _0x315e7e(_0x593095);},'Frmbx':_0xcdfdb2(0x29c),'DBuXx':function(_0x5bcf0a,_0x1fa3d8){return _0x5bcf0a!==_0x1fa3d8;},'XIowc':'PAyxj','wFiUE':function(_0x36b099,_0x213325){return _0x36b099(_0x213325);},'nZLiF':'You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?'};questionStartTime&&(questionStates[currentQuestionIndex][_0xcdfdb2(0x2e1)]+=_0x59d3c0[_0xcdfdb2(0x24e)](Date['now'](),questionStartTime)),currentQuestionIndex<_0x59d3c0['cMdDD'](questionsData['length'],0x1)?(currentQuestionIndex++,_0x59d3c0['VQJVG'](displayQuestion),_0x59d3c0['YyASn'](saveProgress)):_0x59d3c0[_0xcdfdb2(0x1d9)](currentMode,_0xcdfdb2(0x1a4))||currentMode===_0xcdfdb2(0x3d0)?_0x59d3c0[_0xcdfdb2(0x2b7)](confirm,_0x59d3c0[_0xcdfdb2(0x41c)])&&submitQuiz():_0x59d3c0['DBuXx'](_0x59d3c0[_0xcdfdb2(0x437)],_0xcdfdb2(0x27a))?_0x59d3c0[_0xcdfdb2(0x237)](_0x1cfd7d,0x0)&&(_0x296b5c&&(_0x60be63[_0x344745][_0xcdfdb2(0x2e1)]+=_0x59d3c0[_0xcdfdb2(0x246)](_0x54b1c8[_0xcdfdb2(0x26a)](),_0x1f0e4d)),_0x545949--,_0x59d3c0[_0xcdfdb2(0x2a4)](_0x105a52),_0x59d3c0[_0xcdfdb2(0x2a4)](_0x20508e)):_0x59d3c0[_0xcdfdb2(0x3ec)](confirm,_0x59d3c0[_0xcdfdb2(0x2ac)])&&(currentQuestionIndex=0x0,_0x59d3c0[_0xcdfdb2(0x252)](displayQuestion),saveProgress());}function startTimer(){const _0xca57cf=_0x3f9b2d,_0x1b9d11={'XasUG':function(_0x22acdf,_0x52981f){return _0x22acdf<=_0x52981f;},'FMIrx':function(_0x5ddacf,_0xa3cbed){return _0x5ddacf(_0xa3cbed);},'BDPOd':function(_0x2e87f3,_0x2cd7dc){return _0x2e87f3===_0x2cd7dc;},'FCRXD':'timed_exam','yPeGK':function(_0xa09d01){return _0xa09d01();},'whbhZ':function(_0x42046d){return _0x42046d();},'RggOf':_0xca57cf(0x1f9),'jsdbb':function(_0x409a93,_0x4117f5){return _0x409a93<=_0x4117f5;},'PHXOl':_0xca57cf(0x3cd),'YuCLt':function(_0x11efaf,_0x2b9ab8){return _0x11efaf(_0x2b9ab8);},'QOvKZ':_0xca57cf(0x3e0),'yAEsY':_0xca57cf(0x28f),'BEyyY':function(_0x3fd842){return _0x3fd842();},'SMmXO':function(_0x52044f,_0x44d025,_0x40f0b1){return _0x52044f(_0x44d025,_0x40f0b1);}};if(timer)_0x1b9d11[_0xca57cf(0x377)](clearInterval,timer);timeRemaining=0x78,_0x1b9d11[_0xca57cf(0x3bf)](updateTimerDisplay),timer=_0x1b9d11[_0xca57cf(0x43f)](setInterval,()=>{const _0x326c88=_0xca57cf;if(_0x1b9d11[_0x326c88(0x260)]!==_0x326c88(0x1f9))_0x9e4e9f--,_0x5a9d33(),_0x1b9d11[_0x326c88(0x302)](_0x4899a4,0x0)&&(_0x1b9d11['FMIrx'](_0x12b623,_0x5aab82),_0x1b9d11['BDPOd'](_0x6cceac,_0x1b9d11[_0x326c88(0x2b9)])?_0x1b9d11[_0x326c88(0x3e1)](_0x5e8f76):_0x4961ae());else{timeRemaining--,updateTimerDisplay();if(_0x1b9d11[_0x326c88(0x3f5)](timeRemaining,0x0)){if(_0x326c88(0x35b)===_0x1b9d11[_0x326c88(0x279)])_0x1b9d11[_0x326c88(0x21c)](_0x27d5e7);else{_0x1b9d11['YuCLt'](clearInterval,timer);if(_0x1b9d11[_0x326c88(0x236)](currentMode,_0x1b9d11['FCRXD'])){if(_0x1b9d11['QOvKZ']!==_0x1b9d11['yAEsY'])_0x1b9d11[_0x326c88(0x3e1)](submitQuiz);else{const _0x3b398b=_0x3bbda7?function(){if(_0x3be7dc){const _0x1eb176=_0x4cc2da['apply'](_0x1fe1d4,arguments);return _0x423201=null,_0x1eb176;}}:function(){};return _0x769255=![],_0x3b398b;}}else _0x1b9d11[_0x326c88(0x21c)](nextQuestion);}}}},0x3e8);}function updateTimerDisplay(){const _0x52a761=_0x3f9b2d,_0x1190a7={'iPpAT':function(_0x5641a7,_0x3e3ba1){return _0x5641a7/_0x3e3ba1;},'drLgb':_0x52a761(0x2ce),'TSaeg':function(_0x5dd9e4,_0x53b7b7){return _0x5dd9e4+_0x53b7b7;},'ExZGb':function(_0x1af218,_0x36912c){return _0x1af218+_0x36912c;}},_0x102e88=Math[_0x52a761(0x295)](_0x1190a7[_0x52a761(0x2ff)](timeRemaining,0x3c)),_0x4bc9c9=timeRemaining%0x3c;document['getElementById'](_0x1190a7[_0x52a761(0x215)])[_0x52a761(0x2e7)]=_0x1190a7[_0x52a761(0x1e5)](_0x1190a7['ExZGb'](_0x102e88,':'),_0x4bc9c9[_0x52a761(0x2b1)]()['padStart'](0x2,'0'));}function toggleSidebar(){const _0x25eee0=_0x3f9b2d,_0x1a867c={'lQDkr':_0x25eee0(0x2ab),'SHjqw':'open'};document[_0x25eee0(0x245)](_0x1a867c[_0x25eee0(0x34b)])[_0x25eee0(0x353)]['toggle'](_0x1a867c['SHjqw']);}document[_0x3f9b2d(0x1db)](_0x3f9b2d(0x337),()=>{const _0x1924e7=_0x3f9b2d,_0xb7744c={'gpGQH':_0x1924e7(0x401),'ESnLh':'userHistory','jLnsI':function(_0x57babd){return _0x57babd();},'PArrF':_0x1924e7(0x3aa),'PrCtv':_0x1924e7(0x2f5),'OKSNW':function(_0x456982){return _0x456982();},'zmima':_0x1924e7(0x40b),'ZhNiw':_0x1924e7(0x221),'IsHUW':_0x1924e7(0x33e),'EZmMZ':function(_0x555ea2){return _0x555ea2();}};if(resume){if(_0xb7744c[_0x1924e7(0x335)](loadProgress)){if(_0xb7744c[_0x1924e7(0x3c6)]===_0x1924e7(0x3aa))document[_0x1924e7(0x245)](_0xb7744c[_0x1924e7(0x389)])[_0x1924e7(0x28c)][_0x1924e7(0x3a4)]='none',_0xb7744c[_0x1924e7(0x3eb)](initializeQuiz);else return _0x30869f[_0x1924e7(0x2b1)]()[_0x1924e7(0x33c)](xhEjov[_0x1924e7(0x259)])[_0x1924e7(0x2b1)]()[_0x1924e7(0x3f2)](_0x1925f6)[_0x1924e7(0x33c)](xhEjov['gpGQH']);}else{if(_0xb7744c[_0x1924e7(0x1b6)]!==_0xb7744c[_0x1924e7(0x1b6)]){const _0x1d6c7e=_0x15319f['parse'](_0x31d952[_0x1924e7(0x2fc)](_0xb7744c[_0x1924e7(0x254)]))||{};_0x1d6c7e[_0xaf3040]&&(delete _0x1d6c7e[_0x58e89c],_0x38d326[_0x1924e7(0x35a)](_0xb7744c[_0x1924e7(0x254)],_0x30b38c[_0x1924e7(0x374)](_0x1d6c7e)),_0x1cd513[_0x1924e7(0x370)]('Previous\x20progress\x20cleared.'));}else clearProgress(),document[_0x1924e7(0x245)](_0xb7744c[_0x1924e7(0x389)])[_0x1924e7(0x28c)][_0x1924e7(0x3a4)]=_0xb7744c[_0x1924e7(0x318)];}}else!window[_0x1924e7(0x3b4)][_0x1924e7(0x43e)]['endsWith'](_0xb7744c[_0x1924e7(0x1de)])?(_0xb7744c[_0x1924e7(0x335)](clearProgress),document['getElementById'](_0xb7744c[_0x1924e7(0x389)])[_0x1924e7(0x28c)][_0x1924e7(0x3a4)]=_0xb7744c[_0x1924e7(0x318)]):_0xb7744c[_0x1924e7(0x33f)](initializeQuiz);}),document['addEventListener'](_0x3f9b2d(0x3dd),function(_0x1c785f){const _0x471a34=_0x3f9b2d,_0x349d13={'dcZUg':_0x471a34(0x436),'VsgZt':_0x471a34(0x42a),'otdBQ':'totalAttempted','EqXqn':function(_0xd29ade,_0x21a146){return _0xd29ade*_0x21a146;},'fESdz':function(_0x3e395b,_0x3b85b6){return _0x3e395b/_0x3b85b6;},'xEQOi':function(_0x1687f1,_0x52836a){return _0x1687f1+_0x52836a;},'agMFM':function(_0xb30d1c,_0x89714b){return _0xb30d1c/_0x89714b;},'GULsG':function(_0x5139f5,_0x4a6f17){return _0x5139f5%_0x4a6f17;},'mijur':_0x471a34(0x2e1),'tukQu':_0x471a34(0x1d0),'Zjhda':function(_0x6873a4,_0x117de0){return _0x6873a4===_0x117de0;},'RnTBi':_0x471a34(0x3d4),'cRvPh':'border-green-500','larcL':'border-red-500','UGvGe':function(_0x25425e,_0x42dccc){return _0x25425e!==_0x42dccc;},'JXNCm':_0x471a34(0x3ee),'pYiIM':_0x471a34(0x297),'LyfpL':function(_0x1d9180,_0x4c6fdb){return _0x1d9180>=_0x4c6fdb;},'Aduek':function(_0x48a403,_0xccca9c){return _0x48a403<=_0xccca9c;},'vvxYL':function(_0x3220f6,_0x24a162){return _0x3220f6-_0x24a162;},'sKZuo':function(_0x300894,_0x23c695){return _0x300894(_0x23c695);},'cuaPe':function(_0x4100de){return _0x4100de();},'DBHRZ':function(_0x454e09,_0x33772c){return _0x454e09===_0x33772c;},'kDABk':_0x471a34(0x257),'ULFPZ':function(_0x8b60c3,_0x52dde7){return _0x8b60c3===_0x52dde7;},'nMXKN':function(_0x18e321,_0x12a840){return _0x18e321!==_0x12a840;},'WnCPN':'RYcAK','UbcVY':function(_0x1a7984,_0x166528){return _0x1a7984===_0x166528;},'ahUiX':function(_0x490661,_0x38a6e3){return _0x490661===_0x38a6e3;},'HrRkI':'study','yOJva':_0x471a34(0x26f),'SpVoo':_0x471a34(0x1a4),'sBmYa':_0x471a34(0x3d0),'ISMhw':'eBrex','Mfwog':_0x471a34(0x3c4),'jjvpr':function(_0xc32f4b,_0x1859e3){return _0xc32f4b===_0x1859e3;},'pChJV':_0x471a34(0x34e)};if(_0x349d13[_0x471a34(0x3c2)](document[_0x471a34(0x245)](_0x471a34(0x2f5))['style'][_0x471a34(0x3a4)],_0x349d13['JXNCm']))return;if(document[_0x471a34(0x245)]('performanceModal')[_0x471a34(0x353)][_0x471a34(0x1f1)](_0x349d13['pYiIM'])===![])return;if(_0x349d13[_0x471a34(0x285)](_0x1c785f[_0x471a34(0x1c4)],'1')&&_0x349d13[_0x471a34(0x3a0)](_0x1c785f[_0x471a34(0x1c4)],'4')){const _0x5d2f40=_0x349d13[_0x471a34(0x361)](_0x349d13[_0x471a34(0x2bf)](parseInt,_0x1c785f[_0x471a34(0x1c4)]),0x1),_0x2c9f83=document[_0x471a34(0x1a0)](_0x471a34(0x240));if(_0x5d2f40<_0x2c9f83[_0x471a34(0x261)])_0x349d13[_0x471a34(0x2bf)](selectOption,_0x5d2f40);}else{if(_0x1c785f[_0x471a34(0x1c4)]===_0x471a34(0x1ad))_0x349d13[_0x471a34(0x3b5)](previousQuestion);else{if(_0x349d13['DBHRZ'](_0x1c785f[_0x471a34(0x1c4)],_0x349d13[_0x471a34(0x30f)])||_0x349d13['ULFPZ'](_0x1c785f['key'],'\x20')){if(_0x349d13[_0x471a34(0x267)](_0x349d13['WnCPN'],_0x349d13[_0x471a34(0x3da)])){_0x3b94d8[_0x471a34(0x245)](_0x349d13[_0x471a34(0x3d2)])[_0x471a34(0x2e7)]=_0x26fd91[_0x471a34(0x2af)],_0x2a815e[_0x471a34(0x245)](_0x349d13[_0x471a34(0x3fe)])['textContent']=_0x16800e['incorrectAnswers'],_0x1223ab[_0x471a34(0x245)](_0x349d13[_0x471a34(0x2c0)])[_0x471a34(0x2e7)]=_0xe35ca8[_0x471a34(0x355)];const _0x425667=_0x47173b[_0x471a34(0x355)]>0x0?_0xe6ca25['round'](_0x349d13[_0x471a34(0x3b3)](_0x349d13[_0x471a34(0x34c)](_0x5bce10['correctAnswers'],_0x4d23c4[_0x471a34(0x355)]),0x64)):0x0;_0x2f40dd['getElementById'](_0x471a34(0x393))['textContent']=_0x349d13[_0x471a34(0x3ed)](_0x425667,'%'),_0xf83396[_0x471a34(0x2e6)]=_0x399c9c[_0x471a34(0x283)]((_0x518607,_0x1504b6)=>_0x518607+_0x1504b6[_0x471a34(0x2e1)],0x0);const _0x55f90b=_0x5d88a4[_0x471a34(0x295)](_0x349d13[_0x471a34(0x34c)](_0x56c2f3['totalTime'],0x3e8)),_0x53f1be=_0x39d157[_0x471a34(0x295)](_0x349d13[_0x471a34(0x3cf)](_0x55f90b,0x3c)),_0x27ca12=_0x349d13['GULsG'](_0x55f90b,0x3c);_0x489fc7['getElementById'](_0x349d13[_0x471a34(0x3ab)])['textContent']=_0x53f1be+':'+_0x27ca12[_0x471a34(0x2b1)]()['padStart'](0x2,'0');}else _0x1c785f['preventDefault'](),_0x349d13['cuaPe'](nextQuestion);}else{if(_0x349d13[_0x471a34(0x3fd)](_0x1c785f[_0x471a34(0x1c4)][_0x471a34(0x3d9)](),'b')&&(_0x349d13[_0x471a34(0x33a)](currentMode,_0x349d13[_0x471a34(0x1a9)])||currentMode===_0x349d13['yOJva']))_0x349d13['UbcVY'](_0x471a34(0x397),_0x471a34(0x1ea))?_0x2adaa1[_0x471a34(0x1fd)](_0x349d13[_0x471a34(0x1c0)]):_0x349d13[_0x471a34(0x3b5)](toggleBookmark);else{if(_0x349d13[_0x471a34(0x266)](_0x1c785f[_0x471a34(0x1c4)][_0x471a34(0x3d9)](),'m')&&(_0x349d13['ULFPZ'](currentMode,_0x349d13[_0x471a34(0x429)])||currentMode===_0x349d13['sBmYa']))_0x349d13[_0x471a34(0x3fd)](_0x349d13[_0x471a34(0x435)],_0x349d13[_0x471a34(0x1f6)])?_0x187315=_0x211d42[_0x471a34(0x2a6)](_0x5b9099=>!(_0x5b9099[_0x471a34(0x1b3)][_0x471a34(0x32e)](_0x346a84[_0x471a34(0x3d9)]()[_0x471a34(0x2f6)](/ /g,'-'))&&_0x5b9099[_0x471a34(0x373)]===_0x124a3b)):toggleMarkForReview();else{if(_0x1c785f[_0x471a34(0x1c4)][_0x471a34(0x3d9)]()==='s'&&(_0x349d13['Zjhda'](currentMode,_0x471a34(0x1a4))||_0x349d13[_0x471a34(0x20e)](currentMode,'timed_exam'))){if(_0x471a34(0x3bd)===_0x349d13[_0x471a34(0x211)]){const _0x5e8580=_0x349d13['Zjhda'](_0x613d18[_0x471a34(0x390)],_0xace279),_0x3cb66b=_0xbfda55['id']===_0x339cd5;let _0x3b56b0=_0x349d13[_0x471a34(0x37c)];if(_0x3cb66b)_0x3b56b0=_0x349d13[_0x471a34(0x433)];else{if(_0x5e8580)_0x3b56b0=_0x349d13[_0x471a34(0x1c1)];}return _0x471a34(0x395)+_0x3b56b0+_0x471a34(0x33b)+_0x18abc9[_0x471a34(0x2d8)](_0x349d13[_0x471a34(0x3ed)](0x41,_0x24631c))+_0x471a34(0x394)+_0x3ce981[_0x471a34(0x28b)]+_0x471a34(0x366);}else submitQuiz();}}}}}}});</script>
+
+</body></html>

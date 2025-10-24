@@ -1,0 +1,888 @@
+<!DOCTYPE html><html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basics - Brain And Scalpel</title>
+    <link rel="preload" href="assets/background.jpg" as="image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HLS.js for M3U8 support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        
+/* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
+:root {
+  --glass-bg: rgba(0, 0, 0, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.1);
+  --glass-bg-medium: rgba(255, 255, 255, 0.15);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-blue: #60a5fa;
+  --accent-purple: #a855f7;
+  --accent-green: #34d399;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  background-color: #000;
+}
+
+/* iOS Background Fix */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -2;
+  background: url("assets/background.jpg") center center / cover no-repeat;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+/* Glass morphism components */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 12px;
+}
+
+.glass-medium {
+  background: var(--glass-bg-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.8), rgba(168, 85, 247, 0.8));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(96, 165, 250, 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.9), rgba(168, 85, 247, 0.9));
+}
+
+.glass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+}
+
+.glass-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Performance analysis styles */
+.performance-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.score-circle .circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.score-circle .circle-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Review question styles */
+.review-question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-question.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.review-question.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.review-question.not-attempted {
+  border-left: 4px solid #6b7280;
+}
+
+/* Gradient backgrounds for accents */
+.gradient-blue {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, var(--accent-orange), #f97316);
+}
+
+.gradient-red {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+}
+
+.gradient-yellow {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+}
+
+/* Navigation button styles */
+.nav-btn-not-attempted {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-btn-current {
+  background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+.nav-btn-correct {
+  background: linear-gradient(135deg, var(--accent-green), #10b981);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-incorrect {
+  background: linear-gradient(135deg, var(--accent-red), #ef4444);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-bookmarked {
+  background: linear-gradient(135deg, var(--accent-yellow), #f59e0b);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-marked-review {
+  background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.nav-btn-answered {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+/* Option button styles - REVISED FOR INLINE FEEDBACK */
+.option-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.option-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  transform: translateX(8px);
+}
+
+.option-button.selected {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: var(--accent-blue);
+  transform: translateX(8px);
+}
+
+#optionsContainer.answered .option-button:hover {
+    transform: translateX(0); /* Disable hover effect after answering */
+}
+
+#optionsContainer.answered .option-button {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#optionsContainer.answered .option-button:not(.correct):not(.incorrect) {
+    opacity: 0.5;
+}
+
+.option-button.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-button.incorrect {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
+    color: white;
+    transform: translateX(0);
+}
+
+.option-letter {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.option-button.selected .option-letter {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.option-button.correct .option-letter, .option-button.incorrect .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.option-text {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Stats bar responsive grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stats-grid > div:nth-child(4),
+  .stats-grid > div:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid > div:last-child {
+    grid-column: span 2;
+    justify-self: center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.6); }
+}
+
+@keyframes checkmark {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+@keyframes cross {
+  0% { transform: scale(0) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(90deg); }
+  100% { transform: scale(1) rotate(180deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-checkmark {
+  animation: checkmark 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cross {
+  animation: cross 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+.quiz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#mobile-nav-toggle {
+    display: none; /* Hidden on desktop */
+}
+
+@media (min-width: 1024px) {
+    .quiz-container {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .quiz-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 10px 0px 30px rgba(0,0,0,0.5);
+    }
+    .quiz-sidebar.open {
+        transform: translateX(0);
+    }
+    #mobile-nav-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+    }
+    .quiz-main-content {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-card, .glass {
+        border-radius: 16px;
+    }
+    h1 { font-size: 2.5rem; }
+    #questionText { font-size: 1.125rem; }
+    .controls-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .controls-container button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Mode Selection Modal -->
+    <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
+            
+            <div class="space-y-4">
+                <button onclick="selectMode('study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Study Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Interactive learning with immediate feedback</p>
+                        </div>
+                        <div class="gradient-blue w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('test')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Test Mode</h3>
+                            <p class="text-sm text-white text-opacity-70">Practice test with performance analysis at end</p>
+                        </div>
+                        <div class="gradient-purple w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_study')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Study</h3>
+                            <p class="text-sm text-white text-opacity-70">Study with time pressure and immediate feedback</p>
+                        </div>
+                        <div class="gradient-green w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="selectMode('timed_exam')" class="w-full text-left p-4 glass-light hover:bg-white hover:bg-opacity-10 transition-all duration-300 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold">Timed Exam</h3>
+                            <p class="text-sm text-white text-opacity-70">Real exam simulation with strict timing</p>
+                        </div>
+                        <div class="gradient-red w-10 h-10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analysis Modal -->
+    <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-white">Performance Analysis</h2>
+                <button onclick="closePerformanceModal()" class="glass-light p-2 rounded-lg text-white hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Score Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="performance-card p-6 text-center">
+                    <div class="score-circle mb-4">
+                        <svg width="150" height="150" class="mx-auto">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle id="scoreCircle" class="circle-progress" cx="75" cy="75" r="65" stroke="#22c55e" stroke-dasharray="0 408"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="text-3xl font-bold text-white" id="accuracyScore">0%</div>
+                            <div class="text-sm text-white text-opacity-70">Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Results Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Questions:</span>
+                            <span class="text-white font-semibold" id="totalQuestionsResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400">Correct:</span>
+                            <span class="text-green-400 font-semibold" id="correctResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-400">Incorrect:</span>
+                            <span class="text-red-400 font-semibold" id="incorrectResult">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Not Attempted:</span>
+                            <span class="text-gray-400 font-semibold" id="notAttemptedResult">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4 text-center">Time Analysis</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Total Time:</span>
+                            <span class="text-white font-semibold" id="totalTimeResult">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white text-opacity-70">Avg per Question:</span>
+                            <span class="text-white font-semibold" id="avgTimeResult">0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
+                    Review All Questions
+                </button>
+                <button onclick="retakeQuiz()" class="glass-light px-8 py-3 text-lg text-white hover:bg-white hover:bg-opacity-20">
+                    Retake Quiz
+                </button>
+            </div>
+            
+            <!-- Question Review Section -->
+            <div id="questionReviewSection" class="hidden">
+                <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
+                <div id="reviewQuestionsContainer">
+                    <!-- Review questions will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 mb-6">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div id="quizHierarchy" class="text-sm text-white text-opacity-60">
+                        DocTutorial / qBank / Surgery
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="glass-light px-3 py-1 text-sm text-white">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">20</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
+                        <span id="timeDisplay">2:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
+        <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Stats Bar - Show only in study modes -->
+    <div id="statsBar" class="glass-light mb-8">
+        <div class="container mx-auto px-6 py-4">
+            <div class="stats-grid">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-green-400" id="correctCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Correct</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-red-400" id="incorrectCount">0</div>
+                    <div class="text-xs text-white text-opacity-60">Incorrect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400" id="totalAttempted">0</div>
+                    <div class="text-xs text-white text-opacity-60">Attempted</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400" id="accuracy">0%</div>
+                    <div class="text-xs text-white text-opacity-60">Accuracy</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-orange-400" id="timeSpent">0:00</div>
+                    <div class="text-xs text-white text-opacity-60">Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-container container mx-auto px-6">
+        <!-- Question Navigation Sidebar -->
+        <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
+            <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
+            <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
+                <!-- Question numbers will be populated here -->
+            </div>
+            
+            <div class="space-y-3 text-xs">
+                <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-not-attempted rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Not Attempted</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-current rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Current</span>
+                </div>
+                <div id="studyModeLegend" class="space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-correct rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Correct</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-incorrect rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Incorrect</span>
+                    </div>
+                </div>
+                <div id="testModeLegend" class="hidden space-y-2">
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 nav-btn-answered rounded mr-2"></div>
+                        <span class="text-white text-opacity-60">Answered</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-6 h-6 nav-btn-bookmarked rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Bookmarked</span>
+                </div>
+                <div id="testModeReviewLegend" class="hidden items-center">
+                    <div class="w-6 h-6 nav-btn-marked-review rounded mr-2"></div>
+                    <span class="text-white text-opacity-60">Marked for Review</span>
+                </div>
+            </div>
+            
+            <!-- Submit Quiz Button for test modes -->
+            <div id="submitSection" class="hidden mt-6">
+                <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
+                    Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Quiz Interface -->
+        <div class="quiz-main-content flex-1 max-w-4xl">
+            <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
+                <!-- Question Text -->
+                <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
+                    Loading question...
+                </div>
+
+                <!-- Question Media -->
+                <div id="questionMedia" class="mb-8"></div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3 mb-8">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Solution Display (only for study modes) -->
+                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Explanation
+                    </h3>
+                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
+                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
+                    <div id="solutionImages" class="space-y-4 mt-4"></div>
+                    <div id="solutionVideo" class="hidden mt-4">
+                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls="">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-container flex justify-between items-center mb-8">
+                <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Previous
+                </button>
+                
+                <div class="flex justify-center flex-grow">
+                    <button onclick="toggleBookmark()" id="bookmarkBtn" class="glass-light px-6 py-3 text-white hover:bg-yellow-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" id="bookmarkIcon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                        </svg>
+                        <span id="bookmarkText">Bookmark</span>
+                    </button>
+                    
+                    <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V4a2 2 0 00-2-2H5zm0 2h10v12H5V4z" clip-rule="evenodd"></path>
+                           <path d="M12.586 6.586a2 2 0 10-2.828 2.828l-3 3a2 2 0 102.828-2.828l3-3z"></path>
+                        </svg>
+                        <span id="markReviewText">Mark for Review</span>
+                    </button>
+                </div>
+                
+                <button onclick="nextQuestion()" class="glass-button px-6 py-3 flex items-center justify-center">
+                    Next
+                    <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Mobile Nav Toggle -->
+    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+
+    <script>const _0x3709e6=_0x50f7;(function(_0x18c967,_0x27f1b1){const _0x1a5f30=_0x50f7,_0x5a89e8=_0x18c967();while(!![]){try{const _0x3f0859=-parseInt(_0x1a5f30(0x1b2))/0x1+-parseInt(_0x1a5f30(0x365))/0x2+-parseInt(_0x1a5f30(0x1e2))/0x3+parseInt(_0x1a5f30(0x411))/0x4*(parseInt(_0x1a5f30(0x417))/0x5)+parseInt(_0x1a5f30(0x392))/0x6*(-parseInt(_0x1a5f30(0x274))/0x7)+-parseInt(_0x1a5f30(0x241))/0x8*(-parseInt(_0x1a5f30(0x1c8))/0x9)+parseInt(_0x1a5f30(0x364))/0xa;if(_0x3f0859===_0x27f1b1)break;else _0x5a89e8['push'](_0x5a89e8['shift']());}catch(_0x2dd65d){_0x5a89e8['push'](_0x5a89e8['shift']());}}}(_0x2a5b,0x794f4));const _0xae3b52=(function(){const _0x49696f=_0x50f7,_0x51b91d={'cVUJZ':function(_0x561a70){return _0x561a70();},'qkIzZ':_0x49696f(0x359),'iuDfG':_0x49696f(0x3a4),'iomtE':function(_0x463aff,_0x160c58){return _0x463aff!==_0x160c58;},'zZLLD':_0x49696f(0x32a)};let _0x1632c1=!![];return function(_0x1e980e,_0x4b9ab8){const _0x10a1ef=_0x49696f,_0x5b0793={'Xzgkc':_0x51b91d[_0x10a1ef(0x298)],'FVpkd':_0x10a1ef(0x433),'PPRQT':_0x51b91d[_0x10a1ef(0x41b)]};if(_0x51b91d['iomtE'](_0x51b91d[_0x10a1ef(0x1e6)],_0x51b91d['zZLLD']))_0x5e8cee[_0x201407][_0x10a1ef(0x25a)]=!_0x5d75c2[_0x27d64e][_0x10a1ef(0x25a)],_0x51b91d['cVUJZ'](_0x449686),_0x51b91d[_0x10a1ef(0x2bc)](_0x324f71);else{const _0x2ba5ae=_0x1632c1?function(){const _0x779c42=_0x10a1ef;if(_0x4b9ab8){if(_0x779c42(0x3a4)!==_0x5b0793[_0x779c42(0x1cd)])_0x18fbc8['getElementById'](_0x5b0793['Xzgkc'])[_0x779c42(0x384)][_0x779c42(0x35f)](_0x5b0793[_0x779c42(0x27c)]);else{const _0x383f0c=_0x4b9ab8[_0x779c42(0x39f)](_0x1e980e,arguments);return _0x4b9ab8=null,_0x383f0c;}}}:function(){};return _0x1632c1=![],_0x2ba5ae;}};}()),_0x4884d9=_0xae3b52(this,function(){const _0x3e10f8=_0x50f7,_0x21e2ed={'MuZFe':_0x3e10f8(0x290)};return _0x4884d9[_0x3e10f8(0x1af)]()[_0x3e10f8(0x2a4)](_0x21e2ed[_0x3e10f8(0x27b)])[_0x3e10f8(0x1af)]()['constructor'](_0x4884d9)['search'](_0x21e2ed['MuZFe']);});_0x4884d9();const _0x54ea00=(function(){const _0x4af9a1={'QZQqS':function(_0xc2cac3,_0x927d5b){return _0xc2cac3===_0x927d5b;},'iNmMh':function(_0x3e8022,_0x239aa2){return _0x3e8022!==_0x239aa2;},'ngnEb':'rEvCx','SFvHW':'ulkWY','bvxcX':function(_0x37d893,_0x2a04e9){return _0x37d893===_0x2a04e9;},'LNhAR':'gjILe'};let _0x4fa4e8=!![];return function(_0x9f537e,_0x8c7aac){const _0x58fbee=_0x50f7,_0x2cbbdb={'odMfQ':'selected','LDqkm':function(_0xd7ede3,_0x37d49d){return _0x4af9a1['QZQqS'](_0xd7ede3,_0x37d49d);},'tXWMp':function(_0x25ba46,_0x48ed95){const _0x4b34c5=_0x50f7;return _0x4af9a1[_0x4b34c5(0x19a)](_0x25ba46,_0x48ed95);},'sDgoA':_0x4af9a1['ngnEb'],'wDVuV':_0x4af9a1[_0x58fbee(0x1a8)]};if(_0x4af9a1[_0x58fbee(0x253)](_0x4af9a1[_0x58fbee(0x39d)],_0x4af9a1[_0x58fbee(0x39d)])){const _0x19aacf=_0x4fa4e8?function(){const _0x4bddd1=_0x58fbee,_0x2f0af7={'FcqbH':_0x2cbbdb[_0x4bddd1(0x29d)],'wWxuK':function(_0x1f9fc7,_0x2aed3f){return _0x2cbbdb['LDqkm'](_0x1f9fc7,_0x2aed3f);}};if(_0x2cbbdb[_0x4bddd1(0x271)](_0x2cbbdb[_0x4bddd1(0x243)],_0x2cbbdb[_0x4bddd1(0x34a)])){if(_0x8c7aac){const _0x574e20=_0x8c7aac[_0x4bddd1(0x39f)](_0x9f537e,arguments);return _0x8c7aac=null,_0x574e20;}}else _0x52bfe7[_0x4bddd1(0x384)][_0x4bddd1(0x27a)](_0x2f0af7['FcqbH'],_0x2f0af7['wWxuK'](_0x2e7d93,_0x5dfd6e));}:function(){};return _0x4fa4e8=![],_0x19aacf;}else{if(_0x1da0db)_0x2b344b['innerHTML']+='<div\x20class=\x22mt-4\x22><img\x20src=\x22'+_0x31a48b+'\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>';}};}()),_0x53034b=_0x54ea00(this,function(){const _0x2cbb95=_0x50f7,_0x43d242={'EoGrk':function(_0xbc2c5d){return _0xbc2c5d();},'BMKBH':_0x2cbb95(0x44c),'sVZQx':'flex','fKpnY':function(_0x30e50e,_0x50f01a){return _0x30e50e-_0x50f01a;},'JftLV':function(_0x4f81eb,_0x57d890){return _0x4f81eb===_0x57d890;},'xwAaC':_0x2cbb95(0x3fb),'iQaBw':_0x2cbb95(0x2ef),'fFWgm':function(_0x570003,_0x139b29){return _0x570003(_0x139b29);},'qXXvr':function(_0x214c7b,_0x58fe97){return _0x214c7b+_0x58fe97;},'TfJlF':'return\x20(function()\x20','SMxdI':_0x2cbb95(0x1b9),'ZyGlR':function(_0x2af1ec){return _0x2af1ec();},'dUYvZ':function(_0x5daa67,_0x518a77){return _0x5daa67!==_0x518a77;},'XKWMH':'FrgMF','BJRnV':_0x2cbb95(0x3d8),'TZGSR':_0x2cbb95(0x197),'esQQu':_0x2cbb95(0x297),'PweZD':_0x2cbb95(0x1b0),'eFvyB':_0x2cbb95(0x1ab),'ZToLM':_0x2cbb95(0x33e),'PrrTN':_0x2cbb95(0x25e),'BSEdf':function(_0x32c90a,_0x441b2f){return _0x32c90a<_0x441b2f;}};let _0x5bcadc;try{if(_0x43d242[_0x2cbb95(0x429)](_0x43d242[_0x2cbb95(0x26d)],_0x43d242[_0x2cbb95(0x232)]))_0x43d242['EoGrk'](_0x19d64a),_0x57026c[_0x2cbb95(0x381)](_0x43d242[_0x2cbb95(0x37b)])[_0x2cbb95(0x3a8)]['display']=_0x43d242[_0x2cbb95(0x1cc)];else{const _0x2d0e11=_0x43d242[_0x2cbb95(0x249)](Function,_0x43d242[_0x2cbb95(0x1de)](_0x43d242[_0x2cbb95(0x441)],_0x43d242['SMxdI'])+');');_0x5bcadc=_0x43d242['ZyGlR'](_0x2d0e11);}}catch(_0x5ae133){_0x43d242[_0x2cbb95(0x264)](_0x43d242[_0x2cbb95(0x2f0)],_0x43d242[_0x2cbb95(0x2f0)])?(_0x5aacb3[_0x226012][_0x2cbb95(0x3a6)]+=_0x43d242['fKpnY'](_0x4e991c['now'](),_0x3182a1),_0x40b46e=_0x29d4be[_0x2cbb95(0x3ae)]()):_0x5bcadc=window;}const _0x39323b=_0x5bcadc[_0x2cbb95(0x423)]=_0x5bcadc['console']||{},_0x258975=[_0x43d242[_0x2cbb95(0x2b1)],_0x43d242[_0x2cbb95(0x1f8)],_0x43d242[_0x2cbb95(0x1fe)],_0x43d242[_0x2cbb95(0x3de)],_0x43d242[_0x2cbb95(0x2c8)],_0x43d242[_0x2cbb95(0x3e0)],_0x43d242[_0x2cbb95(0x199)]];for(let _0x2e0301=0x0;_0x43d242[_0x2cbb95(0x44e)](_0x2e0301,_0x258975[_0x2cbb95(0x40b)]);_0x2e0301++){const _0x40d87e=_0x54ea00['constructor']['prototype'][_0x2cbb95(0x227)](_0x54ea00),_0x5c22a7=_0x258975[_0x2e0301],_0x548ec5=_0x39323b[_0x5c22a7]||_0x40d87e;_0x40d87e[_0x2cbb95(0x250)]=_0x54ea00[_0x2cbb95(0x227)](_0x54ea00),_0x40d87e[_0x2cbb95(0x1af)]=_0x548ec5['toString'][_0x2cbb95(0x227)](_0x548ec5),_0x39323b[_0x5c22a7]=_0x40d87e;}});_0x53034b();let questionsData=[{'id':0x1,'choices':[{'id':0x1,'text':_0x3709e6(0x3dd)},{'id':0x2,'text':_0x3709e6(0x443)},{'id':0x3,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>3rd\x20pharyngeal\x20pouch</span></p>'},{'id':0x4,'text':_0x3709e6(0x335)}],'text':_0x3709e6(0x212),'unique_key':'DT1185630','question_audio':null,'question_video':null,'map_id':0x12175e,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x235),'correct_choice_id':0x3,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x2,'choices':[{'id':0xb,'text':_0x3709e6(0x27f)},{'id':0xc,'text':_0x3709e6(0x3dd)},{'id':0xd,'text':_0x3709e6(0x454)},{'id':0xe,'text':_0x3709e6(0x2e2)}],'text':_0x3709e6(0x2d8),'unique_key':_0x3709e6(0x431),'question_audio':null,'question_video':null,'map_id':0x121767,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x44a),'correct_choice_id':0xd,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x3,'choices':[{'id':0x15,'text':_0x3709e6(0x1b3)},{'id':0x16,'text':_0x3709e6(0x1cb)},{'id':0x17,'text':_0x3709e6(0x3cf)},{'id':0x18,'text':_0x3709e6(0x1ea)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20epithelial\x20lining\x20of\x20the\x20follicles\x20in\x20the\x20thyroid\x20gland?</span></p>','unique_key':_0x3709e6(0x42e),'question_audio':null,'question_video':null,'map_id':0x12176f,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x268),'correct_choice_id':0x16,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x4,'choices':[{'id':0x1f,'text':_0x3709e6(0x1b1)},{'id':0x20,'text':_0x3709e6(0x3c0)},{'id':0x21,'text':_0x3709e6(0x265)},{'id':0x22,'text':_0x3709e6(0x291)}],'text':_0x3709e6(0x196),'unique_key':'DT1185675','question_audio':null,'question_video':null,'map_id':0x12178b,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':'<ul>\x0a<li>The\x20relationship\x20between\x20the\x20recurrent\x20laryngeal\x20nerve\x20(RLN)\x20and\x20the\x20thyroid\x20is\x20of\x20supreme\x20importance\x20to\x20the\x20operating\x20surgeon.</li>\x0a<li>A\x20branch\x20of\x20the\x20vagus,\x20the\x20nerve\x20recurs\x20round\x20the\x20arch\x20of\x20the\x20aorta\x20on\x20the\x20left\x20and\x20the\x20subclavian\x20artery\x20on\x20the\x20right.</li>\x0a<li>The\x20clinical\x20significance\x20of\x20this\x20is\x20that\x20on\x20the\x20left\x20the\x20nerve\x20has\x20more\x20distance\x20in\x20which\x20to\x20reach\x20the\x20tracheoesophageal\x20groove\x20and\x20therefore\x20runs\x20in\x20a\x20medial\x20plane.</li>\x0a<li>On\x20the\x20right,\x20there\x20is\x20less\x20distance\x20and\x20the\x20nerve\x20runs\x20more\x20obliquely\x20to\x20reach\x20the\x20tracheoesophageal\x20groove.</li>\x0a<li>Approximately\x202%\x20of\x20nerves\x20on\x20the\x20right\x20are\x20non-recurrent\x20and\x20will\x20enter\x20the\x20larynx\x20from\x20above.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20850-851</p>','correct_choice_id':0x20,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x5,'choices':[{'id':0x29,'text':_0x3709e6(0x338)},{'id':0x2a,'text':_0x3709e6(0x201)},{'id':0x2b,'text':_0x3709e6(0x3e8)},{'id':0x2c,'text':_0x3709e6(0x1fa)}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20statements\x20is\x20false\x20for\x20recurrent\x20laryngeal\x20nerve?</span></p>','unique_key':_0x3709e6(0x1c7),'question_audio':null,'question_video':null,'map_id':0x121792,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x3709e6(0x216),'correct_choice_id':0x2c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x6,'choices':[{'id':0x33,'text':_0x3709e6(0x2ad)},{'id':0x34,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Cricoarytenoid\x20joint</span></p>'},{'id':0x35,'text':_0x3709e6(0x23d)},{'id':0x36,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Cricohyoid\x20joint</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Where\x20does\x20the\x20recurrent\x20laryngeal\x20nerve\x20insert\x20the\x20thyroid\x20gland?</span></p>','unique_key':'DT1185690','question_audio':null,'question_video':null,'map_id':0x12179a,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x2fd),'correct_choice_id':0x33,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x7,'choices':[{'id':0x3d,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Recurrent\x20laryngeal\x20nerve</span></p>'},{'id':0x3e,'text':_0x3709e6(0x459)},{'id':0x3f,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Carotid\x20artery</span></p>'},{'id':0x40,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Lateral\x20border\x20of\x20the\x20thyroid</span></p>'}],'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20doesn\x27t\x20form\x20the\x20boundary\x20of\x20the\x20Beahr\x27s\x20triangle?</span></p>','unique_key':_0x3709e6(0x44b),'question_audio':null,'question_video':null,'map_id':0x1217a0,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':'<ul>\x0a<li>The\x20nerve\x20runs\x20posterior\x20to\x20the\x20thyroid\x20and\x20enters\x20the\x20larynx\x20at\x20the\x20cricothyroid\x20joint.</li>\x0a<li>This\x20entry\x20point\x20is\x20at\x20the\x20level\x20of\x20Berry\x27s\x20ligament,\x20a\x20condensation\x20of\x20pretracheal\x20fascia\x20that\x20binds\x20the\x20thyroid\x20to\x20the\x20trachea.</li>\x0a<li>This\x20is\x20the\x20point\x20at\x20which\x20the\x20nerve\x20is\x20at\x20most\x20risk\x20of\x20injury\x20during\x20surgery.</li>\x0a<li>In\x20terms\x20of\x20surgical\x20anatomy,\x20the\x20nerve\x20can\x20be\x20located\x20in\x20the\x20tracheoesophageal\x20groove\x20where\x20it\x20forms\x20one\x20side\x20of\x20Beahr\x27s\x20triangle\x20(the\x20other\x20two\x20sides\x20are\x20the\x20carotid\x20artery\x20and\x20the\x20inferior\x20thyroid\x20artery)\x20or\x20at\x20the\x20cricothyroid\x20joint.</li>\x0a<li>The\x20nerve\x20will\x20normally\x20be\x20found\x20as\x20the\x20thyroid\x20lobe\x20is\x20mobilised\x20laterally,\x20lying\x20under\x20the\x20most\x20posterolateral\x20portion\x20of\x20the\x20gland\x20called\x20the\x20tubercle\x20of\x20Zuckerkandl.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20851-852</p>','correct_choice_id':0x40,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x8,'choices':[{'id':0x47,'text':_0x3709e6(0x19b)},{'id':0x48,'text':_0x3709e6(0x309)},{'id':0x49,'text':_0x3709e6(0x285)},{'id':0x4a,'text':_0x3709e6(0x3a0)}],'text':_0x3709e6(0x1d1),'unique_key':_0x3709e6(0x2b0),'question_audio':null,'question_video':null,'map_id':0x1217a5,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x41d),'correct_choice_id':0x48,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x9,'choices':[{'id':0x51,'text':_0x3709e6(0x26e)},{'id':0x52,'text':_0x3709e6(0x294)},{'id':0x53,'text':_0x3709e6(0x1ad)},{'id':0x54,'text':_0x3709e6(0x331)}],'text':_0x3709e6(0x28d),'unique_key':_0x3709e6(0x3a9),'question_audio':null,'question_video':null,'map_id':0x1217be,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x3e9),'correct_choice_id':0x51,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xa,'choices':[{'id':0x5b,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Thyrotoxicosis</span></p>'},{'id':0x5c,'text':_0x3709e6(0x30b)},{'id':0x5d,'text':_0x3709e6(0x3ec)},{'id':0x5e,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>T3\x20toxicity</span></p>'}],'text':_0x3709e6(0x19f),'unique_key':_0x3709e6(0x29c),'question_audio':null,'question_video':null,'map_id':0x1217c8,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x3709e6(0x246),'correct_choice_id':0x5c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xb,'choices':[{'id':0x65,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Serum\x20calcitonin</span></p>'},{'id':0x66,'text':_0x3709e6(0x40f)},{'id':0x67,'text':_0x3709e6(0x2e8)},{'id':0x68,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>\x20MRI</span></p>'}],'text':_0x3709e6(0x38b),'unique_key':'DT1185750','question_audio':null,'question_video':null,'map_id':0x1217d6,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x3709e6(0x422),'correct_choice_id':0x67,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xc,'choices':[{'id':0x6f,'text':_0x3709e6(0x22b)},{'id':0x70,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>CT\x20scan</span></p>'},{'id':0x71,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>MRI</span></p>'},{'id':0x72,'text':_0x3709e6(0x3ad)}],'text':_0x3709e6(0x252),'unique_key':'DT1185786','question_audio':null,'question_video':null,'map_id':0x1217fa,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':'<ul>\x0a<li>In\x20the\x20setting\x20of\x20an\x20invasive\x20primary\x20thyroid\x20cancer,\x20both\x20CT\x20and\x20magnetic\x20resonance\x20imaging\x20(MRI)\x20may\x20have\x20a\x20role.</li>\x0a<li>Contrast\x20enhanced\x20CT\x20is\x20useful\x20for\x20determining\x20the\x20extent\x20of\x20airway\x20invasion\x20and\x20MRI\x20is\x20superior\x20at\x20determining\x20the\x20presence\x20of\x20prevertebral\x20fascia\x20invasion.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20853-854</p>','correct_choice_id':0x71,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xd,'choices':[{'id':0x79,'text':_0x3709e6(0x22b)},{'id':0x7a,'text':_0x3709e6(0x1dd)},{'id':0x7b,'text':_0x3709e6(0x34b)},{'id':0x7c,'text':_0x3709e6(0x2e8)}],'text':_0x3709e6(0x302),'unique_key':_0x3709e6(0x38e),'question_audio':null,'question_video':null,'map_id':0x121844,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x22c),'correct_choice_id':0x7c,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xe,'choices':[{'id':0x83,'text':_0x3709e6(0x3f1)},{'id':0x84,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Thy2</span></p>'},{'id':0x85,'text':_0x3709e6(0x452)},{'id':0x86,'text':_0x3709e6(0x37a)}],'text':_0x3709e6(0x3c3),'unique_key':_0x3709e6(0x24b),'question_audio':null,'question_video':null,'map_id':0x12a175,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x31b),'correct_choice_id':0x85,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0xf,'choices':[{'id':0x8d,'text':_0x3709e6(0x3e6)},{'id':0x8e,'text':_0x3709e6(0x386)},{'id':0x8f,'text':_0x3709e6(0x3f6)},{'id':0x90,'text':_0x3709e6(0x399)}],'text':_0x3709e6(0x2bb),'unique_key':_0x3709e6(0x41e),'question_audio':null,'question_video':null,'map_id':0x121884,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x292),'correct_choice_id':0x90,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x10,'choices':[{'id':0x97,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Superior\x20thyroid\x20artery</span></p>'},{'id':0x98,'text':_0x3709e6(0x286)},{'id':0x99,'text':_0x3709e6(0x459)},{'id':0x9a,'text':_0x3709e6(0x3d7)}],'text':_0x3709e6(0x37e),'unique_key':_0x3709e6(0x266),'question_audio':null,'question_video':null,'map_id':0x121888,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x398),'correct_choice_id':0x98,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x11,'choices':[{'id':0xa1,'text':_0x3709e6(0x275)},{'id':0xa2,'text':_0x3709e6(0x2a3)},{'id':0xa3,'text':_0x3709e6(0x385)},{'id':0xa4,'text':_0x3709e6(0x30c)}],'text':_0x3709e6(0x354),'unique_key':'DT1185934','question_audio':null,'question_video':null,'map_id':0x12188e,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':'<ul>\x0a<li>Iodine\x20plays\x20a\x20primary\x20role\x20in\x20thyroid\x20hormone\x20physiology,\x20and\x20it\x20is\x20predicated\x20on\x20there\x20being\x20an\x20adequate\x20supply\x20in\x20the\x20body.</li>\x0a<li>The\x20average\x20daily\x20iodine\x20requirement\x20for\x20adult\x20humans\x20is\x200.1\x20mg,\x20and\x20this\x20is\x20entirely\x20derived\x20from\x20dietary\x20intake.</li>\x0a<li>The\x20thyroid\x20is\x20the\x20target\x20for\x20the\x20overwhelming\x20majority\x20of\x20the\x20body&rsquo;s\x20iodine\x20stores.</li>\x0a<li>Seafood\x20such\x20as\x20fish,\x20shrimp,\x20and\x20seaweed\x20are\x20rich\x20in\x20iodine\x20stores.</li>\x0a<li>Since\x201924,\x20the\x20United\x20States\x20has\x20iodized\x20salt,\x20which\x20effectively\x20has\x20eliminated\x20iodine\x20deficiency\x20in\x20this\x20country.</li>\x0a<li>Many\x20regions\x20of\x20the\x20world\x20remain\x20at\x20risk\x20for\x20iodine\x20deficiency\x20despite\x20worldwide\x20efforts\x20to\x20improve\x20access\x20to\x20iodized\x20salt;\x20the\x20World\x20Health\x20Organization\x20estimates\x20that\x2054\x20countries\x20remain\x20iodine-deficient.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Sabiston\x20textbook\x20of\x20Surgery,\x20chapter:\x2037,\x20Edition:\x2021<sup>st</sup>,\x20Pg:\x20879</p>','correct_choice_id':0xa1,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x12,'choices':[{'id':0xab,'text':_0x3709e6(0x1c9)},{'id':0xac,'text':_0x3709e6(0x397)},{'id':0xad,'text':_0x3709e6(0x3bf)},{'id':0xae,'text':_0x3709e6(0x2d4)}],'text':_0x3709e6(0x28e),'unique_key':'DT1185939','question_audio':null,'question_video':null,'map_id':0x121893,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':_0x3709e6(0x434),'correct_choice_id':0xae,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x13,'choices':[{'id':0xb5,'text':_0x3709e6(0x1ca)},{'id':0xb6,'text':_0x3709e6(0x391)},{'id':0xb7,'text':_0x3709e6(0x406)},{'id':0xb8,'text':_0x3709e6(0x456)}],'text':_0x3709e6(0x31e),'unique_key':'DT1185977','question_audio':null,'question_video':null,'map_id':0x1218b9,'difficulty_level':'intermediate','subjects_id':[0x1],'solution':_0x3709e6(0x230),'correct_choice_id':0xb7,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':'bottom','tags':['Factual'],'explanation_video':null,'question_images':[],'explanation_images':[]},{'id':0x14,'choices':[{'id':0xbf,'text':_0x3709e6(0x3a7)},{'id':0xc0,'text':_0x3709e6(0x425)},{'id':0xc1,'text':'<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-TSH\x20receptor</span></p>'},{'id':0xc2,'text':_0x3709e6(0x3ea)}],'text':_0x3709e6(0x44f),'unique_key':_0x3709e6(0x28b),'question_audio':null,'question_video':null,'map_id':0x1218ba,'difficulty_level':_0x3709e6(0x2d3),'subjects_id':[0x1],'solution':'<ul>\x0a<li>The\x20measurement\x20of\x20serum\x20thyroid\x20autoantibodies\x20is\x20useful\x20in\x20the\x20diagnosis\x20of\x20various\x20autoimmune\x20thyroid\x20diseases,\x20although\x20their\x20variable\x20sensitivities\x20and\x20specificities\x20require\x20caution\x20in\x20test\x20interpretation.</li>\x0a<li>The\x20three\x20most\x20commonly\x20measured\x20autoantibodies\x20today\x20are\x20anti-TPO\x20(TPOAb),\x20anti-Tg\x20(TgAb),\x20and\x20anti-TSH\x20receptor\x20(TRAb).</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Sabiston\x20textbook\x20of\x20Surgery,\x20chapter:\x2037,\x20Edition:\x2021<sup>st</sup>,\x20Pg:\x20881</p>','correct_choice_id':0xc2,'solution_audio':null,'solution_video':null,'audio_explanation_heading':null,'video_explanation_heading':null,'solution_media_position':_0x3709e6(0x2f6),'tags':[_0x3709e6(0x426)],'explanation_video':null,'question_images':[],'explanation_images':[]}],quizName='Basics';const quizFilename=_0x3709e6(0x39c);let hierarchy=['DocTutorial',_0x3709e6(0x23c),_0x3709e6(0x34d)];if(window[_0x3709e6(0x25f)]['pathname']['endsWith'](_0x3709e6(0x361))){const customData=JSON[_0x3709e6(0x3f0)](localStorage['getItem']('customQuizData'));if(customData){const GBmrPp=_0x3709e6(0x3cd)[_0x3709e6(0x1b6)]('|');let UBkige=0x0;while(!![]){switch(GBmrPp[UBkige++]){case'0':document['getElementById']('totalQuestions')['textContent']=questionsData[_0x3709e6(0x40b)];continue;case'1':quizName=customData[_0x3709e6(0x3ac)];continue;case'2':questionsData=customData['questions'];continue;case'3':hierarchy=customData[_0x3709e6(0x21d)];continue;case'4':document[_0x3709e6(0x3f4)]=quizName+'\x20-\x20Brain\x20And\x20Scalpel';continue;case'5':document[_0x3709e6(0x381)](_0x3709e6(0x439))[_0x3709e6(0x442)]=hierarchy[_0x3709e6(0x371)]('\x20>\x20');continue;}break;}}}let currentQuestionIndex=0x0,selectedOption=null,currentMode=_0x3709e6(0x2eb),timer=null,timeRemaining=0x0,questionStartTime=Date[_0x3709e6(0x3ae)](),quizStartTime=Date['now'](),isQuizCompleted=![],questionStates=new Array(questionsData[_0x3709e6(0x40b)])[_0x3709e6(0x2a1)](null)[_0x3709e6(0x296)](()=>({'status':_0x3709e6(0x1da),'bookmarked':![],'markedForReview':![],'selectedAnswer':null,'timeSpent':0x0})),stats={'correctAnswers':0x0,'incorrectAnswers':0x0,'totalAttempted':0x0,'totalTime':0x0,'notAttempted':questionsData[_0x3709e6(0x40b)]};function _0x50f7(_0xcd5684,_0xdc1c69){const _0x50337d=_0x2a5b();return _0x50f7=function(_0x53034b,_0x54ea00){_0x53034b=_0x53034b-0x195;let _0x26fa1c=_0x50337d[_0x53034b];return _0x26fa1c;},_0x50f7(_0xcd5684,_0xdc1c69);}function saveProgress(){const _0x3b7761=_0x3709e6,_0xfcec0b={'cOcYd':_0x3b7761(0x430),'TNpRu':'incomplete'};if(isQuizCompleted)return;const _0x532a85=JSON[_0x3b7761(0x3f0)](localStorage[_0x3b7761(0x3da)](_0xfcec0b[_0x3b7761(0x340)]))||{};_0x532a85[quizFilename]={'questionStates':questionStates,'stats':stats,'currentQuestionIndex':currentQuestionIndex,'currentMode':currentMode,'status':_0xfcec0b[_0x3b7761(0x1e7)],'lastSeen':new Date()['toISOString']()},localStorage[_0x3b7761(0x261)]('userHistory',JSON[_0x3b7761(0x267)](_0x532a85));}function loadProgress(){const _0x26614d=_0x3709e6,_0x45c800={'lYSIF':_0x26614d(0x44c),'ADbGV':_0x26614d(0x1eb),'VCjhh':function(_0x313a68){return _0x313a68();},'FpoUo':_0x26614d(0x430),'EPbej':function(_0x4903f4,_0x9c5f17){return _0x4903f4===_0x9c5f17;},'awUmh':_0x26614d(0x3db),'YAtLl':_0x26614d(0x377)},_0x4d423c=JSON[_0x26614d(0x3f0)](localStorage[_0x26614d(0x3da)](_0x45c800[_0x26614d(0x22d)]))||{},_0x387022=_0x4d423c[quizFilename];if(_0x387022){if(_0x45c800[_0x26614d(0x352)](_0x45c800[_0x26614d(0x394)],'yWdos')){const _0x1c1fdc='4|0|1|5|3|2'[_0x26614d(0x1b6)]('|');let _0x466675=0x0;while(!![]){switch(_0x1c1fdc[_0x466675++]){case'0':stats=_0x387022['stats'];continue;case'1':currentQuestionIndex=_0x387022[_0x26614d(0x3d0)];continue;case'2':return!![];case'3':console[_0x26614d(0x3d8)](_0x45c800[_0x26614d(0x360)]);continue;case'4':questionStates=_0x387022[_0x26614d(0x3b7)];continue;case'5':currentMode=_0x387022[_0x26614d(0x387)];continue;}break;}}else _0x4681bb=_0x8a7ec6,_0x12cafc[_0x26614d(0x381)](_0x45c800[_0x26614d(0x32e)])['style']['display']=_0x45c800[_0x26614d(0x208)],_0x45c800[_0x26614d(0x305)](_0x24c91c);}return![];}function clearProgress(){const _0x5c4f3d=_0x3709e6,_0x5db725={'gLNQK':_0x5c4f3d(0x430),'NHPYa':'Previous\x20progress\x20cleared.'},_0x22f297=JSON[_0x5c4f3d(0x3f0)](localStorage['getItem'](_0x5db725['gLNQK']))||{};_0x22f297[quizFilename]&&(delete _0x22f297[quizFilename],localStorage['setItem'](_0x5c4f3d(0x430),JSON[_0x5c4f3d(0x267)](_0x22f297)),console[_0x5c4f3d(0x3d8)](_0x5db725['NHPYa']));}function markQuizAsCompleted(){const _0x486f90=_0x3709e6,_0x588a30={'tiQlY':'userHistory','dIDWI':_0x486f90(0x1f9)},_0x5345ab=JSON[_0x486f90(0x3f0)](localStorage[_0x486f90(0x3da)](_0x588a30[_0x486f90(0x24c)]))||{},_0x367069=questionsData['length'],_0x38bcde=stats['correctAnswers']||0x0;_0x5345ab[quizFilename]={'score':_0x38bcde,'total':_0x367069,'status':_0x588a30['dIDWI'],'completedOn':new Date()[_0x486f90(0x2df)]()},localStorage[_0x486f90(0x261)](_0x588a30[_0x486f90(0x24c)],JSON[_0x486f90(0x267)](_0x5345ab));}const urlParams=new URLSearchParams(window['location'][_0x3709e6(0x2a4)]),startAt=parseInt(urlParams['get']('startAt')),resume=urlParams[_0x3709e6(0x26f)](_0x3709e6(0x3c1))===_0x3709e6(0x214);function goBack(){const _0x4ca715=_0x3709e6,_0x2b1487={'YWZYW':function(_0x30acd){return _0x30acd();},'YuXAs':'index.html'};if(!isQuizCompleted)_0x2b1487['YWZYW'](saveProgress);window['location']['href']=document['referrer']||_0x2b1487[_0x4ca715(0x427)];}function selectMode(_0x18e5dd){const _0x4e69a6=_0x3709e6,_0x1bef2e={'wEjcL':_0x4e69a6(0x44c),'Xqjtv':_0x4e69a6(0x1eb),'ElijW':function(_0x2b2598){return _0x2b2598();}};currentMode=_0x18e5dd,document['getElementById'](_0x1bef2e[_0x4e69a6(0x38d)])['style']['display']=_0x1bef2e['Xqjtv'],_0x1bef2e[_0x4e69a6(0x24e)](initializeQuiz);}function initializeQuiz(){const _0x2e95f2=_0x3709e6,_0x1f011b={'RlxAO':_0x2e95f2(0x1d4),'jvcfS':'markReviewBtn','HPdOv':function(_0x33180d,_0x4b886d){return _0x33180d===_0x4b886d;},'MNqvQ':_0x2e95f2(0x404),'mAcus':_0x2e95f2(0x349),'XsCne':_0x2e95f2(0x1eb),'VdIAA':_0x2e95f2(0x329),'QmwZj':'studyModeLegend','aCdBS':_0x2e95f2(0x38f),'XHlUJ':_0x2e95f2(0x41f),'yAGBC':_0x2e95f2(0x315),'MBErb':function(_0x292645,_0x2c04c1){return _0x292645===_0x2c04c1;},'mtIBC':_0x2e95f2(0x359),'nSRWe':_0x2e95f2(0x433),'juowv':function(_0xfa54a8,_0x243c02){return _0xfa54a8(_0x243c02);},'aNACw':function(_0x54270d,_0x16a836){return _0x54270d>=_0x16a836;},'GajNk':function(_0x2e5d5d,_0x59da0e){return _0x2e5d5d<_0x59da0e;},'RcFtp':function(_0x3548bb){return _0x3548bb();},'sWNRZ':function(_0x114143){return _0x114143();}};quizStartTime=Date['now']();const _0x3354b7=document[_0x2e95f2(0x381)](_0x1f011b[_0x2e95f2(0x283)]),_0x3daae6=document[_0x2e95f2(0x381)](_0x1f011b[_0x2e95f2(0x1d3)]),_0x370023=document[_0x2e95f2(0x381)](_0x2e95f2(0x379)),_0x518983=_0x1f011b[_0x2e95f2(0x259)](currentMode,_0x1f011b['MNqvQ'])||currentMode===_0x1f011b[_0x2e95f2(0x1e0)];document[_0x2e95f2(0x381)](_0x2e95f2(0x1e3))[_0x2e95f2(0x3a8)][_0x2e95f2(0x27d)]=_0x518983?_0x1f011b[_0x2e95f2(0x3a2)]:_0x1f011b['VdIAA'],document[_0x2e95f2(0x381)](_0x1f011b[_0x2e95f2(0x229)])[_0x2e95f2(0x3a8)][_0x2e95f2(0x27d)]=_0x518983?_0x1f011b[_0x2e95f2(0x3a2)]:_0x1f011b[_0x2e95f2(0x445)],document['getElementById'](_0x1f011b['aCdBS'])['style']['display']=_0x518983?_0x2e95f2(0x329):_0x2e95f2(0x1eb),document['getElementById'](_0x1f011b[_0x2e95f2(0x421)])[_0x2e95f2(0x3a8)][_0x2e95f2(0x27d)]=_0x518983?_0x1f011b['VdIAA']:_0x1f011b[_0x2e95f2(0x3a2)],_0x3354b7['style']['display']=_0x518983?'none':_0x1f011b[_0x2e95f2(0x2fb)],_0x3daae6[_0x2e95f2(0x3a8)][_0x2e95f2(0x27d)]=_0x518983?_0x1f011b['yAGBC']:'none',_0x370023[_0x2e95f2(0x3a8)][_0x2e95f2(0x27d)]=_0x518983?_0x1f011b['yAGBC']:_0x2e95f2(0x1eb),(_0x1f011b[_0x2e95f2(0x259)](currentMode,_0x2e95f2(0x1fd))||_0x1f011b[_0x2e95f2(0x3d9)](currentMode,_0x1f011b[_0x2e95f2(0x1e0)]))&&document[_0x2e95f2(0x381)](_0x1f011b[_0x2e95f2(0x337)])[_0x2e95f2(0x384)][_0x2e95f2(0x35f)](_0x1f011b[_0x2e95f2(0x435)]),!_0x1f011b[_0x2e95f2(0x450)](isNaN,startAt)&&_0x1f011b[_0x2e95f2(0x1a9)](startAt,0x0)&&_0x1f011b[_0x2e95f2(0x32b)](startAt,questionsData[_0x2e95f2(0x40b)])&&(currentQuestionIndex=startAt),loadBookmarkedQuestions(),_0x1f011b[_0x2e95f2(0x3c9)](generateQuestionNav),updateStats(),_0x1f011b['sWNRZ'](displayQuestion);}function generateQuestionNav(){const _0x3d4e99=_0x3709e6,_0x29faff={'PbtGR':'bookmarkBtn','MQRQs':_0x3d4e99(0x1f5),'OPqvs':'glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','HYQJa':_0x3d4e99(0x3d4),'TQaZw':_0x3d4e99(0x316),'lhOfo':function(_0x27a212,_0x338ff7){return _0x27a212<_0x338ff7;},'TGASA':function(_0xbad774,_0x4cefaa){return _0xbad774===_0x4cefaa;},'bEOHJ':'vlkOZ','cIfyM':_0x3d4e99(0x248),'ufMsD':function(_0x533a27,_0xec42ba){return _0x533a27+_0xec42ba;},'rLeqV':_0x3d4e99(0x2e1)},_0x4028b8=document['getElementById']('questionNav');_0x4028b8[_0x3d4e99(0x31c)]='';for(let _0x592077=0x0;_0x29faff[_0x3d4e99(0x3bd)](_0x592077,questionsData['length']);_0x592077++){if(_0x29faff['TGASA'](_0x3d4e99(0x40d),_0x29faff['bEOHJ'])){const _0x2f5ed0=document[_0x3d4e99(0x3ba)](_0x29faff[_0x3d4e99(0x2d9)]);_0x2f5ed0[_0x3d4e99(0x442)]=_0x29faff['ufMsD'](_0x592077,0x1),_0x2f5ed0[_0x3d4e99(0x28f)]=_0x29faff['rLeqV'],_0x2f5ed0[_0x3d4e99(0x389)]=()=>jumpToQuestion(_0x592077),_0x2f5ed0['id']=_0x3d4e99(0x3c7)+_0x592077,_0x4028b8[_0x3d4e99(0x42c)](_0x2f5ed0);}else{const _0x5a7f0b=_0x3fd789[_0x3d4e99(0x381)](_0x29faff['PbtGR']),_0x1878bc=_0x3f312d[_0x3d4e99(0x381)](_0x3d4e99(0x306)),_0x51c756=_0x2f6409[_0x4a389f]['bookmarked'];_0x5a7f0b[_0x3d4e99(0x28f)]=_0x51c756?_0x29faff['MQRQs']:_0x29faff[_0x3d4e99(0x1d7)],_0x1878bc[_0x3d4e99(0x442)]=_0x51c756?_0x29faff[_0x3d4e99(0x224)]:_0x29faff[_0x3d4e99(0x380)];}}updateQuestionNav();}function updateQuestionNav(){const _0x310ae4=_0x3709e6,_0x523fe0={'DdTNZ':function(_0x4f13a3,_0x19f87e){return _0x4f13a3<_0x19f87e;},'tDLuY':function(_0x567ec7,_0x49ac53){return _0x567ec7===_0x49ac53;},'tRato':_0x310ae4(0x1c2),'AawaL':'nav-btn-bookmarked','QHqdu':function(_0x1b4858,_0x171dfb){return _0x1b4858!==_0x171dfb;},'XxERF':_0x310ae4(0x1ee),'zVJmN':_0x310ae4(0x35d),'oXXAu':_0x310ae4(0x2eb),'WmthX':_0x310ae4(0x1fd),'GHXwO':_0x310ae4(0x33b),'YVuxf':_0x310ae4(0x30d),'lpgbt':_0x310ae4(0x396),'BvTrV':_0x310ae4(0x299),'LgJWo':_0x310ae4(0x1f2),'DzEJq':_0x310ae4(0x2de),'OawJS':_0x310ae4(0x401)};for(let _0x3010d2=0x0;_0x523fe0[_0x310ae4(0x26c)](_0x3010d2,questionsData[_0x310ae4(0x40b)]);_0x3010d2++){const _0x2ce744=document['getElementById'](_0x310ae4(0x3c7)+_0x3010d2),_0x44626a=questionStates[_0x3010d2];let _0x5e43d6='';if(_0x523fe0[_0x310ae4(0x205)](_0x3010d2,currentQuestionIndex))_0x5e43d6=_0x523fe0[_0x310ae4(0x455)];else{if(_0x44626a['bookmarked'])_0x5e43d6=_0x523fe0[_0x310ae4(0x281)];else{if(_0x44626a['markedForReview'])_0x523fe0['QHqdu'](_0x310ae4(0x36b),_0x523fe0[_0x310ae4(0x43d)])?_0x5e43d6=_0x523fe0[_0x310ae4(0x3cb)]:_0x34935e[_0x5075c7[_0x310ae4(0x334)]][_0x310ae4(0x19e)]=!![];else{if(currentMode===_0x523fe0['oXXAu']||_0x523fe0['tDLuY'](currentMode,_0x523fe0[_0x310ae4(0x3d5)])){if(_0x44626a[_0x310ae4(0x39a)]===_0x523fe0[_0x310ae4(0x2d5)])_0x5e43d6=_0x523fe0[_0x310ae4(0x3c6)];else{if(_0x523fe0[_0x310ae4(0x205)](_0x44626a[_0x310ae4(0x39a)],_0x523fe0[_0x310ae4(0x293)]))_0x5e43d6=_0x523fe0[_0x310ae4(0x2c2)];else _0x5e43d6=_0x310ae4(0x401);}}else{if(_0x523fe0[_0x310ae4(0x205)](_0x523fe0[_0x310ae4(0x33c)],_0x523fe0[_0x310ae4(0x33c)])){if(_0x523fe0[_0x310ae4(0x2bd)](_0x44626a['selectedAnswer'],null))_0x5e43d6=_0x523fe0[_0x310ae4(0x36a)];else _0x5e43d6=_0x523fe0[_0x310ae4(0x457)];}else _0x286285[_0x310ae4(0x1ed)]=_0x266b0a;}}}}_0x2ce744[_0x310ae4(0x28f)]=_0x310ae4(0x28a)+_0x5e43d6;}}function jumpToQuestion(_0x15daf0){const _0x5a2adb=_0x3709e6,_0x2e03f6={'PvwMe':function(_0x42f3a2){return _0x42f3a2();},'pVMVH':_0x5a2adb(0x19c),'xSMca':_0x5a2adb(0x3fa),'rgnRc':_0x5a2adb(0x41a),'tWaca':function(_0x40a504,_0x4baae9){return _0x40a504>_0x4baae9;},'PUiuJ':function(_0x44b695,_0x8854dc){return _0x44b695*_0x8854dc;},'ZaCeS':function(_0x35e7e8,_0x4bcf53){return _0x35e7e8/_0x4bcf53;},'erVhH':'accuracy','chygQ':function(_0xe50981,_0x587380){return _0xe50981+_0x587380;},'NTfLR':function(_0x5b7a71,_0x1efb78){return _0x5b7a71/_0x1efb78;},'rjfDf':function(_0xaabbe0,_0x2ffdfb){return _0xaabbe0+_0x2ffdfb;},'govLD':function(_0x21ea0c,_0x296eac){return _0x21ea0c+_0x296eac;},'FTKHa':function(_0x3a3d3e,_0x594ff7){return _0x3a3d3e<_0x594ff7;},'sVyCF':function(_0x1275a0,_0x445b85){return _0x1275a0===_0x445b85;},'urWSS':_0x5a2adb(0x39b),'TZcVi':function(_0x304587,_0x272801){return _0x304587!==_0x272801;},'tnJvD':_0x5a2adb(0x2cf),'EKgPR':function(_0x50a43d,_0x8aad41){return _0x50a43d-_0x8aad41;},'SOMfp':function(_0x13e015){return _0x13e015();},'UGwEq':function(_0x46d979){return _0x46d979();}};if(_0x15daf0>=0x0&&_0x2e03f6[_0x5a2adb(0x3d2)](_0x15daf0,questionsData[_0x5a2adb(0x40b)])){if(_0x2e03f6[_0x5a2adb(0x31f)](_0x2e03f6[_0x5a2adb(0x2dc)],_0x2e03f6[_0x5a2adb(0x2dc)]))questionStartTime&&(_0x2e03f6[_0x5a2adb(0x2a7)](_0x2e03f6[_0x5a2adb(0x2a5)],_0x2e03f6[_0x5a2adb(0x2a5)])?_0x2e03f6[_0x5a2adb(0x438)](_0x427e17):questionStates[currentQuestionIndex]['timeSpent']+=_0x2e03f6['EKgPR'](Date[_0x5a2adb(0x3ae)](),questionStartTime)),currentQuestionIndex=_0x15daf0,_0x2e03f6[_0x5a2adb(0x42a)](displayQuestion),_0x2e03f6[_0x5a2adb(0x1bc)](saveProgress);else{_0x364cd8['getElementById'](_0x2e03f6['pVMVH'])['textContent']=_0x321f2a[_0x5a2adb(0x319)],_0x31abe7['getElementById'](_0x2e03f6[_0x5a2adb(0x400)])[_0x5a2adb(0x442)]=_0x56a627[_0x5a2adb(0x200)],_0xf818b9[_0x5a2adb(0x381)](_0x2e03f6[_0x5a2adb(0x209)])[_0x5a2adb(0x442)]=_0x2236ab[_0x5a2adb(0x41a)];const _0x3ea087=_0x2e03f6[_0x5a2adb(0x276)](_0x203367[_0x5a2adb(0x41a)],0x0)?_0x1ff9bd['round'](_0x2e03f6[_0x5a2adb(0x218)](_0x2e03f6['ZaCeS'](_0x8b9efc['correctAnswers'],_0x317279['totalAttempted']),0x64)):0x0;_0x555078[_0x5a2adb(0x381)](_0x2e03f6[_0x5a2adb(0x1ce)])[_0x5a2adb(0x442)]=_0x2e03f6['chygQ'](_0x3ea087,'%'),_0x2d2251['totalTime']=_0xa5bcd1[_0x5a2adb(0x1df)]((_0x4d1c31,_0x264632)=>_0x4d1c31+_0x264632[_0x5a2adb(0x3a6)],0x0);const _0x22227d=_0x570e8b[_0x5a2adb(0x43b)](_0x33b7d0[_0x5a2adb(0x2c1)]/0x3e8),_0x1bded0=_0x15e279[_0x5a2adb(0x43b)](_0x2e03f6['NTfLR'](_0x22227d,0x3c)),_0x9ad424=_0x22227d%0x3c;_0x5d3600[_0x5a2adb(0x381)]('timeSpent')[_0x5a2adb(0x442)]=_0x2e03f6['rjfDf'](_0x2e03f6[_0x5a2adb(0x321)](_0x1bded0,':'),_0x9ad424[_0x5a2adb(0x1af)]()[_0x5a2adb(0x3b2)](0x2,'0'));}}}function updateStats(){const _0xbbdf1b=_0x3709e6,_0x1100c5={'vZZMb':function(_0x4913a1,_0x321f80){return _0x4913a1===_0x321f80;},'twMwi':_0xbbdf1b(0x1fd),'PEgyq':_0xbbdf1b(0x3fa),'jbSne':'totalAttempted','fccZI':function(_0xaba5b0,_0x43a118){return _0xaba5b0>_0x43a118;},'yfcxM':function(_0x449520,_0x2eb711){return _0x449520*_0x2eb711;},'Ktafi':function(_0x3f064d,_0x338c34){return _0x3f064d/_0x338c34;},'ulNtG':'accuracy','mWJXT':function(_0x4cd668,_0x1798c9){return _0x4cd668+_0x1798c9;},'gmYMh':function(_0x188f2f,_0x2928f9){return _0x188f2f/_0x2928f9;},'BqhRe':function(_0x2d4e98,_0x4a461e){return _0x2d4e98%_0x4a461e;},'usyoR':function(_0x2fb768,_0xc13f20){return _0x2fb768+_0xc13f20;}};if(_0x1100c5['vZZMb'](currentMode,_0xbbdf1b(0x2eb))||currentMode===_0x1100c5[_0xbbdf1b(0x3fe)]){document[_0xbbdf1b(0x381)](_0xbbdf1b(0x19c))[_0xbbdf1b(0x442)]=stats['correctAnswers'],document[_0xbbdf1b(0x381)](_0x1100c5[_0xbbdf1b(0x38c)])[_0xbbdf1b(0x442)]=stats[_0xbbdf1b(0x200)],document['getElementById'](_0x1100c5['jbSne'])[_0xbbdf1b(0x442)]=stats[_0xbbdf1b(0x41a)];const _0x250be8=_0x1100c5[_0xbbdf1b(0x269)](stats[_0xbbdf1b(0x41a)],0x0)?Math[_0xbbdf1b(0x324)](_0x1100c5[_0xbbdf1b(0x32c)](_0x1100c5[_0xbbdf1b(0x3b9)](stats[_0xbbdf1b(0x319)],stats[_0xbbdf1b(0x41a)]),0x64)):0x0;document[_0xbbdf1b(0x381)](_0x1100c5['ulNtG'])[_0xbbdf1b(0x442)]=_0x1100c5[_0xbbdf1b(0x2ab)](_0x250be8,'%'),stats['totalTime']=questionStates['reduce']((_0x3fc58d,_0x267d6f)=>_0x3fc58d+_0x267d6f[_0xbbdf1b(0x3a6)],0x0);const _0x508be3=Math[_0xbbdf1b(0x43b)](_0x1100c5[_0xbbdf1b(0x40e)](stats[_0xbbdf1b(0x2c1)],0x3e8)),_0xa0c704=Math[_0xbbdf1b(0x43b)](_0x508be3/0x3c),_0x261c59=_0x1100c5['BqhRe'](_0x508be3,0x3c);document[_0xbbdf1b(0x381)](_0xbbdf1b(0x3a6))[_0xbbdf1b(0x442)]=_0x1100c5[_0xbbdf1b(0x2ab)](_0x1100c5[_0xbbdf1b(0x3ff)](_0xa0c704,':'),_0x261c59['toString']()[_0xbbdf1b(0x3b2)](0x2,'0'));}}function setupVideo(_0x296895,_0x12ca84){const _0x5d3961=_0x3709e6;if(Hls[_0x5d3961(0x346)]()){const _0x5aa2f4=new Hls();_0x5aa2f4[_0x5d3961(0x22f)](_0x12ca84),_0x5aa2f4[_0x5d3961(0x3f3)](_0x296895);}else _0x296895[_0x5d3961(0x419)](_0x5d3961(0x2f3))&&(_0x296895[_0x5d3961(0x1ed)]=_0x12ca84);}function displayQuestion(){const _0x4715c3=_0x3709e6,_0x54e5a4={'bnJrE':function(_0x4868e4,_0x25834e){return _0x4868e4!==_0x25834e;},'bYFQR':function(_0x233f18){return _0x233f18();},'AxDRO':function(_0x5e6c5e,_0x4d2b37){return _0x5e6c5e!==_0x4d2b37;},'nxIZJ':_0x4715c3(0x20c),'nFjwH':function(_0x15cf39,_0x1c92a6){return _0x15cf39+_0x1c92a6;},'BnnMv':function(_0x59e953,_0x3de0e4){return _0x59e953===_0x3de0e4;},'UNgws':'div','TxyWW':_0x4715c3(0x449),'IavPG':function(_0x36a302,_0x5bc5f6){return _0x36a302+_0x5bc5f6;},'cVADB':_0x4715c3(0x1a1),'dPxpK':function(_0x59fbb3,_0x3408af){return _0x59fbb3(_0x3408af);},'MYDCr':_0x4715c3(0x278),'tiLEG':_0x4715c3(0x430),'iLxHb':function(_0x35ee31,_0x2abc0f){return _0x35ee31===_0x2abc0f;},'kZPFq':_0x4715c3(0x2c5),'AByyY':_0x4715c3(0x1ff),'obeFi':function(_0xb5b992,_0x19d647){return _0xb5b992*_0x19d647;},'Uolhv':function(_0x25a6a2,_0x2dce28){return _0x25a6a2+_0x2dce28;},'UysuN':'progressBar','jadqF':function(_0x5f4c72,_0x932022){return _0x5f4c72+_0x932022;},'iXtqU':_0x4715c3(0x1e5),'POEOq':_0x4715c3(0x1b8),'vMIKw':'solutionContainer','UyICJ':_0x4715c3(0x433),'GsRrL':_0x4715c3(0x26b),'vgqRJ':function(_0x175bc2,_0x2dc0ba){return _0x175bc2!==_0x2dc0ba;},'iRhkY':_0x4715c3(0x327),'GlGVI':_0x4715c3(0x33a),'rrqUu':_0x4715c3(0x440),'zywCO':_0x4715c3(0x1e1),'ykmiT':'KLFwM','APOkq':'click','HawlQ':function(_0x719831,_0x25a448){return _0x719831===_0x25a448;},'QswaZ':_0x4715c3(0x1fd),'rMGFv':_0x4715c3(0x349),'BTNjg':_0x4715c3(0x304)};if(!questionsData||_0x54e5a4[_0x4715c3(0x2d0)](questionsData['length'],0x0)){document[_0x4715c3(0x381)](_0x54e5a4[_0x4715c3(0x1f3)])[_0x4715c3(0x31c)]=_0x54e5a4[_0x4715c3(0x3a5)];return;};const _0x4f5f30=questionsData[currentQuestionIndex];questionStartTime=Date[_0x4715c3(0x3ae)](),selectedOption=questionStates[currentQuestionIndex][_0x4715c3(0x3b6)];const _0x3a647d=_0x54e5a4[_0x4715c3(0x374)](_0x54e5a4[_0x4715c3(0x323)](currentQuestionIndex,0x1)/questionsData[_0x4715c3(0x40b)],0x64);document['getElementById'](_0x54e5a4['UysuN'])[_0x4715c3(0x3a8)]['width']=_0x54e5a4[_0x4715c3(0x240)](_0x3a647d,'%'),document['getElementById'](_0x54e5a4['iXtqU'])[_0x4715c3(0x442)]=currentQuestionIndex+0x1,_0x54e5a4[_0x4715c3(0x2cb)](updateQuestionNav),document[_0x4715c3(0x381)](_0x54e5a4[_0x4715c3(0x219)])[_0x4715c3(0x3ab)]=currentQuestionIndex===0x0,document[_0x4715c3(0x381)](_0x54e5a4[_0x4715c3(0x27e)])[_0x4715c3(0x384)][_0x4715c3(0x40c)](_0x54e5a4[_0x4715c3(0x2ca)]),document['getElementById'](_0x54e5a4[_0x4715c3(0x1f3)])[_0x4715c3(0x31c)]=_0x4f5f30[_0x4715c3(0x21e)]||_0x54e5a4['GsRrL'];let _0x91a286='';if(_0x4f5f30[_0x4715c3(0x367)])_0x91a286+=_0x4715c3(0x2c7)+_0x4f5f30['question_audio']+_0x4715c3(0x1e8);if(_0x4f5f30[_0x4715c3(0x318)])_0x91a286+=_0x4715c3(0x260)+_0x4f5f30[_0x4715c3(0x318)]+_0x4715c3(0x25c);_0x4f5f30[_0x4715c3(0x328)]&&(_0x54e5a4[_0x4715c3(0x245)](_0x4715c3(0x375),_0x54e5a4[_0x4715c3(0x1aa)])?_0x4f5f30['question_images'][_0x4715c3(0x325)](_0x57d25b=>{const _0x13d345=_0x4715c3;if(_0x54e5a4[_0x13d345(0x1d8)]('MBJBQ',_0x13d345(0x339)))_0x12d41c=_0x390d0a;else{if(_0x57d25b)_0x91a286+=_0x13d345(0x35c)+_0x57d25b+_0x13d345(0x326);}}):_0x267a18());document[_0x4715c3(0x381)](_0x54e5a4[_0x4715c3(0x44d)])['innerHTML']=_0x91a286;const _0x1283a1=document[_0x4715c3(0x381)](_0x54e5a4['rrqUu']);_0x1283a1[_0x4715c3(0x31c)]='',_0x1283a1['classList'][_0x4715c3(0x35f)](_0x54e5a4[_0x4715c3(0x2a0)]);if(_0x4f5f30['choices']&&Array['isArray'](_0x4f5f30[_0x4715c3(0x390)])){if(_0x54e5a4[_0x4715c3(0x2d0)](_0x54e5a4[_0x4715c3(0x407)],_0x4715c3(0x31a)))_0x4f5f30['choices'][_0x4715c3(0x325)]((_0x2b089d,_0x284c6c)=>{const _0x1aef76=_0x4715c3,_0x13b811={'UTFlV':function(_0x3a244f){const _0x556419=_0x50f7;return _0x54e5a4[_0x556419(0x2cb)](_0x3a244f);}};if(_0x54e5a4['AxDRO'](_0x54e5a4[_0x1aef76(0x408)],_0x54e5a4[_0x1aef76(0x408)]))_0x13b811[_0x1aef76(0x376)](_0x2271c9);else{const _0x58e917=String['fromCharCode'](_0x54e5a4[_0x1aef76(0x1bb)](0x41,_0x284c6c)),_0x481de4=_0x54e5a4['BnnMv'](selectedOption,_0x284c6c),_0x4bb812=document[_0x1aef76(0x3ba)](_0x54e5a4[_0x1aef76(0x28c)]);_0x4bb812['innerHTML']=_0x1aef76(0x30f)+(_0x481de4?_0x54e5a4[_0x1aef76(0x3cc)]:'')+_0x1aef76(0x203)+_0x284c6c+'\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-letter\x22>'+_0x58e917+_0x1aef76(0x40a)+(_0x2b089d[_0x1aef76(0x21e)]||_0x54e5a4[_0x1aef76(0x2af)](_0x54e5a4['cVADB'],_0x54e5a4[_0x1aef76(0x2af)](_0x284c6c,0x1)))+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x1283a1[_0x1aef76(0x42c)](_0x4bb812);}}),_0x1283a1['addEventListener'](_0x54e5a4[_0x4715c3(0x35b)],function(_0x47a635){const _0x7e15f6=_0x4715c3,_0x1124db=_0x47a635[_0x7e15f6(0x198)]['closest'](_0x7e15f6(0x1d6));if(_0x1124db){const _0x57e361=_0x54e5a4[_0x7e15f6(0x3ce)](parseInt,_0x1124db[_0x7e15f6(0x336)](_0x54e5a4['MYDCr']));_0x54e5a4[_0x7e15f6(0x3ce)](selectOption,_0x57e361);}});else{const _0x1a8225=_0x36b153[_0x4715c3(0x3f0)](_0xdbe2bb[_0x4715c3(0x3da)](_0x54e5a4[_0x4715c3(0x2b3)]))||{},_0x2325a4=_0x1a8225[_0x539edb];if(_0x2325a4)return _0x4abd95=_0x2325a4[_0x4715c3(0x3b7)],_0x23d709=_0x2325a4['stats'],_0xab0c40=_0x2325a4[_0x4715c3(0x3d0)],_0x1afae8=_0x2325a4[_0x4715c3(0x387)],_0x3ccc83['log'](_0x4715c3(0x377)),!![];return![];}}_0x54e5a4[_0x4715c3(0x2cb)](updateBookmarkButton),_0x54e5a4[_0x4715c3(0x2cb)](updateMarkReviewButton),(_0x54e5a4[_0x4715c3(0x1f7)](currentMode,_0x54e5a4[_0x4715c3(0x1ec)])||_0x54e5a4[_0x4715c3(0x1f7)](currentMode,_0x54e5a4[_0x4715c3(0x312)]))&&!isQuizCompleted&&(_0x54e5a4[_0x4715c3(0x1f7)](_0x4715c3(0x304),_0x54e5a4['BTNjg'])?_0x54e5a4[_0x4715c3(0x2cb)](startTimer):_0x280fe4=_0x9ffd01);}function selectOption(_0x507fbb){const _0x34ebdb=_0x3709e6,_0x473a1d={'EBDLF':function(_0x4b1e32,_0x55278d){return _0x4b1e32+_0x55278d;},'GyFVK':_0x34ebdb(0x32f),'NtgHj':function(_0x46be32,_0x5811a9){return _0x46be32!==_0x5811a9;},'nhmzv':_0x34ebdb(0x1d2),'HlARg':_0x34ebdb(0x3c8),'PEalN':_0x34ebdb(0x449),'GgTcP':function(_0x3a2109,_0xc8dec8){return _0x3a2109===_0xc8dec8;},'jrCFy':_0x34ebdb(0x272),'nAUZE':_0x34ebdb(0x2ec),'rNssw':'border-red-500','pWDXY':function(_0x1574b6,_0x5a88ff){return _0x1574b6+_0x5a88ff;},'pPztf':function(_0x1bb133,_0x55db31){return _0x1bb133===_0x55db31;},'kfsbx':_0x34ebdb(0x1fd),'cbDrP':function(_0x4ec59d){return _0x4ec59d();},'UQiTj':_0x34ebdb(0x2e4),'WYjHO':_0x34ebdb(0x1a2),'xeeVO':function(_0x47db26,_0xbd8985){return _0x47db26===_0xbd8985;},'NHGLr':'not_attempted','LUtUX':'answered'},_0x2fc801=document[_0x34ebdb(0x381)]('optionsContainer');if(_0x2fc801[_0x34ebdb(0x384)][_0x34ebdb(0x221)]('answered'))return;questionStartTime&&(questionStates[currentQuestionIndex][_0x34ebdb(0x3a6)]+=Date['now']()-questionStartTime,questionStartTime=Date[_0x34ebdb(0x3ae)]());selectedOption=_0x507fbb,questionStates[currentQuestionIndex][_0x34ebdb(0x3b6)]=_0x507fbb,document['querySelectorAll'](_0x34ebdb(0x1d6))[_0x34ebdb(0x325)]((_0x173118,_0x257dba)=>{const _0x4e6b43=_0x34ebdb,_0x16a4c7={'TuQxF':_0x4e6b43(0x341),'EiBEk':_0x4e6b43(0x21b),'dVThP':function(_0xe76901,_0x1dcb7a){const _0x246518=_0x4e6b43;return _0x473a1d[_0x246518(0x3ca)](_0xe76901,_0x1dcb7a);},'BakTy':_0x473a1d['GyFVK']};if(_0x473a1d[_0x4e6b43(0x1ae)](_0x473a1d[_0x4e6b43(0x228)],_0x473a1d[_0x4e6b43(0x251)]))_0x173118[_0x4e6b43(0x384)][_0x4e6b43(0x27a)](_0x473a1d[_0x4e6b43(0x1fc)],_0x473a1d['GgTcP'](_0x257dba,_0x507fbb));else{const _0x13461c=_0x16a4c7[_0x4e6b43(0x39e)][_0x4e6b43(0x1b6)]('|');let _0x2ae15a=0x0;while(!![]){switch(_0x13461c[_0x2ae15a++]){case'0':_0x7df25=_0x4173bf[_0x4e6b43(0x3ac)];continue;case'1':_0x167298[_0x4e6b43(0x381)](_0x16a4c7['EiBEk'])[_0x4e6b43(0x442)]=_0x42688f[_0x4e6b43(0x40b)];continue;case'2':_0x5934d9[_0x4e6b43(0x3f4)]=_0x16a4c7[_0x4e6b43(0x23b)](_0x1723dc,_0x16a4c7['BakTy']);continue;case'3':_0xb6c355['getElementById']('quizHierarchy')['textContent']=_0x5ac5a0[_0x4e6b43(0x371)](_0x4e6b43(0x36d));continue;case'4':_0x180040=_0x244d5b[_0x4e6b43(0x448)];continue;case'5':_0x2a33a2=_0x5b6db7[_0x4e6b43(0x21d)];continue;}break;}}});if(currentMode===_0x34ebdb(0x2eb)||_0x473a1d[_0x34ebdb(0x257)](currentMode,_0x473a1d[_0x34ebdb(0x1b7)]))_0x473a1d[_0x34ebdb(0x366)](processAnswer);else{if(_0x473a1d[_0x34ebdb(0x1ae)](_0x473a1d[_0x34ebdb(0x2d7)],_0x473a1d[_0x34ebdb(0x19d)]))_0x473a1d[_0x34ebdb(0x2b6)](questionStates[currentQuestionIndex][_0x34ebdb(0x39a)],_0x473a1d[_0x34ebdb(0x30a)])&&(questionStates[currentQuestionIndex][_0x34ebdb(0x39a)]=_0x473a1d['LUtUX'],stats['totalAttempted']++,stats[_0x34ebdb(0x2ac)]--),_0x473a1d[_0x34ebdb(0x366)](updateQuestionNav);else{const _0x56dd85=_0x473a1d[_0x34ebdb(0x45a)](_0x3b1d3f[_0x34ebdb(0x3b6)],_0x267af9),_0x3e9fb5=_0x12e442['id']===_0x9126d2;let _0x10122b=_0x473a1d[_0x34ebdb(0x41c)];if(_0x3e9fb5)_0x10122b=_0x473a1d['nAUZE'];else{if(_0x56dd85)_0x10122b=_0x473a1d[_0x34ebdb(0x405)];}return _0x34ebdb(0x43c)+_0x10122b+_0x34ebdb(0x282)+_0x171d62[_0x34ebdb(0x247)](_0x473a1d[_0x34ebdb(0x2e3)](0x41,_0x31b371))+_0x34ebdb(0x1a0)+_0x491e41['text']+_0x34ebdb(0x38a);}}_0x473a1d['cbDrP'](saveProgress);}function processAnswer(){const _0x56d1ef=_0x3709e6,_0x23c138={'zEQrH':function(_0x1fa544,_0x1e0496){return _0x1fa544===_0x1e0496;},'CNEIZ':function(_0x4f30d7,_0x1a67f9){return _0x4f30d7===_0x1a67f9;},'LgfAU':_0x56d1ef(0x1da),'ZiNzV':'correct','XIDOL':function(_0x12a78f){return _0x12a78f();}},_0x379a47=questionsData[currentQuestionIndex],_0x4db29d=_0x379a47[_0x56d1ef(0x3f2)];if(_0x23c138[_0x56d1ef(0x1c4)](selectedOption,null))return;const _0x5485d7=_0x379a47[_0x56d1ef(0x390)][selectedOption],_0x5cd587=_0x23c138[_0x56d1ef(0x210)](_0x5485d7['id'],_0x4db29d);if(_0x23c138[_0x56d1ef(0x1c4)](questionStates[currentQuestionIndex][_0x56d1ef(0x39a)],_0x23c138[_0x56d1ef(0x43a)])){stats['totalAttempted']++,stats[_0x56d1ef(0x2ac)]--;if(_0x5cd587)stats['correctAnswers']++;else stats[_0x56d1ef(0x200)]++;}questionStates[currentQuestionIndex][_0x56d1ef(0x39a)]=_0x5cd587?_0x23c138['ZiNzV']:_0x56d1ef(0x396),_0x23c138[_0x56d1ef(0x1c6)](updateStats),showInlineFeedback(_0x5cd587),_0x23c138[_0x56d1ef(0x1c6)](updateQuestionNav);}function showInlineFeedback(_0x586c18){const _0xfbbbb=_0x3709e6,_0x3d481f={'imYiv':'nav-btn-bookmarked','ixErb':function(_0x5142bb,_0x14e0b7){return _0x5142bb===_0x14e0b7;},'ROzes':_0xfbbbb(0x34c),'XICYP':_0xfbbbb(0x449),'oVsVU':function(_0x3df10,_0xc7c1a1){return _0x3df10===_0xc7c1a1;},'xqyFR':_0xfbbbb(0x396),'ihTIk':_0xfbbbb(0x2eb),'EjoXU':function(_0x241ece,_0x420b0d){return _0x241ece!==_0x420b0d;},'fzbIl':_0xfbbbb(0x1fd),'fnnkH':_0xfbbbb(0x440),'KHPdS':_0xfbbbb(0x1e1),'POIOB':function(_0x25a6c2){return _0x25a6c2();}};if(currentMode!==_0x3d481f[_0xfbbbb(0x1d9)]&&_0x3d481f['EjoXU'](currentMode,_0x3d481f[_0xfbbbb(0x1be)]))return;const _0x21c9df=document[_0xfbbbb(0x381)](_0x3d481f[_0xfbbbb(0x330)]),_0x1f35c6=_0x21c9df[_0xfbbbb(0x2db)](_0xfbbbb(0x1d6)),_0x5946c2=questionsData[currentQuestionIndex],_0x1cb22c=_0x5946c2[_0xfbbbb(0x3f2)];let _0xc9ec48=_0x5946c2[_0xfbbbb(0x390)][_0xfbbbb(0x26a)](_0x540037=>_0x540037['id']===_0x1cb22c);_0x21c9df['classList']['add'](_0x3d481f[_0xfbbbb(0x35a)]),_0x1f35c6['forEach']((_0x51b2af,_0x38ada9)=>{const _0x50903b=_0xfbbbb,_0x2b0bed={'vsysN':_0x3d481f[_0x50903b(0x2b8)]};if(_0x3d481f['ixErb'](_0x3d481f[_0x50903b(0x3d1)],_0x3d481f[_0x50903b(0x3d1)])){_0x51b2af[_0x50903b(0x384)][_0x50903b(0x35f)](_0x3d481f[_0x50903b(0x2b2)]);if(_0x3d481f[_0x50903b(0x3ed)](_0x38ada9,_0xc9ec48))_0x51b2af[_0x50903b(0x384)][_0x50903b(0x40c)]('correct');else{if(_0x3d481f[_0x50903b(0x416)](_0x38ada9,selectedOption)&&!_0x586c18)_0x51b2af[_0x50903b(0x384)]['add'](_0x3d481f[_0x50903b(0x3e7)]);}}else _0x553444=_0x2b0bed['vsysN'];}),_0x3d481f[_0xfbbbb(0x409)](showSolution);}function _0x2a5b(){const _0x427ca7=['WvvcB','NtipB','AByyY','timeSpent','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-TPO</span></p>','style','DT1185726','includes','disabled','name','<p><span\x20style=\x22font-size:12.0pt;\x22>PET\x20scan</span></p>','now','LsxJY','xFtyK','CsLFM','padStart','AIraC','border-red-500','accuracy','selectedAnswer','questionStates','incorrectResult','Ktafi','createElement','bQmSa','not-attempted','lhOfo','pstnJ','<p><span\x20style=\x22font-size:12.0pt;\x22>Radiolabelled\x20131\x20iodine</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Vagus\x20nerve</span></p>','resume','ArrowRight','<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20classification\x20of\x20fine-needle\x20aspiration\x20cytology\x20for\x20a\x20follicular\x20thyroid\x20swelling?</span></p>','aqSER','jSlKH','YVuxf','navBtn_','hDpvb','RcFtp','EBDLF','zVJmN','TxyWW','2|1|3|4|0|5','dPxpK','<p><span\x20style=\x22font-size:12.0pt;\x22>Squamous</span></p>','currentQuestionIndex','ROzes','FTKHa','mYYML','Bookmarked','WmthX','hocpi','<p><span\x20style=\x22font-size:12.0pt;\x22>Thyroid\x20ima\x20artery</span></p>','log','MBErb','getItem','yWdos','xUVTh','<p><span\x20style=\x22font-size:12.0pt;\x22>1st\x20pharyngeal\x20pouch</span></p>','PweZD','okawd','ZToLM','Are\x20you\x20sure\x20you\x20want\x20to\x20retake\x20the\x20quiz?\x20This\x20will\x20reset\x20all\x20your\x20answers.','CJHjE','AQsNW','usGEk','oiAzv','<p><span\x20style=\x22font-size:12.0pt;\x22>External\x20carotid\x20artery</span></p>','xqyFR','<p><span\x20style=\x22font-size:12.0pt;\x22>Left\x20recurrent\x20laryngeal\x20nerve\x20recurs\x20round\x20the\x20arch\x20of\x20aorta</span></p>','<ul>\x0a<li>The\x20metabolic\x20effects\x20of\x20the\x20thyroid\x20hormones\x20are\x20due\x20to\x20unbound\x20free\x20T4\x20and\x20T3\x20(0.03%\x20and\x200.3%\x20of\x20the\x20total\x20circulating\x20hormones,\x20respectively).</li>\x0a<li>T3\x20is\x20the\x20more\x20important\x20physiological\x20hormone\x20and\x20is\x20also\x20produced\x20in\x20the\x20periphery\x20by\x20conversion\x20from\x20T4.</li>\x0a<li>T3\x20is\x20quick\x20acting\x20(within\x20a\x20few\x20hours),\x20whereas\x20T4\x20acts\x20more\x20slowly\x20(4-14\x20days).</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20852</p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-T3\x20receptor</span></p>','SclZK','<p><span\x20style=\x22font-size:12.0pt;\x22>Suppressive\x20T4\x20therapy</span></p>','ixErb','performanceModal','xujkH','parse','<p><span\x20style=\x22font-size:12.0pt;\x22>Thy1</span></p>','correct_choice_id','attachMedia','title','iaSTe','<p><span\x20style=\x22font-size:12.0pt;\x22>Aorta</span></p>','pathname','You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?','dySIo','incorrectCount','fkKpJ','preventDefault','lmkDp','twMwi','usyoR','xSMca','nav-btn-not-attempted\x20hover:bg-white\x20hover:bg-opacity-20','WJita','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','test','rNssw','<p><span\x20style=\x22font-size:12.0pt;\x22>Medullary\x20carcinoma\x20of\x20thyroid</span></p>','ykmiT','nxIZJ','POIOB','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22option-text\x22>','length','add','vlkOZ','gmYMh','<p><span\x20style=\x22font-size:12.0pt;\x22>Ultrasound\x20neck</span></p>','PdPgS','28DnFAzG','mCsjA','VFbnX','sALNb','-600\x20text-white\x22>','oVsVU','697435XDSOfB','QXCiu','canPlayType','totalAttempted','iuDfG','jrCFy','<p><strong>Thyroxine</strong></p>\x0a<p>The\x20hormones\x20tri-iodothyronine\x20(T3)\x20and\x20l-thyroxine\x20(T4)\x20are\x20bound\x20to\x20thyroglobulin\x20within\x20the\x20colloid.</p>\x0a<p>Synthesis\x20within\x20the\x20thyroglobulin\x20complex\x20is\x20controlled\x20by\x20several\x20enzymes,\x20in\x20distinct\x20steps:</p>\x0a<ul>\x0a<li>trapping\x20of\x20inorganic\x20iodide\x20from\x20the\x20blood;</li>\x0a<li>oxidation\x20of\x20iodide\x20to\x20iodine;</li>\x0a<li>binding\x20of\x20iodine\x20with\x20tyrosine\x20to\x20form\x20iodotyrosine;</li>\x0a<li>coupling\x20of\x20monoiodotyrosines\x20and\x20di-iodotyrosines\x20to\x20form\x20T3\x20and\x20T4.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20852</p>','DT1185924','submitSection','addEventListener','XHlUJ','<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V2NEETPGMCQ/202403194e9c8f5e-410a-45a4-af1c-dceb93039b82.jpg\x22>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20853</p>','console','AcnrN','<p><span\x20style=\x22font-size:12.0pt;\x22>Anti-Tg</span></p>','Factual','YuXAs','osDUJ','JftLV','SOMfp','ZObma','appendChild','solutionImages','DT1185647','cWoTn','userHistory','DT1185639','CQVEb','hidden','<ul>\x0a<li>Thyroid\x20scintigraphy\x20is\x20performed\x20using\x20either\x20technetium-99m\x20pertechnetate\x20or\x20a\x20radiolabelled\x20iodine\x20nuclide\x20(typically\x20123I\x20or\x20131I).</li>\x0a<li>Depending\x20on\x20the\x20specific\x20study,\x20the\x20tracer\x20can\x20be\x20administered\x20intravenously,\x20orally,\x20or\x20via\x20inhalation,\x20and\x20images\x20are\x20obtained\x20anywhere\x20from\x2030\x20minutes\x20(for\x20intravenous\x20[IV]\x20injection)\x20to\x2024\x20hours\x20(for\x20oral\x20administration)\x20afterward.</li>\x0a<li>The\x20thyroid\x20normally\x20displays\x20symmetric\x20uptake\x20bilaterally.\x20Nodular\x20disease\x20can\x20be\x20classified\x20into\x20whether\x20there\x20is\x20increased\x20focal\x20uptake\x20(the\x20so-called\x20\x22hot\x22\x20nodule)\x20or\x20not\x20(the\x20\x22cold\x22\x20nodule).</li>\x0a<li>Classically,\x20\x22hot\x22\x20nodules\x20in\x20the\x20setting\x20of\x20hyperthyroidism\x20are\x20thought\x20to\x20be\x20benign\x20toxic\x20nodules\x20with\x20extremely\x20low\x20risk\x20of\x20malignancy,\x20whereas\x20\x22cold\x22\x20nodules\x20carry\x20a\x2015%\x20risk\x20of\x20malignancy.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Sabiston\x20textbook\x20of\x20Surgery,\x20chapter:\x2037,\x20Edition:\x2021<sup>st</sup>,\x20Pg:\x20882</p>','nSRWe','ArrowLeft','correctResult','PvwMe','quizHierarchy','LgfAU','floor','<div\x20class=\x22p-3\x20rounded-lg\x20border\x20','XxERF','KwObD','\x22\x20data-src=\x22','optionsContainer','TfJlF','textContent','<p><span\x20style=\x22font-size:12.0pt;\x22>2nd\x20pharyngeal\x20pouch</span></p>','Owmyn','VdIAA','mRXNe','smxRv','questions','selected','<ul>\x0a<li>The\x20embryology\x20of\x20the\x20thyroid\x20and\x20parathyroid\x20glands\x20underlies\x20the\x20anatomical\x20position,\x20anatomical\x20variations\x20and\x20congenital\x20conditions\x20of\x20these\x20structures\x20and\x20is\x20therefore\x20vital\x20for\x20surgery.</li>\x0a<li>The\x20thyroglossal\x20duct\x20develops\x20from\x20the\x20median\x20bud\x20of\x20the\x20pharynx.</li>\x0a<li>The\x20foramen\x20caecum\x20at\x20the\x20junction\x20of\x20the\x20anterior\x20two-thirds\x20and\x20posterior\x20one-third\x20of\x20the\x20tongue\x20is\x20the\x20vestigial\x20remnant\x20of\x20the\x20duct.</li>\x0a<li>This\x20initially\x20hollow\x20structure\x20migrates\x20caudally\x20and\x20passes\x20in\x20close\x20continuity\x20with,\x20and\x20sometimes\x20through,\x20the\x20developing\x20hyoid\x20cartilage.</li>\x0a<li>The\x20parathyroid\x20glands\x20develop\x20from\x20the\x20third\x20and\x20fourth\x20pharyngeal\x20pouches.</li>\x0a<li>The\x20thymus\x20also\x20develops\x20from\x20the\x20third\x20pouch.</li>\x0a<li>As\x20it\x20descends,\x20the\x20thymus\x20takes\x20the\x20associated\x20parathyroid\x20gland\x20with\x20it,\x20which\x20explains\x20why\x20the\x20inferior\x20parathyroid,\x20which\x20arises\x20from\x20the\x20third\x20pharyngeal\x20pouch,\x20normally\x20lies\x20inferior\x20to\x20the\x20superior\x20gland.</li>\x0a<li>However,\x20the\x20inferior\x20parathyroid\x20may\x20be\x20found\x20anywhere\x20along\x20this\x20line\x20of\x20descent.</li>\x0a<li>The\x20developing\x20thyroid\x20lobes\x20amalgamate\x20with\x20the\x20structures\x20that\x20arise\x20in\x20the\x20fourth\x20pharyngeal\x20pouch,\x20i.e.\x20the\x20superior\x20parathyroid\x20gland\x20and\x20the\x20ultimobranchial\x20body.</li>\x0a<li>Parafollicular\x20cells\x20(C\x20cells)\x20from\x20the\x20neural\x20crest\x20reach\x20the\x20thyroid\x20via\x20the\x20ultimobranchial\x20body<strong>.</strong></li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20850</p>','DT1185696','modeModal','GlGVI','BSEdf','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20is\x20not\x20the\x20most\x20commonly\x20used\x20thyroid\x20autoantibodies\x20for\x20the\x20diagnosis\x20of\x20autoimmune\x20thyroid\x20disease?</span></p>','juowv','HCdEJ','<p><span\x20style=\x22font-size:12.0pt;\x22>Thy3</span></p>','sCVGm','<p><span\x20style=\x22font-size:12.0pt;\x22>Ultimobranchial\x20body</span></p>','tRato','<p><span\x20style=\x22font-size:12.0pt;\x22>Anaplastic\x20carcinoma\x20of\x20thyroid</span></p>','OawJS','incomplete','<p><span\x20style=\x22font-size:12.0pt;\x22>Inferior\x20thyroid\x20artery</span></p>','GgTcP','div','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20nerve\x20gives\x20the\x20branch\x20to\x20the\x20recurrent\x20laryngeal\x20nerve?</span></p>','warn','target','PrrTN','iNmMh','<p><span\x20style=\x22font-size:12.0pt;\x22>Trapping\x20of\x20inorganic\x20iodide\x20from\x20the\x20blood</span></p>','correctCount','WYjHO','bookmarked','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20conditions\x20show\x20high\x20TSH\x20levels\x20and\x20low\x20levels\x20of\x20free\x20T3\x20and\x20T4?</span></p>','</span><span>','Option\x20','xkEJE','sDUII','YvUdd','dataset','Gplms','review-question\x20','SFvHW','aNACw','iRhkY','exception','gray','<p><span\x20style=\x22font-size:12.0pt;\x22>T3\x20acts\x20quickly</span></p>','NtgHj','toString','error','<p><span\x20style=\x22font-size:12.0pt;\x22>Phrenic\x20nerve</span></p>','507242AYwYqG','<p><span\x20style=\x22font-size:12.0pt;\x22>Simple\x20columnar</span></p>','BTsMv','XAJTN','split','kfsbx','prevBtn','{}.constructor(\x22return\x20this\x22)(\x20)','Incorrect','nFjwH','UGwEq','PxTGT','fzbIl','yGeVn','UvtjJ','Mark\x20for\x20Review','nav-btn-current','\x22\x20class=\x22w-full\x20rounded-lg\x22\x20controls></video></div>','zEQrH','ikhNN','XIDOL','DT1185682','5436axnasv','<p><span\x20style=\x22font-size:12.0pt;\x22>Technicium\x2099</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Papillary\x20carcinoma\x20of\x20thyroid</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Cuboidal</span></p>','sVZQx','PPRQT','erVhH','dCkKn','Not\x20Attempted','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20is\x20not\x20the\x20step\x20of\x20synthesis\x20of\x20thyroxine\x20from\x20the\x20thyroglobulin\x20complex?</span></p>','blIEf','jvcfS','bookmarkBtn','zotwJ','.option-button','OPqvs','bnJrE','ihTIk','not_attempted','TwlOm','mlarI','<p><span\x20style=\x22font-size:12.0pt;\x22>CT\x20scan</span></p>','qXXvr','reduce','mAcus','answered','1261821wLIPkP','statsBar','explanation_video','currentQuestion','zZLLD','TNpRu','\x22\x20controls\x20class=\x22w-full\x22></audio></div>','video[data-src]','<p><span\x20style=\x22font-size:12.0pt;\x22>Stratified\x20columnar</span></p>','none','QswaZ','src','RmHCZ','QFzOA','GCfOG','ymtTk','WaZdE','kZPFq','JqIGZ','gradient-yellow\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','DVybQ','HawlQ','TZGSR','completed','<p><span\x20style=\x22font-size:12.0pt;\x22>Left\x20recurrent\x20laryngeal\x20nerve\x20is\x20shorter\x20than\x20right\x20recurrent\x20laryngeal\x20nerve</span></p>','quizFile','PEalN','timed_study','esQQu','No\x20questions\x20available\x20for\x20this\x20quiz.','incorrectAnswers','<p><span\x20style=\x22font-size:12.0pt;\x22>Right\x20recurrent\x20laryngeal\x20nerve\x20recurs\x20round\x20the\x20subclavian\x20artery</span></p>','ponKN','\x22\x20data-option-index=\x22','No\x20solution\x20provided','tDLuY','gradient-purple\x20px-6\x20py-3\x20text-white\x20transition-all\x20duration-300\x20flex\x20items-center','open','ADbGV','rgnRc','LgqYa','wralq','QEpMd','VQBzH','KNeCA','jBIEe','CNEIZ','nBpyz','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20pouches\x20develop\x20the\x20parathyroid\x20gland?</span></p>','solutionText','true','explanation_audio_hin','<ul>\x0a<li>The\x20relationship\x20between\x20the\x20recurrent\x20laryngeal\x20nerve\x20(RLN)\x20and\x20the\x20thyroid\x20is\x20of\x20supreme\x20importance\x20to\x20the\x20operating\x20surgeon.</li>\x0a<li>A\x20branch\x20of\x20the\x20vagus,\x20the\x20nerve\x20recurs\x20round\x20the\x20arch\x20of\x20the\x20aorta\x20on\x20the\x20left\x20and\x20the\x20subclavian\x20artery\x20on\x20the\x20right.</li>\x0a<li>The\x20clinical\x20significance\x20of\x20this\x20is\x20that\x20on\x20the\x20left\x20the\x20nerve\x20has\x20more\x20distance\x20in\x20which\x20to\x20reach\x20the\x20tracheoesophageal\x20groove\x20and\x20therefore\x20runs\x20in\x20a\x20medial\x20plane.</li>\x0a<li>On\x20the\x20right,\x20there\x20is\x20less\x20distance\x20and\x20the\x20nerve\x20runs\x20more\x20obliquely\x20to\x20reach\x20the\x20tracheoesophageal\x20groove.</li>\x0a<li>Approximately\x202%\x20of\x20nerves\x20on\x20the\x20right\x20are\x20non-recurrent\x20and\x20will\x20enter\x20the\x20larynx\x20from\x20above.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20850-851</p>','TJbnX','PUiuJ','POEOq','IDldC','totalQuestions','zVznj','hierarchy','text','KWPFB','MlXzK','contains','JpzVJ','AkmhY','HYQJa','Vxcmi','UnrSe','bind','nhmzv','QmwZj','Previous\x20progress\x20cleared.','<p><span\x20style=\x22font-size:12.0pt;\x22>Ultrasound</span></p>','<p><strong>Fine-needle\x20aspiration\x20cytology</strong></p>\x0a<ul>\x0a<li>Fine-needle\x20aspiration\x20cytology\x20(FNAC)\x20is\x20the\x20investigation\x20of\x20choice\x20in\x20discrete\x20thyroid\x20swellings.</li>\x0a<li>FNAC\x20has\x20excellent\x20patient\x20compliance,\x20is\x20simple\x20and\x20quick\x20to\x20perform\x20in\x20the\x20out-patient\x20department\x20and\x20is\x20readily\x20repeated.\x20This\x20technique,\x20developed\x20in\x20Scandinavia\x2040\x20years\x20ago,\x20is\x20now\x20routine\x20throughout\x20the\x20world.</li>\x0a<li>FNAC\x20results\x20should\x20be\x20reported\x20using\x20standard\x20terminology.\x20As\x20stated\x20above\x20there\x20is\x20a\x20trend\x20to\x20use\x20ultrasound\x20to\x20guide\x20the\x20needle\x20to\x20achieve\x20more\x20accurate\x20sampling\x20and\x20reduce\x20the\x20rate\x20of\x20unsatisfactory\x20aspirates.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20855</p>','FpoUo','BzfRD','loadSource','<p><strong>Calcitonin</strong></p>\x0a<ul>\x0a<li>Calcitonin\x20is\x20a\x2032-amino\x20acid\x20protein\x20secreted\x20by\x20the\x20parafollicular\x20C\x20cells.</li>\x0a<li>Normally,\x20serum\x20calcitonin\x20levels\x20are\x20highest\x20in\x20infancy,\x20decline\x20rapidly\x20in\x20early\x20childhood,\x20then\x20remain\x20relatively\x20stable\x20through\x20adulthood\x20(although\x20absolute\x20levels\x20can\x20fluctuate\x20minute\x20to\x20minute).</li>\x0a<li>Calcitonin\x20does\x20not\x20appear\x20to\x20play\x20a\x20significant\x20role\x20in\x20calcium\x20homeostasis\x20despite\x20its\x20known\x20mechanisms\x20of\x20action\x20at\x20the\x20level\x20of\x20the\x20bone,\x20gut,\x20and\x20kidney.</li>\x0a<li>Serum\x20calcitonin\x20is\x20the\x20most\x20sensitive\x20biomarker\x20for\x20the\x20detection\x20and\x20surveillance\x20of\x20medullary\x20thyroid\x20cancer\x20(MTC),\x20which\x20is\x20a\x20malignancy\x20of\x20the\x20parafollicular\x20C\x20cells.</li>\x0a<li>This\x20test\x20is\x20performed\x20in\x20patients\x20with-or\x20family\x20members\x20at\x20risk\x20for-MTC\x20or\x20multiple\x20endocrine\x20neoplasia\x20type\x202\x20(MEN2;\x20see\x20below).</li>\x0a<li>There\x20is\x20controversy\x20around\x20the\x20utility\x20of\x20measuring\x20serum\x20calcitonin\x20as\x20a\x20routine\x20screening\x20test\x20in\x20the\x20evaluation\x20of\x20a\x20thyroid\x20nodule.</li>\x0a<li>Calcitonin\x20is\x20currently\x20measured\x20using\x20a\x20variety\x20of\x20methods,\x20including\x20radioimmunoassays,\x20enzyme-linked\x20immunosorbent\x20assay,\x20and\x20immunochemiluminometric\x20assay,\x20with\x20differing\x20sensitivities,\x20specificities,\x20and\x20reference\x20ranges.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Sabiston\x20textbook\x20of\x20Surgery,\x20chapter:\x2037,\x20Edition:\x2021<sup>st</sup>,\x20Pg:\x20882</p>','EKGGL','iQaBw','toLowerCase','koZxr','<ul>\x0a<li>Embryology\x20of\x20the\x20thyroid\x20and\x20parathyroid\x20glands\x20underlies\x20the\x20anatomical\x20position,\x20anatomical\x20variations\x20and\x20congenital\x20conditions\x20of\x20these\x20structures\x20and\x20is\x20therefore\x20vital\x20for\x20surgery.</li>\x0a<li>The\x20thyroglossal\x20duct\x20develops\x20from\x20the\x20median\x20bud\x20of\x20the\x20pharynx.</li>\x0a<li>The\x20foramen\x20caecum\x20at\x20the\x20junction\x20of\x20the\x20anterior\x20two-thirds\x20and\x20posterior\x20one-third\x20of\x20the\x20tongue\x20is\x20the\x20vestigial\x20remnant\x20of\x20the\x20duct.</li>\x0a<li>This\x20initially\x20hollow\x20structure\x20migrates\x20caudally\x20and\x20passes\x20in\x20close\x20continuity\x20with,\x20and\x20sometimes\x20through,\x20the\x20developing\x20hyoid\x20cartilage.</li>\x0a<li>The\x20parathyroid\x20glands\x20develop\x20from\x20the\x20third\x20and\x20fourth\x20pharyngeal\x20pouches.</li>\x0a<li>The\x20thymus\x20also\x20develops\x20from\x20the\x20third\x20pouch.</li>\x0a<li>As\x20it\x20descends,\x20the\x20thymus\x20takes\x20the\x20associated\x20parathyroid\x20gland\x20with\x20it,\x20which\x20explains\x20why\x20the\x20inferior\x20parathyroid,\x20which\x20arises\x20from\x20the\x20third\x20pharyngeal\x20pouch,\x20normally\x20lies\x20inferior\x20to\x20the\x20superior\x20gland.</li>\x0a<li>However,\x20the\x20inferior\x20parathyroid\x20may\x20be\x20found\x20anywhere\x20along\x20this\x20line\x20of\x20descent.</li>\x0a<li>The\x20developing\x20thyroid\x20lobes\x20amalgamate\x20with\x20the\x20structures\x20that\x20arise\x20in\x20the\x20fourth\x20pharyngeal\x20pouch,\x20i.e.\x20the\x20superior\x20parathyroid\x20gland\x20and\x20the\x20ultimobranchial\x20body.</li>\x0a<li>Parafollicular\x20cells\x20(C\x20cells)\x20from\x20the\x20neural\x20crest\x20reach\x20the\x20thyroid\x20via\x20the\x20ultimobranchial\x20body<strong>.</strong></li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20850</p>','BlXlG','LKSIx','DtIfK','explanationVideoPlayer','EtfWP','dVThP','qBank','<p><span\x20style=\x22font-size:12.0pt;\x22>Thyrohyoid\x20joint</span></p>','dFzOf','eDXyP','jadqF','2584KnpYEV','endsWith','sDgoA','mxVnN','vgqRJ','<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V2NEETPGMCQ/20240319717f4819-3078-449a-b10d-1f263a2f5962.jpg\x22>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20852</p>','fromCharCode','button','fFWgm','taqaL','DT1220981','tiQlY','AlhKq','ElijW','nGXxI','__proto__','HlARg','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20modality\x20is\x20helpful\x20in\x20detecting\x20the\x20presence\x20of\x20prevertebral\x20fascia\x20invasion\x20in\x20thyroid\x20swelling?</span></p>','bvxcX','solutionContainer','nKpgp','iCcvi','pPztf','qdRmb','HPdOv','markedForReview','emGVM','\x22\x20controls\x20class=\x22w-full\x20rounded-lg\x22></video></div>','EQHmp','trace','location','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><video\x20src=\x22','setItem','LNSKD','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish\x20Explanation:</p><audio\x20src=\x22','dUYvZ','<p><span\x20style=\x22font-size:12.0pt;\x22>Hypoglossal\x20nerve</span></p>','DT1185928','stringify','<p><strong>SURGICAL\x20ANATOMY</strong></p>\x0a<ul>\x0a<li>The\x20normal\x20thyroid\x20gland\x20weighs\x2020-25\x20g.</li>\x0a<li>The\x20functioning\x20unit\x20is\x20the\x20lobule\x20supplied\x20by\x20a\x20single\x20arteriole\x20and\x20consists\x20of\x2024-40\x20follicles\x20lined\x20with\x20cuboidal\x20epithelium.</li>\x0a<li>The\x20follicle\x20contains\x20colloid\x20in\x20which\x20thyroglobulin\x20is\x20stored.</li>\x0a<li>The\x20arterial\x20supply\x20is\x20rich,\x20and\x20extensive\x20anastomoses\x20occur\x20between\x20the\x20main\x20thyroid\x20arteries\x20and\x20branches\x20of\x20the\x20tracheal\x20and\x20oesophageal\x20arteries.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20850</p>','fccZI','findIndex','No\x20question\x20text\x20available','DdTNZ','xwAaC','<p><span\x20style=\x22font-size:12.0pt;\x22>Metabolic\x20effects\x20are\x20due\x20to\x20bound\x20T3\x20and\x20T4</span></p>','get','roWdn','tXWMp','border-gray-600','Yzcqr','2343131XxRrTy','<p><span\x20style=\x22font-size:12.0pt;\x22>0.1\x20mg</span></p>','tWaca','GaODw','data-option-index','pop','toggle','MuZFe','FVpkd','display','vMIKw','<p><span\x20style=\x22font-size:12.0pt;\x22>Median\x20bud</span></p>','JWkxY','AawaL','\x22><span\x20class=\x22font-bold\x20mr-3\x22>','RlxAO','QdhKd','<p><span\x20style=\x22font-size:12.0pt;\x22>Binding\x20of\x20iodine\x20with\x20tyrosine</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Middle\x20thyroid\x20artery</span></p>','UTGmy','You\x20have\x20reached\x20the\x20end\x20of\x20the\x20quiz.\x20Would\x20you\x20like\x20to\x20submit\x20your\x20answers\x20now?','peFBO','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20','DT1185978','UNgws','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20statements\x20is\x20false\x20for\x20action\x20of\x20thyroid\x20hormones?</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20radioactive\x20substance\x20is\x20not\x20used\x20in\x20the\x20thyroid\x20scintigraphy\x20technique?</span></p>','className','(((.+)+)+)+$','<p><span\x20style=\x22font-size:12.0pt;\x22>External\x20laryngeal\x20nerve</span></p>','<ul>\x0a<li><strong>Blood\x20and\x20Lymphatic\x20Supply</strong>:\x20The\x20thyroid\x20gland\x20has\x20a\x20rich\x20blood\x20supply\x20and\x20a\x20complex\x20network\x20of\x20vessels.\x20It\x20receives\x20arterial\x20blood\x20from\x20several\x20sources.</li>\x0a<li><strong>Superior\x20Thyroid\x20Arteries</strong>:\x20The\x20superior\x20thyroid\x20arteries\x20arise\x20from\x20the\x20external\x20carotid\x20arteries.\x20These\x20arteries\x20split\x20into\x20branches\x20as\x20they\x20enter\x20the\x20upper\x20poles\x20of\x20the\x20thyroid\x20lobes.</li>\x0a<li><strong>Inferior\x20Thyroid\x20Arteries</strong>:\x20The\x20inferior\x20thyroid\x20arteries\x20originate\x20from\x20the\x20<em>thyrocervical\x20trunks\x20of\x20the\x20subclavian\x20arteries</em>.\x20They\x20branch\x20fairly\x20close\x20to\x20the\x20thyrocervical\x20trunk,\x20and\x20their\x20course\x20takes\x20them\x20upward\x20and\x20posteriorly,\x20running\x20behind\x20the\x20carotid\x20sheath.\x20They\x20then\x20turn\x20and\x20enter\x20the\x20mid-portion\x20of\x20the\x20thyroid\x20lobes.</li>\x0a<li><strong>Thyroid\x20Ima\x20Artery</strong>:\x20In\x20about\x202%\x20of\x20individuals,\x20a\x20third\x20artery\x20known\x20as\x20the\x20thyroid\x20ima\x20artery\x20can\x20be\x20present.\x20This\x20artery\x20has\x20an\x20unusual\x20origin,\x20arising\x20directly\x20from\x20either\x20the\x20aorta\x20or\x20innominate\x20artery.\x20It\x20follows\x20a\x20midline\x20path\x20and\x20enters\x20either\x20the\x20thyroid\x20isthmus\x20or\x20the\x20lower\x20poles\x20of\x20the\x20thyroid\x20lobes.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Sabiston\x20textbook\x20of\x20Surgery,\x20chapter:\x2037,\x20Edition:\x2021<sup>st</sup>,\x20Pg:\x20876</p>','lpgbt','<p><span\x20style=\x22font-size:12.0pt;\x22>T3\x20is\x20more\x20important\x20physiological\x20hormone</span></p>','klvAd','map','info','qkIzZ','nav-btn-incorrect','OEjlA','BJxfA','DT1185736','odMfQ','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>Hinglish:</p><audio\x20src=\x22','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','zywCO','fill','quizSidebar','<p><span\x20style=\x22font-size:12.0pt;\x22>0.2\x20mg</span></p>','search','tnJvD','solutionAudio','TZcVi','LvTBs','cyUUa','ZVNuv','mWJXT','notAttempted','<p><span\x20style=\x22font-size:12.0pt;\x22>Cricothyroid\x20joint</span></p>','push','IavPG','DT1185701','BJRnV','XICYP','tiLEG','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-green-900\x20bg-opacity-20\x20p-4\x20rounded-lg\x20border\x20border-green-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h5\x20class=\x22text-green-400\x20font-bold\x20mb-2\x22>Explanation:</h5>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20text-opacity-90\x22>','IsVit','xeeVO','mzvIC','imYiv','timeDisplay','OxSJb','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20artery\x20gives\x20the\x20branch\x20to\x20the\x20inferior\x20thyroid\x20artery?</span></p>','cVUJZ','QHqdu','suaDy','utObO','SYKpI','totalTime','BvTrV','vdEIw','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-4\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x20mb-3\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4\x20class=\x22text-lg\x20font-bold\x20text-white\x22>Question\x20','questionText','solution','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><audio\x20src=\x22','eFvyB','glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-yellow-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center','UyICJ','bYFQR','RSQXv','QIHBr','\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','irMFD','iLxHb','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-white\x20mb-4\x22>','IDXQi','intermediate','<p><span\x20style=\x22font-size:12.0pt;\x22>Radiolabelled\x20139\x20iodine</span></p>','GHXwO','.m3u8','UQiTj','<p><span\x20style=\x22font-size:12.0pt;\x22>Where\x20does\x20the\x20parafollicular\x20C\x20cells\x20develop\x20from?</span></p>','cIfyM','<div\x20class=\x22mt-4\x22><img\x20src=\x22','querySelectorAll','urWSS','ZCFrZ','nav-btn-answered','toISOString','Marked','w-8\x20h-8\x20text-sm\x20font-medium\x20rounded\x20transition-all\x20duration-200','<p><span\x20style=\x22font-size:12.0pt;\x22>Cricothyroid\x20gland</span></p>','pWDXY','XEUtA','return\x20(function()\x20','Ydjcp','WzQFh','<p><span\x20style=\x22font-size:12.0pt;\x22>FNAC</span></p>','JeAYl','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','study','border-green-500','ZWAhI','sUTVc','wZwEf','XKWMH','QxZny','stats','application/vnd.apple.mpegurl','enjEn','yStxT','bottom','ygABV','reviewQuestionsContainer','LOkCM','OzNVi','yAGBC','prototype','<ul>\x0a<li>The\x20nerve\x20runs\x20posterior\x20to\x20the\x20thyroid\x20and\x20enters\x20the\x20larynx\x20at\x20the\x20cricothyroid\x20joint.</li>\x0a<li>This\x20entry\x20point\x20is\x20at\x20the\x20level\x20of\x20Berry\x27s\x20ligament,\x20a\x20condensation\x20of\x20pretracheal\x20fascia\x20that\x20binds\x20the\x20thyroid\x20to\x20the\x20trachea.</li>\x0a<li>This\x20is\x20the\x20point\x20at\x20which\x20the\x20nerve\x20is\x20at\x20most\x20risk\x20of\x20injury\x20during\x20surgery.</li>\x0a<li>In\x20terms\x20of\x20surgical\x20anatomy,\x20the\x20nerve\x20can\x20be\x20located\x20in\x20the\x20tracheoesophageal\x20groove\x20where\x20it\x20forms\x20one\x20side\x20of\x20Beahrs\x27\x20triangle\x20(the\x20other\x20two\x20sides\x20are\x20the\x20carotid\x20artery\x20and\x20the\x20inferior\x20thyroid\x20artery)\x20or\x20at\x20the\x20cricothyroid\x20joint.</li>\x0a<li>The\x20nerve\x20will\x20normally\x20be\x20found\x20as\x20the\x20thyroid\x20lobe\x20is\x20mobilised\x20laterally,\x20lying\x20under\x20the\x20most\x20posterolateral\x20portion\x20of\x20the\x20gland\x20called\x20the\x20tubercle\x20of\x20Zuckerkandl.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20851-852</p>','FZQhN','oITdE','strokeDasharray','cinjp','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20is\x20the\x20investigation\x20of\x20choice\x20in\x20discrete\x20thyroid\x20swelling?</span></p>','KniSi','JDocI','VCjhh','bookmarkText','UKPOy','explanation_images','<p><span\x20style=\x22font-size:12.0pt;\x22>Deoxygenation\x20of\x20iodine\x20to\x20iodide</span></p>','NHGLr','<p><span\x20style=\x22font-size:12.0pt;\x22>Myxoedema</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>0.4\x20mg</span></p>','nav-btn-correct','lnyBq','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20type=\x22button\x22\x20class=\x22option-button\x20','Are\x20you\x20sure\x20you\x20want\x20to\x20submit\x20the\x20quiz?','JTeJm','rMGFv','customQuizData','hfldr','flex','Bookmark','aADpM','question_video','correctAnswers','KLFwM','<img\x20class=\x22w-100\x22\x20style=\x22height:auto;\x20display:block;\x20vertical-align:middle;\x20border:0;\x20\x20\x22src=\x22https://d3d535v34tlady.cloudfront.net/V2NEETPGMCQ/202403199124c775-ac8c-4041-b88d-5f3e1346a176.jpg\x22>\x0a<p><strong>Reference</strong>:\x20Bailey\x20&amp;\x20Love\x27s\x20short\x20practice\x20of\x20surgery,\x20chapter:\x2055,\x20Edition:\x2028<sup>th</sup>,\x20Pg:\x20855</p>','innerHTML','JVHtg','<p><span\x20style=\x22font-size:12.0pt;\x22>In\x20which\x20of\x20the\x20following\x20condition,\x20serum\x20calcitonin\x20is\x20the\x20most\x20sensitive\x20biomarker\x20for\x20detection\x20and\x20surveillance?</span></p>','sVyCF','solutionVideo','govLD','gDjNe','Uolhv','round','forEach','\x22\x20alt=\x22Question\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>','ZFmpu','question_images','block','ughWI','GajNk','yfcxM','lRllh','lYSIF','\x20-\x20Brain\x20And\x20Scalpel','fnnkH','<p><span\x20style=\x22font-size:12.0pt;\x22>T4\x20acts\x20slowly</span></p>','YOXZu','yVLCi','questionIndex','<p><span\x20style=\x22font-size:12.0pt;\x22>5th\x20pharyngeal\x20pouch</span></p>','getAttribute','mtIBC','<p><span\x20style=\x22font-size:12.0pt;\x22>It\x20is\x20a\x20branch\x20of\x20vagus\x20nerve</span></p>','MBJBQ','questionMedia','correct','LgJWo','UvFCZ','table','MwrGE','cOcYd','4|0|5|2|1|3','keydown','ZAgnl','OAdyP','accuracyScore','isSupported','lebWx','ihLHJ','timed_exam','wDVuV','<p><span\x20style=\x22font-size:12.0pt;\x22>MRI</span></p>','CUcLE','Surgery','eZboj','replace','red','</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20px-3\x20py-1\x20rounded-full\x20bg-','EPbej','bookmarkedQuestions','<p><span\x20style=\x22font-size:12.0pt;\x22>What\x20is\x20the\x20average\x20daily\x20iodine\x20requirement\x20for\x20adult\x20human?</span></p>','kkOBZ','TqGBB','trIDu','hbqWy','timerContainer','KHPdS','APOkq','<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22','nav-btn-marked-review','HaJAe','remove','YAtLl','custom_quiz.html','TBiTQ','<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English\x20Explanation:</p><audio\x20src=\x22','13523240bcpNbD','1528718mqGYbG','cbDrP','question_audio','KnLtP','NYaUv','DzEJq','nlucA','RWuKn','\x20>\x20','RZxAI','YOxZZ','cNRZZ','join','notAttemptedResult','clEAD','obeFi','IWEVk','UTFlV','Progress\x20loaded.','zEmXQ','testModeReviewLegend','<p><span\x20style=\x22font-size:12.0pt;\x22>Thy4</span></p>','BMKBH','key','kMXvn','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20artery\x20doesn\x27t\x20supply\x20the\x20thyroid\x20gland?</span></p>','explanation_audio_eng','TQaZw','getElementById','removeItem','DBpxY','classList','<p><span\x20style=\x22font-size:12.0pt;\x22>0.3\x20mg</span></p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Internal\x20carotid\x20artery</span></p>','currentMode','sobFB','onclick','</span></div>','<p><span\x20style=\x22font-size:12.0pt;\x22>Which\x20among\x20the\x20following\x20is\x20an\x20essential\x20thyroid\x20investigation?</span></p>','PEgyq','wEjcL','DT1185860','testModeLegend','choices','<p><span\x20style=\x22font-size:12.0pt;\x22>Follicular\x20carcinoma\x20of\x20thyroid</span></p>','6vBDlLO','OQJIW','awUmh','ZHVXI','incorrect','<p><span\x20style=\x22font-size:12.0pt;\x22>Radiolabelled\x20123\x20iodine</span></p>','<ul>\x0a<li><strong>Blood\x20and\x20Lymphatic\x20Supply</strong>:\x20The\x20thyroid\x20gland\x20has\x20a\x20rich\x20blood\x20supply\x20and\x20a\x20complex\x20network\x20of\x20vessels.\x20It\x20receives\x20arterial\x20blood\x20from\x20several\x20sources.</li>\x0a<li><strong>Superior\x20Thyroid\x20Arteries</strong>:\x20The\x20superior\x20thyroid\x20arteries\x20arise\x20from\x20the\x20external\x20carotid\x20arteries.\x20These\x20arteries\x20split\x20into\x20branches\x20as\x20they\x20enter\x20the\x20upper\x20poles\x20of\x20the\x20thyroid\x20lobes.</li>\x0a<li><strong>Inferior\x20Thyroid\x20Arteries</strong>:\x20The\x20inferior\x20thyroid\x20arteries\x20originate\x20from\x20the\x20thyrocervical\x20trunks\x20of\x20the\x20subclavian\x20arteries.\x20They\x20branch\x20fairly\x20close\x20to\x20the\x20thyrocervical\x20trunk,\x20and\x20their\x20course\x20takes\x20them\x20upward\x20and\x20posteriorly,\x20running\x20behind\x20the\x20carotid\x20sheath.\x20They\x20then\x20turn\x20and\x20enter\x20the\x20mid-portion\x20of\x20the\x20thyroid\x20lobes.</li>\x0a<li><strong>Thyroid\x20Ima\x20Artery</strong>:\x20In\x20about\x202%\x20of\x20individuals,\x20a\x20third\x20artery\x20known\x20as\x20the\x20thyroid\x20ima\x20artery\x20can\x20be\x20present.\x20This\x20artery\x20has\x20an\x20unusual\x20origin,\x20arising\x20directly\x20from\x20either\x20the\x20aorta\x20or\x20innominate\x20artery.\x20It\x20follows\x20a\x20midline\x20path\x20and\x20enters\x20either\x20the\x20thyroid\x20isthmus\x20or\x20the\x20lower\x20poles\x20of\x20the\x20thyroid\x20lobes.</li>\x0a<li>The\x20occurence\x20of\x20Middle\x20thyroid\x20artery\x20is\x20not\x20found\x20in\x20human\x20body.</li>\x0a</ul>\x0a<p><strong>Reference</strong>:\x20Sabiston\x20textbook\x20of\x20Surgery,\x20chapter:\x2037,\x20Edition:\x2021<sup>st</sup>,\x20Pg:\x20876</p>','<p><span\x20style=\x22font-size:12.0pt;\x22>Thyrocervical\x20trunk</span></p>','status','knPHJ','basics-95b168b4.html','LNhAR','TuQxF','apply','<p><span\x20style=\x22font-size:12.0pt;\x22>Coupling\x20of\x20mono\x20and\x20di\x20iodotyrosines</span></p>','totalTimeResult','XsCne'];_0x2a5b=function(){return _0x427ca7;};return _0x2a5b();}function showSolution(){const _0x4ece51=_0x3709e6,_0x113aa5={'YOxZZ':function(_0x3449b7,_0x554142){return _0x3449b7(_0x554142);},'vhkMH':_0x4ece51(0x3f8),'sobFB':function(_0x8ae988){return _0x8ae988();},'IsVit':function(_0x32f33e,_0xbde24b){return _0x32f33e+_0xbde24b;},'UiaBe':_0x4ece51(0x2e5),'mCsjA':_0x4ece51(0x3d8),'xUVTh':_0x4ece51(0x197),'YvUdd':_0x4ece51(0x297),'lnyBq':_0x4ece51(0x1b0),'okawd':function(_0x434643,_0x4d8e83){return _0x434643<_0x4d8e83;},'JVHtg':_0x4ece51(0x2d6),'oiAzv':function(_0x5bea81,_0xbf5698,_0x583351){return _0x5bea81(_0xbf5698,_0x583351);},'AIraC':function(_0x527832,_0x3a72b1){return _0x527832===_0x3a72b1;},'ikhNN':_0x4ece51(0x1f0),'hTLfk':_0x4ece51(0x2e9),'roWdn':_0x4ece51(0x2eb),'IDldC':_0x4ece51(0x1fd),'yVLCi':_0x4ece51(0x213),'iaSTe':_0x4ece51(0x320),'uhiyT':_0x4ece51(0x37d),'QFzOA':_0x4ece51(0x358),'Gplms':'hidden','opHnq':function(_0x2fa940,_0x2fab23,_0x1cc585){return _0x2fa940(_0x2fab23,_0x1cc585);},'xPjqU':_0x4ece51(0x35e),'lfJHa':_0x4ece51(0x2a6),'yXtrd':_0x4ece51(0x42d),'eEjHz':function(_0x9b9be3,_0x3ad1ca){return _0x9b9be3!==_0x3ad1ca;},'LvTBs':_0x4ece51(0x413)};if(currentMode!==_0x113aa5[_0x4ece51(0x270)]&&currentMode!==_0x113aa5[_0x4ece51(0x21a)])return;const _0x2c1c27=questionsData[currentQuestionIndex];document[_0x4ece51(0x381)](_0x113aa5[_0x4ece51(0x333)])['innerHTML']=_0x2c1c27['solution']||_0x4ece51(0x204);const _0x54e2ee=document[_0x4ece51(0x381)](_0x113aa5[_0x4ece51(0x3f5)]),_0x43efc7=document[_0x4ece51(0x381)](_0x4ece51(0x239)),_0x327094=_0x2c1c27[_0x4ece51(0x1e4)];if(_0x327094){if(_0x113aa5['uhiyT']!==_0x113aa5[_0x4ece51(0x1ef)]){_0x54e2ee[_0x4ece51(0x384)][_0x4ece51(0x35f)](_0x113aa5[_0x4ece51(0x1a6)]);if(_0x327094[_0x4ece51(0x3aa)](_0x4ece51(0x2d6)))_0x113aa5['opHnq'](setupVideo,_0x43efc7,_0x327094);else _0x43efc7['src']=_0x327094;}else _0x113aa5[_0x4ece51(0x36f)](_0x5e5ef9,_0x113aa5['vhkMH'])&&(_0x166041=0x0,_0x113aa5[_0x4ece51(0x388)](_0x38bc71),_0x113aa5[_0x4ece51(0x388)](_0x36e4e2));}else{if(_0x113aa5[_0x4ece51(0x3b3)](_0x113aa5['xPjqU'],_0x4ece51(0x35e)))_0x54e2ee['classList'][_0x4ece51(0x40c)](_0x113aa5[_0x4ece51(0x1a6)]);else{let _0x1a9996;try{const _0x73bc47=_0x3ae219(YwXCYZ[_0x4ece51(0x2b5)](YwXCYZ['IsVit'](YwXCYZ['UiaBe'],_0x4ece51(0x1b9)),');'));_0x1a9996=YwXCYZ['sobFB'](_0x73bc47);}catch(_0x3e4d73){_0x1a9996=_0x52a635;}const _0x495cab=_0x1a9996[_0x4ece51(0x423)]=_0x1a9996[_0x4ece51(0x423)]||{},_0x4d0358=[YwXCYZ[_0x4ece51(0x412)],YwXCYZ[_0x4ece51(0x3dc)],YwXCYZ[_0x4ece51(0x1a4)],YwXCYZ[_0x4ece51(0x30e)],_0x4ece51(0x1ab),_0x4ece51(0x33e),_0x4ece51(0x25e)];for(let _0xf88d71=0x0;YwXCYZ[_0x4ece51(0x3df)](_0xf88d71,_0x4d0358['length']);_0xf88d71++){const _0x4b5f18=_0x142e9b['constructor'][_0x4ece51(0x2fc)]['bind'](_0x1482f0),_0x5d2f51=_0x4d0358[_0xf88d71],_0x18fe4c=_0x495cab[_0x5d2f51]||_0x4b5f18;_0x4b5f18[_0x4ece51(0x250)]=_0x44b0c9[_0x4ece51(0x227)](_0x469b4b),_0x4b5f18[_0x4ece51(0x1af)]=_0x18fe4c[_0x4ece51(0x1af)][_0x4ece51(0x227)](_0x18fe4c),_0x495cab[_0x5d2f51]=_0x4b5f18;}}}const _0x32a25e=document[_0x4ece51(0x381)](_0x113aa5['lfJHa']);_0x32a25e[_0x4ece51(0x31c)]='';_0x2c1c27[_0x4ece51(0x37f)]&&(_0x32a25e[_0x4ece51(0x31c)]+=_0x4ece51(0x363)+_0x2c1c27[_0x4ece51(0x37f)]+_0x4ece51(0x1e8));_0x2c1c27[_0x4ece51(0x215)]&&(_0x32a25e[_0x4ece51(0x31c)]+=_0x4ece51(0x263)+_0x2c1c27[_0x4ece51(0x215)]+_0x4ece51(0x1e8));const _0x5bb9aa=document[_0x4ece51(0x381)](_0x113aa5['yXtrd']);_0x5bb9aa[_0x4ece51(0x31c)]='',_0x2c1c27[_0x4ece51(0x308)]&&(_0x113aa5['eEjHz'](_0x113aa5[_0x4ece51(0x2a8)],_0x113aa5['LvTBs'])?(_0x14984f[_0x4ece51(0x381)](_0x4ece51(0x44c))[_0x4ece51(0x3a8)]['display']=_0x4ece51(0x1eb),_0x49808f()):_0x2c1c27[_0x4ece51(0x308)][_0x4ece51(0x325)](_0xe8dbf9=>{const _0x111f33=_0x4ece51;if(_0x113aa5[_0x111f33(0x3b3)](_0x113aa5[_0x111f33(0x1c5)],_0x113aa5['hTLfk'])){_0x5174a4[_0x111f33(0x384)][_0x111f33(0x35f)]('hidden');if(_0x2b6154[_0x111f33(0x3aa)](_0x113aa5[_0x111f33(0x31d)]))_0x113aa5[_0x111f33(0x3e5)](_0x25116c,_0x1e897d,_0x42ad4a);else _0x588de9[_0x111f33(0x1ed)]=_0x5a6518;}else{if(_0xe8dbf9)_0x5bb9aa[_0x111f33(0x31c)]+=_0x111f33(0x2da)+_0xe8dbf9+'\x22\x20alt=\x22Explanation\x20Image\x22\x20class=\x22w-full\x20rounded-lg\x22></div>';}})),document[_0x4ece51(0x381)](_0x4ece51(0x254))[_0x4ece51(0x384)]['remove'](_0x4ece51(0x433));}function submitQuiz(){const _0x5bd446=_0x3709e6,_0x44196f={'FZQhN':function(_0xe9243,_0x5a2755){return _0xe9243!==_0x5a2755;},'MAETA':'correct','Xgnal':_0x5bd446(0x396),'zEmXQ':function(_0xe52585,_0x3fbad8){return _0xe52585(_0x3fbad8);},'WJita':'quizPerformanceData','RWuKn':function(_0x26f705,_0x53519a){return _0x26f705-_0x53519a;},'AlhKq':function(_0x402434,_0x21bd45){return _0x402434+_0x21bd45;},'NHmIK':function(_0x296a2c){return _0x296a2c();},'DBpxY':function(_0x15cd52,_0x7e1ded){return _0x15cd52+_0x7e1ded;}};if(timer)_0x44196f[_0x5bd446(0x378)](clearInterval,timer);if(!_0x44196f['zEmXQ'](confirm,_0x5bd446(0x310)))return;isQuizCompleted=!![];let _0x1d0076=0x0,_0x4e19d5=0x0;const _0x4e2b09=Date['now']()-quizStartTime;questionsData[_0x5bd446(0x325)]((_0x3c2b7f,_0x304767)=>{const _0x13a927=_0x5bd446,_0xf7cebd=questionStates[_0x304767];_0x44196f[_0x13a927(0x2fe)](_0xf7cebd[_0x13a927(0x3b6)],null)&&(_0x3c2b7f[_0x13a927(0x390)][_0xf7cebd[_0x13a927(0x3b6)]]['id']===_0x3c2b7f['correct_choice_id']?(_0x1d0076++,_0xf7cebd[_0x13a927(0x39a)]=_0x44196f['MAETA']):(_0x4e19d5++,_0xf7cebd[_0x13a927(0x39a)]=_0x44196f['Xgnal']));});const _0x5aa762=JSON[_0x5bd446(0x3f0)](localStorage[_0x5bd446(0x3da)](_0x44196f[_0x5bd446(0x402)]))||[];_0x5aa762[_0x5bd446(0x2ae)]({'quizName':quizName,'hierarchy':hierarchy,'timestamp':Date[_0x5bd446(0x3ae)](),'totalTime':_0x4e2b09,'stats':{'correct':_0x1d0076,'incorrect':_0x4e19d5,'notAttempted':_0x44196f[_0x5bd446(0x36c)](questionsData[_0x5bd446(0x40b)],_0x44196f[_0x5bd446(0x24d)](_0x1d0076,_0x4e19d5))}}),localStorage[_0x5bd446(0x261)](_0x44196f[_0x5bd446(0x402)],JSON[_0x5bd446(0x267)](_0x5aa762)),stats[_0x5bd446(0x319)]=_0x1d0076,stats[_0x5bd446(0x200)]=_0x4e19d5,_0x44196f['NHmIK'](markQuizAsCompleted),showPerformanceAnalysis(_0x1d0076,_0x4e19d5,questionsData['length']-_0x44196f[_0x5bd446(0x383)](_0x1d0076,_0x4e19d5),_0x4e2b09);}function showPerformanceAnalysis(_0x4a2e96,_0x386666,_0x37da6a,_0x1b973a){const _0xa2fa96=_0x3709e6,_0x1682e9={'ZVNuv':_0xa2fa96(0x3ee),'AcnrN':function(_0x15c637,_0x3e9730){return _0x15c637>_0x3e9730;},'qVFmp':function(_0x4c360a,_0x282a61){return _0x4c360a+_0x282a61;},'KwObD':function(_0x235c52,_0x5886a6){return _0x235c52*_0x5886a6;},'nBpyz':function(_0x5b0859,_0x5ec146){return _0x5b0859/_0x5ec146;},'eZboj':function(_0xcaff15,_0x4af991){return _0xcaff15*_0x4af991;},'wralq':'scoreCircle','KWPFB':function(_0x58dec6,_0x18555b){return _0x58dec6-_0x18555b;},'ZObma':function(_0x371473,_0x35cd68){return _0x371473*_0x35cd68;},'Owmyn':function(_0x30ae31,_0x58a36c){return _0x30ae31/_0x58a36c;},'RSQXv':_0xa2fa96(0x345),'NhTGZ':_0xa2fa96(0x437),'xFtyK':_0xa2fa96(0x372),'yStxT':function(_0x19cee0,_0x249c56){return _0x19cee0/_0x249c56;},'QxZny':function(_0x14ffb6,_0x442aea){return _0x14ffb6%_0x442aea;},'HpzfH':function(_0xf96342,_0x5bc59f){return _0xf96342/_0x5bc59f;},'YXova':'avgTimeResult','KnLtP':_0xa2fa96(0x433)},_0x3f42a1=document['getElementById'](_0x1682e9[_0xa2fa96(0x2aa)]),_0x3f394d=_0x1682e9[_0xa2fa96(0x424)](_0x1682e9['qVFmp'](_0x4a2e96,_0x386666),0x0)?Math[_0xa2fa96(0x324)](_0x1682e9[_0xa2fa96(0x43e)](_0x1682e9[_0xa2fa96(0x211)](_0x4a2e96,_0x4a2e96+_0x386666),0x64)):0x0,_0x56b8a3=_0x1682e9[_0xa2fa96(0x34e)](0x2,Math['PI'])*0x41,_0x772c29=document['getElementById'](_0x1682e9[_0xa2fa96(0x20b)]);_0x772c29[_0xa2fa96(0x3a8)][_0xa2fa96(0x300)]=_0x56b8a3+'\x20'+_0x56b8a3,_0x772c29[_0xa2fa96(0x3a8)]['strokeDashoffset']=_0x1682e9[_0xa2fa96(0x21f)](_0x56b8a3,_0x1682e9[_0xa2fa96(0x42b)](_0x1682e9[_0xa2fa96(0x444)](_0x3f394d,0x64),_0x56b8a3)),document[_0xa2fa96(0x381)](_0x1682e9[_0xa2fa96(0x2cc)])[_0xa2fa96(0x442)]=_0x3f394d+'%',document[_0xa2fa96(0x381)]('totalQuestionsResult')['textContent']=questionsData[_0xa2fa96(0x40b)],document['getElementById'](_0x1682e9['NhTGZ'])[_0xa2fa96(0x442)]=_0x4a2e96,document['getElementById'](_0xa2fa96(0x3b8))[_0xa2fa96(0x442)]=_0x386666,document[_0xa2fa96(0x381)](_0x1682e9[_0xa2fa96(0x3b0)])['textContent']=_0x37da6a;const _0x6bf683=Math[_0xa2fa96(0x43b)](_0x1b973a/0xea60),_0x4652c7=Math[_0xa2fa96(0x43b)](_0x1682e9[_0xa2fa96(0x2f5)](_0x1682e9[_0xa2fa96(0x2f1)](_0x1b973a,0xea60),0x3e8));document[_0xa2fa96(0x381)](_0xa2fa96(0x3a1))[_0xa2fa96(0x442)]=_0x6bf683+':'+_0x4652c7[_0xa2fa96(0x1af)]()[_0xa2fa96(0x3b2)](0x2,'0');const _0x50fd03=_0x1b973a/questionsData[_0xa2fa96(0x40b)],_0x560f0c=Math[_0xa2fa96(0x43b)](_0x1682e9['HpzfH'](_0x50fd03,0xea60)),_0x1408f5=Math[_0xa2fa96(0x43b)](_0x1682e9['HpzfH'](_0x1682e9[_0xa2fa96(0x2f1)](_0x50fd03,0xea60),0x3e8));document[_0xa2fa96(0x381)](_0x1682e9['YXova'])[_0xa2fa96(0x442)]=_0x560f0c+':'+_0x1408f5[_0xa2fa96(0x1af)]()[_0xa2fa96(0x3b2)](0x2,'0'),_0x3f42a1['classList'][_0xa2fa96(0x35f)](_0x1682e9[_0xa2fa96(0x368)]);}function closePerformanceModal(){const _0x2ba953=_0x3709e6;document[_0x2ba953(0x381)]('performanceModal')[_0x2ba953(0x384)]['add'](_0x2ba953(0x433));}function reviewQuestions(){const _0x11cdc7=_0x3709e6,_0x32c563={'ZHVXI':function(_0x3c77ba,_0x5ef492){return _0x3c77ba===_0x5ef492;},'TBiTQ':_0x11cdc7(0x2a9),'hifAf':_0x11cdc7(0x272),'LNSKD':_0x11cdc7(0x2ec),'CnEcn':_0x11cdc7(0x3b4),'HurmP':function(_0x4c4114,_0x9d8bb5){return _0x4c4114+_0x9d8bb5;},'ygABV':_0x11cdc7(0x2eb),'sUTVc':_0x11cdc7(0x1fd),'ZAgnl':_0x11cdc7(0x3fa),'NnhMa':function(_0x122b46,_0x7b86f9){return _0x122b46>_0x7b86f9;},'Ydjcp':function(_0xf85933,_0x24a216){return _0xf85933/_0x24a216;},'MlXzK':_0x11cdc7(0x3b5),'gDjNe':function(_0x4dd53b,_0x129c78){return _0x4dd53b+_0x129c78;},'BlXlG':function(_0x43db84,_0x4d7a32){return _0x43db84/_0x4d7a32;},'aKsau':function(_0x2f30ba,_0x53df82){return _0x2f30ba%_0x53df82;},'GaODw':'timeSpent','JpzVJ':function(_0x240bb4,_0x5ee418){return _0x240bb4+_0x5ee418;},'FcLYM':function(_0x24d974,_0x5f4997){return _0x24d974+_0x5f4997;},'zVznj':function(_0x11800b){return _0x11800b();},'qdRmb':function(_0x575818,_0x100e49){return _0x575818!==_0x100e49;},'IDXQi':_0x11cdc7(0x238),'MwrGE':_0x11cdc7(0x301),'suaDy':_0x11cdc7(0x3bc),'OZghn':_0x11cdc7(0x1d0),'bQmSa':function(_0x11b5be,_0x11ec41){return _0x11b5be===_0x11ec41;},'hfldr':_0x11cdc7(0x223),'oITdE':_0x11cdc7(0x33b),'OAdyP':'Correct','enjEn':function(_0x209a82,_0x7e4cbc){return _0x209a82===_0x7e4cbc;},'AQsNW':'incorrect','iCcvi':_0x11cdc7(0x350),'vdEIw':_0x11cdc7(0x1ac),'sDUII':'No\x20solution\x20available.','adlpY':'questionReviewSection','TwlOm':'hidden','trIDu':_0x11cdc7(0x2f8)};document[_0x11cdc7(0x381)](_0x32c563['adlpY'])[_0x11cdc7(0x384)][_0x11cdc7(0x35f)](_0x32c563[_0x11cdc7(0x1db)]);const _0xad4e05=document[_0x11cdc7(0x381)](_0x32c563[_0x11cdc7(0x357)]);_0xad4e05[_0x11cdc7(0x31c)]='',questionsData[_0x11cdc7(0x325)]((_0x5e0f2a,_0x2ab2d3)=>{const _0x28d34f=_0x11cdc7,_0x574928={'EKGGL':function(_0x43732d){const _0x374449=_0x50f7;return _0x32c563[_0x374449(0x21c)](_0x43732d);}};if(_0x32c563[_0x28d34f(0x258)](_0x32c563[_0x28d34f(0x2d2)],_0x32c563[_0x28d34f(0x33f)])){const _0x9af85c=questionStates[_0x2ab2d3],_0x4709b5=_0x5e0f2a['correct_choice_id'];let _0x5f9afd=_0x32c563[_0x28d34f(0x2be)],_0x300d70=_0x32c563['OZghn'];if(_0x32c563[_0x28d34f(0x258)](_0x9af85c[_0x28d34f(0x3b6)],null)){const _0x349677=_0x5e0f2a[_0x28d34f(0x390)][_0x9af85c[_0x28d34f(0x3b6)]];_0x32c563[_0x28d34f(0x3bb)](_0x349677['id'],_0x4709b5)?_0x32c563[_0x28d34f(0x395)](_0x32c563[_0x28d34f(0x314)],_0x32c563[_0x28d34f(0x314)])?(_0x5f9afd=_0x32c563[_0x28d34f(0x2ff)],_0x300d70=_0x32c563[_0x28d34f(0x344)]):(_0x309272=0x0,_0x574928[_0x28d34f(0x231)](_0x3ee2b4),_0x574928[_0x28d34f(0x231)](_0x4fe014)):(_0x5f9afd=_0x28d34f(0x396),_0x300d70=_0x28d34f(0x1ba));}const _0x5d64f2=document[_0x28d34f(0x3ba)](_0x28d34f(0x195));_0x5d64f2[_0x28d34f(0x28f)]=_0x28d34f(0x1a7)+_0x5f9afd;let _0x4d49c4=(_0x5e0f2a[_0x28d34f(0x390)]||[])[_0x28d34f(0x296)]((_0x141f13,_0x2683bf)=>{const _0x272bfd=_0x28d34f,_0x3117bf={'TJbnX':function(_0x9ef10f,_0x1d2e5b){return _0x9ef10f<_0x1d2e5b;}};if(_0x32c563[_0x272bfd(0x395)](_0x272bfd(0x2a9),_0x32c563[_0x272bfd(0x362)])){const _0x5fac80=_0x32c563[_0x272bfd(0x395)](_0x9af85c[_0x272bfd(0x3b6)],_0x2683bf),_0x5a1793=_0x141f13['id']===_0x4709b5;let _0x211116=_0x32c563['hifAf'];if(_0x5a1793)_0x211116=_0x32c563[_0x272bfd(0x262)];else{if(_0x5fac80)_0x211116=_0x32c563['CnEcn'];}return _0x272bfd(0x43c)+_0x211116+_0x272bfd(0x282)+String[_0x272bfd(0x247)](_0x32c563['HurmP'](0x41,_0x2683bf))+'</span><span>'+_0x141f13[_0x272bfd(0x21e)]+_0x272bfd(0x38a);}else _0x3117bf[_0x272bfd(0x217)](_0x4f994e[_0x272bfd(0x334)],_0x8eaf67[_0x272bfd(0x40b)])&&(_0x2779db[_0x139db7[_0x272bfd(0x334)]]['bookmarked']=!![]);})[_0x28d34f(0x371)]('');const _0x3ea948=_0x5e0f2a[_0x28d34f(0x1e4)]?'<div\x20class=\x22mt-4\x22><video\x20id=\x22review-video-'+_0x2ab2d3+_0x28d34f(0x43f)+_0x5e0f2a[_0x28d34f(0x1e4)]+_0x28d34f(0x1c3):'';let _0x368acb='';if(_0x5e0f2a[_0x28d34f(0x37f)])_0x368acb+='<div\x20class=\x22mt-2\x22><p\x20class=\x22text-sm\x20text-white\x20text-opacity-70\x20mb-1\x22>English:</p><audio\x20src=\x22'+_0x5e0f2a[_0x28d34f(0x37f)]+_0x28d34f(0x1e8);if(_0x5e0f2a[_0x28d34f(0x215)])_0x368acb+=_0x28d34f(0x29e)+_0x5e0f2a[_0x28d34f(0x215)]+_0x28d34f(0x1e8);let _0x4fafcd=(_0x5e0f2a[_0x28d34f(0x308)]||[])[_0x28d34f(0x296)](_0x4194a1=>_0x4194a1?_0x28d34f(0x2da)+_0x4194a1+_0x28d34f(0x2ce):'')[_0x28d34f(0x371)]('');_0x5d64f2[_0x28d34f(0x31c)]=_0x28d34f(0x2c4)+(_0x2ab2d3+0x1)+_0x28d34f(0x351)+(_0x32c563[_0x28d34f(0x2f4)](_0x5f9afd,_0x28d34f(0x33b))?'green':_0x32c563[_0x28d34f(0x3bb)](_0x5f9afd,_0x32c563[_0x28d34f(0x3e3)])?_0x32c563[_0x28d34f(0x256)]:_0x32c563[_0x28d34f(0x2c3)])+_0x28d34f(0x415)+_0x300d70+_0x28d34f(0x2d1)+_0x5e0f2a[_0x28d34f(0x21e)]+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22space-y-2\x20mb-4\x22>'+_0x4d49c4+_0x28d34f(0x2b4)+(_0x5e0f2a[_0x28d34f(0x2c6)]||_0x32c563[_0x28d34f(0x1a3)])+_0x28d34f(0x2ea)+_0x3ea948+_0x28d34f(0x403)+_0x368acb+_0x28d34f(0x403)+_0x4fafcd+_0x28d34f(0x29f),_0xad4e05['appendChild'](_0x5d64f2);}else{if(_0x32c563[_0x28d34f(0x395)](_0x5dca81,_0x32c563[_0x28d34f(0x2f7)])||_0x32c563[_0x28d34f(0x395)](_0x4d81b0,_0x32c563[_0x28d34f(0x2ee)])){_0x3abbfd[_0x28d34f(0x381)](_0x28d34f(0x19c))[_0x28d34f(0x442)]=_0x3a46c8[_0x28d34f(0x319)],_0x5fa005[_0x28d34f(0x381)](_0x32c563[_0x28d34f(0x343)])[_0x28d34f(0x442)]=_0x9eb2f3[_0x28d34f(0x200)],_0x66d40a[_0x28d34f(0x381)]('totalAttempted')[_0x28d34f(0x442)]=_0x3f3cdb[_0x28d34f(0x41a)];const _0x5c3b9d=_0x32c563['NnhMa'](_0x151a58[_0x28d34f(0x41a)],0x0)?_0x266b85['round'](_0x32c563['Ydjcp'](_0x17e1c8[_0x28d34f(0x319)],_0x2b2c5c[_0x28d34f(0x41a)])*0x64):0x0;_0x3aa942['getElementById'](_0x32c563[_0x28d34f(0x220)])[_0x28d34f(0x442)]=_0x32c563[_0x28d34f(0x322)](_0x5c3b9d,'%'),_0x2019ea[_0x28d34f(0x2c1)]=_0x42dd9a[_0x28d34f(0x1df)]((_0x4bf4e6,_0x4c395c)=>_0x4bf4e6+_0x4c395c[_0x28d34f(0x3a6)],0x0);const _0x57716d=_0x5f545b[_0x28d34f(0x43b)](_0x32c563[_0x28d34f(0x236)](_0x7ca250[_0x28d34f(0x2c1)],0x3e8)),_0x40c376=_0xc1bc03[_0x28d34f(0x43b)](_0x32c563[_0x28d34f(0x2e6)](_0x57716d,0x3c)),_0x5c7ab6=_0x32c563['aKsau'](_0x57716d,0x3c);_0x273137[_0x28d34f(0x381)](_0x32c563[_0x28d34f(0x277)])[_0x28d34f(0x442)]=_0x32c563[_0x28d34f(0x222)](_0x32c563['FcLYM'](_0x40c376,':'),_0x5c7ab6[_0x28d34f(0x1af)]()[_0x28d34f(0x3b2)](0x2,'0'));}}}),initializeReviewVideos();}function initializeReviewVideos(){const _0x369332=_0x3709e6,_0x60e5a7={'mxVnN':'.m3u8','aADpM':function(_0xe3e29c,_0x2b5e6e,_0x3318a2){return _0xe3e29c(_0x2b5e6e,_0x3318a2);},'txlji':_0x369332(0x1e9)};document[_0x369332(0x2db)](_0x60e5a7['txlji'])['forEach'](_0x11e29=>{const _0x4aafc0=_0x369332,_0x2e1618=_0x11e29[_0x4aafc0(0x1a5)]['src'];if(_0x2e1618&&_0x2e1618[_0x4aafc0(0x3aa)](_0x60e5a7[_0x4aafc0(0x244)]))_0x60e5a7[_0x4aafc0(0x317)](setupVideo,_0x11e29,_0x2e1618);else _0x2e1618&&(_0x11e29['src']=_0x2e1618);});}function retakeQuiz(){const _0x4bd5fc=_0x3709e6,_0x58a593={'taqaL':'userHistory','PxTGT':_0x4bd5fc(0x22a),'UvtjJ':function(_0x45a60b,_0x4028ce){return _0x45a60b(_0x4028ce);},'xujkH':_0x4bd5fc(0x361),'nGXxI':'ZOeoV','ymtTk':_0x4bd5fc(0x356),'gTnqC':function(_0x243b0e){return _0x243b0e();}};if(_0x58a593[_0x4bd5fc(0x1c0)](confirm,_0x4bd5fc(0x3e1))){if(window[_0x4bd5fc(0x25f)]['pathname'][_0x4bd5fc(0x242)](_0x58a593[_0x4bd5fc(0x3ef)])){if(_0x58a593[_0x4bd5fc(0x24f)]!==_0x58a593[_0x4bd5fc(0x1f1)])localStorage[_0x4bd5fc(0x382)](_0x4bd5fc(0x313));else{const _0x38bfc7=_0x164aaf[_0x4bd5fc(0x3f0)](_0x4f1939['getItem'](_0x58a593[_0x4bd5fc(0x24a)]))||{};_0x38bfc7[_0x4a95e3]&&(delete _0x38bfc7[_0x309362],_0x2f3aae[_0x4bd5fc(0x261)](_0x58a593[_0x4bd5fc(0x24a)],_0x3e52d1['stringify'](_0x38bfc7)),_0x157863[_0x4bd5fc(0x3d8)](_0x58a593[_0x4bd5fc(0x1bd)]));}}_0x58a593['gTnqC'](clearProgress),location['reload']();}}function loadBookmarkedQuestions(){const _0x551044=_0x3709e6,_0x2ffd03={'siRkB':_0x551044(0x35d),'Yzcqr':function(_0x54cf88,_0x5c877f){return _0x54cf88===_0x5c877f;},'WvvcB':_0x551044(0x332),'ponKN':_0x551044(0x29b),'uDrnk':_0x551044(0x25d),'aqSER':_0x551044(0x353)},_0x54c83c=JSON[_0x551044(0x3f0)](localStorage['getItem'](_0x2ffd03[_0x551044(0x3c4)]))||[];_0x54c83c[_0x551044(0x325)](_0x221707=>{const _0x3f19dc=_0x551044;if(_0x2ffd03[_0x3f19dc(0x273)](_0x3f19dc(0x311),_0x2ffd03[_0x3f19dc(0x3a3)]))_0x20e491=_0x2ffd03['siRkB'];else{if(_0x221707[_0x3f19dc(0x1fb)][_0x3f19dc(0x3aa)](quizName[_0x3f19dc(0x233)]()[_0x3f19dc(0x34f)](/ /g,'-'))){if(_0x2ffd03[_0x3f19dc(0x202)]===_0x2ffd03['uDrnk']){if(_0x128369)_0x260073+='<div\x20class=\x22glass-light\x20p-4\x20mb-4\x22><img\x20src=\x22'+_0x9d132f+_0x3f19dc(0x326);}else _0x221707['questionIndex']<questionsData['length']&&(questionStates[_0x221707[_0x3f19dc(0x334)]]['bookmarked']=!![]);}}});}function toggleBookmark(){const _0x10bd31=_0x3709e6,_0x221926={'lebWx':_0x10bd31(0x353),'MOKyZ':function(_0x247445){return _0x247445();}},_0x12d1a2=!questionStates[currentQuestionIndex][_0x10bd31(0x19e)];questionStates[currentQuestionIndex][_0x10bd31(0x19e)]=_0x12d1a2;let _0x14e27b=JSON[_0x10bd31(0x3f0)](localStorage[_0x10bd31(0x3da)](_0x10bd31(0x353)))||[];if(_0x12d1a2){const _0x4eff6e={'quizName':quizName,'quizFile':window[_0x10bd31(0x25f)][_0x10bd31(0x3f7)][_0x10bd31(0x1b6)]('/')[_0x10bd31(0x279)](),'questionIndex':currentQuestionIndex,'question':questionsData[currentQuestionIndex],'hierarchy':hierarchy,'timestamp':Date['now']()};_0x14e27b[_0x10bd31(0x2ae)](_0x4eff6e);}else _0x14e27b=_0x14e27b['filter'](_0x1b2874=>!(_0x1b2874['quizFile']['includes'](quizName[_0x10bd31(0x233)]()[_0x10bd31(0x34f)](/ /g,'-'))&&_0x1b2874[_0x10bd31(0x334)]===currentQuestionIndex));localStorage[_0x10bd31(0x261)](_0x221926[_0x10bd31(0x347)],JSON[_0x10bd31(0x267)](_0x14e27b)),updateBookmarkButton(),_0x221926['MOKyZ'](updateQuestionNav);}function updateBookmarkButton(){const _0x1822f5=_0x3709e6,_0x4cec0d={'jBIEe':_0x1822f5(0x1d4),'CsLFM':'bookmarkText','yGeVn':_0x1822f5(0x2c9),'QXCiu':_0x1822f5(0x3d4),'CJHjE':'Bookmark'},_0x391900=document[_0x1822f5(0x381)](_0x4cec0d[_0x1822f5(0x20f)]),_0x140a03=document[_0x1822f5(0x381)](_0x4cec0d[_0x1822f5(0x3b1)]),_0x42927d=questionStates[currentQuestionIndex]['bookmarked'];_0x391900[_0x1822f5(0x28f)]=_0x42927d?_0x1822f5(0x1f5):_0x4cec0d[_0x1822f5(0x1bf)],_0x140a03['textContent']=_0x42927d?_0x4cec0d[_0x1822f5(0x418)]:_0x4cec0d[_0x1822f5(0x3e2)];}function toggleMarkForReview(){const _0x1e5e5e=_0x3709e6,_0x2fb45c={'Uzgnr':function(_0x15243e){return _0x15243e();},'PdPgS':function(_0x5df703){return _0x5df703();}};questionStates[currentQuestionIndex][_0x1e5e5e(0x25a)]=!questionStates[currentQuestionIndex][_0x1e5e5e(0x25a)],_0x2fb45c['Uzgnr'](updateMarkReviewButton),_0x2fb45c[_0x1e5e5e(0x410)](updateQuestionNav);}function updateMarkReviewButton(){const _0x555ae9=_0x3709e6,_0x307f17={'LgqYa':'markReviewBtn','smxRv':'markReviewText','UxXYK':_0x555ae9(0x206),'dFzOf':'glass-light\x20px-6\x20py-3\x20text-white\x20hover:bg-purple-500\x20hover:bg-opacity-20\x20transition-all\x20duration-300\x20flex\x20items-center'},_0x8ec7f1=document['getElementById'](_0x307f17[_0x555ae9(0x20a)]),_0x57514a=document[_0x555ae9(0x381)](_0x307f17[_0x555ae9(0x447)]),_0x1a9153=questionStates[currentQuestionIndex][_0x555ae9(0x25a)];_0x8ec7f1[_0x555ae9(0x28f)]=_0x1a9153?_0x307f17['UxXYK']:_0x307f17[_0x555ae9(0x23e)],_0x57514a[_0x555ae9(0x442)]=_0x1a9153?_0x555ae9(0x2e0):_0x555ae9(0x1c1);}function previousQuestion(){const _0x124879=_0x3709e6,_0x137c35={'Vxcmi':function(_0x3ca820,_0x3d1a83){return _0x3ca820-_0x3d1a83;},'UKPOy':function(_0x480d97,_0x50015d){return _0x480d97!==_0x50015d;},'emGVM':_0x124879(0x3c5),'zFsrT':function(_0x42c60e,_0x1cebbd){return _0x42c60e-_0x1cebbd;},'peFBO':function(_0x22cfb1){return _0x22cfb1();},'EtfWP':function(_0x59b46b){return _0x59b46b();}};currentQuestionIndex>0x0&&(_0x137c35[_0x124879(0x307)](_0x137c35[_0x124879(0x25b)],_0x124879(0x3c5))?_0x3f510f[_0x1e8223][_0x124879(0x3a6)]+=_0x137c35[_0x124879(0x225)](_0x2a22ce['now'](),_0xfa5b54):(questionStartTime&&(questionStates[currentQuestionIndex][_0x124879(0x3a6)]+=_0x137c35['zFsrT'](Date[_0x124879(0x3ae)](),questionStartTime)),currentQuestionIndex--,_0x137c35[_0x124879(0x289)](displayQuestion),_0x137c35[_0x124879(0x23a)](saveProgress)));}function nextQuestion(){const _0x4921e9=_0x3709e6,_0x333b55={'pzZQS':'4|5|1|2|3|0','utObO':'Progress\x20loaded.','hocpi':function(_0x4afd8e,_0x22b960){return _0x4afd8e!==_0x22b960;},'SYKpI':_0x4921e9(0x1dc),'sALNb':_0x4921e9(0x20d),'ZCFrZ':function(_0xa54613,_0xfd9c98){return _0xa54613<_0xfd9c98;},'ypbPu':function(_0x3faf0d,_0x58998b){return _0x3faf0d-_0x58998b;},'sCVGm':function(_0x254b1c){return _0x254b1c();},'BTsMv':_0x4921e9(0x404),'UTGmy':_0x4921e9(0x349),'UUfZh':function(_0xacd790,_0x7eba29){return _0xacd790(_0x7eba29);},'VREeM':function(_0x372d06){return _0x372d06();}};if(questionStartTime){if(_0x333b55[_0x4921e9(0x3d6)](_0x333b55[_0x4921e9(0x2c0)],_0x333b55[_0x4921e9(0x414)]))questionStates[currentQuestionIndex][_0x4921e9(0x3a6)]+=Date[_0x4921e9(0x3ae)]()-questionStartTime;else{const _0xbb4a62=_0x333b55['pzZQS'][_0x4921e9(0x1b6)]('|');let _0x9d7797=0x0;while(!![]){switch(_0xbb4a62[_0x9d7797++]){case'0':return!![];case'1':_0x3accbb=_0x408b55[_0x4921e9(0x3d0)];continue;case'2':_0x56b09f=_0x280982[_0x4921e9(0x387)];continue;case'3':_0x2259c9[_0x4921e9(0x3d8)](_0x333b55[_0x4921e9(0x2bf)]);continue;case'4':_0xc2603d=_0x5be317['questionStates'];continue;case'5':_0x3bb43f=_0x3f5dc4[_0x4921e9(0x2f2)];continue;}break;}}}_0x333b55[_0x4921e9(0x2dd)](currentQuestionIndex,_0x333b55['ypbPu'](questionsData[_0x4921e9(0x40b)],0x1))?(currentQuestionIndex++,displayQuestion(),_0x333b55[_0x4921e9(0x453)](saveProgress)):currentMode===_0x333b55[_0x4921e9(0x1b4)]||currentMode===_0x333b55[_0x4921e9(0x287)]?_0x333b55['UUfZh'](confirm,_0x4921e9(0x288))&&submitQuiz():confirm('You\x20have\x20completed\x20all\x20questions.\x20Would\x20you\x20like\x20to\x20review\x20from\x20the\x20beginning?')&&(currentQuestionIndex=0x0,_0x333b55[_0x4921e9(0x453)](displayQuestion),_0x333b55['VREeM'](saveProgress));}function startTimer(){const _0x2e6492=_0x3709e6,_0x5f005f={'UNAWE':'No\x20questions\x20available\x20for\x20this\x20quiz.','nKpgp':function(_0x1ab5f7){return _0x1ab5f7();},'KNeCA':function(_0xae5d68,_0x415e5c){return _0xae5d68<=_0x415e5c;},'Rnydk':function(_0x57fed8,_0x116d5d){return _0x57fed8(_0x116d5d);},'UBfam':function(_0x4879a9,_0x4e6092){return _0x4879a9===_0x4e6092;},'eDXyP':_0x2e6492(0x349),'AgRvo':function(_0x4c18f4,_0x2ae0f5){return _0x4c18f4===_0x2ae0f5;},'QdhKd':_0x2e6492(0x446),'lmkDp':'YtyTX','usGEk':function(_0x46cc8b){return _0x46cc8b();},'JWkxY':function(_0x2f8f47,_0x181857,_0x196341){return _0x2f8f47(_0x181857,_0x196341);}};if(timer)_0x5f005f['Rnydk'](clearInterval,timer);timeRemaining=0x78,updateTimerDisplay(),timer=_0x5f005f[_0x2e6492(0x280)](setInterval,()=>{const _0x1d7c0d=_0x2e6492,_0x2786ba={'ALhvC':_0x5f005f['UNAWE']};if(_0x1d7c0d(0x3af)===_0x1d7c0d(0x36e)){_0x4d70ad[_0x1d7c0d(0x381)](_0x1d7c0d(0x2c5))[_0x1d7c0d(0x31c)]=_0x2786ba['ALhvC'];return;}else{timeRemaining--,_0x5f005f[_0x1d7c0d(0x255)](updateTimerDisplay);if(_0x5f005f[_0x1d7c0d(0x20e)](timeRemaining,0x0)){_0x5f005f['Rnydk'](clearInterval,timer);if(_0x5f005f['UBfam'](currentMode,_0x5f005f[_0x1d7c0d(0x23f)])){if(_0x5f005f['AgRvo'](_0x5f005f[_0x1d7c0d(0x284)],_0x5f005f[_0x1d7c0d(0x3fd)])){const _0x69bfe0=_0x13cd62?function(){if(_0x40cac1){const _0xf0735=_0x210873['apply'](_0x2e07c8,arguments);return _0x2feb5c=null,_0xf0735;}}:function(){};return _0x5b5286=![],_0x69bfe0;}else _0x5f005f[_0x1d7c0d(0x3e4)](submitQuiz);}else nextQuestion();}}},0x3e8);}function updateTimerDisplay(){const _0x516c70=_0x3709e6,_0x530d56={'lRllh':function(_0x3ef303,_0x57f400){return _0x3ef303/_0x57f400;},'sPZIH':function(_0x29d4b7,_0x3ddd5c){return _0x29d4b7%_0x3ddd5c;},'osDUJ':_0x516c70(0x2b9),'kkOBZ':function(_0x5c2fd1,_0x540e86){return _0x5c2fd1+_0x540e86;}},_0x32564e=Math[_0x516c70(0x43b)](_0x530d56[_0x516c70(0x32d)](timeRemaining,0x3c)),_0x44ba7d=_0x530d56['sPZIH'](timeRemaining,0x3c);document[_0x516c70(0x381)](_0x530d56[_0x516c70(0x428)])[_0x516c70(0x442)]=_0x530d56[_0x516c70(0x355)](_0x530d56[_0x516c70(0x355)](_0x32564e,':'),_0x44ba7d[_0x516c70(0x1af)]()[_0x516c70(0x3b2)](0x2,'0'));}function toggleSidebar(){const _0x5bbf47=_0x3709e6,_0x2977a6={'LKSIx':_0x5bbf47(0x2a2),'LOkCM':_0x5bbf47(0x207)};document[_0x5bbf47(0x381)](_0x2977a6[_0x5bbf47(0x237)])[_0x5bbf47(0x384)][_0x5bbf47(0x27a)](_0x2977a6[_0x5bbf47(0x2f9)]);}document[_0x3709e6(0x420)]('DOMContentLoaded',()=>{const _0x3b58a1=_0x3709e6,_0x18c818={'cWoTn':function(_0xcd1c6f){return _0xcd1c6f();},'OzNVi':_0x3b58a1(0x44c),'NYaUv':function(_0x4f597c){return _0x4f597c();},'KniSi':'flex'};if(resume)_0x18c818[_0x3b58a1(0x42f)](loadProgress)?(document[_0x3b58a1(0x381)](_0x18c818[_0x3b58a1(0x2fa)])['style'][_0x3b58a1(0x27d)]=_0x3b58a1(0x1eb),_0x18c818[_0x3b58a1(0x42f)](initializeQuiz)):(_0x18c818[_0x3b58a1(0x369)](clearProgress),document[_0x3b58a1(0x381)](_0x18c818['OzNVi'])[_0x3b58a1(0x3a8)]['display']='flex');else!window[_0x3b58a1(0x25f)][_0x3b58a1(0x3f7)]['endsWith'](_0x3b58a1(0x361))?(_0x18c818['cWoTn'](clearProgress),document[_0x3b58a1(0x381)](_0x18c818[_0x3b58a1(0x2fa)])[_0x3b58a1(0x3a8)][_0x3b58a1(0x27d)]=_0x18c818[_0x3b58a1(0x303)]):_0x18c818['NYaUv'](initializeQuiz);}),document[_0x3709e6(0x420)](_0x3709e6(0x342),function(_0x192d6c){const _0x415ba5=_0x3709e6,_0x21c675={'mzvIC':function(_0x4b861f,_0x4f015b){return _0x4b861f(_0x4f015b);},'ihLHJ':function(_0x44b17e,_0x22c00c){return _0x44b17e===_0x22c00c;},'mYYML':function(_0x1771f7){return _0x1771f7();},'cNRZZ':'userHistory','dCkKn':_0x415ba5(0x458),'QIHBr':function(_0x432db3,_0x18f851){return _0x432db3!==_0x18f851;},'jxYQo':_0x415ba5(0x44c),'klvAd':'performanceModal','hBUYD':function(_0x4a1dec,_0x33a157){return _0x4a1dec>=_0x33a157;},'eqUTN':function(_0x2b8839,_0x56401e){return _0x2b8839<=_0x56401e;},'zotwJ':_0x415ba5(0x1d6),'JqIGZ':function(_0x3dabc2,_0x49231a){return _0x3dabc2<_0x49231a;},'ZWAhI':_0x415ba5(0x436),'DVybQ':_0x415ba5(0x22e),'SclZK':function(_0x5a011b){return _0x5a011b();},'pstnJ':_0x415ba5(0x3c2),'YoXxr':function(_0x27e14b,_0x38af22){return _0x27e14b===_0x38af22;},'CQVEb':function(_0x329309,_0x2bda3a){return _0x329309===_0x2bda3a;},'dySIo':_0x415ba5(0x1fd),'XAJTN':function(_0x30e10d,_0x590d46){return _0x30e10d===_0x590d46;},'koZxr':_0x415ba5(0x33d),'WzQFh':function(_0x3a94e2,_0x4d3093){return _0x3a94e2===_0x4d3093;},'UnrSe':_0x415ba5(0x404),'HCdEJ':'timed_exam','OQJIW':function(_0x499fe2,_0x58f1cb){return _0x499fe2===_0x58f1cb;},'OEjlA':function(_0x4691f9,_0x190921){return _0x4691f9===_0x190921;},'clEAD':function(_0x4ebdcb,_0x529dfa){return _0x4ebdcb===_0x529dfa;},'BRPMg':function(_0x2ac343){return _0x2ac343();}};if(_0x21c675[_0x415ba5(0x2cd)](document[_0x415ba5(0x381)](_0x21c675['jxYQo'])[_0x415ba5(0x3a8)][_0x415ba5(0x27d)],'none'))return;if(document[_0x415ba5(0x381)](_0x21c675[_0x415ba5(0x295)])[_0x415ba5(0x384)][_0x415ba5(0x221)](_0x415ba5(0x433))===![])return;if(_0x21c675['hBUYD'](_0x192d6c['key'],'1')&&_0x21c675['eqUTN'](_0x192d6c['key'],'4')){const _0x4a6417=_0x21c675[_0x415ba5(0x2b7)](parseInt,_0x192d6c[_0x415ba5(0x37c)])-0x1,_0x597811=document[_0x415ba5(0x2db)](_0x21c675[_0x415ba5(0x1d5)]);if(_0x21c675[_0x415ba5(0x1f4)](_0x4a6417,_0x597811[_0x415ba5(0x40b)]))_0x21c675[_0x415ba5(0x2b7)](selectOption,_0x4a6417);}else{if(_0x21c675[_0x415ba5(0x348)](_0x192d6c[_0x415ba5(0x37c)],_0x21c675[_0x415ba5(0x2ed)]))_0x21c675[_0x415ba5(0x1f6)]!==_0x415ba5(0x2ba)?_0x21c675[_0x415ba5(0x3eb)](previousQuestion):(_0x21c675['mzvIC'](_0x56b1b9,_0x10173e),_0x21c675['ihLHJ'](_0x44e528,_0x415ba5(0x349))?_0x21c675['mYYML'](_0x4f115d):_0x3371e7());else{if(_0x192d6c[_0x415ba5(0x37c)]===_0x21c675[_0x415ba5(0x3be)]||_0x21c675['YoXxr'](_0x192d6c['key'],'\x20'))_0x192d6c[_0x415ba5(0x3fc)](),nextQuestion();else{if(_0x21c675[_0x415ba5(0x348)](_0x192d6c[_0x415ba5(0x37c)][_0x415ba5(0x233)](),'b')&&(_0x21c675[_0x415ba5(0x432)](currentMode,_0x415ba5(0x2eb))||_0x21c675[_0x415ba5(0x348)](currentMode,_0x21c675[_0x415ba5(0x3f9)]))){if(_0x21c675[_0x415ba5(0x1b5)]('UvFCZ',_0x21c675[_0x415ba5(0x234)]))_0x21c675[_0x415ba5(0x3eb)](toggleBookmark);else{if(_0x9ab4f1)return;const _0x395aa3=_0x1ee7df['parse'](_0x1ab40[_0x415ba5(0x3da)](_0x21c675[_0x415ba5(0x370)]))||{};_0x395aa3[_0x3d99e8]={'questionStates':_0x17f57d,'stats':_0x58736b,'currentQuestionIndex':_0x39b877,'currentMode':_0x1e1280,'status':_0x21c675[_0x415ba5(0x1cf)],'lastSeen':new _0x454643()['toISOString']()},_0x58fe6b['setItem'](_0x21c675[_0x415ba5(0x370)],_0x76f599[_0x415ba5(0x267)](_0x395aa3));}}else{if(_0x21c675[_0x415ba5(0x2e7)](_0x192d6c[_0x415ba5(0x37c)]['toLowerCase'](),'m')&&(currentMode===_0x21c675[_0x415ba5(0x226)]||_0x21c675['ihLHJ'](currentMode,_0x21c675[_0x415ba5(0x451)])))_0x21c675[_0x415ba5(0x3d3)](toggleMarkForReview);else _0x21c675[_0x415ba5(0x393)](_0x192d6c[_0x415ba5(0x37c)]['toLowerCase'](),'s')&&(_0x21c675[_0x415ba5(0x29a)](currentMode,_0x21c675[_0x415ba5(0x226)])||_0x21c675[_0x415ba5(0x373)](currentMode,'timed_exam'))&&_0x21c675['BRPMg'](submitQuiz);}}}}});</script>
+
+</body></html>
