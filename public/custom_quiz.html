@@ -6,8 +6,11 @@
     <title>Custom Quiz - Brain And Scalpel</title>
     <link rel="preload" href="assets/background.jpg" as="image">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HLS.js for M3U8 support -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+
     <style>
         
 /* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
@@ -538,12 +541,30 @@ body::after {
     .controls-container button {
         width: 100%;
     }
+    /* --- PWA Install Button --- */
+    #install-app-btn {
+    display: none; /* Hidden by default */
+    background: linear-gradient(135deg, var(--accent-green), #10b981);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(52, 211, 153, 0.3);
+    cursor: pointer;
+    }
+    #install-app-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(52, 211, 153, 0.4);
+    }
 }
 
     </style>
 </head>
 <body>
-    <!-- Mode Selection Modal -->
     <div id="modeModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
         <div class="glass-heavy p-8 max-w-md w-full mx-4 shadow-2xl">
             <h2 class="text-2xl font-bold text-white mb-6 text-center">Choose Study Mode</h2>
@@ -609,7 +630,6 @@ body::after {
         </div>
     </div>
 
-    <!-- Performance Analysis Modal -->
     <div id="performanceModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
         <div class="glass-heavy p-8 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-8">
@@ -621,7 +641,6 @@ body::after {
                 </button>
             </div>
             
-            <!-- Score Overview -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="performance-card p-6 text-center">
                     <div class="score-circle mb-4">
@@ -673,7 +692,6 @@ body::after {
                 </div>
             </div>
             
-            <!-- Action Buttons -->
             <div class="flex justify-center space-x-4 mb-8">
                 <button onclick="reviewQuestions()" class="glass-button px-8 py-3 text-lg">
                     Review All Questions
@@ -683,17 +701,14 @@ body::after {
                 </button>
             </div>
             
-            <!-- Question Review Section -->
             <div id="questionReviewSection" class="hidden">
                 <h3 class="text-2xl font-bold text-white mb-6">Question Review</h3>
                 <div id="reviewQuestionsContainer">
-                    <!-- Review questions will be populated here -->
-                </div>
+                    </div>
             </div>
         </div>
     </div>
 
-    <!-- Header -->
     <header class="glass sticky top-0 z-40 mb-6">
         <div class="container mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
@@ -714,7 +729,6 @@ body::after {
                         Question <span id="currentQuestion">1</span> of <span id="totalQuestions">0</span>
                     </div>
                     
-                    <!-- Timer -->
                     <div id="timerContainer" class="hidden gradient-red px-3 py-1 text-sm text-white font-bold animate-pulse-glow">
                         <span id="timeDisplay">2:00</span>
                     </div>
@@ -723,12 +737,10 @@ body::after {
         </div>
     </header>
 
-    <!-- Progress Bar -->
     <div class="w-full h-1 bg-black bg-opacity-30 mb-6">
         <div id="progressBar" class="h-1 gradient-blue transition-all duration-500 ease-out" style="width: 0%"></div>
     </div>
 
-    <!-- Stats Bar - Show only in study modes -->
     <div id="statsBar" class="glass-light mb-8">
         <div class="container mx-auto px-6 py-4">
             <div class="stats-grid">
@@ -757,12 +769,10 @@ body::after {
     </div>
 
     <div class="quiz-container container mx-auto px-6">
-        <!-- Question Navigation Sidebar -->
         <div id="quizSidebar" class="quiz-sidebar glass p-6 h-fit lg:sticky top-24">
             <h3 class="text-lg font-bold text-white mb-4">Question Navigator</h3>
             <div id="questionNav" class="grid grid-cols-5 gap-2 mb-6">
-                <!-- Question numbers will be populated here -->
-            </div>
+                </div>
             
             <div class="space-y-3 text-xs">
                 <h4 class="text-sm font-medium text-white text-opacity-80 mb-3">Legend</h4>
@@ -800,7 +810,6 @@ body::after {
                 </div>
             </div>
             
-            <!-- Submit Quiz Button for test modes -->
             <div id="submitSection" class="hidden mt-6">
                 <button onclick="submitQuiz()" class="glass-button w-full py-3 text-lg font-bold">
                     Submit Quiz
@@ -808,23 +817,17 @@ body::after {
             </div>
         </div>
 
-        <!-- Main Quiz Interface -->
         <div class="quiz-main-content flex-1 max-w-4xl">
             <div class="glass-card p-4 md:p-8 lg:p-12 mb-8 relative">
-                <!-- Question Text -->
                 <div id="questionText" class="text-xl lg:text-2xl leading-relaxed text-white mb-8">
                     Loading question...
                 </div>
 
-                <!-- Question Media -->
                 <div id="questionMedia" class="mb-8"></div>
 
-                <!-- Options -->
                 <div id="optionsContainer" class="space-y-3 mb-8">
-                    <!-- Options will be inserted here -->
-                </div>
+                    </div>
 
-                <!-- Solution Display (only for study modes) -->
                 <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
                     <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -843,7 +846,6 @@ body::after {
                 </div>
             </div>
 
-            <!-- Controls -->
             <div class="controls-container flex justify-between items-center mb-8">
                 <button onclick="previousQuestion()" id="prevBtn" class="glass-button px-6 py-3 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -879,13 +881,25 @@ body::after {
         </div>
     </div>
 
-     <!-- Mobile Nav Toggle -->
-    <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
+     <button id="mobile-nav-toggle" onclick="toggleSidebar()" class="glass-button w-14 h-14 rounded-full items-center justify-center">
         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </button>
 
 
     <script>
+        // --- NEW: PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
         let questionsData = [];
         let quizName = 'Custom Quiz';
         const quizFilename = 'custom_quiz.html';

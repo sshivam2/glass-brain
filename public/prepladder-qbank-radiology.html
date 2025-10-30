@@ -6,6 +6,10 @@
     <title>Radiology - Brain And Scalpel</title>
     <link rel="preload" href="assets/background.jpg" as="image">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+
     <style>
         
 /* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
@@ -536,12 +540,30 @@ body::after {
     .controls-container button {
         width: 100%;
     }
+    /* --- PWA Install Button --- */
+    #install-app-btn {
+    display: none; /* Hidden by default */
+    background: linear-gradient(135deg, var(--accent-green), #10b981);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(52, 211, 153, 0.3);
+    cursor: pointer;
+    }
+    #install-app-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(52, 211, 153, 0.4);
+    }
 }
 
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="glass sticky top-0 z-40 mb-8">
         <div class="container mx-auto px-6 py-4">
             <div class="flex items-center justify-between">
@@ -569,7 +591,6 @@ body::after {
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="container mx-auto px-6 py-16 text-center">
         <div class="glass-heavy w-20 h-20 flex items-center justify-center text-2xl font-bold mx-auto mb-8 animate-float">
             R
@@ -582,12 +603,10 @@ body::after {
         </p>
     </section>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-6 pb-12">
         
 
         
-        <!-- Quiz Sets -->
         <section>
             <h2 class="text-3xl font-bold text-white mb-8 text-center">Quiz Sets</h2>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1646,11 +1665,22 @@ body::after {
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // --- NEW: Supabase Client Setup ---
+        // --- NEW: PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // --- Supabase Client Setup ---
         const SUPABASE_URL = 'https://mxymburfwdjqrbhsqzod.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eW1idXJmd2RqcXJiaHNxem9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzc0NDYsImV4cCI6MjA3MzYxMzQ0Nn0.9xRwH5la1vqpDsGKGif5zM8wnaVWJbDbA6ARrZfg5pU';
-        
-        // --- !! PASTE YOUR URL AND KEY ABOVE !! ---
         
         let sb_client;
         try {
@@ -1680,7 +1710,7 @@ body::after {
             }
         }
 
-        // --- NEW: Function to unlock premium content ---
+        // --- Function to unlock premium content ---
         async function checkPremiumStatus() {
             if (!sb_client) return; // Supabase failed to init
 
@@ -1747,10 +1777,9 @@ body::after {
                 }, index * 150);
             });
             
-            // Check user history and update quiz cards
+            // NEW: Check user history and update quiz cards
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
-                // ... (all your existing history logic inside this loop) ...
                 const quizId = quizCard.dataset.quizId;
                 const history = userHistory[quizId];
                 if (!history) return;
@@ -1800,7 +1829,7 @@ body::after {
                 }
             });
             
-            // --- NEW: Check for premium status AFTER loading history ---
+            // Check for premium status AFTER loading history
             checkPremiumStatus();
         });
     </script>

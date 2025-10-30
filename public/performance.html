@@ -6,6 +6,10 @@
     <title>Performance Dashboard - Brain And Scalpel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+
     <style>
 /* Liquid Glass Morphism Universal Theme - Enhanced & Mobile-First */
 :root {
@@ -535,6 +539,25 @@ body::after {
     .controls-container button {
         width: 100%;
     }
+    /* --- PWA Install Button --- */
+    #install-app-btn {
+    display: none; /* Hidden by default */
+    background: linear-gradient(135deg, var(--accent-green), #10b981);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(52, 211, 153, 0.3);
+    cursor: pointer;
+    }
+    #install-app-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(52, 211, 153, 0.4);
+    }
 }
 </style>
 </head>
@@ -556,7 +579,6 @@ body::after {
         </div>
 
         <div id="dashboardContent">
-            <!-- Overall Stats -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Overall Accuracy</h3><div id="overallAccuracy" class="text-3xl font-bold text-white">0%</div></div>
                 <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Quizzes Completed</h3><div id="quizzesCompleted" class="text-3xl font-bold text-white">0</div></div>
@@ -564,7 +586,6 @@ body::after {
                 <div class="glass-card p-6"><h3 class="text-white text-opacity-70">Average Score</h3><div id="averageScore" class="text-3xl font-bold text-white">0%</div></div>
             </div>
 
-            <!-- Charts -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="glass-card p-6"><h3 class="text-xl font-bold text-white mb-4">Performance Over Time</h3><canvas id="performanceHistoryChart"></canvas></div>
                 <div class="glass-card p-6 flex flex-col items-center justify-center"><h3 class="text-xl font-bold text-white mb-4">Overall Breakdown</h3><div class="w-full max-w-xs"><canvas id="overallBreakdownChart"></canvas></div></div>
@@ -572,7 +593,6 @@ body::after {
 
             <div class="glass-card p-6 mb-8"><h3 class="text-xl font-bold text-white mb-4">Accuracy by Topic</h3><canvas id="accuracyByTopicChart"></canvas></div>
 
-            <!-- Quiz History Table -->
             <div class="glass-card p-6">
                 <h3 class="text-xl font-bold text-white mb-4">Quiz History</h3>
                 <div class="overflow-x-auto">
@@ -585,6 +605,19 @@ body::after {
         </div>
     </main>
     <script>
+        // --- NEW: PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const data = JSON.parse(localStorage.getItem('quizPerformanceData')) || [];
             if (data.length === 0) {
