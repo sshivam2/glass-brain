@@ -754,7 +754,23 @@ body::after {
         
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // --- NEW: Supabase Client Setup ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        // --- !! PASTE YOUR URL AND KEY ABOVE !! ---
+        
+        let sb_client;
+        try {
+            sb_client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.error('Supabase init error:', e);
+        }
+
+        // --- Original Functions ---
         function goBack() {
             window.history.back();
         }
@@ -767,7 +783,6 @@ body::after {
             window.location.href = filename;
         }
         
-        // NEW: User History Logic
         function clearQuizHistory(quizId) {
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             if (userHistory[quizId]) {
@@ -776,6 +791,60 @@ body::after {
             }
         }
 
+        // --- NEW: Function to unlock premium content ---
+        async function checkPremiumStatus() {
+            if (!sb_client) return; // Supabase failed to init
+
+            const { data: { session } } = await sb_client.auth.getSession();
+            
+            if (session) {
+                // User is logged in
+                console.log('User is logged in:', session.user.email);
+                
+                // Fetch their profile
+                const { data: profile, error } = await sb_client
+                    .from('profiles')
+                    .select('is_premium')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (error) {
+                    console.error('Error fetching profile:', error.message);
+                    return;
+                }
+
+                if (profile && profile.is_premium) {
+                    // --- This is the magic! ---
+                    console.log('User is PREMIUM. Unlocking content...');
+                    unlockAllQuizzes();
+                } else {
+                    console.log('User is not premium.');
+                }
+            } else {
+                console.log('User is not logged in.');
+            }
+        }
+
+        function unlockAllQuizzes() {
+            // Find all quiz cards
+            document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
+                const quizId = quizCard.dataset.quizId;
+                const actionsContainer = quizCard.querySelector('.quiz-actions');
+                
+                // Find the locked button
+                const lockedButton = actionsContainer.querySelector('button.cursor-not-allowed');
+                
+                if (lockedButton) {
+                    // Replace locked button with a start button
+                    actionsContainer.innerHTML = `
+                        <button onclick="startQuiz('${quizId}')" class="start-btn glass-button px-6 py-2">
+                            Start Quiz
+                        </button>`;
+                }
+            });
+        }
+
+        // --- UPDATED: DOMContentLoaded ---
         document.addEventListener('DOMContentLoaded', function() {
             // Animate cards
             const cards = document.querySelectorAll('.glass-card');
@@ -789,9 +858,10 @@ body::after {
                 }, index * 150);
             });
             
-            // NEW: Check user history and update quiz cards
+            // Check user history and update quiz cards
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
+                // ... (all your existing history logic inside this loop) ...
                 const quizId = quizCard.dataset.quizId;
                 const history = userHistory[quizId];
                 if (!history) return;
@@ -840,6 +910,9 @@ body::after {
                     titleEl.appendChild(statusBadge);
                 }
             });
+            
+            // --- NEW: Check for premium status AFTER loading history ---
+            checkPremiumStatus();
         });
     </script>
 </body>
