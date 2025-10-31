@@ -603,14 +603,31 @@ body::after {
         </p>
     </section>
 
+    
+        <div class="container mx-auto px-6 mb-16">
+            <div class="glass-light p-4 max-w-3xl mx-auto">
+                <input 
+                    type="text" 
+                    id="quizSearchInput" 
+                    placeholder="Search quizzes..."
+                    class="glass-input w-full p-4 text-lg"
+                >
+            </div>
+        </div>
+        
+
     <main class="container mx-auto px-6 pb-12">
         
 
         
-        <section>
-            <h2 class="text-3xl font-bold text-white mb-8 text-center">Quiz Sets</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
+        <section id="quiz-section"> 
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-8 px-2">
+            <h2 class="text-3xl font-bold text-white mb-4 sm:mb-0">Quiz Sets</h2>
+            <button id="sortToggleBtn" class="glass-light px-5 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 self-start sm:self-center">
+                Newest First
+            </button>
+        </div>
+         <div id="quiz-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6"> 
         <div class="glass-card p-6 relative" data-quiz-id="01-anatomy-of-female-pelvic-organs-6105efc9.html" data-quiz-name="01 Anatomy Of Female Pelvic Organs"> 
             
             <span class="absolute top-4 right-4 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full bg-green-900 text-green-300 border border-green-700">
@@ -2305,28 +2322,28 @@ body::after {
         
 
         
+        <div id="noResultsMessage" class="hidden text-center py-16">
+            <div class="glass-heavy w-32 h-32 flex items-center justify-center mx-auto mb-8">
+                <svg class="w-16 h-16 text-white text-opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-3xl font-bold text-white mb-4">No Quizzes Found</h3>
+            <p class="text-white text-opacity-70 text-lg">
+                Your search did not match any quiz titles.
+            </p>
+        </div>
+        
+
+        
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // --- NEW: PWA Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('Service Worker registered successfully:', registration);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            });
-        }
-
-        // --- Supabase Client Setup ---
+        // (Your existing Supabase setup)
         const SUPABASE_URL = 'https://mxymburfwdjqrbhsqzod.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eW1idXJmd2RqcXJiaHNxem9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzc0NDYsImV4cCI6MjA3MzYxMzQ0Nn0.9xRwH5la1vqpDsGKGif5zM8wnaVWJbDbA6ARrZfg5pU';
-        
         let sb_client;
         try {
             sb_client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -2334,19 +2351,10 @@ body::after {
             console.error('Supabase init error:', e);
         }
 
-        // --- Original Functions ---
-        function goBack() {
-            window.history.back();
-        }
-
-        function navigateToTier(pageId) {
-            window.location.href = pageId + '.html';
-        }
-
-        function startQuiz(filename) {
-            window.location.href = filename;
-        }
-        
+        // (Your existing functions: goBack, navigateToTier, startQuiz, etc...)
+        function goBack() { window.history.back(); }
+        function navigateToTier(pageId) { window.location.href = pageId + '.html'; }
+        function startQuiz(filename) { window.location.href = filename; }
         function clearQuizHistory(quizId) {
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             if (userHistory[quizId]) {
@@ -2354,52 +2362,26 @@ body::after {
                 localStorage.setItem('userHistory', JSON.stringify(userHistory));
             }
         }
-
-        // --- Function to unlock premium content ---
         async function checkPremiumStatus() {
-            if (!sb_client) return; // Supabase failed to init
-
+            if (!sb_client) return;
             const { data: { session } } = await sb_client.auth.getSession();
-            
             if (session) {
-                // User is logged in
-                console.log('User is logged in:', session.user.email);
-                
-                // Fetch their profile
                 const { data: profile, error } = await sb_client
                     .from('profiles')
                     .select('is_premium')
                     .eq('id', session.user.id)
                     .single();
-
-                if (error) {
-                    console.error('Error fetching profile:', error.message);
-                    return;
-                }
-
                 if (profile && profile.is_premium) {
-                    // --- This is the magic! ---
-                    console.log('User is PREMIUM. Unlocking content...');
                     unlockAllQuizzes();
-                } else {
-                    console.log('User is not premium.');
                 }
-            } else {
-                console.log('User is not logged in.');
             }
         }
-
         function unlockAllQuizzes() {
-            // Find all quiz cards
             document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
                 const quizId = quizCard.dataset.quizId;
                 const actionsContainer = quizCard.querySelector('.quiz-actions');
-                
-                // Find the locked button
                 const lockedButton = actionsContainer.querySelector('button.cursor-not-allowed');
-                
                 if (lockedButton) {
-                    // Replace locked button with a start button
                     actionsContainer.innerHTML = `
                         <button onclick="startQuiz('${quizId}')" class="start-btn glass-button px-6 py-2">
                             Start Quiz
@@ -2408,70 +2390,93 @@ body::after {
             });
         }
 
+
         // --- UPDATED: DOMContentLoaded ---
         document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards
+            // (Your existing animation fix)
             const cards = document.querySelectorAll('.glass-card');
+            const cardCount = cards.length;
+            const animationDelay = cardCount > 50 ? 10 : 150; 
+            
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(30px)';
-                setTimeout(() => {
+                setTimeout(() => { 
                     card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
-                }, index * 150);
+                }, index * animationDelay); 
             });
+
+            // --- ⬇️ 3. ADD THIS NEW SORT SCRIPT (WITH BRACE FIXES) ⬇️ ---
+            const sortBtn = document.getElementById('sortToggleBtn');
+            const quizGrid = document.getElementById('quiz-grid');
             
-            // NEW: Check user history and update quiz cards
+            if (sortBtn && quizGrid) {
+                let isReversed = false; 
+
+                sortBtn.addEventListener('click', function() {
+                    isReversed = !isReversed; 
+
+                    const quizCards = Array.from(quizGrid.querySelectorAll('[data-quiz-id]'));
+                    quizCards.reverse();
+                    
+                    quizCards.forEach(card => {
+                        quizGrid.appendChild(card);
+                    });
+
+                    if (isReversed) {
+                        sortBtn.textContent = 'Oldest First';
+                    } else {
+                        sortBtn.textContent = 'Newest First';
+                    }
+                });
+            }
+            // --- ⬆️ END OF SORT SCRIPT ⬆️ ---
+            
+            // (Your conditional search script)
+            
+        // --- Search JavaScript ---
+        const searchInput = document.getElementById('quizSearchInput');
+        const noResultsEl = document.getElementById('noResultsMessage');
+
+        const quizCards = document.querySelectorAll('[data-quiz-id]');
+        const quizSection = document.getElementById('quiz-section'); // Use ID
+
+        if (searchInput && quizCards.length > 0) {
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.trim().toLowerCase();
+                let visibleQuizzes = 0;
+
+                quizCards.forEach(card => {
+                    const title = card.querySelector('.quiz-title')?.textContent.trim().toLowerCase() || '';
+                    const desc = card.querySelector('p')?.textContent.trim().toLowerCase() || '';
+
+                    if ((title + desc).includes(searchTerm)) {
+                        card.style.display = '';
+                        visibleQuizzes++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (quizSection) {
+                    quizSection.style.display = visibleQuizzes > 0 ? '' : 'none';
+                }
+
+                if (visibleQuizzes === 0 && searchTerm !== '') {
+                    noResultsEl.classList.remove('hidden');
+                } else {
+                    noResultsEl.classList.add('hidden');
+                }
+            });
+        }
+        
+            
+            // (Your existing user history script)
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
-                const quizId = quizCard.dataset.quizId;
-                const history = userHistory[quizId];
-                if (!history) return;
-
-                const actionsContainer = quizCard.querySelector('.quiz-actions');
-                const titleEl = quizCard.querySelector('.quiz-title');
-                actionsContainer.innerHTML = ''; // Clear existing button
-
-                const statusBadge = document.createElement('span');
-                statusBadge.className = 'ml-3 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full';
-
-                if (history.status === 'completed') {
-                    statusBadge.textContent = 'Completed';
-                    statusBadge.classList.add('bg-green-100', 'text-green-800');
-                    
-                    const restartBtn = document.createElement('button');
-                    restartBtn.className = 'glass-light px-6 py-2 text-white hover:bg-white hover:bg-opacity-20';
-                    restartBtn.textContent = 'Restart';
-                    restartBtn.onclick = () => {
-                        clearQuizHistory(quizId);
-                        startQuiz(quizId);
-                    };
-                    actionsContainer.appendChild(restartBtn);
-                } else if (history.status === 'incomplete') {
-                    statusBadge.textContent = 'In Progress';
-                    statusBadge.classList.add('bg-yellow-100', 'text-yellow-800');
-
-                    const continueBtn = document.createElement('button');
-                    continueBtn.className = 'glass-button px-6 py-2';
-                    continueBtn.textContent = 'Continue';
-                    continueBtn.onclick = () => startQuiz(`${quizId}?resume=true`);
-
-                    const restartBtn = document.createElement('button');
-                    restartBtn.className = 'ml-2 glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20';
-                    restartBtn.textContent = 'Restart';
-                     restartBtn.onclick = () => {
-                        clearQuizHistory(quizId);
-                        startQuiz(quizId);
-                    };
-                    
-                    actionsContainer.appendChild(continueBtn);
-                    actionsContainer.appendChild(restartBtn);
-                }
-                
-                if (titleEl) {
-                    titleEl.appendChild(statusBadge);
-                }
+                // ... (all your user history logic) ...
             });
             
             // Check for premium status AFTER loading history

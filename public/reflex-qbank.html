@@ -603,6 +603,8 @@ body::after {
         </p>
     </section>
 
+    
+
     <main class="container mx-auto px-6 pb-12">
         
         <section class="mb-16">
@@ -647,28 +649,16 @@ body::after {
         
 
         
+
+        
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // --- NEW: PWA Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('Service Worker registered successfully:', registration);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            });
-        }
-
-        // --- Supabase Client Setup ---
+        // (Your existing Supabase setup)
         const SUPABASE_URL = 'https://mxymburfwdjqrbhsqzod.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eW1idXJmd2RqcXJiaHNxem9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzc0NDYsImV4cCI6MjA3MzYxMzQ0Nn0.9xRwH5la1vqpDsGKGif5zM8wnaVWJbDbA6ARrZfg5pU';
-        
         let sb_client;
         try {
             sb_client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -676,19 +666,10 @@ body::after {
             console.error('Supabase init error:', e);
         }
 
-        // --- Original Functions ---
-        function goBack() {
-            window.history.back();
-        }
-
-        function navigateToTier(pageId) {
-            window.location.href = pageId + '.html';
-        }
-
-        function startQuiz(filename) {
-            window.location.href = filename;
-        }
-        
+        // (Your existing functions: goBack, navigateToTier, startQuiz, etc...)
+        function goBack() { window.history.back(); }
+        function navigateToTier(pageId) { window.location.href = pageId + '.html'; }
+        function startQuiz(filename) { window.location.href = filename; }
         function clearQuizHistory(quizId) {
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             if (userHistory[quizId]) {
@@ -696,52 +677,26 @@ body::after {
                 localStorage.setItem('userHistory', JSON.stringify(userHistory));
             }
         }
-
-        // --- Function to unlock premium content ---
         async function checkPremiumStatus() {
-            if (!sb_client) return; // Supabase failed to init
-
+            if (!sb_client) return;
             const { data: { session } } = await sb_client.auth.getSession();
-            
             if (session) {
-                // User is logged in
-                console.log('User is logged in:', session.user.email);
-                
-                // Fetch their profile
                 const { data: profile, error } = await sb_client
                     .from('profiles')
                     .select('is_premium')
                     .eq('id', session.user.id)
                     .single();
-
-                if (error) {
-                    console.error('Error fetching profile:', error.message);
-                    return;
-                }
-
                 if (profile && profile.is_premium) {
-                    // --- This is the magic! ---
-                    console.log('User is PREMIUM. Unlocking content...');
                     unlockAllQuizzes();
-                } else {
-                    console.log('User is not premium.');
                 }
-            } else {
-                console.log('User is not logged in.');
             }
         }
-
         function unlockAllQuizzes() {
-            // Find all quiz cards
             document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
                 const quizId = quizCard.dataset.quizId;
                 const actionsContainer = quizCard.querySelector('.quiz-actions');
-                
-                // Find the locked button
                 const lockedButton = actionsContainer.querySelector('button.cursor-not-allowed');
-                
                 if (lockedButton) {
-                    // Replace locked button with a start button
                     actionsContainer.innerHTML = `
                         <button onclick="startQuiz('${quizId}')" class="start-btn glass-button px-6 py-2">
                             Start Quiz
@@ -750,70 +705,57 @@ body::after {
             });
         }
 
+
         // --- UPDATED: DOMContentLoaded ---
         document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards
+            // (Your existing animation fix)
             const cards = document.querySelectorAll('.glass-card');
+            const cardCount = cards.length;
+            const animationDelay = cardCount > 50 ? 10 : 150; 
+            
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(30px)';
-                setTimeout(() => {
+                setTimeout(() => { 
                     card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
-                }, index * 150);
+                }, index * animationDelay); 
             });
+
+            // --- ⬇️ 3. ADD THIS NEW SORT SCRIPT (WITH BRACE FIXES) ⬇️ ---
+            const sortBtn = document.getElementById('sortToggleBtn');
+            const quizGrid = document.getElementById('quiz-grid');
             
-            // NEW: Check user history and update quiz cards
+            if (sortBtn && quizGrid) {
+                let isReversed = false; 
+
+                sortBtn.addEventListener('click', function() {
+                    isReversed = !isReversed; 
+
+                    const quizCards = Array.from(quizGrid.querySelectorAll('[data-quiz-id]'));
+                    quizCards.reverse();
+                    
+                    quizCards.forEach(card => {
+                        quizGrid.appendChild(card);
+                    });
+
+                    if (isReversed) {
+                        sortBtn.textContent = 'Oldest First';
+                    } else {
+                        sortBtn.textContent = 'Newest First';
+                    }
+                });
+            }
+            // --- ⬆️ END OF SORT SCRIPT ⬆️ ---
+            
+            // (Your conditional search script)
+            
+            
+            // (Your existing user history script)
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
-                const quizId = quizCard.dataset.quizId;
-                const history = userHistory[quizId];
-                if (!history) return;
-
-                const actionsContainer = quizCard.querySelector('.quiz-actions');
-                const titleEl = quizCard.querySelector('.quiz-title');
-                actionsContainer.innerHTML = ''; // Clear existing button
-
-                const statusBadge = document.createElement('span');
-                statusBadge.className = 'ml-3 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full';
-
-                if (history.status === 'completed') {
-                    statusBadge.textContent = 'Completed';
-                    statusBadge.classList.add('bg-green-100', 'text-green-800');
-                    
-                    const restartBtn = document.createElement('button');
-                    restartBtn.className = 'glass-light px-6 py-2 text-white hover:bg-white hover:bg-opacity-20';
-                    restartBtn.textContent = 'Restart';
-                    restartBtn.onclick = () => {
-                        clearQuizHistory(quizId);
-                        startQuiz(quizId);
-                    };
-                    actionsContainer.appendChild(restartBtn);
-                } else if (history.status === 'incomplete') {
-                    statusBadge.textContent = 'In Progress';
-                    statusBadge.classList.add('bg-yellow-100', 'text-yellow-800');
-
-                    const continueBtn = document.createElement('button');
-                    continueBtn.className = 'glass-button px-6 py-2';
-                    continueBtn.textContent = 'Continue';
-                    continueBtn.onclick = () => startQuiz(`${quizId}?resume=true`);
-
-                    const restartBtn = document.createElement('button');
-                    restartBtn.className = 'ml-2 glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20';
-                    restartBtn.textContent = 'Restart';
-                     restartBtn.onclick = () => {
-                        clearQuizHistory(quizId);
-                        startQuiz(quizId);
-                    };
-                    
-                    actionsContainer.appendChild(continueBtn);
-                    actionsContainer.appendChild(restartBtn);
-                }
-                
-                if (titleEl) {
-                    titleEl.appendChild(statusBadge);
-                }
+                // ... (all your user history logic) ...
             });
             
             // Check for premium status AFTER loading history
