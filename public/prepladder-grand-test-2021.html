@@ -621,13 +621,16 @@ body::after {
 
         
         <section id="quiz-section"> 
+            
         <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-8 px-2">
             <h2 class="text-3xl font-bold text-white mb-4 sm:mb-0">Quiz Sets</h2>
             <button id="sortToggleBtn" class="glass-light px-5 py-2 text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300 self-start sm:self-center">
                 Newest First
             </button>
         </div>
-         <div id="quiz-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6"> 
+         
+            <div id="quiz-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6"> 
+                
         <div class="glass-card p-6 relative" data-quiz-id="ini-cet-grand-test-06-15th-sep-2021-september-2021-1-d3c5efec.html" data-quiz-name="Ini Cet Grand Test 06    15Th Sep 2021    September 2021        1    "> 
             
             <span class="absolute top-4 right-4 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full bg-yellow-900 text-yellow-300 border border-yellow-700">
@@ -1619,7 +1622,7 @@ body::after {
                 }, index * animationDelay); 
             });
 
-            // --- ⬇️ 3. ADD THIS NEW SORT SCRIPT (WITH BRACE FIXES) ⬇️ ---
+            // (Your sort script)
             const sortBtn = document.getElementById('sortToggleBtn');
             const quizGrid = document.getElementById('quiz-grid');
             
@@ -1629,10 +1632,10 @@ body::after {
                 sortBtn.addEventListener('click', function() {
                     isReversed = !isReversed; 
 
-                    const quizCards = Array.from(quizGrid.querySelectorAll('[data-quiz-id]'));
-                    quizCards.reverse();
+                    const quizCardsToSort = Array.from(quizGrid.querySelectorAll('[data-quiz-id]'));
+                    quizCardsToSort.reverse();
                     
-                    quizCards.forEach(card => {
+                    quizCardsToSort.forEach(card => {
                         quizGrid.appendChild(card);
                     });
 
@@ -1643,7 +1646,6 @@ body::after {
                     }
                 });
             }
-            // --- ⬆️ END OF SORT SCRIPT ⬆️ ---
             
             // (Your conditional search script)
             
@@ -1651,15 +1653,15 @@ body::after {
         const searchInput = document.getElementById('quizSearchInput');
         const noResultsEl = document.getElementById('noResultsMessage');
 
-        const quizCards = document.querySelectorAll('[data-quiz-id]');
-        const quizSection = document.getElementById('quiz-section'); // Use ID
+        const searchableQuizCards = document.querySelectorAll('[data-quiz-id]'); 
+        const quizSection = document.getElementById('quiz-section'); 
 
-        if (searchInput && quizCards.length > 0) {
+        if (searchInput && searchableQuizCards.length > 0) {
             searchInput.addEventListener('input', function(e) {
                 const searchTerm = e.target.value.trim().toLowerCase();
                 let visibleQuizzes = 0;
 
-                quizCards.forEach(card => {
+                searchableQuizCards.forEach(card => {
                     const title = card.querySelector('.quiz-title')?.textContent.trim().toLowerCase() || '';
                     const desc = card.querySelector('p')?.textContent.trim().toLowerCase() || '';
 
@@ -1684,11 +1686,73 @@ body::after {
         }
         
             
-            // (Your existing user history script)
+            
+            // --- ⬇️ 2. BUG FIX + NEW FEATURE (SCORE) ⬇️ ---
+            
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
-            document.querySelectorAll('[data-quiz-id]').forEach(quizCard => {
-                // ... (all your user history logic) ...
+            // BUG FIX: Renamed to 'historyQuizCards' to avoid conflict with search script
+            const historyQuizCards = document.querySelectorAll('[data-quiz-id]'); 
+            
+            historyQuizCards.forEach(quizCard => {
+                const quizId = quizCard.dataset.quizId;
+                const history = userHistory[quizId];
+                if (!history) return;
+
+                const actionsContainer = quizCard.querySelector('.quiz-actions');
+                const titleEl = quizCard.querySelector('.quiz-title');
+                actionsContainer.innerHTML = ''; 
+
+                const statusBadge = document.createElement('span');
+                statusBadge.className = 'ml-3 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full';
+
+                if (history.status === 'completed') {
+                    statusBadge.textContent = 'Completed';
+                    statusBadge.classList.add('bg-green-100', 'text-green-800');
+                    
+                    // --- NEW FEATURE: Show Score ---
+                    const scoreDisplay = document.createElement('span');
+                    scoreDisplay.className = 'text-lg font-bold text-green-400 mr-4';
+                    // Use template literal to access history.score and history.total
+                    scoreDisplay.textContent = `Score: ${history.score} / ${history.total}`;
+                    actionsContainer.appendChild(scoreDisplay);
+                    // --- END NEW FEATURE ---
+
+                    const restartBtn = document.createElement('button');
+                    restartBtn.className = 'glass-light px-6 py-2 text-white hover:bg-white hover:bg-opacity-20';
+                    restartBtn.textContent = 'Restart';
+                    restartBtn.onclick = () => {
+                        clearQuizHistory(quizId);
+                        startQuiz(quizId);
+                    };
+                    actionsContainer.appendChild(restartBtn);
+
+                } else if (history.status === 'incomplete') {
+                    statusBadge.textContent = 'In Progress';
+                    statusBadge.classList.add('bg-yellow-100', 'text-yellow-800');
+
+                    const continueBtn = document.createElement('button');
+                    continueBtn.className = 'glass-button px-6 py-2';
+                    continueBtn.textContent = 'Continue';
+                    continueBtn.onclick = () => startQuiz(`${quizId}?resume=true`);
+
+                    const restartBtn = document.createElement('button');
+                    restartBtn.className = 'ml-2 glass-light px-4 py-2 text-white hover:bg-white hover:bg-opacity-20';
+                    restartBtn.textContent = 'Restart';
+                     restartBtn.onclick = () => {
+                        clearQuizHistory(quizId);
+                        startQuiz(quizId);
+                    };
+                    
+                    actionsContainer.appendChild(continueBtn);
+                    actionsContainer.appendChild(restartBtn);
+                }
+                
+                if (titleEl) {
+                    titleEl.appendChild(statusBadge);
+                }
             });
+            // --- ⬆️ END OF BUG FIX + NEW FEATURE ⬆️ ---
+
             
             // Check for premium status AFTER loading history
             checkPremiumStatus();

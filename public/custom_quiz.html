@@ -828,21 +828,19 @@ body::after {
                 <div id="optionsContainer" class="space-y-3 mb-8">
                     </div>
 
-                <div id="solutionContainer" class="hidden glass-light p-6 border-l-4 border-green-400">
-                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                        </svg>
-                        Explanation
+                <div id="hintContainer" class="hidden glass-light p-6 border-l-4 border-blue-400 mb-8">
+                    <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center">
+                        💡 Hint
                     </h3>
-                    <div id="solutionText" class="text-white text-opacity-90 leading-relaxed mb-4"></div>
-                    <div id="solutionAudio" class="space-y-2 mt-4"></div>
-                    <div id="solutionImages" class="space-y-4 mt-4"></div>
-                    <div id="solutionVideo" class="hidden mt-4">
-                        <video id="explanationVideoPlayer" class="w-full rounded-lg" controls>
-                            Your browser does not support the video tag.
-                        </video>
+                    <div id="hintText" class="text-white text-opacity-90 leading-relaxed"></div>
+                </div>
+
+                <div id="explanationContainer" class="hidden mt-8">
                     </div>
+                
+                <div id="metaContainer" class="hidden flex justify-between items-center text-sm text-white text-opacity-60 border-t border-white border-opacity-10 pt-4 mt-8">
+                    <span id="difficultyDisplay">Difficulty: N/A</span>
+                    <span id="questionIdDisplay">ID: N/A</span>
                 </div>
             </div>
 
@@ -860,6 +858,13 @@ body::after {
                             <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
                         </svg>
                         <span id="bookmarkText">Bookmark</span>
+                    </button>
+
+                    <button onclick="toggleHint()" id="hintBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-blue-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center ml-2">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                           <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Show Hint</span>
                     </button>
                     
                     <button onclick="toggleMarkForReview()" id="markReviewBtn" class="hidden glass-light px-6 py-3 text-white hover:bg-purple-500 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
@@ -887,7 +892,6 @@ body::after {
 
 
     <script>
-        // --- NEW: PWA Service Worker Registration ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -905,7 +909,6 @@ body::after {
         const quizFilename = 'custom_quiz.html';
         let hierarchy = ["Custom Quizzes"];
         
-        // Handle Custom Quiz Loading
         if (window.location.pathname.endsWith('custom_quiz.html')) {
             const customData = JSON.parse(localStorage.getItem('customQuizData'));
             if (customData) {
@@ -943,9 +946,8 @@ body::after {
             notAttempted: questionsData.length
         };
 
-        // --- NEW: History Management ---
         function saveProgress() {
-            if (isQuizCompleted) return; // Don't save after completion
+            if (isQuizCompleted) return;
             const userHistory = JSON.parse(localStorage.getItem('userHistory')) || {};
             userHistory[quizFilename] = {
                 questionStates,
@@ -994,14 +996,13 @@ body::after {
             };
             localStorage.setItem('userHistory', JSON.stringify(userHistory));
         }
-        // --- End of History Management ---
 
         const urlParams = new URLSearchParams(window.location.search);
         const startAt = parseInt(urlParams.get('startAt'));
         const resume = urlParams.get('resume') === 'true';
 
         function goBack() {
-            if (!isQuizCompleted) saveProgress(); // Save progress before leaving
+            if (!isQuizCompleted) saveProgress();
             window.location.href = document.referrer || 'index.html';
         }
 
@@ -1089,7 +1090,7 @@ body::after {
                 
                 currentQuestionIndex = index;
                 displayQuestion();
-                saveProgress(); // NEW: Save on navigation
+                saveProgress();
             }
         }
 
@@ -1123,6 +1124,13 @@ body::after {
             }
         }
 
+        function toggleHint() {
+            const hintContainer = document.getElementById('hintContainer');
+            if (hintContainer) {
+                hintContainer.classList.toggle('hidden');
+            }
+        }
+
         function displayQuestion() {
             if (!questionsData || questionsData.length === 0) {
                 document.getElementById('questionText').innerHTML = 'No questions available for this quiz.';
@@ -1141,7 +1149,9 @@ body::after {
             
             document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
             
-            document.getElementById('solutionContainer').classList.add('hidden');
+            document.getElementById('explanationContainer').classList.add('hidden');
+            document.getElementById('explanationContainer').innerHTML = '';
+            document.getElementById('hintContainer').classList.add('hidden');
             
             document.getElementById('questionText').innerHTML = question.text || 'No question text available';
             
@@ -1154,6 +1164,23 @@ body::after {
                 });
             }
             document.getElementById('questionMedia').innerHTML = mediaHtml;
+
+            const hintBtn = document.getElementById('hintBtn');
+            if (question.hint) {
+                document.getElementById('hintText').innerHTML = question.hint;
+                hintBtn.classList.remove('hidden');
+            } else {
+                hintBtn.classList.add('hidden');
+            }
+            
+            const metaContainer = document.getElementById('metaContainer');
+            if (question.difficulty || question.question_id) {
+                document.getElementById('difficultyDisplay').textContent = `Difficulty: ${question.difficulty || 'N/A'}`;
+                document.getElementById('questionIdDisplay').textContent = `ID: ${question.question_id || 'N/A'}`;
+                metaContainer.classList.remove('hidden');
+            } else {
+                metaContainer.classList.add('hidden');
+            }
             
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
@@ -1162,7 +1189,7 @@ body::after {
             if (question.choices && Array.isArray(question.choices)) {
                 question.choices.forEach((choice, index) => {
                     const optionLetter = String.fromCharCode(65 + index);
-                    const isSelected = selectedOption === index;
+                    const isSelected = selectedOption === index; 
                     
                     const optionDiv = document.createElement('div');
                     optionDiv.innerHTML = `
@@ -1217,7 +1244,7 @@ body::after {
                 }
                 updateQuestionNav();
             }
-            saveProgress(); // NEW: Save on navigation
+            saveProgress();
         }
 
         function processAnswer() {
@@ -1248,6 +1275,7 @@ body::after {
             const optionButtons = optionsContainer.querySelectorAll('.option-button');
             const question = questionsData[currentQuestionIndex];
             const correctChoiceId = question.correct_choice_id;
+            
             let correctOptionIndex = question.choices.findIndex(c => c.id === correctChoiceId);
 
             optionsContainer.classList.add('answered');
@@ -1261,43 +1289,114 @@ body::after {
             showSolution();
         }
 
-
+        // --- COMPLETELY REPLACED FUNCTION ---
         function showSolution() {
             if (currentMode !== 'study' && currentMode !== 'timed_study') return;
             
             const question = questionsData[currentQuestionIndex];
-            document.getElementById('solutionText').innerHTML = question.solution || 'No solution provided';
+            const explanationContainer = document.getElementById('explanationContainer');
+            explanationContainer.innerHTML = ''; // Clear previous content
             
-            const videoContainer = document.getElementById('solutionVideo');
-            const videoPlayer = document.getElementById('explanationVideoPlayer');
-            const explanationVideo = question.explanation_video;
-            
-            if (explanationVideo) {
-                videoContainer.classList.remove('hidden');
-                if (explanationVideo.includes('.m3u8')) setupVideo(videoPlayer, explanationVideo);
-                else videoPlayer.src = explanationVideo;
-            } else {
-                videoContainer.classList.add('hidden');
-            }
+            let contentHtml = '';
+            let videoToInit = null; // Store video URL for HLS.js
 
-            const audioContainer = document.getElementById('solutionAudio');
-            audioContainer.innerHTML = '';
-            if (question.explanation_audio_eng) {
-                audioContainer.innerHTML += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English Explanation:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
-            }
-            if (question.explanation_audio_hin) {
-                audioContainer.innerHTML += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish Explanation:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
-            }
-            
-            const imagesContainer = document.getElementById('solutionImages');
-            imagesContainer.innerHTML = '';
-            if (question.explanation_images) {
-                 question.explanation_images.forEach(imgSrc => {
-                    if(imgSrc) imagesContainer.innerHTML += `<div class="mt-4"><img src="${imgSrc}" alt="Explanation Image" class="w-full rounded-lg"></div>`;
+            // --- AMBOSS MULTI-BOX LOGIC ---
+            if (question.explanations && Array.isArray(question.explanations) && question.explanations.length > 0) {
+                contentHtml = '<h3 class="text-2xl font-bold text-white mb-4">✅ Explanations</h3><div class="space-y-4">';
+                
+                question.explanations.forEach(exp => {
+                    const isCorrect = exp.label.includes('CORRECT');
+                    const borderColor = isCorrect ? 'border-green-400' : 'border-red-400';
+                    const textColor = isCorrect ? 'text-green-400' : 'text-red-400';
+                    
+                    let imageHtml = '';
+                    if (exp.image_url) {
+                        imageHtml += `<img src="${exp.image_url}" alt="Explanation Image" class="w-full rounded-lg mt-4">`;
+                    }
+                    if (exp.image_description) {
+                        imageHtml += `
+                            <div class="mt-4 border-t border-white border-opacity-10 pt-4">
+                                <h5 class="font-bold text-white text-opacity-70 mb-2">Image Description:</h5>
+                                <div class="text-white text-opacity-80 text-sm">${exp.image_description}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    contentHtml += `
+                        <div class="glass-light p-4 border-l-4 ${borderColor}">
+                            <h4 class="text-lg font-bold ${textColor} mb-2">${exp.label}</h4>
+                            <div class="text-white text-opacity-90 leading-relaxed">${exp.text}</div>
+                            ${imageHtml}
+                        </div>
+                    `;
                 });
-            }
+                
+                contentHtml += '</div>';
+            } 
+            // --- FIX: FALLBACK LOGIC FOR SINGLE BOX (Legacy, Modern, PrepLadder, Amboss-fallback) ---
+            else if (question.solution || (question.explanation_images && question.explanation_images.length > 0) || question.explanation_video || question.explanation_audio_eng) {
+                 // Start the single box
+                 contentHtml = `
+                    <h3 class="text-2xl font-bold text-white mb-4">✅ Explanation</h3>
+                    <div class="glass-light p-6 border-l-4 border-green-400">
+                 `;
+                 
+                 // 1. Add Solution Text (if it exists)
+                 if (question.solution) {
+                    contentHtml += `<div id="solutionText" class="text-white text-opacity-90 leading-relaxed">${question.solution}</div>`;
+                 }
 
-            document.getElementById('solutionContainer').classList.remove('hidden');
+                 // 2. Add Explanation Images (if they exist)
+                 let imagesHtml = '';
+                 if (question.explanation_images && Array.isArray(question.explanation_images) && question.explanation_images.length > 0) {
+                     question.explanation_images.forEach(imgSrc => {
+                        if(imgSrc) imagesHtml += `<div class="mt-4"><img src="${imgSrc}" alt="Explanation Image" class="w-full rounded-lg"></div>`;
+                    });
+                     contentHtml += `<div id="solutionImages" class="space-y-4 mt-4">${imagesHtml}</div>`;
+                 }
+
+                 // 3. Add Video
+                 const explanationVideo = question.explanation_video;
+                 if (explanationVideo) {
+                    videoToInit = explanationVideo; // Save for later
+                    contentHtml += `
+                        <div id="solutionVideo" class="mt-4">
+                            <video id="explanationVideoPlayer" class="w-full rounded-lg" controls>
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>`;
+                 }
+
+                 // 4. Add Audio
+                 let audioHtml = '';
+                 if (question.explanation_audio_eng) {
+                    audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English Explanation:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
+                 }
+                 if (question.explanation_audio_hin) {
+                    audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish Explanation:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
+                 }
+                 if (audioHtml) {
+                    contentHtml += `<div id="solutionAudio" class="space-y-2 mt-4">${audioHtml}</div>`;
+                 }
+
+                 // Close the single box
+                 contentHtml += '</div>';
+            }
+            // --- END FIX ---
+
+            explanationContainer.innerHTML = contentHtml;
+            explanationContainer.classList.remove('hidden');
+
+            if (videoToInit) {
+                const videoPlayer = document.getElementById('explanationVideoPlayer');
+                if (videoPlayer) {
+                    if (videoToInit.includes('.m3u8')) {
+                        setupVideo(videoPlayer, videoToInit);
+                    } else {
+                        videoPlayer.src = videoToInit;
+                    }
+                }
+            }
         }
 
         function submitQuiz() {
@@ -1321,7 +1420,6 @@ body::after {
                 }
             });
             
-            // Save performance data
             const performanceData = JSON.parse(localStorage.getItem('quizPerformanceData')) || [];
             performanceData.push({
                 quizName: quizName,
@@ -1336,9 +1434,9 @@ body::after {
             });
             localStorage.setItem('quizPerformanceData', JSON.stringify(performanceData));
 
-            stats.correctAnswers = correct; // Update global stats
+            stats.correctAnswers = correct;
             stats.incorrectAnswers = incorrect;
-            markQuizAsCompleted(); // NEW: Mark quiz as complete in history
+            markQuizAsCompleted();
             showPerformanceAnalysis(correct, incorrect, questionsData.length - (correct + incorrect), totalTime);
         }
 
@@ -1406,6 +1504,34 @@ body::after {
                 if(question.explanation_audio_eng) audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">English:</p><audio src="${question.explanation_audio_eng}" controls class="w-full"></audio></div>`;
                 if(question.explanation_audio_hin) audioHtml += `<div class="mt-2"><p class="text-sm text-white text-opacity-70 mb-1">Hinglish:</p><audio src="${question.explanation_audio_hin}" controls class="w-full"></audio></div>`;
 
+                let explanationContent = '';
+                // --- FIX: Check .length > 0 ---
+                if (question.explanations && Array.isArray(question.explanations) && question.explanations.length > 0) {
+                    explanationContent = question.explanations.map(exp => {
+                         const isCorrect = exp.label.includes('CORRECT');
+                         const textColor = isCorrect ? 'text-green-400' : 'text-red-400';
+                         
+                         let imageHtml = '';
+                         if (exp.image_url) {
+                            imageHtml += `<img src="${exp.image_url}" alt="Explanation Image" class="w-full rounded-lg mt-4">`;
+                         }
+                         if (exp.image_description) {
+                            imageHtml += `
+                                <div class="mt-4 border-t border-white border-opacity-10 pt-4">
+                                    <h5 class="font-bold text-white text-opacity-70 mb-2">Image Description:</h5>
+                                    <div class="text-white text-opacity-80 text-sm">${exp.image_description}</div>
+                                </div>
+                            `;
+                         }
+                         
+                         return `<div class="mt-2"><h5 class="font-bold ${textColor}">${exp.label}</h5><div class="text-white text-opacity-90">${exp.text}</div>${imageHtml}</div>`
+                    }).join('');
+                } else if (question.solution) {
+                    explanationContent = `<div class="text-white text-opacity-90">${question.solution}</div>`;
+                } else {
+                    explanationContent = `<div class="text-white text-opacity-70">No solution available.</div>`;
+                }
+
                 let imagesHtml = (question.explanation_images || []).map(src => src ? `<div class="mt-4"><img src="${src}" alt="Explanation Image" class="w-full rounded-lg"></div>` : '').join('');
 
                 reviewDiv.innerHTML = `
@@ -1419,7 +1545,7 @@ body::after {
                     <div class="space-y-2 mb-4">${optionsHtml}</div>
                     <div class="bg-green-900 bg-opacity-20 p-4 rounded-lg border border-green-700">
                         <h5 class="text-green-400 font-bold mb-2">Explanation:</h5>
-                        <div class="text-white text-opacity-90">${question.solution || 'No solution available.'}</div>
+                        ${explanationContent}
                         ${videoHtml}
                         ${audioHtml}
                         ${imagesHtml}
@@ -1445,7 +1571,7 @@ body::after {
                 if (window.location.pathname.endsWith('custom_quiz.html')) {
                     localStorage.removeItem('customQuizData');
                 }
-                clearProgress(); // NEW: Clear history on retake
+                clearProgress();
                 location.reload();
             }
         }
@@ -1520,7 +1646,7 @@ body::after {
                 
                 currentQuestionIndex--;
                 displayQuestion();
-                saveProgress(); // NEW: Save on navigation
+                saveProgress();
             }
         }
 
@@ -1532,7 +1658,7 @@ body::after {
             if (currentQuestionIndex < questionsData.length - 1) {
                 currentQuestionIndex++;
                 displayQuestion();
-                saveProgress(); // NEW: Save on navigation
+                saveProgress();
             } else {
                 if (currentMode === 'test' || currentMode === 'timed_exam') {
                     if (confirm('You have reached the end of the quiz. Would you like to submit your answers now?')) {
@@ -1583,14 +1709,13 @@ body::after {
              if (resume) {
                 if (loadProgress()) {
                     document.getElementById('modeModal').style.display = 'none';
-                    initializeQuiz(); // Resume directly into the saved mode and state
+                    initializeQuiz();
                 } else {
-                    // If resume fails (e.g., cleared history), start fresh
                     clearProgress();
                     document.getElementById('modeModal').style.display = 'flex';
                 }
              } else if (!window.location.pathname.endsWith('custom_quiz.html')) {
-                clearProgress(); // Clear old progress if not resuming
+                clearProgress();
                 document.getElementById('modeModal').style.display = 'flex';
              } else {
                 initializeQuiz();
@@ -1601,10 +1726,12 @@ body::after {
             if (document.getElementById('modeModal').style.display !== 'none') return;
             if (document.getElementById('performanceModal').classList.contains('hidden') === false) return;
             
-            if (e.key >= '1' && e.key <= '4') {
+            if (e.key >= '1' && e.key <= '9') {
                 const optionIndex = parseInt(e.key) - 1;
                 const options = document.querySelectorAll('.option-button');
-                if (optionIndex < options.length) selectOption(optionIndex);
+                if (optionIndex >= 0 && optionIndex < options.length) {
+                    selectOption(optionIndex);
+                }
             } else if (e.key === 'ArrowLeft') {
                 previousQuestion();
             } else if (e.key === 'ArrowRight' || e.key === ' ') {
@@ -1614,6 +1741,8 @@ body::after {
                 toggleBookmark();
             } else if (e.key.toLowerCase() === 'm' && (currentMode === 'test' || currentMode === 'timed_exam')) {
                 toggleMarkForReview();
+            } else if (e.key.toLowerCase() === 'h') {
+                toggleHint();
             } else if (e.key.toLowerCase() === 's' && (currentMode === 'test' || currentMode === 'timed_exam')) {
                 submitQuiz();
             }
